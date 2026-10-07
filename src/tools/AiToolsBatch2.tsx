@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import { runAutoAiCompletion } from '../lib/aiService';
 import { toast } from 'sonner';
+import { MarkdownRenderer } from '../components/MarkdownRenderer';
 
 // Reusable live streaming status & progress component
 export const AiStreamingStatus: React.FC<{ loading: boolean; status: string; wordCount?: number }> = ({ loading, status, wordCount }) => {
@@ -43,7 +44,7 @@ export const AiStreamingStatus: React.FC<{ loading: boolean; status: string; wor
   );
 };
 
-export const AiLiveCursor: React.FC<{ active: boolean }> = ({ active }) => {
+export const AiLiveCursor: React.FC<{ active?: boolean }> = ({ active = true }) => {
   if (!active) return null;
   return <span className="inline-block w-1.5 h-4 bg-primary animate-pulse ml-0.5 align-middle rounded-xs" />;
 };

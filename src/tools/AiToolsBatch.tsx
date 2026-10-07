@@ -21,6 +21,7 @@ import {
 import { runAutoAiCompletion } from '../lib/aiService';
 import { toast } from 'sonner';
 import { AiStreamingStatus, AiLiveCursor } from './AiToolsBatch2';
+import { MarkdownRenderer } from '../components/MarkdownRenderer';
 
 // ============================================================================
 // 1. AI Article & Blog Post Writer
@@ -229,8 +230,9 @@ Format the output cleanly in Markdown with:
 
           <div className="flex-1 min-h-[380px] p-5 rounded-2xl bg-card border border-border overflow-y-auto">
             {result ? (
-              <div className="prose dark:prose-invert max-w-none text-xs text-foreground leading-relaxed whitespace-pre-wrap font-sans">
-                {result}
+              <div className="text-xs text-foreground leading-relaxed font-sans">
+                <MarkdownRenderer content={result} />
+                {loading && <AiLiveCursor />}
               </div>
             ) : (
               <div className="h-full min-h-[300px] flex flex-col items-center justify-center text-center text-muted-foreground p-6">

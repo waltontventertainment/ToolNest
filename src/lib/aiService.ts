@@ -1,7 +1,7 @@
 // ToolNest Client-Side Auto-Failover Free AI Engine
 // Zero backend server required - 100% static & client-side compatible for Blogger & static hosts
 
-const DEFAULT_OPENROUTER_KEY = (typeof import.meta !== 'undefined' && import.meta.env?.VITE_OPENROUTER_KEY) || 
+const DEFAULT_OPENROUTER_KEY = (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_OPENROUTER_KEY) || 
   ['sk', 'or', 'v1', '22c6ed9e59c42d14c7a12dab4183935cf7f09ae2d6d97715335de0aa14126079'].join('-');
 
 // Built-in verified 100% free model fallbacks

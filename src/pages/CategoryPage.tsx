@@ -77,7 +77,7 @@ export const CategoryPage: React.FC = () => {
         )}
       </div>
 
-      <AdSlot slot="category-bottom" className="w-full mt-10" />
+      <AdSlot slot="category-bottom" format="auto" />
     </>
   );
 };

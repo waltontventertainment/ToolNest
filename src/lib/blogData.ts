@@ -30,8 +30,8 @@ export const BUILTIN_BLOG_POSTS: BlogPost[] = [
     excerpt: 'Discover how open-source and free AI models can automate article writing, code refactoring, SQL query building, and SEO optimization with zero subscription fees.',
     category: 'AI & Machine Learning',
     author: {
-      name: 'ToolNest Engineering Team',
-      role: 'Core AI & Architecture Lab',
+      name: 'ToolNest Team',
+      role: 'ToolNest Official Editorial',
       avatar: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150&auto=format&fit=crop&q=80'
     },
     publishedAt: '2026-10-04',
@@ -117,8 +117,8 @@ By adopting client-side, zero-backend toolchains powered by resilient free model
     excerpt: 'Learn how WebAssembly, the Canvas API, and Web Cryptography allow full image resizing, PDF operations, and encryption to execute 100% locally on your device.',
     category: 'Security & Privacy',
     author: {
-      name: 'ToolNest Security Lab',
-      role: 'Web Privacy & Cryptography Research',
+      name: 'ToolNest Team',
+      role: 'ToolNest Security & Privacy Lab',
       avatar: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150&auto=format&fit=crop&q=80'
     },
     publishedAt: '2026-10-02',
@@ -183,8 +183,8 @@ Always verify if an online utility requires a server upload. For sensitive compa
     excerpt: 'A comprehensive technical audit guide for maximizing click-through rates on Google Search, X, LinkedIn, and Facebook with structured metadata.',
     category: 'SEO & Growth',
     author: {
-      name: 'ToolNest Growth & SEO Desk',
-      role: 'Technical Search & Web Standards',
+      name: 'ToolNest Team',
+      role: 'ToolNest Growth & SEO Desk',
       avatar: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150&auto=format&fit=crop&q=80'
     },
     publishedAt: '2026-09-28',
@@ -256,8 +256,8 @@ Adding structured data enables Google to display rich snippets, review stars, FA
     excerpt: 'Battle-tested regex expressions for email, phone, IP addresses, and UUIDs paired with high-performance SQL query snippets.',
     category: 'Developer Workflows',
     author: {
-      name: 'ToolNest Developer Lab',
-      role: 'Full-Stack & Database Engineering',
+      name: 'ToolNest Team',
+      role: 'ToolNest Developer Lab',
       avatar: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150&auto=format&fit=crop&q=80'
     },
     publishedAt: '2026-09-24',
@@ -337,8 +337,8 @@ Keep these patterns accessible or use the **AI Regex & SQL Generator** to create
     excerpt: 'A practical UI design guide on luminance calculations, accessible color palettes, and color blindness simulations for high-converting user experiences.',
     category: 'Design & UX',
     author: {
-      name: 'ToolNest Design System',
-      role: 'Accessibility & UI/UX Standards',
+      name: 'ToolNest Team',
+      role: 'ToolNest Design & UX System',
       avatar: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150&auto=format&fit=crop&q=80'
     },
     publishedAt: '2026-09-19',
@@ -392,8 +392,8 @@ Utilize the **Color Contrast WCAG Checker** and **Color Blindness Simulator** in
     excerpt: 'Everything you need to know about QR error correction levels, WiFi credentials encoding, EAN-13, UPC-A, and Code-128 barcode standards.',
     category: 'Developer Workflows',
     author: {
-      name: 'ToolNest Hardware & Standards Desk',
-      role: 'Barcode & QR Protocol Engineering',
+      name: 'ToolNest Team',
+      role: 'ToolNest Hardware & Standards Desk',
       avatar: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150&auto=format&fit=crop&q=80'
     },
     publishedAt: '2026-09-12',
@@ -519,9 +519,9 @@ export async function fetchBloggerPosts(bloggerUrl: string): Promise<BlogPost[]>
         content: rawContent,
         category,
         author: {
-          name: authorName,
-          role: 'Blogger Contributor',
-          avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&auto=format&fit=crop&q=80'
+          name: 'ToolNest Team',
+          role: 'ToolNest Official Editorial',
+          avatar: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150&auto=format&fit=crop&q=80'
         },
         publishedAt: published,
         readTimeMinutes: readTime,

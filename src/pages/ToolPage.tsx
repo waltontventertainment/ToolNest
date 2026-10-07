@@ -130,11 +130,11 @@ export const ToolPage: React.FC = () => {
       </div>
 
       {/* Main Tool Component View */}
-      <section className="mb-16">
+      <section className="mb-12">
         <Component />
       </section>
 
-      <AdSlot slot="tool-mid" className="mb-12 min-h-[90px] w-full" />
+      <AdSlot slot="tool-mid" format="horizontal" />
 
       {/* Instructions & FAQs */}
       <div className="grid md:grid-cols-3 gap-10 max-w-6xl">
@@ -198,7 +198,7 @@ export const ToolPage: React.FC = () => {
             </ul>
           </div>
           
-          <AdSlot slot="tool-sidebar" className="min-h-[250px] w-full" />
+          <AdSlot slot="tool-sidebar" format="rectangle" />
         </aside>
       </div>
     </>

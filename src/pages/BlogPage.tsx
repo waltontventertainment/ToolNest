@@ -261,7 +261,7 @@ export const BlogPage: React.FC = () => {
       </section>
 
       {/* Bottom AdSense Slot */}
-      <AdSlot slot="blog-hub-bottom" className="min-h-[90px] w-full" />
+      <AdSlot slot="blog-hub-bottom" format="auto" />
     </div>
   );
 };

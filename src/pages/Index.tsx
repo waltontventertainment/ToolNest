@@ -91,7 +91,7 @@ export const Index: React.FC = () => {
       />
       
       {/* Hero Section */}
-      <section className="text-center md:text-left py-8 md:py-14 flex flex-col md:flex-row items-center justify-between gap-10">
+      <section className="text-center md:text-left pt-2 pb-6 md:pt-4 md:pb-10 flex flex-col md:flex-row items-center justify-between gap-8 md:gap-10">
         <div className="flex-1 max-w-2xl">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-bold mb-4 border border-primary/20 shadow-2xs">
             <Sparkles className="w-3.5 h-3.5 animate-pulse" />
@@ -316,6 +316,9 @@ export const Index: React.FC = () => {
         )}
       </section>
 
+      {/* Ad slot after tools (self-collapses when not filled) */}
+      <AdSlot slot="home-after-tools" format="horizontal" />
+
       {/* Featured Blog & Insights Section */}
       {blogPosts.length > 0 && !showFavoritesOnly && !search && (
         <section className="mt-20 pt-10 border-t border-border/60 space-y-6">
@@ -400,6 +403,9 @@ export const Index: React.FC = () => {
           </div>
         </section>
       )}
+
+      {/* Ad slot before platform features (self-collapsing) */}
+      <AdSlot slot="home-before-features" format="auto" />
       
       {/* Platform Features Section */}
       <section className="mt-20 py-12 border-t border-border/60">

@@ -10,6 +10,10 @@ interface AdSlotProps {
   label?: boolean;
 }
 
+/**
+ * Intelligent Google AdSense Slot with 100% Zero-Whitespace Auto-Collapse.
+ * Does not render any padding, margins, or height unless the ad actually delivers an iframe.
+ */
 export const AdSlot: React.FC<AdSlotProps> = ({ 
   slot, 
   format = 'auto', 
@@ -31,34 +35,48 @@ export const AdSlot: React.FC<AdSlotProps> = ({
       }
     }
 
-    // Check if ad actually rendered an iframe
-    const observer = new MutationObserver(() => {
-      const hasIframe = adRef.current && adRef.current.querySelector('iframe') !== null;
-      const status = adRef.current?.getAttribute('data-ad-status');
-      if (hasIframe || status === 'filled') {
+    const checkFilledStatus = () => {
+      if (!adRef.current) return;
+      const iframe = adRef.current.querySelector('iframe');
+      const status = adRef.current.getAttribute('data-ad-status');
+      
+      if (status === 'filled' || (iframe && (iframe.clientHeight > 20 || iframe.offsetHeight > 20))) {
         setIsFilled(true);
       } else if (status === 'unfilled') {
         setIsFilled(false);
       }
-    });
+    };
 
+    // Mutation observer to detect iframe injection and size
+    const observer = new MutationObserver(checkFilledStatus);
     observer.observe(adRef.current, { attributes: true, childList: true, subtree: true });
 
-    return () => observer.disconnect();
+    // Periodic safety check in case iframe takes a moment to paint
+    const timer = setTimeout(checkFilledStatus, 1500);
+
+    return () => {
+      observer.disconnect();
+      clearTimeout(timer);
+    };
   }, [slot, client]);
 
-  // If no client, return null to avoid any empty whitespace
+  // If no client, return null to avoid any whitespace
   if (!client) {
     return null;
   }
 
   return (
     <div 
-      className={`ad-slot-wrapper w-full flex-col items-center justify-center transition-all ${className}`}
-      style={{ display: isFilled ? 'flex' : 'none', margin: isFilled ? '1.5rem 0' : '0' }}
+      className={`ad-slot-wrapper transition-all duration-300 ${
+        isFilled 
+          ? `w-full flex flex-col items-center justify-center my-6 ${className}` 
+          : 'hidden h-0 max-h-0 min-h-0 m-0 p-0 border-0 opacity-0 overflow-hidden pointer-events-none'
+      }`}
+      data-filled={isFilled ? 'true' : 'false'}
+      style={!isFilled ? { display: 'none', height: 0, minHeight: 0, margin: 0, padding: 0 } : undefined}
     >
       {label && isFilled && (
-        <span className="text-[9px] font-bold tracking-widest uppercase text-muted-foreground/60 mb-1">
+        <span className="text-[9px] font-bold tracking-widest uppercase text-muted-foreground/60 mb-1.5 select-none">
           Advertisement
         </span>
       )}
@@ -69,10 +87,12 @@ export const AdSlot: React.FC<AdSlotProps> = ({
         data-ad-slot={slot || '1234567890'}
         data-ad-format={format}
         data-full-width-responsive="true"
-        style={{ display: isFilled ? 'block' : 'none', minHeight: isFilled ? '90px' : '0px' }}
+        style={{ 
+          display: isFilled ? 'block' : 'none', 
+          minHeight: isFilled ? '60px' : '0px',
+          height: isFilled ? 'auto' : '0px'
+        }}
       />
     </div>
   );
 };
-
-

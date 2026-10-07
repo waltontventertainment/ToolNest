@@ -172,36 +172,38 @@ const TextBlock: React.FC<{ text: string }> = ({ text }) => {
       continue;
     }
 
-    // H1
-    if (trimmed.startsWith('# ')) {
+    // Check any heading (#, ##, ###, ####, #####, ######)
+    const headingMatch = trimmed.match(/^(#{1,6})\s+(.*)$/);
+    if (headingMatch) {
       flushList();
-      elements.push(
-        <h1 key={`h1-${i}`} className="text-2xl md:text-3xl font-extrabold text-foreground tracking-tight font-display mt-8 mb-4">
-          <FormattedInline text={trimmed.slice(2)} />
-        </h1>
-      );
-      continue;
-    }
-
-    // H2
-    if (trimmed.startsWith('## ')) {
-      flushList();
-      elements.push(
-        <h2 key={`h2-${i}`} className="text-xl md:text-2xl font-bold text-foreground tracking-tight font-display mt-8 mb-3 pb-2 border-b border-border/60 flex items-center gap-2">
-          <FormattedInline text={trimmed.slice(3)} />
-        </h2>
-      );
-      continue;
-    }
-
-    // H3
-    if (trimmed.startsWith('### ')) {
-      flushList();
-      elements.push(
-        <h3 key={`h3-${i}`} className="text-base md:text-lg font-bold text-foreground tracking-tight mt-6 mb-2">
-          <FormattedInline text={trimmed.slice(4)} />
-        </h3>
-      );
+      const level = headingMatch[1].length;
+      const text = headingMatch[2].trim();
+      
+      if (level === 1) {
+        elements.push(
+          <h1 key={`h1-${i}`} className="text-2xl md:text-3xl font-extrabold text-foreground tracking-tight font-display mt-8 mb-4">
+            <FormattedInline text={text} />
+          </h1>
+        );
+      } else if (level === 2) {
+        elements.push(
+          <h2 key={`h2-${i}`} className="text-xl md:text-2xl font-bold text-foreground tracking-tight font-display mt-8 mb-3 pb-2 border-b border-border/60 flex items-center gap-2">
+            <FormattedInline text={text} />
+          </h2>
+        );
+      } else if (level === 3) {
+        elements.push(
+          <h3 key={`h3-${i}`} className="text-base md:text-lg font-bold text-foreground tracking-tight mt-6 mb-2">
+            <FormattedInline text={text} />
+          </h3>
+        );
+      } else {
+        elements.push(
+          <h4 key={`h4-${i}`} className="text-sm md:text-base font-bold text-foreground tracking-tight mt-4 mb-1.5">
+            <FormattedInline text={text} />
+          </h4>
+        );
+      }
       continue;
     }
 

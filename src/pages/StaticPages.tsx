@@ -132,7 +132,7 @@ export const About: React.FC = () => (
       </div>
     </section>
 
-    <AdSlot slot="static-about-bottom" className="w-full mt-8" />
+    <AdSlot slot="static-about-bottom" format="auto" />
   </div>
 );
 
@@ -423,6 +423,6 @@ export const Disclaimer: React.FC = () => (
       </section>
     </div>
 
-    <AdSlot slot="static-disclaimer-bottom" className="w-full mt-8" />
+    <AdSlot slot="static-disclaimer-bottom" format="auto" />
   </div>
 );

@@ -197,6 +197,8 @@ export const BlogPostPage: React.FC = () => {
         </div>
       </header>
 
+      <AdSlot slot="blog-article-top" format="horizontal" />
+
       {/* Featured Image */}
       <div className="rounded-3xl overflow-hidden aspect-video border border-border shadow-md">
         <img
@@ -235,7 +237,7 @@ export const BlogPostPage: React.FC = () => {
         </div>
       )}
 
-      <AdSlot slot="blog-article-bottom" className="min-h-[90px] w-full my-6" />
+      <AdSlot slot="blog-article-bottom" format="auto" />
 
       {/* Related Tools Interactive Box */}
       {relatedTools.length > 0 && (

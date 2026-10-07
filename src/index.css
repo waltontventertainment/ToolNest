@@ -726,23 +726,44 @@
   }
 
   /* ========================================================
-     GOOGLE ADSENSE AUTO-COLLAPSE (ZERO BLANK SPACE)
+     GOOGLE ADSENSE AUTO-COLLAPSE (ZERO BLANK SPACE & CLEAN PRESENTATION)
      ======================================================== */
-  ins.adsbygoogle[data-ad-status="unfilled"],
-  ins.adsbygoogle:empty {
-    display: none !important;
-    height: 0 !important;
-    min-height: 0 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    visibility: hidden !important;
+  /* Remove any blank auto-injected top gaps */
+  body {
+    padding-top: 0 !important;
+    margin-top: 0 !important;
   }
 
+  /* Completely collapse unfilled ads, auto-placed placeholders and empty units */
+  ins.adsbygoogle[data-ad-status="unfilled"],
+  ins.adsbygoogle:empty,
+  ins.adsbygoogle[data-ad-status="unfilled"] *,
+  .google-auto-placed:empty,
+  .google-auto-placed:not(:has(iframe)),
+  .google-auto-placed:not(:has(ins.adsbygoogle[data-ad-status="filled"])),
+  .ad-slot-wrapper:not([data-filled="true"]),
   .ad-slot-wrapper:not(:has(iframe)):not(:has(ins.adsbygoogle[data-ad-status="filled"])) {
     display: none !important;
     height: 0 !important;
     min-height: 0 !important;
+    max-height: 0 !important;
     margin: 0 !important;
     padding: 0 !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    border: none !important;
+    overflow: hidden !important;
+    pointer-events: none !important;
+  }
+
+  /* When an ad is filled, style it elegantly */
+  .ad-slot-wrapper[data-filled="true"],
+  .google-auto-placed:has(iframe) {
+    animation: adFadeIn 0.35s ease-in-out;
+  }
+
+  @keyframes adFadeIn {
+    from { opacity: 0; transform: scale(0.99); }
+    to { opacity: 1; transform: scale(1); }
   }
 }
