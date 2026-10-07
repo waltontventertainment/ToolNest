@@ -1,0 +1,126 @@
+import React, { useState, useEffect } from 'react';
+import { Copy, Check, Download, AlertTriangle } from 'lucide-react';
+import { toast } from 'sonner';
+import { cn } from './utils';
+
+// LocalStorage hook with SSR support & cross-component reactive sync
+export function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T | ((val: T) => T)) => void] {
+  const [storedValue, setStoredValue] = useState<T>(() => {
+    if (typeof window === 'undefined') {
+      return initialValue;
+    }
+    try {
+      const item = window.localStorage.getItem(key);
+      return item ? JSON.parse(item) : initialValue;
+    } catch (error) {
+      console.error(error);
+      return initialValue;
+    }
+  });
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const handleStorageChange = (e: StorageEvent | CustomEvent) => {
+      if ('key' in e && e.key !== key) return;
+      if ('detail' in e && (e as CustomEvent).detail?.key !== key) return;
+
+      try {
+        const item = window.localStorage.getItem(key);
+        setStoredValue(item ? JSON.parse(item) : initialValue);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange as EventListener);
+    window.addEventListener('local-storage-update', handleStorageChange as EventListener);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange as EventListener);
+      window.removeEventListener('local-storage-update', handleStorageChange as EventListener);
+    };
+  }, [key, initialValue]);
+
+  const setValue = (value: T | ((val: T) => T)) => {
+    try {
+      const valueToStore = value instanceof Function ? value(storedValue) : value;
+      setStoredValue(valueToStore);
+      if (typeof window !== 'undefined') {
+        window.localStorage.setItem(key, JSON.stringify(valueToStore));
+        window.dispatchEvent(new CustomEvent('local-storage-update', { detail: { key, value: valueToStore } }));
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  return [storedValue, setValue];
+}
+
+export function CopyButton({ text, className }: { text: string; className?: string }) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    if (!text) return;
+    navigator.clipboard.writeText(text).then(() => {
+      setCopied(true);
+      toast.success('Copied to clipboard');
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
+
+  return (
+    <button
+      onClick={handleCopy}
+      className={cn(
+        "inline-flex items-center justify-center gap-2 px-3 py-1.5 text-sm font-medium rounded-md transition-brand",
+        copied ? "bg-accent/10 text-accent" : "bg-secondary text-secondary-foreground hover:bg-secondary/80",
+        className
+      )}
+      aria-label="Copy output"
+    >
+      {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+      {copied ? 'Copied' : 'Copy'}
+    </button>
+  );
+}
+
+export function DownloadButton({ onClick, label = "Download", className }: { onClick: () => void; label?: string; className?: string }) {
+  return (
+    <button
+      onClick={onClick}
+      className={cn(
+        "inline-flex items-center justify-center gap-2 px-3 py-1.5 text-sm font-medium rounded-md bg-primary text-primary-foreground hover:bg-primary/90 transition-brand",
+        className
+      )}
+    >
+      <Download className="w-4 h-4" />
+      {label}
+    </button>
+  );
+}
+
+export function ToolPanel({ children, className }: { children: React.ReactNode; className?: string }) {
+  return (
+    <div className={cn("bg-card text-card-foreground rounded-lg border shadow-sm p-4 sm:p-6", className)}>
+      {children}
+    </div>
+  );
+}
+
+export function OutputBox({ value, label = "Output", className }: { value: string; label?: string; className?: string }) {
+  return (
+    <div className={cn("flex flex-col gap-2", className)}>
+      <div className="flex items-center justify-between">
+        <label className="text-sm font-medium text-foreground">{label}</label>
+        <CopyButton text={value} />
+      </div>
+      <textarea
+        readOnly
+        value={value}
+        className="w-full min-h-[120px] p-3 rounded-md bg-secondary/50 border-input border font-mono text-sm resize-y focus:outline-none focus:ring-2 focus:ring-ring"
+      />
+    </div>
+  );
+}

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://toolnest.com/</loc><priority>1.0</priority></url>
+  <url><loc>https://toolnest.com/tools/case-converter</loc><priority>0.8</priority></url>
+  <url><loc>https://toolnest.com/tools/qr-code-generator</loc><priority>0.8</priority></url>
+  <url><loc>https://toolnest.com/tools/image-compressor</loc><priority>0.8</priority></url>
+  <url><loc>https://toolnest.com/tools/password-generator</loc><priority>0.8</priority></url>
+  <url><loc>https://toolnest.com/about</loc><priority>0.5</priority></url>
+  <url><loc>https://toolnest.com/contact</loc><priority>0.5</priority></url>
+  <url><loc>https://toolnest.com/privacy-policy</loc><priority>0.5</priority></url>
+  <url><loc>https://toolnest.com/terms</loc><priority>0.5</priority></url>
+  <url><loc>https://toolnest.com/disclaimer</loc><priority>0.5</priority></url>
+</urlset>

@@ -1,0 +1,83 @@
+import React from 'react';
+import { useParams, Navigate, Link } from 'react-router-dom';
+import { ChevronRight } from 'lucide-react';
+import { tools, categories } from '../lib/registry';
+import { ToolCard } from '../components/ToolCard';
+import { Seo } from '../components/Seo';
+import { AdSlot } from '../components/AdSlot';
+
+export const CategoryPage: React.FC = () => {
+  const { slug } = useParams();
+  
+  const [displayCount, setDisplayCount] = React.useState(12);
+  const [incrementCount, setIncrementCount] = React.useState(12);
+
+  React.useEffect(() => {
+    const getCounts = () => {
+      if (window.innerWidth >= 1280) return 16; // 4 columns
+      if (window.innerWidth >= 1024) return 12; // 3 columns
+      if (window.innerWidth >= 640) return 10; // 2 columns
+      return 8; // 1 column
+    };
+    
+    const count = getCounts();
+    setDisplayCount(count);
+    setIncrementCount(count);
+  }, []);
+
+  // Find real category name
+  const categoryName = categories.find(c => c.toLowerCase().replace(/ & /g, '-').replace(/ /g, '-') === slug);
+
+  React.useEffect(() => {
+    setDisplayCount(incrementCount);
+  }, [slug, incrementCount]);
+
+  if (!categoryName) {
+    return <Navigate to="/404" replace />;
+  }
+
+  const categoryTools = tools.filter(t => t.category === categoryName);
+  const displayedTools = categoryTools.slice(0, displayCount);
+
+  return (
+    <>
+      <Seo 
+        title={`${categoryName} Tools - Free Online Utilities | ToolNest`}
+        description={`Explore our collection of free ${categoryName} tools. No sign-ups, runs locally in your browser.`}
+      />
+      
+      <nav className="flex items-center text-xs text-muted-foreground mb-8">
+        <Link to="/" className="btn-signature-header h-8 px-2.5 text-xs text-muted-foreground hover:text-foreground">Home</Link>
+        <ChevronRight className="w-3.5 h-3.5 mx-2 text-muted-foreground/40" />
+        <span className="text-foreground font-bold">{categoryName}</span>
+      </nav>
+
+      <div className="mb-10">
+        <h1 className="text-3xl md:text-5xl font-display font-extrabold tracking-tight mb-3">
+          {categoryName} Tools
+        </h1>
+        <p className="text-sm text-muted-foreground max-w-xl">
+          A curated collection of {categoryTools.length} free browser utilities to help with your {categoryName.toLowerCase()} workflows.
+        </p>
+      </div>
+
+      <div className="flex flex-col items-center">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 w-full">
+          {displayedTools.map(tool => (
+            <ToolCard key={tool.slug} tool={tool} />
+          ))}
+        </div>
+        {displayCount < categoryTools.length && (
+          <button 
+            onClick={() => setDisplayCount(prev => prev + incrementCount)}
+            className="mt-10 px-8 py-3.5 rounded-2xl font-bold text-xs btn-signature-header hover:border-primary/50 text-foreground shadow-sm cursor-pointer"
+          >
+            Load More Tools ({categoryTools.length - displayCount} remaining)
+          </button>
+        )}
+      </div>
+
+      <AdSlot slot="category-bottom" className="w-full mt-10" />
+    </>
+  );
+};
