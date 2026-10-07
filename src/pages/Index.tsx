@@ -75,12 +75,12 @@ export const Index: React.FC = () => {
   return (
     <>
       <Seo 
-        title="ToolNest - Free Online Developer & Utility Tools" 
+        title="Toolzaro - Free Online Developer & Utility Tools" 
         description="A complete suite of 35+ free, fast, browser-based tools including color tools, image resizers, QR generators, image compressors, and developer utilities."
         jsonLd={{
           "@context": "https://schema.org",
           "@type": "WebSite",
-          "name": "ToolNest",
+          "name": "Toolzaro",
           "url": "https://toolnest.com",
           "potentialAction": {
             "@type": "SearchAction",
@@ -168,7 +168,7 @@ export const Index: React.FC = () => {
           <div className="relative">
             <img 
               src={heroImg} 
-              alt="ToolNest Visual" 
+              alt="Toolzaro Visual" 
               className="w-full max-w-md rounded-3xl shadow-xl border border-border object-cover" 
             />
             <div className="absolute -bottom-4 -left-4 bg-card/90 backdrop-blur-md border border-border/80 p-3.5 rounded-2xl shadow-lg flex items-center gap-3">
@@ -326,7 +326,7 @@ export const Index: React.FC = () => {
             <div>
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-[11px] font-bold text-primary mb-2">
                 <BookOpen className="w-3.5 h-3.5" />
-                <span>ToolNest Pulse & Insights</span>
+                <span>Toolzaro Pulse & Insights</span>
               </div>
               <h2 className="text-2xl font-extrabold text-foreground tracking-tight font-display">
                 Latest Guides & Developer Dispatches

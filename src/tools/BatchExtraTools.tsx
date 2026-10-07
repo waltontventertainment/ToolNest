@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 
 // 1. Markdown to HTML Converter
 export const MarkdownToHtmlConverter: React.FC = () => {
-  const [markdown, setMarkdown] = useState('# Hello World\n\nWelcome to **ToolNest** Markdown Converter!\n\n- Feature 1: Live HTML generation\n- Feature 2: Clean formatting\n\n> "Simplicity is prerequisite for reliability."');
+  const [markdown, setMarkdown] = useState('# Hello World\n\nWelcome to **Toolzaro** Markdown Converter!\n\n- Feature 1: Live HTML generation\n- Feature 2: Clean formatting\n\n> "Simplicity is prerequisite for reliability."');
   const [htmlOutput, setHtmlOutput] = useState('');
 
   const parseMarkdown = (text: string) => {
@@ -68,7 +68,7 @@ export const MarkdownToHtmlConverter: React.FC = () => {
 
 // 2. JSON to XML Converter
 export const JsonToXmlConverter: React.FC = () => {
-  const [jsonInput, setJsonInput] = useState('{\n  "company": "ToolNest",\n  "version": 2.0,\n  "active": true,\n  "users": [\n    { "id": 1, "name": "Alice" },\n    { "id": 2, "name": "Bob" }\n  ]\n}');
+  const [jsonInput, setJsonInput] = useState('{\n  "company": "Toolzaro",\n  "version": 2.0,\n  "active": true,\n  "users": [\n    { "id": 1, "name": "Alice" },\n    { "id": 2, "name": "Bob" }\n  ]\n}');
   const [rootTag, setRootTag] = useState('root');
   const [xmlOutput, setXmlOutput] = useState('');
   const [error, setError] = useState<string | null>(null);

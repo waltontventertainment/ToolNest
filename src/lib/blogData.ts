@@ -1,4 +1,4 @@
-// ToolNest Pulse & Insights - Dynamic Blog & Blogger Feed Integration
+// Toolzaro Pulse & Insights - Dynamic Blog & Blogger Feed Integration
 // 100% Client-Side Compatible for Blogger & Static Hosting
 
 export interface BlogPost {
@@ -30,8 +30,8 @@ export const BUILTIN_BLOG_POSTS: BlogPost[] = [
     excerpt: 'Discover how open-source and free AI models can automate article writing, code refactoring, SQL query building, and SEO optimization with zero subscription fees.',
     category: 'AI & Machine Learning',
     author: {
-      name: 'ToolNest Team',
-      role: 'ToolNest Official Editorial',
+      name: 'Toolzaro Team',
+      role: 'Toolzaro Official Editorial',
       avatar: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150&auto=format&fit=crop&q=80'
     },
     publishedAt: '2026-10-04',
@@ -107,7 +107,7 @@ LIMIT 5;
 
 ## Conclusion
 
-By adopting client-side, zero-backend toolchains powered by resilient free models, developers and creators can build completely sovereign, high-speed workflows that run anywhere—even on static Blogger sites.
+By adopting client-side, zero-backend toolchains powered by resilient neural engines, developers and creators can build completely sovereign, high-speed workflows that run anywhere—even on static Blogger sites.
     `
   },
   {
@@ -117,8 +117,8 @@ By adopting client-side, zero-backend toolchains powered by resilient free model
     excerpt: 'Learn how WebAssembly, the Canvas API, and Web Cryptography allow full image resizing, PDF operations, and encryption to execute 100% locally on your device.',
     category: 'Security & Privacy',
     author: {
-      name: 'ToolNest Team',
-      role: 'ToolNest Security & Privacy Lab',
+      name: 'Toolzaro Team',
+      role: 'Toolzaro Security & Privacy Lab',
       avatar: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150&auto=format&fit=crop&q=80'
     },
     publishedAt: '2026-10-02',
@@ -132,13 +132,13 @@ By adopting client-side, zero-backend toolchains powered by resilient free model
 
 Every day, millions of users upload confidential documents, personal photos, API keys, and business contracts to online converter websites. Unbeknownst to many, many conventional utility websites upload files to remote servers where they may be stored, logged, or analyzed.
 
-ToolNest takes a fundamentally different architectural stance: **Zero Server Processing**.
+Toolzaro takes a fundamentally different architectural stance: **Zero Server Processing**.
 
 ---
 
 ## 1. What Does "Client-Side Only" Actually Mean?
 
-When you compress an image or convert a PDF on ToolNest:
+When you compress an image or convert a PDF on Toolzaro:
 - The file **never leaves your device's memory (RAM)**.
 - Calculations run directly within your browser using HTML5 Canvas, Web Audio, and the Web Cryptography API.
 - Even if you disconnect your Wi-Fi, the utility continues functioning without interruption.
@@ -147,7 +147,7 @@ When you compress an image or convert a PDF on ToolNest:
 
 ## 2. Comparing Traditional Cloud Tools vs. Client-Side Utilities
 
-| Feature | Traditional Cloud Converters | ToolNest Client-Side Engine |
+| Feature | Traditional Cloud Converters | Toolzaro Client-Side Engine |
 | :--- | :--- | :--- |
 | **Data Transmission** | Sent over internet to cloud server | 0 bytes transmitted externally |
 | **Server Logging** | Often logged & indexed | Impossible to log (never touches server) |
@@ -183,8 +183,8 @@ Always verify if an online utility requires a server upload. For sensitive compa
     excerpt: 'A comprehensive technical audit guide for maximizing click-through rates on Google Search, X, LinkedIn, and Facebook with structured metadata.',
     category: 'SEO & Growth',
     author: {
-      name: 'ToolNest Team',
-      role: 'ToolNest Growth & SEO Desk',
+      name: 'Toolzaro Team',
+      role: 'Toolzaro Growth & SEO Desk',
       avatar: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150&auto=format&fit=crop&q=80'
     },
     publishedAt: '2026-09-28',
@@ -235,7 +235,7 @@ Adding structured data enables Google to display rich snippets, review stars, FA
 {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
-  "name": "ToolNest Online Suite",
+  "name": "Toolzaro Online Suite",
   "applicationCategory": "DeveloperApplication",
   "operatingSystem": "All",
   "offers": {
@@ -256,8 +256,8 @@ Adding structured data enables Google to display rich snippets, review stars, FA
     excerpt: 'Battle-tested regex expressions for email, phone, IP addresses, and UUIDs paired with high-performance SQL query snippets.',
     category: 'Developer Workflows',
     author: {
-      name: 'ToolNest Team',
-      role: 'ToolNest Developer Lab',
+      name: 'Toolzaro Team',
+      role: 'Toolzaro Developer Lab',
       avatar: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150&auto=format&fit=crop&q=80'
     },
     publishedAt: '2026-09-24',
@@ -337,8 +337,8 @@ Keep these patterns accessible or use the **AI Regex & SQL Generator** to create
     excerpt: 'A practical UI design guide on luminance calculations, accessible color palettes, and color blindness simulations for high-converting user experiences.',
     category: 'Design & UX',
     author: {
-      name: 'ToolNest Team',
-      role: 'ToolNest Design & UX System',
+      name: 'Toolzaro Team',
+      role: 'Toolzaro Design & UX System',
       avatar: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150&auto=format&fit=crop&q=80'
     },
     publishedAt: '2026-09-19',
@@ -380,9 +380,9 @@ Approximately 8% of men and 0.5% of women have some form of color vision deficie
 
 ---
 
-## 3. Test Your Palette in ToolNest
+## 3. Test Your Palette in Toolzaro
 
-Utilize the **Color Contrast WCAG Checker** and **Color Blindness Simulator** in ToolNest to audit your brand colors instantly and generate accessible variants.
+Utilize the **Color Contrast WCAG Checker** and **Color Blindness Simulator** in Toolzaro to audit your brand colors instantly and generate accessible variants.
     `
   },
   {
@@ -392,8 +392,8 @@ Utilize the **Color Contrast WCAG Checker** and **Color Blindness Simulator** in
     excerpt: 'Everything you need to know about QR error correction levels, WiFi credentials encoding, EAN-13, UPC-A, and Code-128 barcode standards.',
     category: 'Developer Workflows',
     author: {
-      name: 'ToolNest Team',
-      role: 'ToolNest Hardware & Standards Desk',
+      name: 'Toolzaro Team',
+      role: 'Toolzaro Hardware & Standards Desk',
       avatar: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150&auto=format&fit=crop&q=80'
     },
     publishedAt: '2026-09-12',
@@ -519,8 +519,8 @@ export async function fetchBloggerPosts(bloggerUrl: string): Promise<BlogPost[]>
         content: rawContent,
         category,
         author: {
-          name: 'ToolNest Team',
-          role: 'ToolNest Official Editorial',
+          name: 'Toolzaro Team',
+          role: 'Toolzaro Official Editorial',
           avatar: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150&auto=format&fit=crop&q=80'
         },
         publishedAt: published,

@@ -1,10 +1,10 @@
 import React from 'react';
 import { useParams, Navigate, Link } from 'react-router-dom';
-import { ChevronRight } from 'lucide-react';
 import { tools, categories } from '../lib/registry';
 import { ToolCard } from '../components/ToolCard';
 import { Seo } from '../components/Seo';
 import { AdSlot } from '../components/AdSlot';
+import { BreadcrumbNavigation } from '../components/BreadcrumbNavigation';
 
 export const CategoryPage: React.FC = () => {
   const { slug } = useParams();
@@ -42,15 +42,19 @@ export const CategoryPage: React.FC = () => {
   return (
     <>
       <Seo 
-        title={`${categoryName} Tools - Free Online Utilities | ToolNest`}
+        title={`${categoryName} Tools - Free Online Utilities | Toolzaro`}
         description={`Explore our collection of free ${categoryName} tools. No sign-ups, runs locally in your browser.`}
       />
       
-      <nav className="flex items-center text-xs text-muted-foreground mb-8">
-        <Link to="/" className="btn-signature-header h-8 px-2.5 text-xs text-muted-foreground hover:text-foreground">Home</Link>
-        <ChevronRight className="w-3.5 h-3.5 mx-2 text-muted-foreground/40" />
-        <span className="text-foreground font-bold">{categoryName}</span>
-      </nav>
+      <div className="mb-6">
+        <BreadcrumbNavigation
+          items={[
+            {
+              label: categoryName,
+            },
+          ]}
+        />
+      </div>
 
       <div className="mb-10">
         <h1 className="text-3xl md:text-5xl font-display font-extrabold tracking-tight mb-3">

@@ -1232,7 +1232,7 @@ For each recommendation provide:
               <option value="Short & Punchy 4-5 letter coined words">Short 4-5 Letter Coined Names</option>
               <option value="Playful & Friendly (like Slack, Mailchimp)">Playful (Slack, Mailchimp)</option>
               <option value="Prestigious & Elite (like Apex, Quantum, Vanguard)">Prestigious & Elite</option>
-              <option value="Compound Words (like DropBox, YouTube, ToolNest)">Compound Words (ToolNest)</option>
+              <option value="Compound Words (like DropBox, YouTube, Toolzaro)">Compound Words (Toolzaro)</option>
             </select>
           </div>
 

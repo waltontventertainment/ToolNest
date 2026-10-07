@@ -10,9 +10,9 @@ import {
   saveBackupToDrive, 
   loadBackupFromDrive, 
   uploadCustomFileToDrive, 
-  listToolNestDriveFiles, 
+  listToolzaroDriveFiles, 
   DriveFileInfo, 
-  ToolNestBackupPayload 
+  ToolzaroBackupPayload 
 } from '../lib/googleDriveService';
 import { useFavorites } from './FavoritesContext';
 
@@ -65,7 +65,7 @@ export const GoogleDriveProvider: React.FC<{ children: React.ReactNode }> = ({ c
   const refreshFiles = useCallback(async () => {
     if (!accessToken) return;
     try {
-      const files = await listToolNestDriveFiles(accessToken);
+      const files = await listToolzaroDriveFiles(accessToken);
       setDriveFiles(files);
     } catch (err) {
       console.error('Error fetching drive files:', err);
@@ -110,7 +110,7 @@ export const GoogleDriveProvider: React.FC<{ children: React.ReactNode }> = ({ c
   };
 
   // Build current local state snapshot
-  const buildLocalSnapshot = (customNotes?: string): ToolNestBackupPayload => {
+  const buildLocalSnapshot = (customNotes?: string): ToolzaroBackupPayload => {
     const currentTheme = (document.documentElement.classList.contains('dark') ? 'dark' : 'light') as 'light' | 'dark';
     const scratchpad = customNotes ?? localStorage.getItem('webtools_scratchpad') ?? '';
     const customBloggerUrl = localStorage.getItem('toolnest_custom_blogger_url') ?? '';

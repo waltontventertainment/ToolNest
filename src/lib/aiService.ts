@@ -1,4 +1,4 @@
-// ToolNest Client-Side Auto-Failover Free AI Engine
+// Toolzaro Client-Side Auto-Failover Free AI Engine
 // Zero backend server required - 100% static & client-side compatible for Blogger & static hosts
 
 const DEFAULT_OPENROUTER_KEY = (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_OPENROUTER_KEY) || 
@@ -135,7 +135,7 @@ export async function runAutoAiCompletion(options: AiRequestOptions): Promise<Ai
   }
   messages.push({ role: 'user', content: prompt });
 
-  onStatus?.('⚡ Initializing ToolNest Neural Engine...');
+  onStatus?.('⚡ Initializing Toolzaro Neural Engine...');
   // Get dynamic live high-performance models list
   const modelsToTry = await getLiveFreeModels();
   let lastErrorMsg = 'Failed to generate response. Please check your internet connection.';
@@ -161,7 +161,7 @@ export async function runAutoAiCompletion(options: AiRequestOptions): Promise<Ai
         headers: {
           'Authorization': `Bearer ${apiKey}`,
           'HTTP-Referer': typeof window !== 'undefined' ? window.location.origin : 'https://toolnest.com',
-          'X-Title': 'ToolNest Utility Suite',
+          'X-Title': 'Toolzaro Utility Suite',
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({

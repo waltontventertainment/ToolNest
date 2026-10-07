@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { Moon, Sun, Wrench, Star, ArrowRight, BookOpen, Cloud, Coffee } from 'lucide-react';
+import { Moon, Sun, Wrench, Star, ArrowRight, BookOpen, Cloud, Coffee, Bug, MessageSquarePlus } from 'lucide-react';
 import { useLocalStorage } from '../lib/toolkit';
 import { categories, tools } from '../lib/registry';
 import { HeaderSearch } from './HeaderSearch';
@@ -8,17 +8,16 @@ import { ThemeToggle3D } from './ThemeToggle3D';
 import { useFavorites } from '../context/FavoritesContext';
 import { useGoogleDrive } from '../context/GoogleDriveContext';
 import { GoogleDriveModal } from './GoogleDriveModal';
-import { AiSettingsModal } from './AiSettingsModal';
 import { CoffeeSupportModal } from './CoffeeSupportModal';
-import { Sparkles } from 'lucide-react';
+import { FeedbackModal } from './FeedbackModal';
 
 export const SiteLayout: React.FC = () => {
   const [theme, setTheme] = useLocalStorage<'light' | 'dark'>('toolnest-theme', 'light');
   const { favorites } = useFavorites();
   const { user, accessToken } = useGoogleDrive();
   const [isDriveModalOpen, setIsDriveModalOpen] = useState(false);
-  const [isAiModalOpen, setIsAiModalOpen] = useState(false);
   const [isCoffeeModalOpen, setIsCoffeeModalOpen] = useState(false);
+  const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
   const location = useLocation();
   const { pathname } = location;
 
@@ -40,7 +39,7 @@ export const SiteLayout: React.FC = () => {
       <header className="sticky top-0 z-50 w-full backdrop-blur-xl bg-background/90 border-b border-border/80 shadow-xs">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between gap-4 max-w-7xl">
           {/* 3D Extruded Logo on the left */}
-          <Link to="/" className="flex items-center gap-3.5 group shrink-0" aria-label="ToolNest Home">
+          <Link to="/" className="flex items-center gap-3.5 group shrink-0" aria-label="Toolzaro Home">
             <div className="logo-3d w-10 h-10 flex items-center justify-center text-white shrink-0">
               {/* Inner ambient light specular shine */}
               <div className="absolute inset-0 rounded-2xl bg-gradient-to-t from-transparent via-white/10 to-white/35 pointer-events-none" />
@@ -48,7 +47,7 @@ export const SiteLayout: React.FC = () => {
             </div>
             <div className="flex flex-col">
               <span className="text-brand-gradient font-display font-black text-xl sm:text-2xl tracking-[-0.035em] leading-none drop-shadow-[0_1px_1px_rgba(0,0,0,0.1)]">
-                ToolNest
+                Toolzaro
               </span>
               <span className="text-kicker text-[9px] text-muted-foreground/80 tracking-widest mt-0.5 font-bold hidden sm:block">
                 Online Utility Suite
@@ -66,7 +65,7 @@ export const SiteLayout: React.FC = () => {
                   ? 'bg-primary/15 text-primary border-primary/40 shadow-xs'
                   : 'text-muted-foreground hover:text-foreground'
               }`}
-              title="ToolNest Pulse & Insights"
+              title="Toolzaro Pulse & Insights"
             >
               <BookOpen className="w-3.5 h-3.5 text-primary shrink-0" />
               <span className="hidden sm:inline">Blog</span>
@@ -121,13 +120,24 @@ export const SiteLayout: React.FC = () => {
               type="button"
               onClick={() => setIsCoffeeModalOpen(true)}
               className="btn-signature-header px-2.5 sm:px-3 gap-1.5 text-xs font-bold text-amber-600 dark:text-amber-400 bg-amber-500/10 hover:bg-amber-500/20 border-amber-500/30 cursor-pointer"
-              title="Support ToolNest - Buy Me a Coffee"
+              title="Support Toolzaro - Buy Me a Coffee"
             >
               <Coffee className="w-3.5 h-3.5 fill-amber-500 text-amber-500 shrink-0" />
               <span className="hidden md:inline">Support Us</span>
             </button>
 
-            {/* 5. 3D Theme Toggle Button & Wave Animation */}
+            {/* 5. Report Bug Button (AdSense Safe Header Placement) */}
+            <button
+              type="button"
+              onClick={() => setIsFeedbackModalOpen(true)}
+              className="btn-signature-header px-2 sm:px-2.5 gap-1.5 text-xs font-bold text-rose-600 dark:text-rose-400 bg-rose-500/10 hover:bg-rose-500/20 border-rose-500/30 cursor-pointer"
+              title="Report a Bug or Send Feedback"
+            >
+              <Bug className="w-3.5 h-3.5 text-rose-500 shrink-0" />
+              <span className="hidden lg:inline">Report Bug</span>
+            </button>
+
+            {/* 6. 3D Theme Toggle Button & Wave Animation */}
             <ThemeToggle3D theme={theme} setTheme={setTheme} />
           </div>
         </div>
@@ -136,11 +146,11 @@ export const SiteLayout: React.FC = () => {
       {/* Google Drive Modal */}
       <GoogleDriveModal isOpen={isDriveModalOpen} onClose={() => setIsDriveModalOpen(false)} />
 
-      {/* AI Settings Modal */}
-      <AiSettingsModal isOpen={isAiModalOpen} onClose={() => setIsAiModalOpen(false)} />
-
       {/* Coffee Support Modal */}
       <CoffeeSupportModal isOpen={isCoffeeModalOpen} onClose={() => setIsCoffeeModalOpen(false)} />
+
+      {/* Feedback & Bug Report Modal */}
+      <FeedbackModal isOpen={isFeedbackModalOpen} onClose={() => setIsFeedbackModalOpen(false)} />
 
       <main className="flex-1 w-full max-w-7xl mx-auto px-3 sm:px-4 md:px-6 pt-2 sm:pt-4 pb-10 md:pb-16">
         <Outlet />
@@ -149,11 +159,11 @@ export const SiteLayout: React.FC = () => {
       <footer className="border-t border-border bg-card/60 backdrop-blur-xs py-12 mt-16">
         <div className="container mx-auto px-4 max-w-7xl grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="space-y-3">
-            <Link to="/" className="flex items-center gap-3 group" aria-label="ToolNest Home">
+            <Link to="/" className="flex items-center gap-3 group" aria-label="Toolzaro Home">
               <div className="logo-3d w-8 h-8 flex items-center justify-center text-white shrink-0">
                 <Wrench className="w-4 h-4 transition-transform group-hover:rotate-12 group-hover:scale-110 drop-shadow-[0_1px_2px_rgba(0,0,0,0.4)]" />
               </div>
-              <span className="text-brand-gradient font-display font-black text-xl tracking-tight">ToolNest</span>
+              <span className="text-brand-gradient font-display font-black text-xl tracking-tight">Toolzaro</span>
             </Link>
             <p className="text-xs text-muted-foreground leading-relaxed">
               100% free, browser-based utilities for developers, designers, and creators. Secure client-side processing with zero server uploads.
@@ -200,7 +210,7 @@ export const SiteLayout: React.FC = () => {
             <h4 className="font-bold text-xs uppercase tracking-wider text-muted-foreground mb-3">Resources & Guides</h4>
             <ul className="space-y-2 text-xs font-medium text-muted-foreground">
               <li><Link to="/blog" className="hover:text-primary transition-colors flex items-center gap-1.5"><BookOpen className="w-3.5 h-3.5 text-primary" /> Blog & Insights</Link></li>
-              <li><Link to="/about" className="hover:text-primary transition-colors">About ToolNest</Link></li>
+              <li><Link to="/about" className="hover:text-primary transition-colors">About Toolzaro</Link></li>
               <li><Link to="/contact" className="hover:text-primary transition-colors">Contact Support</Link></li>
               <li><Link to="/privacy-policy" className="hover:text-primary transition-colors">Privacy Policy</Link></li>
               <li><Link to="/terms" className="hover:text-primary transition-colors">Terms of Service</Link></li>
@@ -208,11 +218,11 @@ export const SiteLayout: React.FC = () => {
               <li>
                 <button
                   type="button"
-                  onClick={() => setIsAiModalOpen(true)}
-                  className="hover:text-primary transition-colors flex items-center gap-1.5 cursor-pointer text-left font-semibold text-primary/90"
+                  onClick={() => setIsFeedbackModalOpen(true)}
+                  className="hover:text-primary transition-colors flex items-center gap-1.5 cursor-pointer text-left font-semibold text-rose-500"
                 >
-                  <Sparkles className="w-3.5 h-3.5 text-primary shrink-0" />
-                  <span>AI Engine Settings</span>
+                  <Bug className="w-3.5 h-3.5 text-rose-500 shrink-0" />
+                  <span>Report Bug / Feedback</span>
                 </button>
               </li>
             </ul>
@@ -220,7 +230,7 @@ export const SiteLayout: React.FC = () => {
         </div>
 
         <div className="container mx-auto px-4 max-w-7xl mt-10 pt-6 border-t border-border/60 text-xs text-muted-foreground flex flex-col md:flex-row items-center justify-between gap-4">
-          <div>&copy; {new Date().getFullYear()} ToolNest. All processing happens client-side in your browser.</div>
+          <div>&copy; {new Date().getFullYear()} Toolzaro. All processing happens client-side in your browser.</div>
           <div className="flex items-center gap-4 text-[11px]">
             <span className="text-muted-foreground">Fast • Private • Accessible</span>
           </div>

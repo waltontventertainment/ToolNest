@@ -68,7 +68,7 @@ export const tools: ToolDefinition[] = [
       'Click Generate Article to receive structured Markdown content.'
     ],
     faq: [
-      { q: 'Is this AI writer completely free?', a: 'Yes! It is fully accessible and powered by the ToolNest Neural Engine with automatic multi-stream failover.' },
+      { q: 'Is this AI writer completely free?', a: 'Yes! It is fully accessible and powered by the Toolzaro Neural Engine with automatic multi-stream failover.' },
       { q: 'Can I write articles in different languages?', a: 'Yes, it supports English, Bengali, Spanish, French, German, Hindi, Arabic, and more.' }
     ],
     Component: AiArticleWriter

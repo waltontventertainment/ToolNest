@@ -19,8 +19,7 @@ export function downloadBlob(blob: Blob, filename: string) {
     a.href = url;
     a.download = filename;
     a.setAttribute('download', filename);
-    a.target = '_blank';
-    a.rel = 'noopener noreferrer';
+    a.rel = 'noopener';
     
     document.body.appendChild(a);
     a.click();

@@ -89,7 +89,7 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({ isOpen, onCl
               <div className="max-w-sm mx-auto space-y-1.5">
                 <h4 className="text-sm font-bold text-foreground">Connect Your Google Drive</h4>
                 <p className="text-xs text-muted-foreground leading-relaxed">
-                  Sign in with your Google account to automatically back up and restore your ToolNest preferences, bookmarked tools, scratchpad notes, and calculations.
+                  Sign in with your Google account to automatically back up and restore your Toolzaro preferences, bookmarked tools, scratchpad notes, and calculations.
                 </p>
               </div>
 
@@ -198,8 +198,8 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({ isOpen, onCl
               {/* Google Drive Files Explorer */}
               <div className="space-y-2 pt-1">
                 <div className="flex items-center justify-between text-xs font-bold text-foreground">
-                  <span>Your ToolNest Drive Files ({driveFiles.length})</span>
-                  <span className="text-[11px] text-muted-foreground font-normal">Folder: ToolNest Utility Suite Data</span>
+                  <span>Your Toolzaro Drive Files ({driveFiles.length})</span>
+                  <span className="text-[11px] text-muted-foreground font-normal">Folder: Toolzaro Utility Suite Data</span>
                 </div>
 
                 {driveFiles.length > 0 ? (

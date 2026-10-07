@@ -1517,12 +1517,16 @@ export const PdfToImagesTool: React.FC = () => {
                           <span>{copiedPage === img.pageNum ? 'Copied' : 'Copy'}</span>
                         </button>
 
-                        <button
-                          onClick={() => downloadSingle(img.dataUrl, img.pageNum)}
-                          className="btn-signature-header h-8 px-2 text-[11px] font-bold text-rose-500 gap-1 cursor-pointer"
+                        <a
+                          href={img.dataUrl}
+                          download={`${file.name.replace(/\.pdf$/i, '')}_page_${img.pageNum}_${Math.round(scaleFactor * 72)}dpi.${imageFormat === 'jpeg' ? 'jpg' : imageFormat}`}
+                          onClick={(e) => {
+                            downloadSingle(img.dataUrl, img.pageNum);
+                          }}
+                          className="btn-signature-header h-8 px-2 text-[11px] font-bold text-rose-500 gap-1 cursor-pointer flex items-center justify-center"
                         >
                           <Download className="w-3 h-3" /> Save
-                        </button>
+                        </a>
                       </div>
                     </div>
                   </div>

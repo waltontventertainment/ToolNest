@@ -618,8 +618,8 @@ export const AdvancedSlugGenerator: React.FC = () => {
 
 // 9. Web App Manifest & Favicon Generator
 export const FaviconManifestGenerator: React.FC = () => {
-  const [appName, setAppName] = useState('ToolNest');
-  const [shortName, setShortName] = useState('ToolNest');
+  const [appName, setAppName] = useState('Toolzaro');
+  const [shortName, setShortName] = useState('Toolzaro');
   const [themeColor, setThemeColor] = useState('#0f172a');
   const [bgColor, setBgColor] = useState('#ffffff');
   const [display, setDisplay] = useState('standalone');

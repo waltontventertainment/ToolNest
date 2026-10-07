@@ -5,7 +5,7 @@ import { Seo } from '../components/Seo';
 export const NotFound: React.FC = () => {
   return (
     <div className="min-h-[60vh] flex flex-col items-center justify-center text-center px-4">
-      <Seo title="Page Not Found | ToolNest" description="The page you are looking for does not exist." />
+      <Seo title="Page Not Found | Toolzaro" description="The page you are looking for does not exist." />
       <h1 className="text-8xl font-display font-bold text-primary mb-6">404</h1>
       <h2 className="text-2xl font-semibold mb-4">Page Not Found</h2>
       <p className="text-muted-foreground mb-8 max-w-md mx-auto">

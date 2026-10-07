@@ -19,10 +19,10 @@ const PageHeader = ({ title, subtitle, date }: { title: string; subtitle?: strin
 
 export const About: React.FC = () => (
   <div className="max-w-4xl mx-auto space-y-12">
-    <Seo title="About Us | ToolNest" description={`Learn more about ToolNest - a free, privacy-first suite of ${tools.length} client-side web tools.`} />
+    <Seo title="About Us | Toolzaro" description={`Learn more about Toolzaro - a free, privacy-first suite of ${tools.length} client-side web tools.`} />
     
     <PageHeader 
-      title="About ToolNest" 
+      title="About Toolzaro" 
       subtitle={`Building the ultimate browser-native toolbox with ${tools.length} live utilities for developers, designers, and creators.`}
     />
 
@@ -67,7 +67,7 @@ export const About: React.FC = () => (
         Traditional web utility sites require users to upload confidential data, source code, photos, or password strings to remote cloud servers. This introduces bandwidth delay, server downtime, and privacy security risks.
       </p>
       <p className="text-sm text-muted-foreground leading-relaxed">
-        <strong>ToolNest is engineered around a client-first architecture.</strong> By harnessing standard modern browser APIs—including HTML5 Canvas API, Web Cryptography SubtleCrypto API, CSS Color Module Level 4 algorithms, and JavaScript ES2024 state engines—<strong>all computation occurs 100% on your local CPU and GPU.</strong>
+        <strong>Toolzaro is engineered around a client-first architecture.</strong> By harnessing standard modern browser APIs—including HTML5 Canvas API, Web Cryptography SubtleCrypto API, CSS Color Module Level 4 algorithms, and JavaScript ES2024 state engines—<strong>all computation occurs 100% on your local CPU and GPU.</strong>
       </p>
 
       <div className="grid sm:grid-cols-2 gap-4 pt-4 border-t border-border/60">
@@ -108,7 +108,7 @@ export const About: React.FC = () => (
         <Zap className="w-6 h-6 text-amber-500" /> Tool Categories & Capabilities
       </h2>
       <p className="text-sm text-muted-foreground leading-relaxed">
-        ToolNest organizes its {tools.length} utilities into intuitive categories designed for everyday workflow efficiency:
+        Toolzaro organizes its {tools.length} utilities into intuitive categories designed for everyday workflow efficiency:
       </p>
       
       <div className="grid sm:grid-cols-2 gap-4">
@@ -151,7 +151,7 @@ export const Contact: React.FC = () => {
 
   return (
     <div className="max-w-4xl mx-auto space-y-10">
-      <Seo title="Contact Us | ToolNest" description="Get in touch with the ToolNest team via Gmail or WhatsApp for support, feedback, and custom tool requests." />
+      <Seo title="Contact Us | Toolzaro" description="Get in touch with the Toolzaro team via Gmail or WhatsApp for support, feedback, and custom tool requests." />
       
       <PageHeader 
         title="Contact Us" 
@@ -260,7 +260,7 @@ export const Contact: React.FC = () => {
             <div className="font-bold text-foreground mb-1 flex items-center gap-1.5">
               <Globe className="w-4 h-4 text-emerald-500" /> Partnerships
             </div>
-            <div className="text-muted-foreground">Interested in sponsoring tools or advertising opportunities on ToolNest? Drop us a line!</div>
+            <div className="text-muted-foreground">Interested in sponsoring tools or advertising opportunities on Toolzaro? Drop us a line!</div>
           </div>
         </div>
       </section>
@@ -270,11 +270,11 @@ export const Contact: React.FC = () => {
 
 export const PrivacyPolicy: React.FC = () => (
   <div className="max-w-4xl mx-auto space-y-8">
-    <Seo title="Privacy Policy | ToolNest" description="Detailed privacy policy for ToolNest regarding browser storage, analytics, and advertising." />
+    <Seo title="Privacy Policy | Toolzaro" description="Detailed privacy policy for Toolzaro regarding browser storage, analytics, and advertising." />
     
     <PageHeader 
       title="Privacy Policy" 
-      subtitle="Transparency is core to ToolNest. Read how we protect your information."
+      subtitle="Transparency is core to Toolzaro. Read how we protect your information."
       date="August 2026"
     />
 
@@ -284,7 +284,7 @@ export const PrivacyPolicy: React.FC = () => (
           <Lock className="w-4 h-4 text-primary" /> 1. Client-Side Local Data Processing
         </h2>
         <p>
-          The vast majority of tools on ToolNest run 100% locally inside your web browser. Any text, images, files, or custom settings you enter or upload into our utilities are processed using standard JavaScript in your browser’s temporary memory. <strong>We do not upload, transmit, store, or monitor your personal input files or generated output.</strong>
+          The vast majority of tools on Toolzaro run 100% locally inside your web browser. Any text, images, files, or custom settings you enter or upload into our utilities are processed using standard JavaScript in your browser’s temporary memory. <strong>We do not upload, transmit, store, or monitor your personal input files or generated output.</strong>
         </p>
       </section>
 
@@ -293,7 +293,7 @@ export const PrivacyPolicy: React.FC = () => (
           <FileText className="w-4 h-4 text-primary" /> 2. Local Storage Usage
         </h2>
         <p>
-          ToolNest uses your browser’s standard <code className="text-xs font-mono bg-secondary px-1.5 py-0.5 rounded">localStorage</code> solely to remember your user interface preferences:
+          Toolzaro uses your browser’s standard <code className="text-xs font-mono bg-secondary px-1.5 py-0.5 rounded">localStorage</code> solely to remember your user interface preferences:
         </p>
         <ul className="list-disc pl-5 space-y-1">
           <li><strong>Theme Setting:</strong> Saving your preference for Light Mode or Dark Mode.</li>
@@ -307,7 +307,7 @@ export const PrivacyPolicy: React.FC = () => (
           <Globe className="w-4 h-4 text-primary" /> 3. Third-Party Advertising & Cookies (Google AdSense)
         </h2>
         <p>
-          To maintain ToolNest as a completely free resource for everyone, we display third-party advertisements served by Google AdSense and its partners.
+          To maintain Toolzaro as a completely free resource for everyone, we display third-party advertisements served by Google AdSense and its partners.
         </p>
         <ul className="list-disc pl-5 space-y-2">
           <li>Third-party vendors, including Google, use cookies to serve ads based on your prior visits to our website or other websites on the internet.</li>
@@ -332,11 +332,11 @@ export const PrivacyPolicy: React.FC = () => (
 
 export const TermsOfService: React.FC = () => (
   <div className="max-w-4xl mx-auto space-y-8">
-    <Seo title="Terms of Service | ToolNest" description="Terms and conditions for accessing and using ToolNest tools." />
+    <Seo title="Terms of Service | Toolzaro" description="Terms and conditions for accessing and using Toolzaro tools." />
     
     <PageHeader 
       title="Terms of Service" 
-      subtitle="By accessing ToolNest, you agree to comply with the following terms."
+      subtitle="By accessing Toolzaro, you agree to comply with the following terms."
       date="August 2026"
     />
 
@@ -346,7 +346,7 @@ export const TermsOfService: React.FC = () => (
           <Scale className="w-4 h-4 text-primary" /> 1. Acceptance of Terms
         </h2>
         <p>
-          By accessing or using ToolNest ("Website"), you agree to be bound by these Terms of Service. If you do not agree with any part of these terms, please refrain from using our platform.
+          By accessing or using Toolzaro ("Website"), you agree to be bound by these Terms of Service. If you do not agree with any part of these terms, please refrain from using our platform.
         </p>
       </section>
 
@@ -355,7 +355,7 @@ export const TermsOfService: React.FC = () => (
           <Wrench className="w-4 h-4 text-primary" /> 2. Permitted Use & Conduct
         </h2>
         <p>
-          ToolNest provides browser utilities free of charge for personal, educational, and commercial purposes. You agree not to:
+          Toolzaro provides browser utilities free of charge for personal, educational, and commercial purposes. You agree not to:
         </p>
         <ul className="list-disc pl-5 space-y-1">
           <li>Use any tool to generate malicious code, spam, deceptive phishing content, or unlawful media.</li>
@@ -369,7 +369,7 @@ export const TermsOfService: React.FC = () => (
           <AlertTriangle className="w-4 h-4 text-primary" /> 3. Limitation of Liability
         </h2>
         <p>
-          All tools are provided on an <strong>"AS IS"</strong> and <strong>"AS AVAILABLE"</strong> basis without warranties of any kind. ToolNest shall not be liable for any direct, indirect, incidental, or consequential damages resulting from the use or inability to use our tools or reliance on calculated output.
+          All tools are provided on an <strong>"AS IS"</strong> and <strong>"AS AVAILABLE"</strong> basis without warranties of any kind. Toolzaro shall not be liable for any direct, indirect, incidental, or consequential damages resulting from the use or inability to use our tools or reliance on calculated output.
         </p>
       </section>
 
@@ -387,7 +387,7 @@ export const TermsOfService: React.FC = () => (
 
 export const Disclaimer: React.FC = () => (
   <div className="max-w-4xl mx-auto space-y-8">
-    <Seo title="Disclaimer | ToolNest" description="Official disclaimer regarding accuracy and utility output on ToolNest." />
+    <Seo title="Disclaimer | Toolzaro" description="Official disclaimer regarding accuracy and utility output on Toolzaro." />
     
     <PageHeader 
       title="Disclaimer" 
@@ -400,7 +400,7 @@ export const Disclaimer: React.FC = () => (
           <AlertTriangle className="w-4 h-4 text-amber-500" /> 1. Accuracy & General Information Notice
         </h2>
         <p>
-          The tools, converters, and calculators provided on ToolNest are designed for general utility and informational purposes only. While we test and strive for mathematical precision in our converters, unit formulas, and graphic generators, we cannot guarantee 100% flawlessness in all potential edge cases or browser environments.
+          The tools, converters, and calculators provided on Toolzaro are designed for general utility and informational purposes only. While we test and strive for mathematical precision in our converters, unit formulas, and graphic generators, we cannot guarantee 100% flawlessness in all potential edge cases or browser environments.
         </p>
       </section>
 
@@ -418,7 +418,7 @@ export const Disclaimer: React.FC = () => (
           <Globe className="w-4 h-4 text-amber-500" /> 3. External Links & Advertisements
         </h2>
         <p>
-          ToolNest may contain links to third-party websites or advertisements served by Google AdSense. We do not control or guarantee the content, privacy practices, or accuracy of third-party external sites.
+          Toolzaro may contain links to third-party websites or advertisements served by Google AdSense. We do not control or guarantee the content, privacy practices, or accuracy of third-party external sites.
         </p>
       </section>
     </div>

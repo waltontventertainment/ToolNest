@@ -49,13 +49,13 @@ export const CoffeeSupportModal: React.FC<CoffeeSupportModalProps> = ({ isOpen, 
             </div>
             <div>
               <h3 className="text-base font-bold text-foreground leading-tight flex items-center gap-2">
-                <span>Support ToolNest</span>
+                <span>Support Toolzaro</span>
                 <span className="text-[10px] bg-amber-500/20 text-amber-700 dark:text-amber-300 font-bold px-2 py-0.5 rounded-full border border-amber-500/30">
                   Buy Me a Coffee
                 </span>
               </h3>
               <p className="text-xs text-muted-foreground mt-0.5">
-                Keep ToolNest 100% free, fast, and private for creators worldwide
+                Keep Toolzaro 100% free, fast, and private for creators worldwide
               </p>
             </div>
           </div>
@@ -76,9 +76,9 @@ export const CoffeeSupportModal: React.FC<CoffeeSupportModalProps> = ({ isOpen, 
               <Heart className="w-6 h-6 fill-amber-500 text-amber-500 animate-pulse" />
             </div>
             <div className="space-y-1">
-              <h4 className="text-sm font-bold text-foreground">Loved using ToolNest today?</h4>
+              <h4 className="text-sm font-bold text-foreground">Loved using Toolzaro today?</h4>
               <p className="text-xs text-muted-foreground max-w-sm mx-auto leading-relaxed">
-                ToolNest runs client-side with zero subscription paywalls or hidden fees. If our tools helped you complete a task or saved your time, consider buying us a coffee!
+                Toolzaro runs client-side with zero subscription paywalls or hidden fees. If our tools helped you complete a task or saved your time, consider buying us a coffee!
               </p>
             </div>
 
@@ -104,7 +104,7 @@ export const CoffeeSupportModal: React.FC<CoffeeSupportModalProps> = ({ isOpen, 
               {[
                 { amount: '$3', label: '1 Coffee', desc: 'Quick Espresso' },
                 { amount: '$5', label: '2 Coffees', desc: 'Double Shot' },
-                { amount: '$10', label: 'Supporter', desc: 'ToolNest Fan' }
+                { amount: '$10', label: 'Supporter', desc: 'Toolzaro Fan' }
               ].map((tier) => (
                 <a
                   key={tier.amount}

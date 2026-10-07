@@ -1569,7 +1569,7 @@ Please generate:
               rows={4}
               value={topic}
               onChange={(e) => setTopic(e.target.value)}
-              placeholder="e.g., Just launched ToolNest — an all-in-one free toolkit with 50+ tools for developers and creators. No signups required..."
+              placeholder="e.g., Just launched Toolzaro — an all-in-one free toolkit with 50+ tools for developers and creators. No signups required..."
               className="w-full p-3 text-xs border border-border rounded-xl focus:outline-hidden focus:border-primary leading-relaxed"
             />
           </div>

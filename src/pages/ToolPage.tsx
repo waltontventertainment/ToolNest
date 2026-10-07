@@ -4,6 +4,7 @@ import { ChevronRight, HelpCircle, Star, Share2, Check, ArrowLeft } from 'lucide
 import { tools } from '../lib/registry';
 import { Seo } from '../components/Seo';
 import { AdSlot } from '../components/AdSlot';
+import { BreadcrumbNavigation } from '../components/BreadcrumbNavigation';
 import { useFavorites } from '../context/FavoritesContext';
 import { toast } from 'sonner';
 
@@ -75,17 +76,17 @@ export const ToolPage: React.FC = () => {
       
       {/* Breadcrumbs & Navigation Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-border/60">
-        <nav className="flex items-center text-xs font-medium text-muted-foreground flex-wrap gap-1.5">
-          <Link to="/" className="btn-signature-header h-8 px-2.5 gap-1.5 text-xs text-muted-foreground hover:text-foreground">
-            <ArrowLeft className="w-3.5 h-3.5 text-primary" /> <span>All Tools</span>
-          </Link>
-          <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/40" />
-          <Link to={`/category/${tool.category.toLowerCase().replace(/ & /g, '-').replace(/ /g, '-')}`} className="hover:text-primary transition-colors">
-            {tool.category}
-          </Link>
-          <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/40" />
-          <span className="text-foreground font-bold">{tool.name}</span>
-        </nav>
+        <BreadcrumbNavigation
+          items={[
+            {
+              label: tool.category,
+              href: `/category/${tool.category.toLowerCase().replace(/ & /g, '-').replace(/ /g, '-')}`,
+            },
+            {
+              label: tool.name,
+            },
+          ]}
+        />
 
         <div className="flex items-center gap-2">
           <button

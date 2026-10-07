@@ -18,6 +18,7 @@ import {
 import { BlogPost, BUILTIN_BLOG_POSTS, getMergedBlogPosts } from '../lib/blogData';
 import { tools } from '../lib/registry';
 import { Seo } from '../components/Seo';
+import { BreadcrumbNavigation } from '../components/BreadcrumbNavigation';
 import { AdSlot } from '../components/AdSlot';
 import { MarkdownRenderer } from '../components/MarkdownRenderer';
 import { toast } from 'sonner';
@@ -94,7 +95,7 @@ export const BlogPostPage: React.FC = () => {
   return (
     <article className="max-w-4xl mx-auto space-y-10">
       <Seo
-        title={`${post.title} - ToolNest Pulse`}
+        title={`${post.title} - Toolzaro Pulse`}
         description={post.excerpt}
         url={`https://toolnest.com/blog/${post.slug}`}
         image={post.coverImage}
@@ -112,13 +113,22 @@ export const BlogPostPage: React.FC = () => {
           },
           'publisher': {
             '@type': 'Organization',
-            'name': 'ToolNest',
+            'name': 'Toolzaro',
             'logo': {
               '@type': 'ImageObject',
               'url': 'https://toolnest.com/logo.png'
             }
           }
         }}
+      />
+
+      {/* Breadcrumbs Navigation */}
+      <BreadcrumbNavigation
+        items={[
+          { label: 'Blog & Insights', href: '/blog' },
+          { label: post.title },
+        ]}
+        className="mb-4"
       />
 
       {/* Back Button */}
@@ -248,7 +258,7 @@ export const BlogPostPage: React.FC = () => {
           </div>
 
           <p className="text-xs text-muted-foreground">
-            Try these free browser-native utilities directly on ToolNest:
+            Try these free browser-native utilities directly on Toolzaro:
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-1">
