@@ -184,8 +184,7 @@ export const Index: React.FC = () => {
         </div>
       </section>
 
-      {/* Categories & Favorites Tabs */}
-      <section className="mb-8 space-y-4">
+      <section className="mb-12 space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">Explore Categories</h2>
           {favorites.length > 0 && (
@@ -208,37 +207,36 @@ export const Index: React.FC = () => {
           )}
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 gap-3">
           <button
             onClick={() => { setActiveCategory('All'); setShowFavoritesOnly(false); }}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all border cursor-pointer ${
+            className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all border cursor-pointer flex items-center justify-center gap-2 ${
               activeCategory === 'All' && !showFavoritesOnly
                 ? 'bg-blue-600 text-white border-blue-500 shadow-md shadow-blue-500/30'
                 : 'bg-card/90 text-muted-foreground border-border hover:border-border/80 hover:text-foreground hover:bg-muted/40'
             }`}
           >
-            All Tools ({tools.length})
+            <Layers className={`w-3.5 h-3.5 ${activeCategory === 'All' && !showFavoritesOnly ? 'text-white' : 'text-primary/60'}`} />
+            <span>All Tools ({tools.length})</span>
           </button>
 
           {categories.map((cat) => {
             const count = tools.filter(t => t.category === cat).length;
             const isActive = activeCategory === cat && !showFavoritesOnly;
+            const SampleIcon = tools.find(t => t.category === cat)?.icon || Layers;
+            
             return (
               <button
                 key={cat}
                 onClick={() => { setActiveCategory(cat); setShowFavoritesOnly(false); }}
-                className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all border flex items-center gap-2 cursor-pointer ${
+                className={`px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all border flex items-center justify-center gap-2 cursor-pointer ${
                   isActive
                     ? 'bg-blue-600 text-white border-blue-500 shadow-md shadow-blue-500/30'
                     : 'bg-card/90 text-muted-foreground border-border hover:border-border/80 hover:text-foreground hover:bg-muted/40'
                 }`}
               >
-                <span>{cat}</span>
-                <span className={`text-[10px] px-1.5 py-0.2 rounded-md font-mono font-bold ${
-                  isActive ? 'bg-white/25 text-white' : 'bg-muted text-muted-foreground'
-                }`}>
-                  {count}
-                </span>
+                <SampleIcon className={`w-3.5 h-3.5 ${isActive ? 'text-white' : 'text-primary/60'}`} />
+                <span>{cat} ({count})</span>
               </button>
             );
           })}
@@ -332,7 +330,7 @@ export const Index: React.FC = () => {
                 Latest Guides & Developer Dispatches
               </h2>
               <p className="text-xs text-muted-foreground mt-0.5">
-                Technical tutorials, free AI workflows, and client-side web utility architectures.
+                Technical tutorials, AI workflows, and client-side web utility architectures.
               </p>
             </div>
 

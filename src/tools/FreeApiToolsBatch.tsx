@@ -14,45 +14,58 @@ export const RestCountriesTool: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState<any>(null);
 
-  const fetchCountries = async (searchTerm: string, isInitial = false) => {
-    if (!searchTerm.trim() && !isInitial) return;
+  const fetchCountries = async (searchTerm: string) => {
+    if (!searchTerm.trim()) return;
     setLoading(true);
+    const fields = 'name,flags,region,capital,population,currencies,subregion,status,continents,maps,idd,tld,car,unMember,languages,timezones,borders,area';
+    const baseUrl = 'https://restcountries.com/v3.1';
+    
+    const performFetch = async (url: string) => {
+      try {
+        const res = await fetch(url);
+        if (res.ok) {
+          const data = await res.json();
+          return Array.isArray(data) ? data : [];
+        }
+        return null;
+      } catch (err) {
+        throw err;
+      }
+    };
+
     try {
-      const url = isInitial 
-        ? 'https://restcountries.com/v3.1/all' 
-        : `https://restcountries.com/v3.1/name/${encodeURIComponent(searchTerm.trim())}`;
+      // Attempt 1: Search by name with fields
+      let results = await performFetch(`${baseUrl}/name/${encodeURIComponent(searchTerm.trim())}?fields=${fields}`);
       
-      const res = await fetch(url);
-      if (res.ok) {
-        const data = await res.json();
-        let results = Array.isArray(data) ? data : [];
-        if (isInitial) {
-          // Just show a few popular ones on initial load
-          const popular = ['Bangladesh', 'United States', 'United Kingdom', 'Canada', 'Australia', 'Japan', 'Germany', 'India', 'France', 'United Arab Emirates'];
-          results = results.filter(c => popular.includes(c.name?.common)).slice(0, 10);
-        }
+      // Attempt 2: If no results or 404, try fullText search
+      if (!results || results.length === 0) {
+        results = await performFetch(`${baseUrl}/name/${encodeURIComponent(searchTerm.trim())}?fullText=true&fields=${fields}`);
+      }
+
+      // Attempt 3: If still no results, maybe it's a code? (alpha search)
+      if ((!results || results.length === 0) && searchTerm.length <= 3) {
+        results = await performFetch(`${baseUrl}/alpha/${encodeURIComponent(searchTerm.trim())}?fields=${fields}`);
+        if (results && !Array.isArray(results)) results = [results];
+      }
+
+      if (results && results.length > 0) {
         setCountries(results);
-      } else if (!isInitial) {
-        // Fallback for fullText search
-        const res2 = await fetch(`https://restcountries.com/v3.1/name/${encodeURIComponent(searchTerm.trim())}?fullText=true`);
-        if (res2.ok) {
-          const data2 = await res2.json();
-          setCountries(Array.isArray(data2) ? data2 : []);
-        } else {
-          setCountries([]);
-          toast.error(`Could not find "${searchTerm}". Check spelling or try a partial name.`);
-        }
+      } else {
+        setCountries([]);
+        toast.error(`Could not find "${searchTerm}". Check spelling or try a partial name.`);
       }
     } catch (err) {
-      toast.error('API connection failed. Please check your internet.');
+      console.error('RestCountries Error:', err);
+      // If it's a TypeError: Failed to fetch, it's likely a network or CORS issue
+      if (err instanceof TypeError && err.message === 'Failed to fetch') {
+        toast.error('Network Error: Could not connect to the country database. This may be due to an ad-blocker or unstable connection.');
+      } else {
+        toast.error('API connection failed. Please try again later.');
+      }
     } finally {
       setLoading(false);
     }
   };
-
-  React.useEffect(() => {
-    fetchCountries('', true);
-  }, []);
 
   const quickLinks = ['USA', 'Canada', 'United Kingdom', 'Bangladesh', 'India', 'Japan', 'France', 'Australia'];
 
@@ -1032,7 +1045,7 @@ export const JokeQuotableTool: React.FC = () => {
 
 // 10. University Directory
 export const HipolabsUniversitiesTool: React.FC = () => {
-  const [country, setCountry] = useState('Bangladesh');
+  const [country, setCountry] = useState('');
   const [universities, setUniversities] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -1056,10 +1069,6 @@ export const HipolabsUniversitiesTool: React.FC = () => {
       setLoading(false);
     }
   };
-
-  React.useEffect(() => {
-    fetchUniversities('Bangladesh');
-  }, []);
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto p-4 sm:p-6 bg-card rounded-2xl border border-border shadow-lg">

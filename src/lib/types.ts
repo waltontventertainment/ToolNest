@@ -2,7 +2,7 @@ import { LucideIcon } from 'lucide-react';
 import React from 'react';
 
 export type ToolCategory = 
-  | 'Global Utilities'
+  | 'Universal Data Suite'
   | 'Wikipedia'
   | 'AI'
   | 'Text' 
@@ -21,6 +21,7 @@ export interface ToolDefinition {
   name: string; 
   category: ToolCategory; 
   icon: LucideIcon;
+  previewIcons?: LucideIcon[]; // Optional multiple icons for mini-box preview
   keywords: string[]; 
   metaTitle: string; 
   metaDescription: string;

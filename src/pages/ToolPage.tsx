@@ -74,61 +74,52 @@ export const ToolPage: React.FC = () => {
         jsonLd={[jsonLd, faqLd]}
       />
       
-      {/* Breadcrumbs & Navigation Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-border/60">
-        <BreadcrumbNavigation
-          items={[
-            {
-              label: tool.category,
-              href: `/category/${tool.category.toLowerCase().replace(/ & /g, '-').replace(/ /g, '-')}`,
-            },
-            {
-              label: tool.name,
-            },
-          ]}
-        />
-
-        <div className="flex items-center gap-2">
-          <button
-            onClick={toggleFavorite}
-            className={`btn-signature-header h-9 px-3.5 gap-2 text-xs font-semibold cursor-pointer ${
-              isFavorite
-                ? 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-300 dark:border-amber-700'
-                : 'text-muted-foreground hover:text-foreground'
-            }`}
-          >
-            <Star className={`w-4 h-4 transition-transform hover:scale-115 ${isFavorite ? 'text-amber-500 fill-amber-500' : 'text-amber-500/80'}`} />
-            <span>{isFavorite ? 'Saved' : 'Bookmark'}</span>
-          </button>
-
-          <button
-            onClick={copyToolLink}
-            className="btn-signature-header h-9 px-3.5 gap-2 text-xs font-semibold text-muted-foreground hover:text-foreground cursor-pointer"
-          >
-            {copiedLink ? <Check className="w-4 h-4 text-emerald-500" /> : <Share2 className="w-4 h-4" />}
-            <span>{copiedLink ? 'Copied' : 'Share'}</span>
-          </button>
-        </div>
-      </div>
-
-      <div className="mb-8 max-w-3xl">
-        <div className="flex items-center gap-3.5 mb-2">
-          <div className="icon-squircle w-14 h-14 text-primary shrink-0 shadow-sm">
-            <tool.icon className="w-7 h-7" />
+      <div className="mb-10 max-w-4xl">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+          <div className="flex items-center gap-4">
+            <div className="icon-squircle w-16 h-16 text-primary shrink-0 shadow-md">
+              <tool.icon className="w-8 h-8" />
+            </div>
+            <div>
+              <h1 className="text-3xl md:text-5xl font-display font-black tracking-tight text-foreground">
+                {tool.name}
+              </h1>
+              <p className="text-xs font-bold text-primary uppercase tracking-[0.2em] mt-1 opacity-70">
+                {tool.category} Professional Suite
+              </p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-2xl md:text-4xl font-display font-extrabold tracking-tight text-foreground mt-1">
-              {tool.name}
-            </h1>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={toggleFavorite}
+              className={`btn-signature-header h-10 px-4 gap-2 text-xs font-bold cursor-pointer transition-all ${
+                isFavorite
+                  ? 'bg-amber-500/20 text-amber-600 dark:text-amber-400 border-amber-400'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              <Star className={`w-4 h-4 transition-transform hover:scale-115 ${isFavorite ? 'text-amber-500 fill-amber-500' : 'text-amber-500/80'}`} />
+              <span>{isFavorite ? 'Saved' : 'Bookmark'}</span>
+            </button>
+
+            <button
+              onClick={copyToolLink}
+              className="btn-signature-header h-10 px-4 gap-2 text-xs font-bold text-muted-foreground hover:text-foreground cursor-pointer transition-all"
+            >
+              {copiedLink ? <Check className="w-4 h-4 text-emerald-500" /> : <Share2 className="w-4 h-4" />}
+              <span>{copiedLink ? 'Copied' : 'Share'}</span>
+            </button>
           </div>
         </div>
-        <p className="text-sm text-muted-foreground leading-relaxed mt-3">
+        
+        <div className="mt-6 p-4 rounded-2xl bg-secondary/30 border border-border/50 text-sm text-muted-foreground leading-relaxed max-w-3xl">
           {tool.intro}
-        </p>
+        </div>
       </div>
 
       {/* Main Tool Component View */}
-      <section className="mb-12">
+      <section className="mb-16">
         <Component />
       </section>
 

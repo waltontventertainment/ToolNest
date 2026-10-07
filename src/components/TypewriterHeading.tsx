@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 const ROTATING_PHRASES = [
   "Zero installation required.",
-  "100% free & private in browser.",
+  "Professional & private in browser.",
   "Instant PDF, Image & AI tools.",
   "Zero cloud server uploads."
 ];
