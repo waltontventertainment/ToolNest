@@ -11,18 +11,18 @@ import { toast } from 'sonner';
 import { tools, categories } from '../lib/registry';
 
 const PageHeader = ({ title, subtitle, date }: { title: string; subtitle?: string; date?: string }) => (
-  <div className="mb-10 text-center md:text-left border-b border-border/60 pb-6">
-    <div className="mb-4">
+  <div className="mb-6 sm:mb-8 md:mb-10 text-center md:text-left border-b border-border/60 pb-4 sm:pb-6">
+    <div className="mb-3 sm:mb-4">
       <BreadcrumbNavigation items={[{ label: title }]} />
     </div>
-    <h1 className="text-3xl md:text-5xl font-display font-extrabold tracking-tight mb-3 text-foreground">{title}</h1>
-    {subtitle && <p className="text-base text-muted-foreground max-w-2xl">{subtitle}</p>}
+    <h1 className="text-2xl sm:text-3xl md:text-5xl font-display font-extrabold tracking-tight mb-2 sm:mb-3 text-foreground">{title}</h1>
+    {subtitle && <p className="text-sm sm:text-base text-muted-foreground max-w-2xl leading-relaxed">{subtitle}</p>}
     {date && <p className="text-xs text-muted-foreground/80 mt-2 font-mono">Effective Date: {date}</p>}
   </div>
 );
 
 export const About: React.FC = () => (
-  <div className="max-w-4xl mx-auto space-y-12">
+  <div className="max-w-4xl mx-auto space-y-8 sm:space-y-10 md:space-y-12">
     <Seo title="About Us | Toolzaro" description={`Learn more about Toolzaro - a free, privacy-first suite of ${tools.length} client-side web tools.`} />
     
     <PageHeader 
@@ -30,8 +30,8 @@ export const About: React.FC = () => (
       subtitle={`Building the ultimate browser-native toolbox with ${tools.length} live utilities for developers, designers, and creators.`}
     />
 
-    <div className="grid md:grid-cols-3 gap-6">
-      <div className="p-6 bg-card border border-border/80 rounded-2xl shadow-2xs">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6">
+      <div className="p-5 sm:p-6 bg-card border border-border/80 rounded-2xl shadow-2xs">
         <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-bold mb-4">
           <ShieldCheck className="w-5 h-5" />
         </div>
@@ -41,7 +41,7 @@ export const About: React.FC = () => (
         </p>
       </div>
 
-      <div className="p-6 bg-card border border-border/80 rounded-2xl shadow-2xs">
+      <div className="p-5 sm:p-6 bg-card border border-border/80 rounded-2xl shadow-2xs">
         <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold mb-4">
           <Sparkles className="w-5 h-5" />
         </div>
@@ -51,7 +51,7 @@ export const About: React.FC = () => (
         </p>
       </div>
 
-      <div className="p-6 bg-card border border-border/80 rounded-2xl shadow-2xs">
+      <div className="p-5 sm:p-6 bg-card border border-border/80 rounded-2xl shadow-2xs">
         <div className="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold mb-4">
           <Wrench className="w-5 h-5" />
         </div>

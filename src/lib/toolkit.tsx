@@ -21,13 +21,24 @@ export function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T 
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    const handleStorageChange = (e: StorageEvent | CustomEvent) => {
-      if ('key' in e && e.key !== key) return;
-      if ('detail' in e && (e as CustomEvent).detail?.key !== key) return;
+    const handleStorageChange = (e: Event) => {
+      let eventKey: string | null = null;
+      if ('key' in e && typeof (e as StorageEvent).key === 'string') {
+        eventKey = (e as StorageEvent).key;
+      } else if ('detail' in e && (e as CustomEvent).detail && typeof (e as CustomEvent).detail.key === 'string') {
+        eventKey = (e as CustomEvent).detail.key;
+      }
+
+      // If the event targets a specific key that isn't ours, or specifies no key, safely ignore
+      if (!eventKey || eventKey !== key) return;
 
       try {
         const item = window.localStorage.getItem(key);
-        setStoredValue(item ? JSON.parse(item) : initialValue);
+        const nextVal = item ? JSON.parse(item) : initialValue;
+        setStoredValue(prev => {
+          if (JSON.stringify(prev) === JSON.stringify(nextVal)) return prev;
+          return nextVal;
+        });
       } catch (error) {
         console.error(error);
       }

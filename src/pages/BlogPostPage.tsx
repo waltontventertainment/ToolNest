@@ -93,7 +93,7 @@ export const BlogPostPage: React.FC = () => {
   const nextPost = currentIndex < allPosts.length - 1 ? allPosts[currentIndex + 1] : null;
 
   return (
-    <article className="max-w-4xl mx-auto space-y-10">
+    <article className="max-w-4xl mx-auto space-y-6 sm:space-y-8 md:space-y-10">
       <Seo
         title={`${post.title} - Toolzaro Pulse`}
         description={post.excerpt}
@@ -128,7 +128,7 @@ export const BlogPostPage: React.FC = () => {
           { label: 'Blog & Insights', href: '/blog' },
           { label: post.title },
         ]}
-        className="mb-4"
+        className="mb-3 sm:mb-4"
       />
 
       {/* Back Button */}
@@ -143,12 +143,12 @@ export const BlogPostPage: React.FC = () => {
       </div>
 
       {/* Header Info */}
-      <header className="space-y-4">
-        <div className="flex flex-wrap items-center gap-3">
-          <span className="px-3.5 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-xs font-bold text-primary">
+      <header className="space-y-3 sm:space-y-4">
+        <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
+          <span className="px-3 sm:px-3.5 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-xs font-bold text-primary">
             {post.category}
           </span>
-          <div className="flex items-center gap-3 text-xs text-muted-foreground">
+          <div className="flex items-center gap-2.5 sm:gap-3 text-xs text-muted-foreground">
             <span className="flex items-center gap-1">
               <Calendar className="w-3.5 h-3.5" />
               {post.publishedAt}
@@ -161,11 +161,11 @@ export const BlogPostPage: React.FC = () => {
           </div>
         </div>
 
-        <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-foreground font-display leading-tight">
+        <h1 className="text-2xl sm:text-3xl md:text-5xl font-extrabold tracking-tight text-foreground font-display leading-tight">
           {post.title}
         </h1>
 
-        <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
+        <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed">
           {post.excerpt}
         </p>
 

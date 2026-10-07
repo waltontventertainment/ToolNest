@@ -62,14 +62,14 @@ export const BlogPage: React.FC = () => {
   const gridPosts = filteredPosts.filter(p => p.id !== (selectedCategory === 'All' && !search ? featuredPost?.id : ''));
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-6 sm:space-y-8 md:space-y-10">
       <Seo
         title="Toolzaro Pulse & Insights - Web, AI & Developer Guides"
         description="Explore in-depth technical guides, free AI workflows, developer cheatsheets, and SEO optimization strategies."
         url="https://toolnest.com/blog"
       />
 
-      <div className="mb-2">
+      <div className="mb-2 sm:mb-3">
         <BreadcrumbNavigation
           items={[
             {
@@ -80,18 +80,18 @@ export const BlogPage: React.FC = () => {
       </div>
 
       {/* Hero Header */}
-      <section className="relative overflow-hidden rounded-3xl bg-linear-to-br from-card via-card to-primary/5 border border-border p-8 md:p-12 shadow-sm">
-        <div className="max-w-3xl space-y-4">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-xs font-bold text-primary">
+      <section className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-linear-to-br from-card via-card to-primary/5 border border-border p-6 sm:p-8 md:p-10 shadow-sm">
+        <div className="max-w-3xl space-y-3.5 sm:space-y-4">
+          <div className="inline-flex items-center gap-2 px-3 sm:px-3.5 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-xs font-bold text-primary">
             <Rss className="w-3.5 h-3.5" />
             <span>Toolzaro Pulse & Insights</span>
           </div>
 
-          <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-foreground font-display">
+          <h1 className="text-2xl sm:text-3xl md:text-5xl font-extrabold tracking-tight text-foreground font-display">
             Knowledge Hub & Engineering Journal
           </h1>
 
-          <p className="text-sm md:text-base text-muted-foreground leading-relaxed max-w-2xl">
+          <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed max-w-2xl">
             In-depth guides, practical developer workflows, free AI model tutorials, and technical SEO strategies designed for modern creators.
           </p>
 
@@ -112,12 +112,12 @@ export const BlogPage: React.FC = () => {
       </section>
 
       {/* Category Filter Pills */}
-      <section className="flex flex-wrap items-center gap-2">
+      <section className="flex flex-wrap items-center gap-1.5 sm:gap-2">
         {categories.map((cat) => (
           <button
             key={cat}
             onClick={() => setSelectedCategory(cat)}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all border cursor-pointer ${
+            className={`px-3 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all border cursor-pointer ${
               selectedCategory === cat
                 ? 'bg-blue-600 text-white border-blue-500 shadow-md shadow-blue-500/30'
                 : 'bg-card text-muted-foreground border-border hover:border-border/80 hover:text-foreground hover:bg-muted/40'
@@ -130,9 +130,9 @@ export const BlogPage: React.FC = () => {
 
       {/* Featured Hero Article (when showing all and no search query) */}
       {selectedCategory === 'All' && !search && featuredPost && (
-        <section className="group relative overflow-hidden rounded-3xl bg-card border border-border hover:border-primary/40 transition-all shadow-xs hover:shadow-lg">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 p-6 md:p-8 items-center">
-            <div className="lg:col-span-7 space-y-4">
+        <section className="group relative overflow-hidden rounded-2xl sm:rounded-3xl bg-card border border-border hover:border-primary/40 transition-all shadow-xs hover:shadow-lg">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 p-5 sm:p-6 md:p-8 items-center">
+            <div className="lg:col-span-7 space-y-3 sm:space-y-4">
               <div className="flex items-center gap-2">
                 <span className="px-3 py-1 rounded-full bg-primary/10 text-primary text-[11px] font-bold">
                   {featuredPost.category}
@@ -144,12 +144,12 @@ export const BlogPage: React.FC = () => {
               </div>
 
               <Link to={`/blog/${featuredPost.slug}`}>
-                <h2 className="text-2xl md:text-3xl font-extrabold text-foreground tracking-tight group-hover:text-primary transition-colors">
+                <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-foreground tracking-tight group-hover:text-primary transition-colors">
                   {featuredPost.title}
                 </h2>
               </Link>
 
-              <p className="text-xs md:text-sm text-muted-foreground leading-relaxed line-clamp-3">
+              <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed line-clamp-3">
                 {featuredPost.excerpt}
               </p>
 
@@ -188,15 +188,15 @@ export const BlogPage: React.FC = () => {
       )}
 
       {/* Blog Cards Grid */}
-      <section className="space-y-6">
+      <section className="space-y-4 sm:space-y-6">
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
+          <h2 className="text-xs sm:text-sm font-bold uppercase tracking-wider text-muted-foreground">
             {selectedCategory === 'All' ? 'Latest Articles' : `${selectedCategory} Articles`} ({filteredPosts.length})
           </h2>
         </div>
 
         {gridPosts.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
             {gridPosts.map((post) => (
               <Link
                 key={post.id}

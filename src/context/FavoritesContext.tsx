@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { toast } from 'sonner';
 
 interface FavoritesContextType {
@@ -13,6 +13,7 @@ const FavoritesContext = createContext<FavoritesContextType | undefined>(undefin
 const LOCAL_FAVORITES_KEY = 'toolnest-favorites';
 
 function getStoredFavorites(): string[] {
+  if (typeof window === 'undefined') return [];
   try {
     const item = localStorage.getItem(LOCAL_FAVORITES_KEY);
     return item ? JSON.parse(item) : [];
@@ -22,9 +23,9 @@ function getStoredFavorites(): string[] {
 }
 
 function saveStoredFavorites(favs: string[]) {
+  if (typeof window === 'undefined') return;
   try {
     localStorage.setItem(LOCAL_FAVORITES_KEY, JSON.stringify(favs));
-    window.dispatchEvent(new Event('storage'));
   } catch {
     // ignore
   }
@@ -35,8 +36,11 @@ export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
   // Sync state with storage events across multiple tabs
   useEffect(() => {
-    const handleStorageChange = () => {
-      setFavorites(getStoredFavorites());
+    if (typeof window === 'undefined') return;
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === LOCAL_FAVORITES_KEY) {
+        setFavorites(getStoredFavorites());
+      }
     };
     window.addEventListener('storage', handleStorageChange);
     return () => window.removeEventListener('storage', handleStorageChange);
@@ -47,11 +51,13 @@ export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       const exists = prev.includes(slug);
       const updated = exists ? prev.filter(s => s !== slug) : [...prev, slug];
       saveStoredFavorites(updated);
-      if (exists) {
-        toast.info('Removed from bookmarked tools');
-      } else {
-        toast.success('Saved to bookmarked tools');
-      }
+      queueMicrotask(() => {
+        if (exists) {
+          toast.info('Removed from bookmarked tools');
+        } else {
+          toast.success('Saved to bookmarked tools');
+        }
+      });
       return updated;
     });
   }, []);
@@ -66,13 +72,15 @@ export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     toast.success('All bookmarks cleared');
   }, []);
 
+  const contextValue = useMemo(() => ({
+    favorites,
+    toggleFavorite,
+    isFavorite,
+    clearFavorites
+  }), [favorites, toggleFavorite, isFavorite, clearFavorites]);
+
   return (
-    <FavoritesContext.Provider value={{
-      favorites,
-      toggleFavorite,
-      isFavorite,
-      clearFavorites
-    }}>
+    <FavoritesContext.Provider value={contextValue}>
       {children}
     </FavoritesContext.Provider>
   );

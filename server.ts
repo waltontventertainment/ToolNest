@@ -144,23 +144,19 @@ async function startServer() {
       
       // 2. Fallback to Gemini API if OpenRouter models fail
       try {
-        const model = aiClient.getGenerativeModel({ 
-          model: 'gemini-1.5-flash',
-          systemInstruction: systemPrompt || 'You are a helpful assistant.'
-        });
-
-        const result = await model.generateContent({
-          contents: [{ role: 'user', parts: [{ text: prompt }] }],
-          generationConfig: {
+        const response = await aiClient.models.generateContent({
+          model: 'gemini-2.5-flash',
+          contents: prompt,
+          config: {
+            systemInstruction: systemPrompt || 'You are a helpful assistant.',
             temperature: temperature,
             maxOutputTokens: maxTokens,
           }
         });
 
-        const response = await result.response;
         return res.json({
           success: true,
-          text: response.text() || ''
+          text: response.text || ''
         });
       } catch (geminiErr: any) {
         console.error('Gemini fallback also failed:', geminiErr);

@@ -76,7 +76,7 @@ export const GoogleDriveProvider: React.FC<{ children: React.ReactNode }> = ({ c
     if (accessToken) {
       refreshFiles();
     } else {
-      setDriveFiles([]);
+      setDriveFiles(prev => prev.length === 0 ? prev : []);
     }
   }, [accessToken, refreshFiles]);
 

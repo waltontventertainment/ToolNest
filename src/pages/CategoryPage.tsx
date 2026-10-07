@@ -46,7 +46,7 @@ export const CategoryPage: React.FC = () => {
         description={`Explore our collection of free ${categoryName} tools. No sign-ups, runs locally in your browser.`}
       />
       
-      <div className="mb-6">
+      <div className="mb-4 sm:mb-6">
         <BreadcrumbNavigation
           items={[
             {
@@ -56,17 +56,17 @@ export const CategoryPage: React.FC = () => {
         />
       </div>
 
-      <div className="mb-10">
-        <h1 className="text-3xl md:text-5xl font-display font-extrabold tracking-tight mb-3">
+      <div className="mb-6 sm:mb-8 md:mb-10">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-display font-extrabold tracking-tight mb-2 sm:mb-3 text-foreground">
           {categoryName} Tools
         </h1>
-        <p className="text-sm text-muted-foreground max-w-xl">
+        <p className="text-xs sm:text-sm text-muted-foreground max-w-xl leading-relaxed">
           A curated collection of {categoryTools.length} free browser utilities to help with your {categoryName.toLowerCase()} workflows.
         </p>
       </div>
 
       <div className="flex flex-col items-center">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 w-full">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 lg:gap-6 w-full">
           {displayedTools.map(tool => (
             <ToolCard key={tool.slug} tool={tool} />
           ))}
@@ -74,14 +74,16 @@ export const CategoryPage: React.FC = () => {
         {displayCount < categoryTools.length && (
           <button 
             onClick={() => setDisplayCount(prev => prev + incrementCount)}
-            className="mt-10 px-8 py-3.5 rounded-2xl font-bold text-xs btn-signature-header hover:border-primary/50 text-foreground shadow-sm cursor-pointer"
+            className="mt-8 sm:mt-10 md:mt-12 px-8 py-3.5 rounded-2xl font-bold text-xs btn-signature-header hover:border-primary/50 text-foreground shadow-sm cursor-pointer"
           >
             Load More Tools ({categoryTools.length - displayCount} remaining)
           </button>
         )}
       </div>
 
-      <AdSlot slot="category-bottom" format="auto" />
+      <div className="mt-8 sm:mt-12">
+        <AdSlot slot="category-bottom" format="auto" />
+      </div>
     </>
   );
 };

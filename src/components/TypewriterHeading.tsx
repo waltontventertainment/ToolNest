@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 const ROTATING_PHRASES = [
   "Zero installation required.",
-  "Professional & private in browser.",
+  "100% private in browser.",
   "Instant PDF, Image & AI tools.",
   "Zero cloud server uploads."
 ];
@@ -16,11 +16,11 @@ export const TypewriterHeading: React.FC = () => {
     const fullPhrase = ROTATING_PHRASES[phraseIndex];
     
     // Typing speed calculation
-    let typingSpeed = isDeleting ? 35 : 70;
+    let typingSpeed = isDeleting ? 30 : 65;
     
     // Add realistic human typing randomness
     if (!isDeleting) {
-      typingSpeed += Math.floor(Math.random() * 30);
+      typingSpeed += Math.floor(Math.random() * 25);
     }
 
     const handleType = () => {
@@ -52,17 +52,18 @@ export const TypewriterHeading: React.FC = () => {
 
   return (
     <h1 
-      className="text-3xl sm:text-5xl lg:text-6xl font-display font-black tracking-[-0.035em] mb-4 text-foreground leading-[1.15] select-none"
+      className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl font-display font-black tracking-[-0.03em] mb-3 sm:mb-4 text-foreground leading-[1.15] select-none text-center md:text-left"
       aria-label="Every web tool you need. Zero installation required."
     >
-      <span className="block text-foreground">
+      <span className="block text-foreground mb-1 text-center md:text-left">
         Every web tool you need.
       </span>
-      <span className="text-brand-gradient block h-[2.4em] sm:h-[1.25em] overflow-hidden">
-        <span className="inline-block align-middle">{currentText || '\u200b'}</span>
-        {/* Realistic Glowing Keyboard Cursor */}
+      {/* Reserved height container to completely prevent any vertical jumping/layout shift on PC, Tablet, and Mobile */}
+      <span className="text-brand-gradient block min-h-[2.2em] sm:min-h-[1.5em] md:min-h-[1.25em] text-center md:text-left">
+        <span className="inline">{currentText || '\u200b'}</span>
+        {/* Realistic Glowing Keyboard Cursor locked to typography baseline */}
         <span 
-          className="inline-block w-[3px] sm:w-[4px] h-[0.8em] bg-primary ml-1 rounded-full animate-pulse shadow-[0_0_10px_rgba(99,102,241,0.8)] align-middle"
+          className="inline-block w-[3px] sm:w-[4px] h-[0.8em] bg-primary ml-1 rounded-full animate-pulse shadow-[0_0_10px_rgba(99,102,241,0.8)] align-baseline translate-y-[1px]"
           aria-hidden="true"
         />
       </span>

@@ -43,7 +43,7 @@ export const SiteLayout: React.FC = () => {
           {/* Ambient Specular Glass Reflection Shimmer */}
           <div className="absolute inset-0 bg-[linear-gradient(110deg,transparent_25%,rgba(255,255,255,0.08)_50%,transparent_75%)] bg-[length:250%_100%] animate-[shimmer_8s_infinite] pointer-events-none" />
 
-          <div className="max-w-7xl mx-auto px-4 py-2 flex items-center justify-between gap-4 relative z-10">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 flex items-center justify-between gap-4 relative z-10">
             <div className="flex items-center gap-3">
               <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-primary/30 border border-primary/40 text-[10px] font-black uppercase tracking-wider text-white shadow-2xs">
                 <Sparkles className="w-3 h-3 text-amber-400 animate-pulse" />
@@ -77,7 +77,7 @@ export const SiteLayout: React.FC = () => {
       )}
 
       <header className="sticky top-0 z-50 w-full backdrop-blur-xl bg-background/90 border-b border-border/80 shadow-xs">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between gap-4 max-w-7xl">
+        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
           {/* 3D Extruded Logo on the left */}
           <Link to="/" className="flex items-center gap-3.5 group shrink-0" aria-label="Toolzaro Home">
             <div className="logo-3d w-10 h-10 flex items-center justify-center text-white shrink-0">
@@ -192,12 +192,12 @@ export const SiteLayout: React.FC = () => {
       {/* Feedback & Bug Report Modal */}
       <FeedbackModal isOpen={isFeedbackModalOpen} onClose={() => setIsFeedbackModalOpen(false)} />
 
-      <main className="flex-1 w-full max-w-7xl mx-auto px-3 sm:px-4 md:px-6 pt-2 sm:pt-4 pb-10 md:pb-16">
+      <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-3 sm:pt-4 md:pt-6 pb-12 sm:pb-16 md:pb-20">
         <Outlet />
       </main>
 
-      <footer className="border-t border-border bg-card/60 backdrop-blur-xs py-12 mt-16">
-        <div className="container mx-auto px-4 max-w-7xl grid grid-cols-1 md:grid-cols-4 gap-8">
+      <footer className="border-t border-border bg-card/60 backdrop-blur-xs py-10 sm:py-14 mt-12 sm:mt-16 md:mt-20">
+        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
           <div className="space-y-3">
             <Link to="/" className="flex items-center gap-3 group" aria-label="Toolzaro Home">
               <div className="logo-3d w-8 h-8 flex items-center justify-center text-white shrink-0">
@@ -269,7 +269,7 @@ export const SiteLayout: React.FC = () => {
           </div>
         </div>
 
-        <div className="container mx-auto px-4 max-w-7xl mt-10 pt-6 border-t border-border/60 text-xs text-muted-foreground flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 sm:mt-10 pt-6 border-t border-border/60 text-xs text-muted-foreground flex flex-col md:flex-row items-center justify-between gap-4">
           <div>&copy; {new Date().getFullYear()} Toolzaro. All processing happens client-side in your browser.</div>
           <div className="flex items-center gap-4 text-[11px]">
             <span className="text-muted-foreground">Fast • Private • Accessible</span>

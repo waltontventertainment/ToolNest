@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Search, Sparkles, Star, ShieldCheck, Zap, Layers, X, ArrowRight, BookOpen, Clock, Calendar } from 'lucide-react';
+import { Search, Sparkles, Star, ShieldCheck, Zap, Layers, X, ArrowRight, BookOpen, Clock, Calendar, Home, ChevronRight, Trash2 } from 'lucide-react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { tools, categories } from '../lib/registry';
 import { ToolCard } from '../components/ToolCard';
@@ -20,7 +20,7 @@ export const Index: React.FC = () => {
   const [search, setSearch] = useState(searchParams.get('q') || '');
   const [activeCategory, setActiveCategory] = useState<string>('All');
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(searchParams.get('favorites') === 'true');
-  const { favorites } = useFavorites();
+  const { favorites, clearFavorites } = useFavorites();
 
   // Show 24 tools initially on the homepage grid (22-25 range requested)
   const [displayCount, setDisplayCount] = useState(24);
@@ -34,10 +34,14 @@ export const Index: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    setShowFavoritesOnly(searchParams.get('favorites') === 'true');
+    const isFav = searchParams.get('favorites') === 'true';
+    setShowFavoritesOnly(isFav);
     const q = searchParams.get('q');
     if (q !== null && q !== search) {
       setSearch(q);
+    }
+    if (isFav) {
+      setActiveCategory('All');
     }
   }, [searchParams]);
 
@@ -51,6 +55,47 @@ export const Index: React.FC = () => {
     const count = getCounts();
     setDisplayCount(count);
     setIncrementCount(count);
+  }, []);
+
+  const handleExitFavorites = () => {
+    setActiveCategory('All');
+    setSearch('');
+    setShowFavoritesOnly(false);
+    const newParams = new URLSearchParams(searchParams);
+    newParams.delete('favorites');
+    newParams.delete('q');
+    setSearchParams(newParams, { replace: true });
+  };
+
+  const handleEnterFavorites = () => {
+    setActiveCategory('All');
+    setSearch('');
+    setShowFavoritesOnly(true);
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set('favorites', 'true');
+    newParams.delete('q');
+    setSearchParams(newParams, { replace: true });
+  };
+
+  // Only categories represented in user's saved bookmarks
+  const bookmarkedCategories = useMemo(() => {
+    const userBookmarked = tools.filter(t => favorites.includes(t.slug));
+    const set = new Set<string>();
+    userBookmarked.forEach(t => set.add(t.category));
+    return Array.from(set);
+  }, [favorites]);
+
+  // Curated category order for intuitive exploration
+  const orderedCategories = useMemo(() => {
+    const desiredOrder = [
+      'AI', 'PDF', 'Text',
+      'Developer', 'Converters', 'Generators',
+      'Calculators', 'Color & Image', 'QR & Barcode',
+      'SEO', 'Utility', 'Wikipedia', 'Universal Data Suite'
+    ];
+    const present = desiredOrder.filter(cat => categories.includes(cat as any));
+    const remainder = categories.filter(cat => !desiredOrder.includes(cat));
+    return [...present, ...remainder];
   }, []);
 
   const filteredTools = useMemo(() => {
@@ -78,8 +123,8 @@ export const Index: React.FC = () => {
   return (
     <>
       <Seo 
-        title="Toolzaro - Professional Online Developer & Utility Tools" 
-        description="A complete suite of 35+ fast, browser-based tools including color tools, image resizers, QR generators, image compressors, and developer utilities."
+        title={showFavoritesOnly ? "Saved Bookmarked Tools - Toolzaro" : "Toolzaro - Professional Online Developer & Utility Tools"} 
+        description={showFavoritesOnly ? "Your personal collection of bookmarked developer and utility tools on Toolzaro." : "A complete suite of 35+ fast, browser-based tools including color tools, image resizers, QR generators, image compressors, and developer utilities."}
         jsonLd={{
           "@context": "https://schema.org",
           "@type": "WebSite",
@@ -93,233 +138,417 @@ export const Index: React.FC = () => {
         }}
       />
       
-      {/* Hero Section */}
-      <section className="text-center md:text-left pt-2 pb-6 md:pt-4 md:pb-10 flex flex-col md:flex-row items-center justify-between gap-8 md:gap-10">
-        <div className="flex-1 max-w-2xl">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-bold mb-4 border border-primary/20 shadow-2xs">
-            <Sparkles className="w-3.5 h-3.5 animate-pulse" />
-            <span className="tracking-tight">{tools.length}+ Professional Browser Utilities • Client-Side Privacy</span>
-          </div>
-          
-          {/* Real Keyboard Typewriter Animation Heading */}
-          <TypewriterHeading />
-          
-          <p className="text-sm sm:text-base text-muted-foreground mb-8 leading-relaxed max-w-xl font-normal">
-            Browser-native processing. Resize images, extract color palettes, format JSON, generate QR codes, and convert files safely without cloud uploads.
-          </p>
-          
-          {/* Quick Stats Badges */}
-          <div className="flex flex-wrap items-center gap-3 mb-8 text-xs font-semibold text-muted-foreground">
-            <div className="flex items-center gap-2 bg-card/80 border border-border/80 px-3.5 py-2 rounded-xl shadow-2xs backdrop-blur-xs">
-              <div className="w-5 h-5 rounded-lg bg-amber-500/15 text-amber-500 flex items-center justify-center">
-                <Zap className="w-3.5 h-3.5" />
-              </div>
-              <span>Instant Execution</span>
-            </div>
-            <div className="flex items-center gap-2 bg-card/80 border border-border/80 px-3.5 py-2 rounded-xl shadow-2xs backdrop-blur-xs">
-              <div className="w-5 h-5 rounded-lg bg-emerald-500/15 text-emerald-500 flex items-center justify-center">
-                <ShieldCheck className="w-3.5 h-3.5" />
-              </div>
-              <span>Privacy First</span>
-            </div>
-            <div className="flex items-center gap-2 bg-card/80 border border-border/80 px-3.5 py-2 rounded-xl shadow-2xs backdrop-blur-xs">
-              <div className="w-5 h-5 rounded-lg bg-indigo-500/15 text-indigo-500 flex items-center justify-center">
-                <Layers className="w-3.5 h-3.5" />
-              </div>
-              <span>{tools.length} Utilities</span>
-            </div>
-          </div>
-
-          {/* Daily Tech Digest Widget (Positioned above Search Box) */}
-          <div className="w-full mb-2">
-            <DailyTechDigest />
-          </div>
-
-          {/* Search Box */}
-          <div className="w-full relative group">
-            <div className="absolute inset-y-0 left-3.5 flex items-center pointer-events-none text-muted-foreground group-focus-within:text-primary transition-colors">
-              <div className="w-8 h-8 rounded-xl bg-primary/10 text-primary flex items-center justify-center transition-transform group-focus-within:scale-105">
-                <Search className="w-4 h-4" />
-              </div>
-            </div>
-            <input
-              type="text"
-              className="w-full h-14 pl-14 pr-12 rounded-2xl border-2 border-border/80 bg-card/90 text-sm font-medium focus:outline-none focus:border-primary/80 focus:ring-4 focus:ring-primary/10 shadow-sm transition-all"
-              placeholder={`Search ${tools.length} tools (e.g., color, resizer, JSON, QR)...`}
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-            {search && (
+      {showFavoritesOnly ? (
+        /* ============================================================ */
+        /* DEDICATED PREMIUM SAVED BOOKMARKS WORKSPACE                  */
+        /* (Clutter-free: Homepage Hero, Tech Digest, & full categories */
+        /* are cleanly hidden to give immediate focus to saved tools)    */
+        /* ============================================================ */
+        <div className="pt-1 sm:pt-3 pb-8 space-y-6">
+          {/* Breadcrumb Navigation & Back Action */}
+          <div className="flex items-center justify-between gap-3">
+            <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs text-muted-foreground">
               <button
-                onClick={() => {
-                  setSearch('');
-                  if (searchParams.has('q')) {
-                    const newParams = new URLSearchParams(searchParams);
-                    newParams.delete('q');
-                    setSearchParams(newParams);
-                  }
-                }}
-                className="absolute inset-y-0 right-3.5 my-auto w-8 h-8 rounded-xl bg-muted/80 hover:bg-muted flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
-                title="Clear search"
+                type="button"
+                onClick={handleExitFavorites}
+                className="hover:text-primary transition-colors flex items-center gap-1 font-semibold cursor-pointer"
               >
-                <X className="w-4 h-4" />
+                <Home className="w-3.5 h-3.5" />
+                <span>Home</span>
               </button>
-            )}
-          </div>
-        </div>
+              <ChevronRight className="w-3 h-3 text-muted-foreground/60" />
+              <span className="font-bold text-foreground">Saved Bookmarks</span>
+            </nav>
 
-        <div className="flex-1 hidden md:flex justify-end relative">
-          <div className="relative">
-            <HeroShowcase />
-            <div className="absolute -bottom-4 -left-4 bg-card/95 backdrop-blur-md border border-border/80 p-3.5 rounded-2xl shadow-xl flex items-center gap-3 animate-bounce [animation-duration:3.5s] z-20">
-              <div className="w-10 h-10 rounded-xl bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold shadow-inner">
-                <Sparkles className="w-5 h-5 text-indigo-500 animate-pulse" />
+            <button
+              type="button"
+              onClick={handleExitFavorites}
+              className="btn-signature-header px-3.5 py-1.5 text-xs font-bold text-foreground hover:text-primary transition-colors flex items-center gap-1.5 cursor-pointer shadow-2xs"
+            >
+              <ArrowRight className="w-3.5 h-3.5 rotate-180 text-primary" />
+              <span>Back to All Tools</span>
+            </button>
+          </div>
+
+          {/* Premium Bookmarks Hero Card */}
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-amber-500/10 via-card to-card border border-amber-500/30 dark:border-amber-500/20 p-5 sm:p-7 shadow-sm">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-5 relative z-10">
+              <div className="flex items-start sm:items-center gap-4">
+                <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 text-white flex items-center justify-center shadow-lg shadow-amber-500/25 shrink-0 ring-4 ring-amber-500/10">
+                  <Star className="w-6 h-6 sm:w-7 sm:h-7 fill-white" />
+                  <Sparkles className="w-3.5 h-3.5 text-amber-200 absolute -top-1 -right-1" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2 flex-wrap mb-1">
+                    <h1 className="text-xl sm:text-2xl font-black text-foreground tracking-tight font-display">
+                      Saved Bookmarked Tools
+                    </h1>
+                    <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/25">
+                      {favorites.length} {favorites.length === 1 ? 'Tool' : 'Tools'} Saved
+                    </span>
+                  </div>
+                  <p className="text-xs sm:text-sm text-muted-foreground max-w-xl">
+                    Instant one-click access to your favorite developer & utility tools. Stored securely and privately in your browser.
+                  </p>
+                </div>
               </div>
-              <div>
-                <div className="text-xs font-bold text-foreground">Color & Image Suite</div>
-                <div className="text-[11px] text-muted-foreground">10 New High-Speed Tools Added</div>
+
+              <div className="flex items-center gap-2.5 self-start sm:self-center shrink-0">
+                {favorites.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (window.confirm('Are you sure you want to clear all your saved bookmarks?')) {
+                        clearFavorites();
+                      }
+                    }}
+                    className="px-3 py-2 text-xs font-semibold text-muted-foreground hover:text-red-500 hover:bg-red-500/10 rounded-xl transition-colors flex items-center gap-1.5 cursor-pointer border border-transparent hover:border-red-500/20"
+                    title="Clear all saved bookmarks"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span>Clear All</span>
+                  </button>
+                )}
+
+                <button
+                  type="button"
+                  onClick={handleExitFavorites}
+                  className="btn-signature-primary px-4 py-2 text-xs font-bold cursor-pointer flex items-center gap-1.5"
+                >
+                  <span>Explore All {tools.length} Tools</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
               </div>
             </div>
-          </div>
-        </div>
-      </section>
 
-      <section className="mb-12 space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">Explore Categories</h2>
+            {/* Decorative background glow */}
+            <div className="absolute -right-10 -bottom-10 w-44 h-44 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+          </div>
+
+          {/* Search & Category Filter within Bookmarks */}
           {favorites.length > 0 && (
-            <button
-              onClick={() => {
-                setShowFavoritesOnly(!showFavoritesOnly);
-                if (searchParams.has('favorites')) {
-                  setSearchParams({});
-                }
-              }}
-              className={`text-xs font-bold px-3.5 py-1.5 rounded-xl border transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs ${
-                showFavoritesOnly
-                  ? 'bg-amber-500 text-white border-amber-600 shadow-amber-500/20'
-                  : 'bg-card/80 text-muted-foreground border-border hover:border-amber-400 hover:text-amber-500'
-              }`}
-            >
-              <Star className="w-3.5 h-3.5" fill={showFavoritesOnly ? 'currentColor' : 'none'} />
-              <span>Bookmarked ({favorites.length})</span>
-            </button>
-          )}
-        </div>
+            <div className="space-y-3">
+              <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
+                {/* Compact search for saved tools */}
+                <div className="relative flex-1 max-w-md">
+                  <div className="absolute inset-y-0 left-3.5 flex items-center pointer-events-none text-muted-foreground">
+                    <Search className="w-4 h-4" />
+                  </div>
+                  <input
+                    type="text"
+                    className="w-full h-10 pl-10 pr-9 rounded-xl border border-border bg-card/90 text-xs sm:text-sm font-medium focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 shadow-2xs transition-all placeholder:text-muted-foreground/75"
+                    placeholder="Search in your saved tools..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                  />
+                  {search && (
+                    <button
+                      type="button"
+                      onClick={() => setSearch('')}
+                      className="absolute inset-y-0 right-2.5 my-auto w-6 h-6 rounded-lg bg-muted/80 hover:bg-muted flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                      title="Clear search"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 gap-3">
-          <button
-            onClick={() => { setActiveCategory('All'); setShowFavoritesOnly(false); }}
-            className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all border cursor-pointer flex items-center justify-center gap-2 ${
-              activeCategory === 'All' && !showFavoritesOnly
-                ? 'bg-blue-600 text-white border-blue-500 shadow-md shadow-blue-500/30'
-                : 'bg-card/90 text-muted-foreground border-border hover:border-border/80 hover:text-foreground hover:bg-muted/40'
-            }`}
-          >
-            <Layers className={`w-3.5 h-3.5 ${activeCategory === 'All' && !showFavoritesOnly ? 'text-white' : 'text-primary/60'}`} />
-            <span>All Tools ({tools.length})</span>
-          </button>
-
-          {categories.map((cat) => {
-            const count = tools.filter(t => t.category === cat).length;
-            const isActive = activeCategory === cat && !showFavoritesOnly;
-            const SampleIcon = tools.find(t => t.category === cat)?.icon || Layers;
-            
-            return (
-              <button
-                key={cat}
-                onClick={() => { setActiveCategory(cat); setShowFavoritesOnly(false); }}
-                className={`px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all border flex items-center justify-center gap-2 cursor-pointer ${
-                  isActive
-                    ? 'bg-blue-600 text-white border-blue-500 shadow-md shadow-blue-500/30'
-                    : 'bg-card/90 text-muted-foreground border-border hover:border-border/80 hover:text-foreground hover:bg-muted/40'
-                }`}
-              >
-                <SampleIcon className={`w-3.5 h-3.5 ${isActive ? 'text-white' : 'text-primary/60'}`} />
-                <span>{cat} ({count})</span>
-              </button>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* Tools Grid */}
-      <section>
-        {showFavoritesOnly && (
-          <div className="mb-6 p-4 rounded-2xl bg-amber-500/10 border border-amber-300 dark:border-amber-800 flex items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 text-white flex items-center justify-center shadow-sm">
-                <Star className="w-5 h-5" fill="currentColor" />
-              </div>
-              <div>
-                <h3 className="text-sm font-bold text-foreground">Saved Bookmarked Tools</h3>
-                <p className="text-xs text-muted-foreground">
-                  Displaying {filteredTools.length} bookmarked {filteredTools.length === 1 ? 'tool' : 'tools'}
-                </p>
+                {/* If bookmarked tools span multiple categories, show smart category pills */}
+                {bookmarkedCategories.length > 1 && (
+                  <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
+                    <button
+                      type="button"
+                      onClick={() => setActiveCategory('All')}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all border cursor-pointer shrink-0 ${
+                        activeCategory === 'All'
+                          ? 'bg-amber-500 text-white border-amber-600 shadow-2xs'
+                          : 'bg-card text-muted-foreground border-border hover:border-amber-400 hover:text-foreground'
+                      }`}
+                    >
+                      All Saved ({favorites.length})
+                    </button>
+                    {bookmarkedCategories.map(cat => {
+                      const count = tools.filter(t => favorites.includes(t.slug) && t.category === cat).length;
+                      const isActive = activeCategory === cat;
+                      return (
+                        <button
+                          key={cat}
+                          type="button"
+                          onClick={() => setActiveCategory(cat)}
+                          className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all border cursor-pointer shrink-0 ${
+                            isActive
+                              ? 'bg-amber-500 text-white border-amber-600 shadow-2xs'
+                              : 'bg-card text-muted-foreground border-border hover:border-amber-400 hover:text-foreground'
+                          }`}
+                        >
+                          {cat} ({count})
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             </div>
-            <button
-              onClick={() => {
-                setShowFavoritesOnly(false);
-                if (searchParams.has('favorites')) {
-                  setSearchParams({});
-                }
-              }}
-              className="btn-signature-header px-4 py-2 text-xs font-bold text-foreground cursor-pointer"
-            >
-              Show All {tools.length} Tools
-            </button>
-          </div>
-        )}
+          )}
 
-        {filteredTools.length > 0 ? (
-          <div className="flex flex-col items-center">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 w-full">
-              {displayedTools.map(tool => (
+          {/* Bookmarked Tools Grid or Empty State */}
+          {filteredTools.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 lg:gap-6 w-full">
+              {filteredTools.map(tool => (
                 <ToolCard key={tool.slug} tool={tool} />
               ))}
             </div>
+          ) : (
+            <div className="text-center py-12 sm:py-16 bg-card/50 rounded-3xl border-2 border-dashed border-border/80 flex flex-col items-center p-6 sm:p-10">
+              <div className="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-500 mb-4 shadow-sm">
+                <Star className="w-8 h-8" />
+              </div>
+              <h3 className="text-base sm:text-lg font-bold mb-1 text-foreground">
+                {search ? 'No matching bookmarked tools' : 'No bookmarked tools yet'}
+              </h3>
+              <p className="text-xs sm:text-sm text-muted-foreground mb-6 max-w-md leading-relaxed">
+                {search
+                  ? `No saved tools match "${search}". Try clearing your search.`
+                  : 'You haven\'t added any tools to your bookmarks yet. Click the star icon on any tool card to save it for quick access.'}
+              </p>
+              <div className="flex items-center gap-3">
+                {search ? (
+                  <button
+                    type="button"
+                    onClick={() => setSearch('')}
+                    className="btn-signature-primary px-5 py-2.5 text-xs font-bold cursor-pointer"
+                  >
+                    Clear Search
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={handleExitFavorites}
+                    className="btn-signature-primary px-6 py-2.5 text-xs font-bold cursor-pointer flex items-center gap-2"
+                  >
+                    <span>Explore All {tools.length} Tools</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      ) : (
+        /* ============================================================ */
+        /* STANDARD HOMEPAGE VIEW (Hero, Daily Digest, Categories, Grid) */
+        /* ============================================================ */
+        <>
+          {/* Hero Section */}
+          <section className="pt-1 sm:pt-3 md:pt-4 pb-6 sm:pb-7 md:pb-9 flex flex-col md:flex-row items-center justify-between gap-6 sm:gap-8 md:gap-10">
+            <div className="flex-1 w-full max-w-2xl flex flex-col items-center md:items-start text-center md:text-left">
+              <div className="inline-flex items-center gap-2 px-3 sm:px-3.5 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-bold mb-3 sm:mb-4 border border-primary/20 shadow-2xs">
+                <Sparkles className="w-3.5 h-3.5 animate-pulse" />
+                <span className="tracking-tight">{tools.length}+ Professional Browser Utilities • Client-Side Privacy</span>
+              </div>
+              
+              {/* Real Keyboard Typewriter Animation Heading (centered on phone, left on md+) */}
+              <div className="w-full">
+                <TypewriterHeading />
+              </div>
+              
+              <p className="text-sm sm:text-base text-muted-foreground mb-4 sm:mb-5 leading-relaxed max-w-xl font-normal text-center md:text-left mx-auto md:mx-0">
+                Browser-native processing. Resize images, extract color palettes, format JSON, generate QR codes, and convert files safely without cloud uploads.
+              </p>
+              
+              {/* Quick Stats Badges */}
+              <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 sm:gap-2.5 md:gap-3 text-xs font-semibold text-muted-foreground">
+                <div className="flex items-center gap-2 bg-card/80 border border-border/80 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl shadow-2xs backdrop-blur-xs">
+                  <div className="w-5 h-5 rounded-lg bg-amber-500/15 text-amber-500 flex items-center justify-center">
+                    <Zap className="w-3.5 h-3.5" />
+                  </div>
+                  <span>Instant Execution</span>
+                </div>
+                <div className="flex items-center gap-2 bg-card/80 border border-border/80 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl shadow-2xs backdrop-blur-xs">
+                  <div className="w-5 h-5 rounded-lg bg-emerald-500/15 text-emerald-500 flex items-center justify-center">
+                    <ShieldCheck className="w-3.5 h-3.5" />
+                  </div>
+                  <span>Privacy First</span>
+                </div>
+                <div className="flex items-center gap-2 bg-card/80 border border-border/80 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl shadow-2xs backdrop-blur-xs">
+                  <div className="w-5 h-5 rounded-lg bg-indigo-500/15 text-indigo-500 flex items-center justify-center">
+                    <Layers className="w-3.5 h-3.5" />
+                  </div>
+                  <span>{tools.length} Utilities</span>
+                </div>
+              </div>
+            </div>
 
-            {displayCount < filteredTools.length && (
-              <button 
-                onClick={() => setDisplayCount(prev => prev + incrementCount)}
-                className="mt-10 px-8 py-3.5 rounded-2xl font-bold text-xs btn-signature-header hover:border-primary/50 text-foreground shadow-sm flex items-center gap-2 group cursor-pointer"
+            {/* Right Column: Premium Banner Showcase on PC */}
+            <div className="flex-1 w-full hidden md:flex justify-end relative">
+              <HeroShowcase />
+            </div>
+          </section>
+
+          {/* Full-Width Daily Tech Digest & Expansive Search Section */}
+          <section className="w-full mb-6 sm:mb-8 md:mb-10 space-y-3 sm:space-y-3.5">
+            {/* Daily Tech Digest Widget (Full Width across page) */}
+            <div className="w-full">
+              <DailyTechDigest />
+            </div>
+
+            {/* Search Box (Full Width across page) */}
+            <div className="w-full relative group">
+              <div className="absolute inset-y-0 left-3.5 sm:left-4 flex items-center pointer-events-none text-muted-foreground group-focus-within:text-primary transition-colors">
+                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center transition-transform group-focus-within:scale-105">
+                  <Search className="w-4 h-4 sm:w-5 sm:h-5" />
+                </div>
+              </div>
+              <input
+                type="text"
+                className="w-full h-13 sm:h-15 md:h-16 pl-14 sm:pl-16 pr-12 sm:pr-14 rounded-2xl border-2 border-border/80 bg-card/90 text-sm sm:text-base font-medium focus:outline-none focus:border-primary/80 focus:ring-4 focus:ring-primary/10 shadow-sm transition-all placeholder:text-muted-foreground/75"
+                placeholder={`Search across ${tools.length} developer utilities (e.g., color, resizer, JSON, QR, PDF, countries)...`}
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+              {search && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearch('');
+                    if (searchParams.has('q')) {
+                      const newParams = new URLSearchParams(searchParams);
+                      newParams.delete('q');
+                      setSearchParams(newParams);
+                    }
+                  }}
+                  className="absolute inset-y-0 right-3.5 sm:right-4 my-auto w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-muted/80 hover:bg-muted flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                  title="Clear search"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+            </div>
+          </section>
+
+          {/* Explore Categories Section */}
+          <section className="mb-8 sm:mb-10 md:mb-12 space-y-3 sm:space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-xs sm:text-sm font-bold uppercase tracking-wider text-muted-foreground">Explore Categories</h2>
+              {favorites.length > 0 && (
+                <button
+                  type="button"
+                  onClick={handleEnterFavorites}
+                  className="text-xs font-bold px-3 sm:px-3.5 py-1.5 rounded-xl border transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs bg-card/80 text-muted-foreground border-border hover:border-amber-400 hover:text-amber-500"
+                >
+                  <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
+                  <span>Bookmarked ({favorites.length})</span>
+                </button>
+              )}
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
+              <button
+                type="button"
+                onClick={() => setActiveCategory('All')}
+                className={`group inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs font-bold transition-all border cursor-pointer select-none ${
+                  activeCategory === 'All'
+                    ? 'bg-blue-600 text-white border-blue-500 shadow-sm shadow-blue-500/25 ring-2 ring-blue-500/20'
+                    : 'bg-card/90 text-muted-foreground border-border hover:border-primary/40 hover:text-foreground hover:bg-muted/40 shadow-2xs'
+                }`}
               >
-                <span>Show More Tools ({filteredTools.length - displayCount} remaining)</span>
-                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1 text-primary" />
+                <Layers className={`w-3.5 h-3.5 shrink-0 transition-colors ${activeCategory === 'All' ? 'text-white' : 'text-primary/70 group-hover:text-primary'}`} />
+                <span>All Tools</span>
+                <span className={`text-[10px] sm:text-[11px] px-1.5 py-0.5 rounded-full font-mono font-semibold shrink-0 transition-colors ${
+                  activeCategory === 'All'
+                    ? 'bg-white/20 text-white'
+                    : 'bg-muted/80 text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary'
+                }`}>
+                  {tools.length}
+                </span>
               </button>
+
+              {orderedCategories.map((cat) => {
+                const count = tools.filter(t => t.category === cat).length;
+                const isActive = activeCategory === cat;
+                const SampleIcon = tools.find(t => t.category === cat)?.icon || Layers;
+                
+                return (
+                  <button
+                    key={cat}
+                    type="button"
+                    onClick={() => setActiveCategory(cat)}
+                    className={`group inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs font-bold transition-all border cursor-pointer select-none ${
+                      isActive
+                        ? 'bg-blue-600 text-white border-blue-500 shadow-sm shadow-blue-500/25 ring-2 ring-blue-500/20'
+                        : 'bg-card/90 text-muted-foreground border-border hover:border-primary/40 hover:text-foreground hover:bg-muted/40 shadow-2xs'
+                    }`}
+                  >
+                    <SampleIcon className={`w-3.5 h-3.5 shrink-0 transition-colors ${isActive ? 'text-white' : 'text-primary/70 group-hover:text-primary'}`} />
+                    <span>{cat}</span>
+                    <span className={`text-[10px] sm:text-[11px] px-1.5 py-0.5 rounded-full font-mono font-semibold shrink-0 transition-colors ${
+                      isActive
+                        ? 'bg-white/20 text-white'
+                        : 'bg-muted/80 text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary'
+                    }`}>
+                      {count}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+
+          {/* Tools Grid */}
+          <section>
+            {filteredTools.length > 0 ? (
+              <div className="flex flex-col items-center">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 lg:gap-6 w-full">
+                  {displayedTools.map(tool => (
+                    <ToolCard key={tool.slug} tool={tool} />
+                  ))}
+                </div>
+
+                {displayCount < filteredTools.length && (
+                  <button 
+                    type="button"
+                    onClick={() => setDisplayCount(prev => prev + incrementCount)}
+                    className="mt-8 sm:mt-10 md:mt-12 px-8 py-3.5 rounded-2xl font-bold text-xs btn-signature-header hover:border-primary/50 text-foreground shadow-sm flex items-center gap-2 group cursor-pointer"
+                  >
+                    <span>Show More Tools ({filteredTools.length - displayCount} remaining)</span>
+                    <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1 text-primary" />
+                  </button>
+                )}
+              </div>
+            ) : (
+              <div className="text-center py-12 sm:py-16 bg-card/50 rounded-3xl border-2 border-dashed border-border flex flex-col items-center p-6">
+                <img src={emptyImg} alt="No tools found" className="w-32 h-32 sm:w-36 sm:h-36 mb-4 opacity-80" />
+                <h3 className="text-base font-bold mb-1">No matching tools found</h3>
+                <p className="text-xs text-muted-foreground mb-5 max-w-sm">
+                  We couldn't find anything matching "{search}".
+                </p>
+                <button 
+                  type="button"
+                  onClick={() => { 
+                    setSearch(''); 
+                    setActiveCategory('All'); 
+                    if (searchParams.has('q')) {
+                      setSearchParams({});
+                    }
+                  }} 
+                  className="btn-signature-primary px-6 py-2.5 text-xs font-bold cursor-pointer"
+                >
+                  Reset Filters
+                </button>
+              </div>
             )}
-          </div>
-        ) : (
-          <div className="text-center py-16 bg-card/50 rounded-3xl border-2 border-dashed border-border flex flex-col items-center p-6">
-            <img src={emptyImg} alt="No tools found" className="w-36 h-36 mb-4 opacity-80" />
-            <h3 className="text-base font-bold mb-1">No matching tools found</h3>
-            <p className="text-xs text-muted-foreground mb-5 max-w-sm">
-              {showFavoritesOnly ? "You haven't bookmarked any tools yet. Click the star on any tool card to add it here." : `We couldn't find anything matching "${search}".`}
-            </p>
-            <button 
-              onClick={() => { 
-                setSearch(''); 
-                setActiveCategory('All'); 
-                setShowFavoritesOnly(false); 
-                if (searchParams.has('q') || searchParams.has('favorites')) {
-                  setSearchParams({});
-                }
-              }} 
-              className="btn-signature-primary px-6 py-2.5 text-xs font-bold cursor-pointer"
-            >
-              Reset Filters
-            </button>
-          </div>
-        )}
-      </section>
+          </section>
+        </>
+      )}
 
       {/* Ad slot after tools (self-collapses when not filled) */}
-      <AdSlot slot="home-after-tools" format="horizontal" />
+      <div className="my-8 sm:my-10 md:my-12">
+        <AdSlot slot="home-after-tools" format="horizontal" />
+      </div>
 
       {/* Featured Blog & Insights Section */}
       {blogPosts.length > 0 && !showFavoritesOnly && !search && (
-        <section className="mt-20 pt-10 border-t border-border/60 space-y-6">
+        <section className="mt-12 sm:mt-16 md:mt-20 pt-8 sm:pt-10 border-t border-border/60 space-y-5 sm:space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-[11px] font-bold text-primary mb-2">
@@ -343,7 +572,7 @@ export const Index: React.FC = () => {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6">
             {blogPosts.map((post) => (
               <Link
                 key={post.id}
@@ -399,12 +628,14 @@ export const Index: React.FC = () => {
       )}
 
       {/* Ad slot before platform features (self-collapsing) */}
-      <AdSlot slot="home-before-features" format="auto" />
+      <div className="my-8 sm:my-10">
+        <AdSlot slot="home-before-features" format="auto" />
+      </div>
       
       {/* Platform Features Section */}
-      <section className="mt-20 py-12 border-t border-border/60">
-        <div className="grid md:grid-cols-3 gap-8 text-center md:text-left">
-          <div className="bg-card border border-border/80 p-6 rounded-2xl">
+      <section className="mt-12 sm:mt-16 md:mt-20 py-8 sm:py-12 border-t border-border/60">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6 md:gap-8 text-center md:text-left">
+          <div className="bg-card border border-border/80 p-5 sm:p-6 rounded-2xl">
             <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center mx-auto md:mx-0 mb-3 font-bold">
               <ShieldCheck className="w-5 h-5" />
             </div>
@@ -414,7 +645,7 @@ export const Index: React.FC = () => {
             </p>
           </div>
 
-          <div className="bg-card border border-border/80 p-6 rounded-2xl">
+          <div className="bg-card border border-border/80 p-5 sm:p-6 rounded-2xl">
             <div className="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-600 flex items-center justify-center mx-auto md:mx-0 mb-3 font-bold">
               <Zap className="w-5 h-5" />
             </div>
@@ -424,7 +655,7 @@ export const Index: React.FC = () => {
             </p>
           </div>
 
-          <div className="bg-card border border-border/80 p-6 rounded-2xl">
+          <div className="bg-card border border-border/80 p-5 sm:p-6 rounded-2xl">
             <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center mx-auto md:mx-0 mb-3 font-bold">
               <Sparkles className="w-5 h-5" />
             </div>
