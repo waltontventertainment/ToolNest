@@ -13,11 +13,11 @@ export const ThemeToggle3D: React.FC<ThemeToggle3DProps> = ({ theme, setTheme })
   const handleToggle = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (isRotating || typeof document === 'undefined') return;
     setIsRotating(true);
-    setTimeout(() => setIsRotating(false), 500);
+    setTimeout(() => setIsRotating(false), 550);
 
     const nextTheme = theme === 'dark' ? 'light' : 'dark';
 
-    // 1. If browser supports native View Transitions API (Chrome 111+, Edge, Safari 18+)
+    // 1. Native View Transitions API with fluid circular ripple
     if (typeof document !== 'undefined' && 'startViewTransition' in document) {
       const rect = e.currentTarget.getBoundingClientRect();
       const x = rect.left + rect.width / 2;
@@ -48,8 +48,8 @@ export const ThemeToggle3D: React.FC<ThemeToggle3DProps> = ({ theme, setTheme })
               ]
             },
             {
-              duration: 400,
-              easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
+              duration: 620,
+              easing: 'cubic-bezier(0.25, 1, 0.4, 1)',
               pseudoElement: '::view-transition-new(root)'
             }
           );
@@ -59,7 +59,7 @@ export const ThemeToggle3D: React.FC<ThemeToggle3DProps> = ({ theme, setTheme })
       return;
     }
 
-    // 2. Synchronized fallback: All elements transform together synchronously with zero white flash
+    // 2. Synchronized fallback: Hardware-accelerated CSS transition
     document.documentElement.classList.add('theme-transitioning');
     flushSync(() => {
       setTheme(nextTheme);
@@ -72,13 +72,13 @@ export const ThemeToggle3D: React.FC<ThemeToggle3DProps> = ({ theme, setTheme })
 
     setTimeout(() => {
       document.documentElement.classList.remove('theme-transitioning');
-    }, 350);
+    }, 450);
   };
 
   return (
     <button
       onClick={handleToggle}
-      className={`btn-signature-header btn-theme-3d w-10 h-10 p-0 text-muted-foreground hover:text-foreground cursor-pointer group relative overflow-hidden transition-all duration-300 active:scale-90 ${
+      className={`btn-signature-header btn-theme-3d w-10 h-10 p-0 text-muted-foreground hover:text-foreground cursor-pointer group relative overflow-hidden transition-transform duration-300 active:scale-90 ${
         isRotating ? 'animating' : ''
       }`}
       aria-label="Toggle Theme Mode"

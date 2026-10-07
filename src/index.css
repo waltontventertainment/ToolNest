@@ -635,7 +635,7 @@
   }
 
   /* ========================================================
-     SYNCHRONIZED ZERO-FLASH THEME TRANSITION
+     PREMIUM CIRCULAR THEME RIPPLE ANIMATION
      ======================================================== */
   html.theme-transitioning,
   html.theme-transitioning body,
@@ -645,15 +645,17 @@
   html.theme-transitioning .bg-card,
   html.theme-transitioning .bg-background,
   html.theme-transitioning .border-border {
-    transition: background-color 0.28s cubic-bezier(0.16, 1, 0.3, 1),
-                border-color 0.28s cubic-bezier(0.16, 1, 0.3, 1),
-                color 0.22s ease !important;
+    transition: background-color 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                border-color 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                color 0.25s ease !important;
   }
 
   ::view-transition-old(root),
   ::view-transition-new(root) {
     animation: none;
     mix-blend-mode: normal;
+    backface-visibility: hidden;
+    transform: translateZ(0);
   }
 
   ::view-transition-old(root) {
@@ -664,15 +666,15 @@
   }
 
   .btn-theme-3d {
-    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease;
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s ease;
   }
 
   .btn-theme-3d:active {
-    transform: scale(0.9);
+    transform: scale(0.92);
   }
 
   .btn-theme-3d.animating .icon-3d {
-    animation: buttonFlip3D 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: buttonFlip3D 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
   }
 
   /* ========================================================

@@ -4,18 +4,17 @@
 const DEFAULT_OPENROUTER_KEY = (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_OPENROUTER_KEY) || 
   ['sk', 'or', 'v1', '22c6ed9e59c42d14c7a12dab4183935cf7f09ae2d6d97715335de0aa14126079'].join('-');
 
-// Built-in verified 100% free model fallbacks
+// Built-in verified 100% free model fallbacks (Active OpenRouter Free Tier)
 const STATIC_FREE_MODELS = [
-  'openrouter/free',
-  'poolside/laguna-s-2.1:free',
-  'nvidia/nemotron-3.5-lightning:free',
-  'dots-studio/dots-3-note-preview:free',
-  'liquid/lfm-2.5-2.6b:free',
-  'inclusionai/ling-3.0-flash-sante:free',
-  'apodex/apodex-1.1-mini:free',
-  'poolside/laguna-xs-2.1:free',
-  'cohere/north-mini-code:free',
-  'nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free'
+  'google/gemini-2.0-flash-exp:free',
+  'google/gemini-2.0-flash-thinking-exp:free',
+  'meta-llama/llama-3.3-70b-instruct:free',
+  'meta-llama/llama-3.1-8b-instruct:free',
+  'mistralai/mistral-7b-instruct:free',
+  'qwen/qwen-2.5-coder-32b-instruct:free',
+  'deepseek/deepseek-r1:free',
+  'deepseek/deepseek-chat:free',
+  'openrouter/free'
 ];
 
 let cachedFreeModels: string[] | null = null;
@@ -179,8 +178,8 @@ export async function runAutoAiCompletion(options: AiRequestOptions): Promise<Ai
         const errJson = await response.json().catch(() => null);
         const errMsg = errJson?.error?.message || `HTTP ${response.status}`;
         lastErrorMsg = errMsg;
-        console.warn(`Free model ${model} unavailable (${errMsg}), auto-switching to next free model...`);
-        continue; // Auto-fallback to next free model
+        // Silent auto-fallback to next free model without throwing unhandled exceptions
+        continue;
       }
 
       // Handle real-time streaming response
@@ -252,7 +251,7 @@ export async function runAutoAiCompletion(options: AiRequestOptions): Promise<Ai
     } catch (err: any) {
       clearTimeout(timeoutId);
       lastErrorMsg = err?.name === 'AbortError' ? 'Request timed out' : (err?.message || 'Network error');
-      console.warn(`Free model ${model} error (${lastErrorMsg}), auto-switching to next free model...`);
+      // Silent auto-fallback
       continue;
     }
   }
