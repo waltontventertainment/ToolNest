@@ -71,14 +71,14 @@ export const BreadcrumbNavigation: React.FC<BreadcrumbNavigationProps> = ({ item
                 {item.href && !isLast ? (
                   <Link
                     to={item.href}
-                    className="px-2 py-1 rounded-lg hover:bg-secondary/50 text-muted-foreground hover:text-foreground font-medium transition-colors"
+                    className="px-2.5 py-1 rounded-lg bg-secondary/60 hover:bg-secondary text-muted-foreground hover:text-foreground font-medium transition-colors border border-border/50 truncate max-w-[150px] sm:max-w-none"
                   >
                     {item.label}
                   </Link>
                 ) : (
                   <span
                     aria-current="page"
-                    className="px-2 py-1 rounded-lg font-bold text-foreground bg-primary/10 text-primary border border-primary/20 truncate max-w-[200px] sm:max-w-xs"
+                    className="px-2.5 py-1 rounded-lg font-bold text-foreground bg-primary/10 text-primary border border-primary/20 truncate max-w-[190px] sm:max-w-xs"
                     title={item.label}
                   >
                     {item.label}

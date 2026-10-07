@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Seo } from '../components/Seo';
 import { AdSlot } from '../components/AdSlot';
+import { BreadcrumbNavigation } from '../components/BreadcrumbNavigation';
 import { 
   Mail, MessageSquare, ShieldCheck, FileText, Info, Sparkles, 
   Lock, Scale, AlertTriangle, CheckCircle2, Globe, Wrench, Send, Copy, Check,
@@ -11,6 +12,9 @@ import { tools, categories } from '../lib/registry';
 
 const PageHeader = ({ title, subtitle, date }: { title: string; subtitle?: string; date?: string }) => (
   <div className="mb-10 text-center md:text-left border-b border-border/60 pb-6">
+    <div className="mb-4">
+      <BreadcrumbNavigation items={[{ label: title }]} />
+    </div>
     <h1 className="text-3xl md:text-5xl font-display font-extrabold tracking-tight mb-3 text-foreground">{title}</h1>
     {subtitle && <p className="text-base text-muted-foreground max-w-2xl">{subtitle}</p>}
     {date && <p className="text-xs text-muted-foreground/80 mt-2 font-mono">Effective Date: {date}</p>}

@@ -19,6 +19,7 @@ import { BlogPost, BUILTIN_BLOG_POSTS, getMergedBlogPosts } from '../lib/blogDat
 import { tools } from '../lib/registry';
 import { Seo } from '../components/Seo';
 import { AdSlot } from '../components/AdSlot';
+import { BreadcrumbNavigation } from '../components/BreadcrumbNavigation';
 
 export const BlogPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -67,6 +68,16 @@ export const BlogPage: React.FC = () => {
         description="Explore in-depth technical guides, free AI workflows, developer cheatsheets, and SEO optimization strategies."
         url="https://toolnest.com/blog"
       />
+
+      <div className="mb-2">
+        <BreadcrumbNavigation
+          items={[
+            {
+              label: 'Blog & Insights',
+            },
+          ]}
+        />
+      </div>
 
       {/* Hero Header */}
       <section className="relative overflow-hidden rounded-3xl bg-linear-to-br from-card via-card to-primary/5 border border-border p-8 md:p-12 shadow-sm">
