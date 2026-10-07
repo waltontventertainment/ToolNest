@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { 
   Globe, BookOpen, CloudSun, QrCode, Image as ImageIcon, 
-  Wifi, Smile, GraduationCap, Copy, Check, Download, ExternalLink, Search, Volume2, RefreshCw, Maximize2
+  Wifi, Smile, GraduationCap, Copy, Check, Download, ExternalLink, Search, Volume2, RefreshCw, Maximize2, ShieldCheck, X
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { downloadBlob } from '../lib/downloadHelper';
@@ -415,6 +415,7 @@ export const OpenLibraryTool: React.FC = () => {
   const [books, setBooks] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedBook, setSelectedBook] = useState<any>(null);
+  const [showLiveReader, setShowLiveReader] = useState(false);
 
   const searchBooks = async (searchTerm: string) => {
     if (!searchTerm.trim()) return;
@@ -464,7 +465,7 @@ export const OpenLibraryTool: React.FC = () => {
             return (
               <div 
                 key={idx} 
-                onClick={() => setSelectedBook(b)}
+                onClick={() => { setSelectedBook(b); setShowLiveReader(false); }}
                 className="p-4 rounded-2xl bg-secondary/50 border border-border flex gap-3 items-start shadow-sm hover:border-amber-500/50 cursor-pointer group transition-all"
               >
                 {coverUrl ? (
@@ -485,9 +486,10 @@ export const OpenLibraryTool: React.FC = () => {
 
       <UniversalDataReaderModal
         isOpen={!!selectedBook}
-        onClose={() => setSelectedBook(null)}
+        onClose={() => { setSelectedBook(null); setShowLiveReader(false); }}
         title={selectedBook?.title || 'Book Details'}
         category="Library"
+        showDownload={false}
         content={selectedBook && (
           <div className="space-y-8">
             <div className="flex flex-col sm:flex-row items-center sm:items-start gap-8">
@@ -534,27 +536,164 @@ export const OpenLibraryTool: React.FC = () => {
               </div>
             </div>
 
-            <div className="p-6 rounded-2xl bg-amber-500/10 border border-amber-500/20 space-y-3">
-              <h4 className="text-sm font-black text-amber-600 uppercase flex items-center gap-2">
-                <BookOpen className="w-4 h-4" />
-                <span>Read Full Book Online</span>
-              </h4>
+            <div className="p-6 rounded-2xl bg-gradient-to-br from-amber-500/10 via-amber-500/5 to-transparent border border-amber-500/25 space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <h4 className="text-sm font-black text-amber-600 dark:text-amber-400 uppercase flex items-center gap-2">
+                  <BookOpen className="w-4 h-4" />
+                  <span>Interactive Book Reader</span>
+                </h4>
+                {selectedBook.ebook_access === 'public' && (
+                  <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold self-start sm:self-auto">
+                    Public Domain • Full Book Free
+                  </span>
+                )}
+                {selectedBook.ebook_access === 'borrowable' && (
+                  <span className="px-2.5 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-600 dark:text-amber-400 text-[10px] font-bold self-start sm:self-auto">
+                    Library Lending • Free Preview
+                  </span>
+                )}
+              </div>
+
               <p className="text-xs font-medium text-foreground/80 leading-relaxed">
-                This book may be available for full real-time reading on the Internet Archive via Open Library.
+                {selectedBook.ia && selectedBook.ia.length > 0 
+                  ? "This edition is digitized in the official Internet Archive digital library. Click below to launch the full-screen interactive reader with seamless page-turning, zooming, and double-page view."
+                  : "Online digital scan file is not available for this specific catalog edition. You can search other titles or author editions."}
               </p>
-              <a 
-                href={`https://openlibrary.org${selectedBook.key}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-amber-500 text-white font-black hover:bg-amber-600 transition-all shadow-md text-xs"
-              >
-                <span>Access Full Book</span>
-                <ExternalLink className="w-3.5 h-3.5" />
-              </a>
+
+              <div className="flex flex-wrap items-center gap-3 pt-1">
+                {selectedBook.ia && selectedBook.ia.length > 0 ? (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => setShowLiveReader(true)}
+                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-[0.875rem] bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-bold transition-all shadow-md text-xs cursor-pointer active:scale-98"
+                    >
+                      <Maximize2 className="w-3.5 h-3.5" />
+                      <span>Read Live Inside Website (Full Screen)</span>
+                    </button>
+
+                    <a
+                      href={`https://archive.org/details/${selectedBook.ia[0]}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-4 py-2.5 rounded-[0.875rem] bg-secondary hover:bg-secondary/80 text-foreground font-bold border border-border/80 hover:border-amber-500/50 transition-all text-xs no-underline shadow-xs hover:shadow-sm active:scale-98"
+                      title="Open and read the full original digital scan on official Internet Archive"
+                    >
+                      <ExternalLink className="w-3.5 h-3.5 text-amber-500" />
+                      <span>Official Archive Edition ↗</span>
+                    </a>
+                  </>
+                ) : (
+                  <div className="flex flex-wrap items-center gap-3">
+                    <div className="text-xs text-muted-foreground flex items-center gap-2">
+                      <BookOpen className="w-4 h-4 text-muted-foreground" />
+                      <span>No digital scan file available for this edition</span>
+                    </div>
+                    {selectedBook.key && (
+                      <a
+                        href={`https://openlibrary.org${selectedBook.key}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 px-4 py-2 rounded-[0.875rem] bg-secondary hover:bg-secondary/80 text-foreground font-bold border border-border/80 hover:border-amber-500/50 transition-all text-xs no-underline shadow-xs"
+                        title="View official catalog records and edition metadata on Open Library"
+                      >
+                        <ExternalLink className="w-3.5 h-3.5 text-amber-500" />
+                        <span>Official Open Library Catalog ↗</span>
+                      </a>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Safe Harbor Compliance Notice */}
+              <div className="pt-2 border-t border-amber-500/15 text-[10px] text-muted-foreground/80 flex items-center gap-1.5">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                <span>Legal open-access book preview powered by Open Library & Internet Archive. No copyrighted files are hosted locally.</span>
+              </div>
             </div>
           </div>
         )}
       />
+
+      {/* Dedicated Full Screen Live Book Reader Overlay (100% AdSense & DMCA Safe) */}
+      {showLiveReader && selectedBook?.ia && selectedBook.ia.length > 0 && (
+        <div className="fixed inset-0 z-[100] bg-neutral-950 flex flex-col animate-in fade-in duration-200">
+          {/* Reader Top Bar */}
+          <div className="px-4 py-3 bg-neutral-900 border-b border-neutral-800 flex items-center justify-between gap-3 text-neutral-200 shrink-0">
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0 border border-amber-500/30">
+                <BookOpen className="w-4 h-4" />
+              </div>
+              <div className="min-w-0">
+                <h3 className="text-xs sm:text-sm font-bold text-white truncate max-w-xs sm:max-w-md md:max-w-lg">
+                  {selectedBook.title}
+                </h3>
+                <p className="text-[11px] text-neutral-400 truncate">
+                  {selectedBook.author_name?.[0] ? `By ${selectedBook.author_name[0]} • ` : ''}
+                  {selectedBook.first_publish_year ? `First Published: ${selectedBook.first_publish_year} • ` : ''}
+                  Internet Archive Official BookReader
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2.5 shrink-0">
+              {selectedBook.ebook_access === 'public' ? (
+                <span className="hidden md:inline-flex items-center gap-1 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[11px] font-bold">
+                  Public Domain • Full Book Free
+                </span>
+              ) : (
+                <span className="hidden md:inline-flex items-center gap-1 px-3 py-1 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30 text-[11px] font-bold">
+                  Library Lending • Live Preview
+                </span>
+              )}
+
+              {/* Unique Official Website / Archive Edition Button */}
+              <a
+                href={`https://archive.org/details/${selectedBook.ia[0]}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-3 py-1.5 text-xs font-bold text-amber-400 hover:text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 rounded-[0.875rem] transition-colors flex items-center gap-1.5 no-underline cursor-pointer"
+                title="Read & borrow directly on the official Internet Archive website"
+              >
+                <ExternalLink className="w-3.5 h-3.5 text-amber-400" />
+                <span className="hidden sm:inline">Official Archive Edition</span>
+                <span className="sm:hidden">Official Site</span>
+              </a>
+
+              <button
+                type="button"
+                onClick={() => setShowLiveReader(false)}
+                className="btn-signature-header px-3.5 py-1.5 text-xs font-bold text-neutral-200 hover:text-white bg-neutral-800 hover:bg-neutral-700 border-neutral-700 cursor-pointer flex items-center gap-1.5 rounded-[0.875rem] transition-colors"
+              >
+                <X className="w-4 h-4" />
+                <span>Close Reader</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Full Screen Live Iframe */}
+          <div className="flex-1 w-full bg-black relative">
+            <iframe
+              src={`https://archive.org/embed/${selectedBook.ia[0]}`}
+              width="100%"
+              height="100%"
+              frameBorder="0"
+              allowFullScreen
+              className="w-full h-full border-0"
+              title={`Read ${selectedBook.title} live in full screen`}
+            />
+          </div>
+
+          {/* Compliance & AdSense Safe Footer */}
+          <div className="px-4 py-2 bg-neutral-900 border-t border-neutral-800 flex flex-col sm:flex-row items-center justify-between gap-2 text-[10px] text-neutral-400 shrink-0">
+            <div className="flex items-center gap-2">
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+              <span>Official open-access digital library viewer powered by Open Library & Internet Archive.</span>
+            </div>
+            <span className="text-neutral-500">Toolzaro does not host, upload, or store copyrighted ebook files.</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

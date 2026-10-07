@@ -3,19 +3,27 @@ import { Copy, Check, Download, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from './utils';
 
+// Helper for safely parsing JSON or fallback to raw string without throwing
+function safeParse<T>(item: string | null, fallback: T): T {
+  if (item === null) return fallback;
+  try {
+    return JSON.parse(item);
+  } catch {
+    // If it's a plain string like "light", "dark", "true", "false", return graceful cast
+    if (item === 'true') return true as unknown as T;
+    if (item === 'false') return false as unknown as T;
+    return item as unknown as T;
+  }
+}
+
 // LocalStorage hook with SSR support & cross-component reactive sync
 export function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T | ((val: T) => T)) => void] {
   const [storedValue, setStoredValue] = useState<T>(() => {
     if (typeof window === 'undefined') {
       return initialValue;
     }
-    try {
-      const item = window.localStorage.getItem(key);
-      return item ? JSON.parse(item) : initialValue;
-    } catch (error) {
-      console.error(error);
-      return initialValue;
-    }
+    const item = window.localStorage.getItem(key);
+    return safeParse(item, initialValue);
   });
 
   useEffect(() => {
@@ -32,16 +40,15 @@ export function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T 
       // If the event targets a specific key that isn't ours, or specifies no key, safely ignore
       if (!eventKey || eventKey !== key) return;
 
-      try {
-        const item = window.localStorage.getItem(key);
-        const nextVal = item ? JSON.parse(item) : initialValue;
+      const item = window.localStorage.getItem(key);
+      const nextVal = safeParse(item, initialValue);
+      // Run in microtask to prevent triggering setState inside an active render cycle of another component
+      queueMicrotask(() => {
         setStoredValue(prev => {
           if (JSON.stringify(prev) === JSON.stringify(nextVal)) return prev;
           return nextVal;
         });
-      } catch (error) {
-        console.error(error);
-      }
+      });
     };
 
     window.addEventListener('storage', handleStorageChange as EventListener);
@@ -59,10 +66,13 @@ export function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T 
       setStoredValue(valueToStore);
       if (typeof window !== 'undefined') {
         window.localStorage.setItem(key, JSON.stringify(valueToStore));
-        window.dispatchEvent(new CustomEvent('local-storage-update', { detail: { key, value: valueToStore } }));
+        // Dispatch in microtask so listeners don't update synchronously inside render
+        queueMicrotask(() => {
+          window.dispatchEvent(new CustomEvent('local-storage-update', { detail: { key, value: valueToStore } }));
+        });
       }
-    } catch (error) {
-      console.error(error);
+    } catch {
+      // Safe no-op
     }
   };
 

@@ -23,11 +23,6 @@ export const ToolPage: React.FC = () => {
 
   const toggleFavorite = () => {
     authToggleFavorite(tool.slug);
-    if (isFavorite) {
-      toast.info('Removed from saved tools');
-    } else {
-      toast.success('Saved to bookmarked tools');
-    }
   };
 
   const copyToolLink = () => {

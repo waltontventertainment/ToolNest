@@ -51,15 +51,18 @@ export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       const exists = prev.includes(slug);
       const updated = exists ? prev.filter(s => s !== slug) : [...prev, slug];
       saveStoredFavorites(updated);
-      queueMicrotask(() => {
-        if (exists) {
-          toast.info('Removed from bookmarked tools');
-        } else {
-          toast.success('Saved to bookmarked tools');
-        }
-      });
       return updated;
     });
+
+    // Notify user safely outside state setter cycle
+    setTimeout(() => {
+      const current = getStoredFavorites();
+      if (current.includes(slug)) {
+        toast.success('Saved to bookmarked tools');
+      } else {
+        toast.info('Removed from bookmarked tools');
+      }
+    }, 0);
   }, []);
 
   const isFavorite = useCallback((slug: string) => {
@@ -69,7 +72,9 @@ export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const clearFavorites = useCallback(() => {
     saveStoredFavorites([]);
     setFavorites([]);
-    toast.success('All bookmarks cleared');
+    setTimeout(() => {
+      toast.success('All bookmarks cleared');
+    }, 0);
   }, []);
 
   const contextValue = useMemo(() => ({

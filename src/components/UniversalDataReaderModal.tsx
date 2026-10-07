@@ -9,10 +9,11 @@ interface UniversalDataReaderModalProps {
   onClose: () => void;
   sourceUrl?: string;
   category?: string;
+  showDownload?: boolean;
 }
 
 export const UniversalDataReaderModal: React.FC<UniversalDataReaderModalProps> = ({ 
-  title, content, isOpen, onClose, sourceUrl, category = 'Data Hub' 
+  title, content, isOpen, onClose, sourceUrl, category = 'Data Hub', showDownload = true 
 }) => {
   const [textSize, setTextSize] = useState<'sm' | 'base' | 'lg' | 'xl'>('base');
 
@@ -85,13 +86,15 @@ export const UniversalDataReaderModal: React.FC<UniversalDataReaderModalProps> =
               </button>
             </div>
 
-            <button
-              onClick={handleDownload}
-              className="p-2 rounded-lg bg-card border border-border hover:bg-muted text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
-              title="Download Data"
-            >
-              <Download className="w-4 h-4" />
-            </button>
+            {showDownload && (
+              <button
+                onClick={handleDownload}
+                className="p-2 rounded-lg bg-card border border-border hover:bg-muted text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                title="Download Data"
+              >
+                <Download className="w-4 h-4" />
+              </button>
+            )}
 
             {sourceUrl && (
               <a

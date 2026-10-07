@@ -174,9 +174,8 @@ export const Index: React.FC = () => {
           <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-amber-500/10 via-card to-card border border-amber-500/30 dark:border-amber-500/20 p-5 sm:p-7 shadow-sm">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-5 relative z-10">
               <div className="flex items-start sm:items-center gap-4">
-                <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 text-white flex items-center justify-center shadow-lg shadow-amber-500/25 shrink-0 ring-4 ring-amber-500/10">
-                  <Star className="w-6 h-6 sm:w-7 sm:h-7 fill-white" />
-                  <Sparkles className="w-3.5 h-3.5 text-amber-200 absolute -top-1 -right-1" />
+                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 text-white flex items-center justify-center shadow-lg shadow-amber-500/25 shrink-0 ring-4 ring-amber-500/10">
+                  <Star className="w-6 h-6 sm:w-7 sm:h-7 fill-white text-white drop-shadow-sm" />
                 </div>
                 <div>
                   <div className="flex items-center gap-2 flex-wrap mb-1">
@@ -202,10 +201,10 @@ export const Index: React.FC = () => {
                         clearFavorites();
                       }
                     }}
-                    className="px-3 py-2 text-xs font-semibold text-muted-foreground hover:text-red-500 hover:bg-red-500/10 rounded-xl transition-colors flex items-center gap-1.5 cursor-pointer border border-transparent hover:border-red-500/20"
+                    className="btn-signature-header px-3.5 py-1.5 text-xs font-bold text-muted-foreground hover:text-red-500 hover:bg-red-500/10 border-red-500/25 hover:border-red-500/40 transition-colors flex items-center gap-1.5 cursor-pointer shadow-2xs"
                     title="Clear all saved bookmarks"
                   >
-                    <Trash2 className="w-3.5 h-3.5" />
+                    <Trash2 className="w-3.5 h-3.5 text-red-500/80" />
                     <span>Clear All</span>
                   </button>
                 )}
@@ -213,7 +212,7 @@ export const Index: React.FC = () => {
                 <button
                   type="button"
                   onClick={handleExitFavorites}
-                  className="btn-signature-primary px-4 py-2 text-xs font-bold cursor-pointer flex items-center gap-1.5"
+                  className="btn-signature-primary px-4 py-1.5 text-xs font-bold cursor-pointer flex items-center gap-1.5 rounded-[0.875rem] shadow-2xs"
                 >
                   <span>Explore All {tools.length} Tools</span>
                   <ArrowRight className="w-3.5 h-3.5" />
@@ -316,7 +315,7 @@ export const Index: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setSearch('')}
-                    className="btn-signature-primary px-5 py-2.5 text-xs font-bold cursor-pointer"
+                    className="btn-signature-primary px-5 py-2 text-xs font-bold cursor-pointer rounded-[0.875rem] shadow-2xs"
                   >
                     Clear Search
                   </button>
@@ -324,7 +323,7 @@ export const Index: React.FC = () => {
                   <button
                     type="button"
                     onClick={handleExitFavorites}
-                    className="btn-signature-primary px-6 py-2.5 text-xs font-bold cursor-pointer flex items-center gap-2"
+                    className="btn-signature-primary px-5 py-2 text-xs font-bold cursor-pointer flex items-center gap-2 rounded-[0.875rem] shadow-2xs"
                   >
                     <span>Explore All {tools.length} Tools</span>
                     <ArrowRight className="w-4 h-4" />
@@ -430,16 +429,6 @@ export const Index: React.FC = () => {
           <section className="mb-8 sm:mb-10 md:mb-12 space-y-3 sm:space-y-4">
             <div className="flex items-center justify-between">
               <h2 className="text-xs sm:text-sm font-bold uppercase tracking-wider text-muted-foreground">Explore Categories</h2>
-              {favorites.length > 0 && (
-                <button
-                  type="button"
-                  onClick={handleEnterFavorites}
-                  className="text-xs font-bold px-3 sm:px-3.5 py-1.5 rounded-xl border transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs bg-card/80 text-muted-foreground border-border hover:border-amber-400 hover:text-amber-500"
-                >
-                  <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
-                  <span>Bookmarked ({favorites.length})</span>
-                </button>
-              )}
             </div>
 
             <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
