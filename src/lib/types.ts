@@ -2,6 +2,7 @@ import { LucideIcon } from 'lucide-react';
 import React from 'react';
 
 export type ToolCategory = 
+  | 'Wikipedia'
   | 'AI'
   | 'Text' 
   | 'Developer' 

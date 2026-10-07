@@ -1,4 +1,4 @@
-import { Type, QrCode, Image as ImageIcon, KeyRound, Search, FileText, Binary, Code, Barcode, FileSearch, Timer, Scissors, ArrowDownAZ, Space, Filter, ArrowLeftRight, WrapText, SplitSquareHorizontal, Mail, Link, Hash, FileDiff, Replace, ListPlus, ShieldX, Calculator, Superscript, Clock, Palette, Database, Fingerprint, Scan, Crop, Globe, Heart, Activity, FileCode, Box, Share2, BarChart2, Tag, Zap, BookOpen, Layers as Hierarchy, Volume2, Keyboard, Monitor, Shuffle, Maximize2, Sliders, Stamp, Eye, EyeOff, Sparkles, Merge, RotateCw, ShieldAlert, CheckCircle2, Video, Briefcase, ShoppingBag, Users, GraduationCap, Globe2, Utensils, Scale } from 'lucide-react';
+import { Type, QrCode, Image as ImageIcon, KeyRound, Search, FileText, Binary, Code, Barcode, FileSearch, Timer, Scissors, ArrowDownAZ, Space, Filter, ArrowLeftRight, WrapText, SplitSquareHorizontal, Mail, Link, Hash, FileDiff, Replace, ListPlus, ShieldX, Calculator, Superscript, Clock, Palette, Database, Fingerprint, Scan, Crop, Globe, Heart, Activity, FileCode, Box, Share2, BarChart2, Tag, Zap, BookOpen, Layers as Hierarchy, Volume2, Keyboard, Monitor, Shuffle, Maximize2, Sliders, Stamp, Eye, EyeOff, Sparkles, Merge, RotateCw, ShieldAlert, CheckCircle2, Video, Briefcase, ShoppingBag, Users, GraduationCap, Globe2, Utensils, Scale, Calendar, MapPin } from 'lucide-react';
 import { ToolDefinition, ToolCategory } from './types';
 import {
   TemperatureConverter, LengthConverter, WeightConverter, VolumeConverter, DataStorageConverter, AngleConverter, Rot13Converter, TextToOctal, OctalToText, RomanNumeralConverter
@@ -31,6 +31,11 @@ import {
   AiStoryPlotGenerator, AiMathProblemSolver, AiQuizFlashcardMaker, AiDomainStartupNamer,
   AiRecipeMealPlanner, AiContractLegalExplainer
 } from '../tools/AiToolsBatch2';
+import { YoutubeTranscriptTool } from '../tools/YoutubeTranscriptTool';
+import { WikipediaSummarizer } from '../tools/WikipediaSummarizer';
+import { WikipediaHistory } from '../tools/WikipediaHistory';
+import { WikipediaNearby } from '../tools/WikipediaNearby';
+import { WikipediaTrivia } from '../tools/WikipediaTrivia';
 
 import { 
   CaseConverter, QRGenerator, ImageCompressor, PasswordGenerator, WordCounter, 
@@ -48,10 +53,116 @@ import {
 } from '../tools';
 
 export const categories: ToolCategory[] = [
-  'AI', 'PDF', 'Text', 'Developer', 'Converters', 'Generators', 'QR & Barcode', 'Color & Image', 'Calculators', 'SEO', 'Utility'
+  'Wikipedia', 'AI', 'PDF', 'Text', 'Developer', 'Converters', 'Generators', 'QR & Barcode', 'Color & Image', 'Calculators', 'SEO', 'Utility'
 ];
 
 export const tools: ToolDefinition[] = [
+  {
+    slug: 'wikipedia-ai-summarizer',
+    name: 'Wikipedia AI Summarizer & Fact Sheet',
+    category: 'Wikipedia',
+    icon: Sparkles,
+    keywords: ['wikipedia api', 'wikipedia summarizer', 'wikipedia fact sheet', 'summarize article', 'wiki AI helper'],
+    metaTitle: 'Wikipedia AI Summarizer & Fact Sheet - Free AI Utility',
+    metaDescription: 'Extract high-precision summaries and generate structured bulleted fact sheets and takeaways using Wikipedia API and server-side AI.',
+    intro: 'Search any article globally, extract high-precision summaries, and generate beautiful bulleted fact sheets with server-side AI.',
+    howTo: [
+      'Enter any search term or topic keyword.',
+      'Click the article search icon and select your matching article from the results.',
+      'Read the summary loaded instantly from Wikipedia API.',
+      'Click "Generate AI Fact Sheet" to prompt the server-side AI for comprehensive takeaways.'
+    ],
+    faq: [
+      { q: 'Is this tool free and compliant?', a: 'Yes! It utilizes official Wikipedia summaries and clearly attributes content under the CC BY-SA 3.0 license.' },
+      { q: 'Can I generate fact sheets in Bengali?', a: 'Yes! You can toggle between English and Bengali using the header language selector.' }
+    ],
+    Component: WikipediaSummarizer
+  },
+  {
+    slug: 'wikipedia-on-this-day-history',
+    name: '"On This Day" History Timeline',
+    category: 'Wikipedia',
+    icon: Calendar,
+    keywords: ['on this day', 'wikipedia history', 'today in history', 'timeline finder', 'historical events calculator'],
+    metaTitle: '"On This Day" History Timeline Explorer - Wikipedia',
+    metaDescription: 'Explore historically logged events, notable births, and deaths for any date of the year. Completely free timeline search.',
+    intro: 'Select any month and day of the year to explore historic events, notable births, and deaths logged on Wikipedia.',
+    howTo: [
+      'Select a calendar month from the dropdown menu.',
+      'Select a calendar day of the month.',
+      'Click search to fetch events registered on that day.',
+      'Toggle between Events, Births, and Deaths sub-sections to explore.'
+    ],
+    faq: [
+      { q: 'Does it support direct links?', a: 'Yes! Relevant events feature direct desktop Wikipedia references to dive deeper.' },
+      { q: 'Are holidays included?', a: 'Yes, historic national and religious holidays are displayed under the timeline.' }
+    ],
+    Component: WikipediaHistory
+  },
+  {
+    slug: 'wikipedia-landmark-geosearch',
+    name: 'Wikipedia Landmark Geo-Search',
+    category: 'Wikipedia',
+    icon: MapPin,
+    keywords: ['wikipedia geosearch', 'nearby landmarks', 'locate monuments', 'historical spots GPS', 'nearby explorer'],
+    metaTitle: 'Wikipedia Landmark Geo-Search - Locate Landmarks Near Me',
+    metaDescription: 'Locate historical buildings, landmark coordinates, and registered monuments near your GPS coordinates or preset global cities.',
+    intro: 'Search Wikipedia records near your exact geographic coordinates to discover nearby historical buildings, landmarks, and monuments.',
+    howTo: [
+      'Click "Find Near Me" to request GPS coordinates from your browser.',
+      'Or click one of the preset global cities (Dhaka, London, New York) as coordinates.',
+      'Browse nearby historical places displayed with distance coordinates.',
+      'Click "Read Wiki Page" to learn more about each landmarks history.'
+    ],
+    faq: [
+      { q: 'Is my GPS location data saved?', a: 'No, all geolocation processing happens 100% locally in your browser and is never stored.' },
+      { q: 'What happens if GPS is disabled?', a: 'The tool safely falls back to popular coordinates (Paris) so you can still test it.' }
+    ],
+    Component: WikipediaNearby
+  },
+  {
+    slug: 'wikipedia-random-ai-trivia',
+    name: 'Wikipedia Random AI Trivia',
+    category: 'Wikipedia',
+    icon: Shuffle,
+    keywords: ['wikipedia trivia', 'random quiz', 'wikipedia flashcards', 'trivia generator', 'AI quiz maker'],
+    metaTitle: 'Wikipedia Random AI Trivia & Quiz Card Generator',
+    metaDescription: 'Retrieve a random Wikipedia topic and use server-side AI to construct an educational multiple-choice quiz card.',
+    intro: 'Spawns a random interesting topic from Wikipedia and uses server-side AI to construct a multiple choice quiz card.',
+    howTo: [
+      'Click "Generate Random Quiz" to pull a random Wikipedia article.',
+      'Read the summarized introduction about the randomly selected topic.',
+      'Test your knowledge with the 3 multiple choice questions generated by AI.',
+      'Click "Show Answers" to view correct options and short educational explanations.'
+    ],
+    faq: [
+      { q: 'How many times can I generate quizzes?', a: 'It is completely free and unlimited. Each shuffle pulls a brand new encyclopedic topic!' },
+      { q: 'Does it support Bengali quizzes?', a: 'Yes! Switch to Bengali in the header language selector to generate quizzes in Bengali.' }
+    ],
+    Component: WikipediaTrivia
+  },
+  {
+    slug: 'youtube-transcript-extractor',
+    name: 'YouTube Transcript Extractor',
+    category: 'AI',
+    icon: Video,
+    keywords: ['youtube transcript', 'youtube subtitles downloader', 'extract youtube text', 'youtube video to text'],
+    metaTitle: 'Free YouTube Transcript Extractor - Video Subtitles Downloader',
+    metaDescription: 'Extract, download, and copy subtitles or transcripts from any YouTube video in milliseconds. Powered by high-speed scraping with instant AI summaries.',
+    intro: 'Need to quickly read or summarize a YouTube video? Our YouTube Transcript Extractor fetches and parses captions or transcripts from any YouTube URL in milliseconds. Download as TXT, copy timelines, or generate deep AI summaries instantly.',
+    howTo: [
+      'Paste any YouTube video URL or ID into the search input.',
+      'Click "Get Transcript" to fetch and format subtitles instantly.',
+      'Use the timestamps list or copy the full paragraph.',
+      'Click "AI Summarize" to generate executive outlines and takeaway briefs.',
+      'Click "Save to Drive" to directly back up to your Google Drive.'
+    ],
+    faq: [
+      { q: 'Do I need a Google Cloud API Key?', a: 'No! Our tool uses high-speed direct subtitle scraping, so it is 100% free and unlimited without any API keys or quota limits.' },
+      { q: 'Does it support auto-generated captions?', a: 'Yes! It seamlessly extracts both official creator-provided captions and YouTube auto-generated subtitle tracks.' }
+    ],
+    Component: YoutubeTranscriptTool
+  },
   {
     slug: 'ai-article-writer',
     name: 'AI Article & Blog Writer',

@@ -58,11 +58,11 @@ export const TypewriterHeading: React.FC = () => {
       <span className="block text-foreground">
         Every web tool you need.
       </span>
-      <span className="text-brand-gradient inline-flex items-center min-h-[1.2em]">
-        <span>{currentText}</span>
+      <span className="text-brand-gradient block h-[2.4em] sm:h-[1.25em] overflow-hidden">
+        <span className="inline-block align-middle">{currentText || '\u200b'}</span>
         {/* Realistic Glowing Keyboard Cursor */}
         <span 
-          className="inline-block w-[3px] sm:w-[4px] h-[0.85em] bg-primary ml-1 rounded-full animate-pulse shadow-[0_0_10px_rgba(99,102,241,0.8)] align-middle"
+          className="inline-block w-[3px] sm:w-[4px] h-[0.8em] bg-primary ml-1 rounded-full animate-pulse shadow-[0_0_10px_rgba(99,102,241,0.8)] align-middle"
           aria-hidden="true"
         />
       </span>

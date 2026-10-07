@@ -38,16 +38,23 @@ export const DailyTechDigest: React.FC = () => {
 
   const driveContext = useGoogleDrive();
 
-  // 1. Background initial fetch
+  // 1. Background initial fetch / auto-sync if fallback
   useEffect(() => {
     let isMounted = true;
-    getOrFetchTodayTechDigest(false)
+    const shouldForce = digest.isFallback === true;
+    if (shouldForce) {
+      setRefreshing(true);
+    }
+    getOrFetchTodayTechDigest(shouldForce)
       .then((data) => {
         if (isMounted && data) {
           setDigest(data);
         }
       })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => {
+        if (isMounted) setRefreshing(false);
+      });
 
     return () => {
       isMounted = false;

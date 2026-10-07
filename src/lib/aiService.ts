@@ -120,14 +120,68 @@ export function cleanAiOutput(text: string): string {
 export async function runAutoAiCompletion(options: AiRequestOptions): Promise<AiResponseResult> {
   const { prompt, systemPrompt, temperature = 0.7, maxTokens = 2048, onChunk, onStatus } = options;
 
-  // Retrieve user custom API key if saved in localStorage, or use default
+  // Retrieve user custom API key if saved in localStorage
+  let hasCustomKey = false;
   let apiKey = DEFAULT_OPENROUTER_KEY;
   try {
     const customKey = localStorage.getItem('toolnest_custom_ai_key');
     if (customKey && customKey.trim().length > 10) {
+      hasCustomKey = true;
       apiKey = customKey.trim();
     }
   } catch {}
+
+  // If no custom key is provided, ALWAYS utilize our ultra-reliable, free, full-stack server-side completion!
+  if (!hasCustomKey) {
+    onStatus?.('⚡ Initializing Toolzaro Full-Stack Server Engine...');
+    try {
+      const response = await fetch('/api/ai/completion', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          prompt,
+          systemPrompt,
+          temperature,
+          maxTokens
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.text) {
+          // Simulate streaming/chunk effect for visual delight
+          const text = data.text;
+          if (onChunk) {
+            const words = text.split(/(\s+)/);
+            let current = '';
+            for (let i = 0; i < words.length; i++) {
+              current += words[i];
+              onChunk(current);
+              if (i % 8 === 0) {
+                await new Promise((r) => setTimeout(r, 5));
+              }
+            }
+            onChunk(text); // Final push
+          }
+          onStatus?.('✨ Response completed');
+          return {
+            text: text,
+            success: true,
+            modelUsed: 'Server Failover Stream'
+          };
+        } else {
+          throw new Error(data.error || 'Server returned empty result');
+        }
+      } else {
+        const text = await response.text();
+        throw new Error(text || `HTTP ${response.status}`);
+      }
+    } catch (err: any) {
+      console.warn('Server completion failed, falling back to client execution...', err.message);
+    }
+  }
 
   const messages: { role: string; content: string }[] = [];
   if (systemPrompt) {

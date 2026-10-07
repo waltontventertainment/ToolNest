@@ -1,4 +1,4 @@
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, deleteDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { runAutoAiCompletion } from '../lib/aiService';
 
@@ -209,6 +209,18 @@ Return ONLY a valid JSON object strictly matching this format without markdown c
         // Save to Firebase Firestore for all visitors
         try {
           await setDoc(doc(db, 'tech_digests', todayKey), digest);
+          
+          // Auto-delete / prune historical digests older than 3 days to keep storage strictly under 100% free limits forever!
+          try {
+            const pastDate = new Date();
+            pastDate.setDate(pastDate.getDate() - 3);
+            const pastYear = pastDate.getFullYear();
+            const pastMonth = String(pastDate.getMonth() + 1).padStart(2, '0');
+            const pastDay = String(pastDate.getDate()).padStart(2, '0');
+            const oldKey = `${pastYear}-${pastMonth}-${pastDay}`;
+            
+            await deleteDoc(doc(db, 'tech_digests', oldKey));
+          } catch {}
         } catch {}
 
         return digest;

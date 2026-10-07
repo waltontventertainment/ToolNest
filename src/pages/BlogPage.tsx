@@ -187,9 +187,10 @@ export const BlogPage: React.FC = () => {
         {gridPosts.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {gridPosts.map((post) => (
-              <article
+              <Link
                 key={post.id}
-                className="group flex flex-col justify-between rounded-3xl bg-card border border-border/80 hover:border-primary/50 transition-all duration-300 p-5 shadow-xs hover:shadow-xl hover:-translate-y-1.5 cursor-pointer"
+                to={`/blog/${post.slug}`}
+                className="group flex flex-col justify-between rounded-3xl bg-card border border-border/80 hover:border-primary/50 transition-all duration-300 p-5 shadow-xs hover:shadow-xl hover:-translate-y-1.5 cursor-pointer no-underline select-none"
               >
                 <div className="space-y-3.5">
                   <div className="overflow-hidden rounded-2xl aspect-video relative">
@@ -215,11 +216,9 @@ export const BlogPage: React.FC = () => {
                     </span>
                   </div>
 
-                  <Link to={`/blog/${post.slug}`}>
-                    <h3 className="font-bold text-base text-foreground group-hover:text-primary transition-colors line-clamp-2 leading-snug">
-                      {post.title}
-                    </h3>
-                  </Link>
+                  <h3 className="font-bold text-base text-foreground group-hover:text-primary transition-colors line-clamp-2 leading-snug">
+                    {post.title}
+                  </h3>
 
                   <p className="text-xs text-muted-foreground line-clamp-3 leading-relaxed">
                     {post.excerpt}
@@ -238,15 +237,12 @@ export const BlogPage: React.FC = () => {
                     </span>
                   </div>
 
-                  <Link
-                    to={`/blog/${post.slug}`}
-                    className="text-xs font-bold text-primary flex items-center gap-1 group-hover:translate-x-1 transition-transform"
-                  >
+                  <div className="text-xs font-bold text-primary flex items-center gap-1 group-hover:translate-x-1 transition-transform">
                     <span>Read</span>
                     <ChevronRight className="w-3.5 h-3.5" />
-                  </Link>
+                  </div>
                 </div>
-              </article>
+              </Link>
             ))}
           </div>
         ) : (
