@@ -27,7 +27,7 @@ export const SiteLayout: React.FC = () => {
   }, [pathname]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-background text-foreground transition-colors duration-200">
+    <div className="min-h-screen flex flex-col bg-background text-foreground">
       <header className="sticky top-0 z-50 w-full backdrop-blur-xl bg-background/90 border-b border-border/80 shadow-xs">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between gap-4 max-w-7xl">
           {/* 3D Extruded Logo on the left */}

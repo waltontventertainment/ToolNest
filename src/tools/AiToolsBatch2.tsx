@@ -23,7 +23,7 @@ import {
 } from 'lucide-react';
 import { runAutoAiCompletion } from '../lib/aiService';
 import { toast } from 'sonner';
-import { MarkdownRenderer } from '../components/MarkdownRenderer';
+import { MarkdownRenderer, stripMarkdown } from '../components/MarkdownRenderer';
 
 // Reusable live streaming status & progress component
 export const AiStreamingStatus: React.FC<{ loading: boolean; status: string; wordCount?: number }> = ({ loading, status, wordCount }) => {
@@ -108,9 +108,9 @@ Please format the script in structured Markdown with:
   };
 
   const copyResult = () => {
-    navigator.clipboard.writeText(result);
+    navigator.clipboard.writeText(stripMarkdown(result));
     setCopied(true);
-    toast.success('Script copied to clipboard!');
+    toast.success('Clean script copied!');
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -221,8 +221,8 @@ Please format the script in structured Markdown with:
 
           <div className="flex-1 min-h-[380px] p-5 rounded-2xl bg-card border border-border overflow-y-auto">
             {result ? (
-              <div className="text-xs text-foreground leading-relaxed whitespace-pre-wrap font-sans">
-                {result}
+              <div className="text-xs md:text-sm text-foreground leading-relaxed font-sans">
+                <MarkdownRenderer content={result} liveCursor={loading} />
               </div>
             ) : (
               <div className="h-full min-h-[300px] flex flex-col items-center justify-center text-center text-muted-foreground p-6">
@@ -292,9 +292,9 @@ Please provide:
   };
 
   const copyResult = () => {
-    navigator.clipboard.writeText(result);
+    navigator.clipboard.writeText(stripMarkdown(result));
     setCopied(true);
-    toast.success('Copied to clipboard!');
+    toast.success('Clean text copied!');
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -368,8 +368,8 @@ Please provide:
 
           <div className="flex-1 min-h-[380px] p-5 rounded-2xl bg-card border border-border overflow-y-auto">
             {result ? (
-              <div className="text-xs text-foreground leading-relaxed whitespace-pre-wrap font-sans">
-                {result}
+              <div className="text-xs md:text-sm text-foreground leading-relaxed font-sans">
+                <MarkdownRenderer content={result} liveCursor={loading} />
               </div>
             ) : (
               <div className="h-full min-h-[300px] flex flex-col items-center justify-center text-center text-muted-foreground p-6">
@@ -441,9 +441,9 @@ Please provide:
   };
 
   const copyResult = () => {
-    navigator.clipboard.writeText(result);
+    navigator.clipboard.writeText(stripMarkdown(result));
     setCopied(true);
-    toast.success('Copied to clipboard!');
+    toast.success('Clean copy copied!');
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -536,8 +536,8 @@ Please provide:
 
           <div className="flex-1 min-h-[380px] p-5 rounded-2xl bg-card border border-border overflow-y-auto">
             {result ? (
-              <div className="text-xs text-foreground leading-relaxed whitespace-pre-wrap font-sans">
-                {result}
+              <div className="text-xs md:text-sm text-foreground leading-relaxed font-sans">
+                <MarkdownRenderer content={result} liveCursor={loading} />
               </div>
             ) : (
               <div className="h-full min-h-[300px] flex flex-col items-center justify-center text-center text-muted-foreground p-6">
@@ -607,9 +607,9 @@ Please provide:
   };
 
   const copyResult = () => {
-    navigator.clipboard.writeText(result);
+    navigator.clipboard.writeText(stripMarkdown(result));
     setCopied(true);
-    toast.success('Copied to clipboard!');
+    toast.success('Clean prep guide copied!');
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -686,8 +686,8 @@ Please provide:
 
           <div className="flex-1 min-h-[380px] p-5 rounded-2xl bg-card border border-border overflow-y-auto">
             {result ? (
-              <div className="text-xs text-foreground leading-relaxed whitespace-pre-wrap font-sans">
-                {result}
+              <div className="text-xs md:text-sm text-foreground leading-relaxed font-sans">
+                <MarkdownRenderer content={result} liveCursor={loading} />
               </div>
             ) : (
               <div className="h-full min-h-[300px] flex flex-col items-center justify-center text-center text-muted-foreground p-6">
@@ -756,9 +756,9 @@ Please craft:
   };
 
   const copyResult = () => {
-    navigator.clipboard.writeText(result);
+    navigator.clipboard.writeText(stripMarkdown(result));
     setCopied(true);
-    toast.success('Story copied to clipboard!');
+    toast.success('Clean story copied!');
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -841,8 +841,8 @@ Please craft:
 
           <div className="flex-1 min-h-[380px] p-5 rounded-2xl bg-card border border-border overflow-y-auto">
             {result ? (
-              <div className="text-xs text-foreground leading-relaxed whitespace-pre-wrap font-serif">
-                {result}
+              <div className="text-xs md:text-sm text-foreground leading-relaxed font-sans">
+                <MarkdownRenderer content={result} liveCursor={loading} />
               </div>
             ) : (
               <div className="h-full min-h-[300px] flex flex-col items-center justify-center text-center text-muted-foreground p-6">
@@ -909,9 +909,9 @@ Please format output in structured Markdown with:
   };
 
   const copyResult = () => {
-    navigator.clipboard.writeText(result);
+    navigator.clipboard.writeText(stripMarkdown(result));
     setCopied(true);
-    toast.success('Solution copied!');
+    toast.success('Clean solution copied!');
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -977,10 +977,10 @@ Please format output in structured Markdown with:
             )}
           </div>
 
-          <div className="flex-1 min-h-[380px] p-5 rounded-2xl bg-card border border-border overflow-y-auto font-mono">
+          <div className="flex-1 min-h-[380px] p-5 rounded-2xl bg-card border border-border overflow-y-auto">
             {result ? (
-              <div className="text-xs text-foreground leading-relaxed whitespace-pre-wrap">
-                {result}
+              <div className="text-xs md:text-sm text-foreground leading-relaxed font-sans">
+                <MarkdownRenderer content={result} liveCursor={loading} />
               </div>
             ) : (
               <div className="h-full min-h-[300px] flex flex-col items-center justify-center text-center text-muted-foreground p-6 font-sans">
@@ -1047,9 +1047,9 @@ Please structure as:
   };
 
   const copyResult = () => {
-    navigator.clipboard.writeText(result);
+    navigator.clipboard.writeText(stripMarkdown(result));
     setCopied(true);
-    toast.success('Copied to clipboard!');
+    toast.success('Clean quiz copied!');
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -1129,8 +1129,8 @@ Please structure as:
 
           <div className="flex-1 min-h-[380px] p-5 rounded-2xl bg-card border border-border overflow-y-auto">
             {result ? (
-              <div className="text-xs text-foreground leading-relaxed whitespace-pre-wrap font-sans">
-                {result}
+              <div className="text-xs md:text-sm text-foreground leading-relaxed font-sans">
+                <MarkdownRenderer content={result} liveCursor={loading} />
               </div>
             ) : (
               <div className="h-full min-h-[300px] flex flex-col items-center justify-center text-center text-muted-foreground p-6">
@@ -1196,9 +1196,9 @@ For each recommendation provide:
   };
 
   const copyResult = () => {
-    navigator.clipboard.writeText(result);
+    navigator.clipboard.writeText(stripMarkdown(result));
     setCopied(true);
-    toast.success('Copied to clipboard!');
+    toast.success('Clean brand names copied!');
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -1265,8 +1265,8 @@ For each recommendation provide:
 
           <div className="flex-1 min-h-[380px] p-5 rounded-2xl bg-card border border-border overflow-y-auto">
             {result ? (
-              <div className="text-xs text-foreground leading-relaxed whitespace-pre-wrap font-sans">
-                {result}
+              <div className="text-xs md:text-sm text-foreground leading-relaxed font-sans">
+                <MarkdownRenderer content={result} liveCursor={loading} />
               </div>
             ) : (
               <div className="h-full min-h-[300px] flex flex-col items-center justify-center text-center text-muted-foreground p-6">
@@ -1335,9 +1335,9 @@ Please format in structured Markdown:
   };
 
   const copyResult = () => {
-    navigator.clipboard.writeText(result);
+    navigator.clipboard.writeText(stripMarkdown(result));
     setCopied(true);
-    toast.success('Recipe copied!');
+    toast.success('Clean recipe copied!');
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -1419,8 +1419,8 @@ Please format in structured Markdown:
 
           <div className="flex-1 min-h-[380px] p-5 rounded-2xl bg-card border border-border overflow-y-auto">
             {result ? (
-              <div className="text-xs text-foreground leading-relaxed whitespace-pre-wrap font-sans">
-                {result}
+              <div className="text-xs md:text-sm text-foreground leading-relaxed font-sans">
+                <MarkdownRenderer content={result} liveCursor={loading} />
               </div>
             ) : (
               <div className="h-full min-h-[300px] flex flex-col items-center justify-center text-center text-muted-foreground p-6">
@@ -1487,9 +1487,9 @@ Please structure as:
   };
 
   const copyResult = () => {
-    navigator.clipboard.writeText(result);
+    navigator.clipboard.writeText(stripMarkdown(result));
     setCopied(true);
-    toast.success('Summary copied!');
+    toast.success('Clean legal breakdown copied!');
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -1556,8 +1556,8 @@ Please structure as:
 
           <div className="flex-1 min-h-[380px] p-5 rounded-2xl bg-card border border-border overflow-y-auto">
             {result ? (
-              <div className="text-xs text-foreground leading-relaxed whitespace-pre-wrap font-sans">
-                {result}
+              <div className="text-xs md:text-sm text-foreground leading-relaxed font-sans">
+                <MarkdownRenderer content={result} liveCursor={loading} />
               </div>
             ) : (
               <div className="h-full min-h-[300px] flex flex-col items-center justify-center text-center text-muted-foreground p-6">

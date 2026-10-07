@@ -21,7 +21,7 @@ export const ToolCard: React.FC<{ tool: ToolDefinition }> = ({ tool }) => {
   return (
     <Link 
       to={`/tools/${tool.slug}`}
-      className="group relative flex flex-col p-5 bg-card/90 hover:bg-card border border-border/80 hover:border-primary/45 rounded-2xl shadow-xs hover:shadow-lg transition-all duration-200 no-underline h-full hover:-translate-y-1 overflow-hidden"
+      className="group relative flex flex-col p-5 sm:p-5.5 bg-card hover:bg-card border border-border/80 hover:border-primary/50 rounded-2xl md:rounded-3xl shadow-xs hover:shadow-xl transition-all duration-200 no-underline h-full hover:-translate-y-1 active:scale-[0.98] overflow-hidden backdrop-blur-xs"
     >
       {/* Top ambient highlight line on hover */}
       <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-primary/0 to-transparent group-hover:via-primary/50 transition-all duration-300" />

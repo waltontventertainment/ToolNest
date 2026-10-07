@@ -21,7 +21,7 @@ import {
 import { runAutoAiCompletion } from '../lib/aiService';
 import { toast } from 'sonner';
 import { AiStreamingStatus, AiLiveCursor } from './AiToolsBatch2';
-import { MarkdownRenderer } from '../components/MarkdownRenderer';
+import { MarkdownRenderer, stripMarkdown } from '../components/MarkdownRenderer';
 
 // ============================================================================
 // 1. AI Article & Blog Post Writer
@@ -81,9 +81,9 @@ Format the output cleanly in Markdown with:
   };
 
   const copyResult = () => {
-    navigator.clipboard.writeText(result);
+    navigator.clipboard.writeText(stripMarkdown(result));
     setCopied(true);
-    toast.success('Article copied to clipboard!');
+    toast.success('Clean formatted article copied!');
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -300,9 +300,9 @@ ${text}`;
   };
 
   const copyResult = () => {
-    navigator.clipboard.writeText(result);
+    navigator.clipboard.writeText(stripMarkdown(result));
     setCopied(true);
-    toast.success('Summary copied!');
+    toast.success('Clean summary copied!');
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -364,8 +364,8 @@ ${text}`;
 
           <div className="flex-1 min-h-[300px] p-5 rounded-2xl bg-card border border-border overflow-y-auto">
             {result ? (
-              <div className="text-xs text-foreground leading-relaxed whitespace-pre-wrap font-sans">
-                {result}
+              <div className="text-xs md:text-sm text-foreground leading-relaxed font-sans">
+                <MarkdownRenderer content={result} liveCursor={loading} />
               </div>
             ) : (
               <div className="h-full min-h-[240px] flex flex-col items-center justify-center text-center text-muted-foreground p-6">
@@ -432,9 +432,9 @@ Output only the translated text. Do not add redundant meta commentary unless nec
   };
 
   const copyResult = () => {
-    navigator.clipboard.writeText(translatedText);
+    navigator.clipboard.writeText(stripMarkdown(translatedText));
     setCopied(true);
-    toast.success('Translation copied!');
+    toast.success('Clean translation copied!');
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -518,8 +518,8 @@ Output only the translated text. Do not add redundant meta commentary unless nec
 
           <div className="flex-1 min-h-[280px] p-5 rounded-2xl bg-card border border-border overflow-y-auto">
             {translatedText ? (
-              <div className="text-xs text-foreground leading-relaxed whitespace-pre-wrap font-sans">
-                {translatedText}
+              <div className="text-xs md:text-sm text-foreground leading-relaxed font-sans">
+                <MarkdownRenderer content={translatedText} liveCursor={loading} />
               </div>
             ) : (
               <div className="h-full min-h-[220px] flex flex-col items-center justify-center text-center text-muted-foreground p-6">
@@ -605,9 +605,9 @@ IMPROVEMENTS_MADE:
   };
 
   const copyResult = () => {
-    navigator.clipboard.writeText(polished);
+    navigator.clipboard.writeText(stripMarkdown(polished));
     setCopied(true);
-    toast.success('Polished text copied!');
+    toast.success('Clean polished text copied!');
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -672,8 +672,8 @@ IMPROVEMENTS_MADE:
           <div className="flex-1 min-h-[220px] p-5 rounded-2xl bg-card border border-border overflow-y-auto">
             {polished ? (
               <div className="space-y-4">
-                <div className="text-xs text-foreground leading-relaxed whitespace-pre-wrap font-sans">
-                  {polished}
+                <div className="text-xs md:text-sm text-foreground leading-relaxed font-sans">
+                  <MarkdownRenderer content={polished} liveCursor={loading} />
                 </div>
 
                 {notes.length > 0 && (
@@ -771,9 +771,9 @@ ${code}
   };
 
   const copyResult = () => {
-    navigator.clipboard.writeText(result);
+    navigator.clipboard.writeText(stripMarkdown(result));
     setCopied(true);
-    toast.success('Analysis copied!');
+    toast.success('Clean analysis copied!');
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -835,8 +835,8 @@ ${code}
 
           <div className="flex-1 min-h-[300px] p-5 rounded-2xl bg-card border border-border overflow-y-auto">
             {result ? (
-              <div className="text-xs text-foreground leading-relaxed whitespace-pre-wrap font-sans">
-                {result}
+              <div className="text-xs md:text-sm text-foreground leading-relaxed font-sans">
+                <MarkdownRenderer content={result} liveCursor={loading} />
               </div>
             ) : (
               <div className="h-full min-h-[240px] flex flex-col items-center justify-center text-center text-muted-foreground p-6">
@@ -905,9 +905,9 @@ For each variant:
   };
 
   const copyResult = () => {
-    navigator.clipboard.writeText(result);
+    navigator.clipboard.writeText(stripMarkdown(result));
     setCopied(true);
-    toast.success('Prompts copied!');
+    toast.success('Clean prompts copied!');
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -1007,8 +1007,8 @@ For each variant:
 
           <div className="flex-1 min-h-[350px] p-5 rounded-2xl bg-card border border-border overflow-y-auto font-mono text-xs">
             {result ? (
-              <div className="text-xs text-foreground leading-relaxed whitespace-pre-wrap">
-                {result}
+              <div className="text-xs md:text-sm text-foreground leading-relaxed font-sans">
+                <MarkdownRenderer content={result} liveCursor={loading} />
               </div>
             ) : (
               <div className="h-full min-h-[280px] flex flex-col items-center justify-center text-center text-muted-foreground p-6 font-sans">
@@ -1080,9 +1080,9 @@ Please provide:
   };
 
   const copyResult = () => {
-    navigator.clipboard.writeText(result);
+    navigator.clipboard.writeText(stripMarkdown(result));
     setCopied(true);
-    toast.success('Email copied to clipboard!');
+    toast.success('Clean email copied!');
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -1175,8 +1175,8 @@ Please provide:
 
           <div className="flex-1 min-h-[350px] p-5 rounded-2xl bg-card border border-border overflow-y-auto">
             {result ? (
-              <div className="text-xs text-foreground leading-relaxed whitespace-pre-wrap font-sans">
-                {result}
+              <div className="text-xs md:text-sm text-foreground leading-relaxed font-sans">
+                <MarkdownRenderer content={result} liveCursor={loading} />
               </div>
             ) : (
               <div className="h-full min-h-[280px] flex flex-col items-center justify-center text-center text-muted-foreground p-6">
@@ -1242,9 +1242,9 @@ Please provide:
   };
 
   const copyResult = () => {
-    navigator.clipboard.writeText(result);
+    navigator.clipboard.writeText(stripMarkdown(result));
     setCopied(true);
-    toast.success('SEO package copied!');
+    toast.success('Clean SEO package copied!');
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -1307,8 +1307,8 @@ Please provide:
 
           <div className="flex-1 min-h-[350px] p-5 rounded-2xl bg-card border border-border overflow-y-auto">
             {result ? (
-              <div className="text-xs text-foreground leading-relaxed whitespace-pre-wrap font-sans">
-                {result}
+              <div className="text-xs md:text-sm text-foreground leading-relaxed font-sans">
+                <MarkdownRenderer content={result} liveCursor={loading} />
               </div>
             ) : (
               <div className="h-full min-h-[280px] flex flex-col items-center justify-center text-center text-muted-foreground p-6">
@@ -1388,9 +1388,9 @@ Please provide:
   };
 
   const copyResult = () => {
-    navigator.clipboard.writeText(result);
+    navigator.clipboard.writeText(stripMarkdown(result));
     setCopied(true);
-    toast.success('Copied to clipboard!');
+    toast.success('Clean output copied!');
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -1478,8 +1478,8 @@ Please provide:
 
           <div className="flex-1 min-h-[350px] p-5 rounded-2xl bg-card border border-border overflow-y-auto font-mono">
             {result ? (
-              <div className="text-xs text-foreground leading-relaxed whitespace-pre-wrap">
-                {result}
+              <div className="text-xs md:text-sm text-foreground leading-relaxed font-sans">
+                <MarkdownRenderer content={result} liveCursor={loading} />
               </div>
             ) : (
               <div className="h-full min-h-[280px] flex flex-col items-center justify-center text-center text-muted-foreground p-6 font-sans">
@@ -1549,9 +1549,9 @@ Please generate:
   };
 
   const copyResult = () => {
-    navigator.clipboard.writeText(result);
+    navigator.clipboard.writeText(stripMarkdown(result));
     setCopied(true);
-    toast.success('Posts copied to clipboard!');
+    toast.success('Clean posts copied!');
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -1646,8 +1646,8 @@ Please generate:
 
           <div className="flex-1 min-h-[350px] p-5 rounded-2xl bg-card border border-border overflow-y-auto">
             {result ? (
-              <div className="text-xs text-foreground leading-relaxed whitespace-pre-wrap font-sans">
-                {result}
+              <div className="text-xs md:text-sm text-foreground leading-relaxed font-sans">
+                <MarkdownRenderer content={result} liveCursor={loading} />
               </div>
             ) : (
               <div className="h-full min-h-[280px] flex flex-col items-center justify-center text-center text-muted-foreground p-6">

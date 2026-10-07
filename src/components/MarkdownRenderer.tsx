@@ -1,35 +1,84 @@
 import React, { useState } from 'react';
-import { Copy, Check, Terminal, Info, Lightbulb, FileCode } from 'lucide-react';
+import { Copy, Check, Info, Lightbulb, FileCode } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface MarkdownRendererProps {
   content: string;
   className?: string;
+  liveCursor?: boolean;
 }
 
-export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content, className = '' }) => {
+/**
+ * Utility to strip all raw markdown syntax (asterisks, hashes, backticks)
+ * for clean, human-readable plain text copy.
+ */
+export function stripMarkdown(md: string): string {
+  if (!md) return '';
+  return md
+    .replace(/^#{1,6}\s+/gm, '') // remove headings
+    .replace(/\*\*\*(.*?)\*\*\*/g, '$1') // remove bold italic
+    .replace(/\*\*(.*?)\*\*/g, '$1') // remove bold
+    .replace(/__(.*?)__/g, '$1')
+    .replace(/\*(.*?)\*/g, '$1') // remove italic
+    .replace(/_(.*?)_/g, '$1')
+    .replace(/~~(.*?)~~/g, '$1') // remove strikethrough
+    .replace(/`([^`]+)`/g, '$1') // remove inline code
+    .replace(/```[a-z]*\n([\s\S]*?)```/g, '$1') // remove code fence
+    .replace(/^>\s*/gm, '') // remove blockquotes
+    .replace(/^[*\-+•]\s+/gm, '• ') // clean bullets
+    .replace(/\*\*+/g, '') // remove dangling asterisks
+    .replace(/##+/g, '') // remove dangling hashes
+    .trim();
+}
+
+export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content, className = '', liveCursor = false }) => {
   if (!content) return null;
 
-  // Split content into blocks: code blocks vs standard text
+  // Split content into blocks: code blocks vs tables vs standard text
   const blocks = parseMarkdownBlocks(content);
 
   return (
-    <div className={`space-y-6 text-foreground leading-relaxed ${className}`}>
+    <div className={`space-y-4 text-foreground leading-relaxed ${className}`}>
       {blocks.map((block, idx) => {
+        const isLast = idx === blocks.length - 1;
         if (block.type === 'code') {
-          return <CodeBlock key={idx} code={block.content} language={block.language || 'text'} />;
+          return (
+            <React.Fragment key={idx}>
+              <CodeBlock code={block.content} language={block.language || 'text'} />
+              {isLast && liveCursor && <LiveCursorBadge />}
+            </React.Fragment>
+          );
         }
         if (block.type === 'table') {
-          return <TableBlock key={idx} tableMarkdown={block.content} />;
+          return (
+            <React.Fragment key={idx}>
+              <TableBlock tableMarkdown={block.content} />
+              {isLast && liveCursor && <LiveCursorBadge />}
+            </React.Fragment>
+          );
         }
         if (block.type === 'blockquote') {
-          return <BlockquoteBlock key={idx} text={block.content} />;
+          return (
+            <React.Fragment key={idx}>
+              <BlockquoteBlock text={block.content} />
+              {isLast && liveCursor && <LiveCursorBadge />}
+            </React.Fragment>
+          );
         }
-        return <TextBlock key={idx} text={block.content} />;
+        return (
+          <React.Fragment key={idx}>
+            <TextBlock text={block.content} isLast={isLast} liveCursor={liveCursor} />
+          </React.Fragment>
+        );
       })}
     </div>
   );
 };
+
+// Live pulsing cursor
+const LiveCursorBadge: React.FC = () => (
+  <span className="inline-block w-2 h-4 bg-primary animate-pulse ml-1 align-middle rounded-xs" aria-hidden="true" />
+);
 
 // Code block with Copy button & language tag
 const CodeBlock: React.FC<{ code: string; language: string }> = ({ code, language }) => {
@@ -43,8 +92,8 @@ const CodeBlock: React.FC<{ code: string; language: string }> = ({ code, languag
   };
 
   return (
-    <div className="my-5 rounded-2xl overflow-hidden border border-border/80 bg-neutral-950 text-neutral-100 shadow-md">
-      <div className="flex items-center justify-between px-4 py-2.5 bg-neutral-900 border-b border-neutral-800 text-xs text-neutral-400">
+    <div className="my-4 rounded-2xl overflow-hidden border border-border/80 bg-neutral-950 text-neutral-100 shadow-md">
+      <div className="flex items-center justify-between px-4 py-2 bg-neutral-900 border-b border-neutral-800 text-xs text-neutral-400">
         <div className="flex items-center gap-2 font-mono font-bold uppercase tracking-wider text-[11px] text-neutral-300">
           <FileCode className="w-3.5 h-3.5 text-primary" />
           <span>{language || 'code'}</span>
@@ -71,7 +120,7 @@ const BlockquoteBlock: React.FC<{ text: string }> = ({ text }) => {
   const isTip = cleaned.toLowerCase().includes('pro tip') || cleaned.toLowerCase().includes('tip:');
 
   return (
-    <div className={`my-5 p-4 md:p-5 rounded-2xl border flex items-start gap-3.5 shadow-2xs ${
+    <div className={`my-4 p-4 rounded-2xl border flex items-start gap-3.5 shadow-2xs ${
       isTip
         ? 'bg-amber-500/10 border-amber-400/30 text-amber-950 dark:text-amber-200'
         : 'bg-primary/10 border-primary/20 text-foreground'
@@ -98,12 +147,12 @@ const TableBlock: React.FC<{ tableMarkdown: string }> = ({ tableMarkdown }) => {
   const dataRows = lines.slice(2).map(parseRow);
 
   return (
-    <div className="my-6 overflow-x-auto rounded-2xl border border-border shadow-xs">
+    <div className="my-5 overflow-x-auto rounded-2xl border border-border shadow-xs">
       <table className="w-full text-left text-xs border-collapse">
         <thead>
           <tr className="bg-muted/70 border-b border-border">
             {header.map((col, idx) => (
-              <th key={idx} className="p-3.5 font-bold text-foreground">
+              <th key={idx} className="p-3 font-bold text-foreground">
                 <FormattedInline text={col} />
               </th>
             ))}
@@ -113,7 +162,7 @@ const TableBlock: React.FC<{ tableMarkdown: string }> = ({ tableMarkdown }) => {
           {dataRows.map((row, rIdx) => (
             <tr key={rIdx} className="hover:bg-muted/30 transition-colors">
               {row.map((cell, cIdx) => (
-                <td key={cIdx} className="p-3.5 text-muted-foreground font-medium">
+                <td key={cIdx} className="p-3 text-muted-foreground font-medium">
                   <FormattedInline text={cell} />
                 </td>
               ))}
@@ -126,7 +175,7 @@ const TableBlock: React.FC<{ tableMarkdown: string }> = ({ tableMarkdown }) => {
 };
 
 // Text block parser (Headings, Paragraphs, Lists, Dividers)
-const TextBlock: React.FC<{ text: string }> = ({ text }) => {
+const TextBlock: React.FC<{ text: string; isLast?: boolean; liveCursor?: boolean }> = ({ text, isLast, liveCursor }) => {
   const lines = text.split('\n');
   const elements: React.ReactNode[] = [];
 
@@ -137,7 +186,7 @@ const TextBlock: React.FC<{ text: string }> = ({ text }) => {
     if (currentList.length > 0) {
       if (isNumberedList) {
         elements.push(
-          <ol key={`ol-${elements.length}`} className="my-3 space-y-1.5 list-decimal list-inside text-xs md:text-sm text-foreground/90 pl-2">
+          <ol key={`ol-${elements.length}`} className="my-2.5 space-y-1.5 list-decimal list-inside text-xs md:text-sm text-foreground/90 pl-2">
             {currentList.map((item, idx) => (
               <li key={idx} className="leading-relaxed"><FormattedInline text={item} /></li>
             ))}
@@ -145,7 +194,7 @@ const TextBlock: React.FC<{ text: string }> = ({ text }) => {
         );
       } else {
         elements.push(
-          <ul key={`ul-${elements.length}`} className="my-3 space-y-1.5 list-disc list-inside text-xs md:text-sm text-foreground/90 pl-2">
+          <ul key={`ul-${elements.length}`} className="my-2.5 space-y-1.5 list-disc list-inside text-xs md:text-sm text-foreground/90 pl-2">
             {currentList.map((item, idx) => (
               <li key={idx} className="leading-relaxed"><FormattedInline text={item} /></li>
             ))}
@@ -165,15 +214,15 @@ const TextBlock: React.FC<{ text: string }> = ({ text }) => {
       continue;
     }
 
-    // Dividers
+    // Dividers (---, ***, ___)
     if (trimmed === '---' || trimmed === '***' || trimmed === '___') {
       flushList();
-      elements.push(<hr key={`hr-${i}`} className="my-8 border-border/80" />);
+      elements.push(<hr key={`hr-${i}`} className="my-6 border-border/80" />);
       continue;
     }
 
-    // Check any heading (#, ##, ###, ####, #####, ######)
-    const headingMatch = trimmed.match(/^(#{1,6})\s+(.*)$/);
+    // Check headings (#, ##, ###, ####, #####, ######)
+    const headingMatch = trimmed.match(/^(#{1,6})\s*(.*)$/);
     if (headingMatch) {
       flushList();
       const level = headingMatch[1].length;
@@ -181,25 +230,25 @@ const TextBlock: React.FC<{ text: string }> = ({ text }) => {
       
       if (level === 1) {
         elements.push(
-          <h1 key={`h1-${i}`} className="text-2xl md:text-3xl font-extrabold text-foreground tracking-tight font-display mt-8 mb-4">
+          <h1 key={`h1-${i}`} className="text-xl md:text-2xl font-extrabold text-foreground tracking-tight font-display mt-6 mb-3">
             <FormattedInline text={text} />
           </h1>
         );
       } else if (level === 2) {
         elements.push(
-          <h2 key={`h2-${i}`} className="text-xl md:text-2xl font-bold text-foreground tracking-tight font-display mt-8 mb-3 pb-2 border-b border-border/60 flex items-center gap-2">
+          <h2 key={`h2-${i}`} className="text-lg md:text-xl font-bold text-foreground tracking-tight font-display mt-5 mb-2.5 pb-1.5 border-b border-border/60">
             <FormattedInline text={text} />
           </h2>
         );
       } else if (level === 3) {
         elements.push(
-          <h3 key={`h3-${i}`} className="text-base md:text-lg font-bold text-foreground tracking-tight mt-6 mb-2">
+          <h3 key={`h3-${i}`} className="text-sm md:text-base font-bold text-foreground tracking-tight mt-4 mb-2">
             <FormattedInline text={text} />
           </h3>
         );
       } else {
         elements.push(
-          <h4 key={`h4-${i}`} className="text-sm md:text-base font-bold text-foreground tracking-tight mt-4 mb-1.5">
+          <h4 key={`h4-${i}`} className="text-xs md:text-sm font-bold text-foreground tracking-tight mt-3 mb-1">
             <FormattedInline text={text} />
           </h4>
         );
@@ -207,36 +256,47 @@ const TextBlock: React.FC<{ text: string }> = ({ text }) => {
       continue;
     }
 
-    // Unordered List
-    if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+    // Unordered List (- , * , + , • )
+    if (
+      trimmed.startsWith('- ') || 
+      trimmed.startsWith('* ') || 
+      trimmed.startsWith('+ ') || 
+      trimmed.startsWith('• ')
+    ) {
       isNumberedList = false;
-      currentList.push(trimmed.slice(2));
+      currentList.push(trimmed.slice(2).trim());
       continue;
     }
 
-    // Numbered List
+    // Numbered List (1. , 2. )
     const numMatch = trimmed.match(/^(\d+)\.\s+(.*)$/);
     if (numMatch) {
       isNumberedList = true;
-      currentList.push(numMatch[2]);
+      currentList.push(numMatch[2].trim());
       continue;
     }
 
-    // Standard paragraph
+    // Standard paragraph - strip any leading unparsed hashes or asterisks
     flushList();
+    const cleanParagraph = trimmed.replace(/^#+\s*/, '');
     elements.push(
-      <p key={`p-${i}`} className="my-3 text-xs md:text-sm text-foreground/90 leading-relaxed">
-        <FormattedInline text={trimmed} />
+      <p key={`p-${i}`} className="my-2 text-xs md:text-sm text-foreground/90 leading-relaxed">
+        <FormattedInline text={cleanParagraph} />
       </p>
     );
   }
 
   flushList();
 
-  return <>{elements}</>;
+  return (
+    <>
+      {elements}
+      {isLast && liveCursor && <LiveCursorBadge />}
+    </>
+  );
 };
 
-// Format inline bold, italic, and inline code
+// Format inline bold, italic, and inline code with zero unparsed artifacts
 const FormattedInline: React.FC<{ text: string }> = ({ text }) => {
   if (!text) return null;
 
@@ -262,9 +322,23 @@ const FormattedInline: React.FC<{ text: string }> = ({ text }) => {
 };
 
 function parseInlineStyles(str: string): string {
+  if (!str) return '';
   return str
+    // 1. Triple asterisks (bold + italic)
+    .replace(/\*\*\*(.*?)\*\*\*/g, '<strong class="font-bold text-foreground"><em class="italic">$1</em></strong>')
+    // 2. Double asterisks (bold)
     .replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-foreground">$1</strong>')
-    .replace(/\*(.*?)\*/g, '<em class="italic">$1</em>');
+    // 3. Double underscores (bold)
+    .replace(/__(.*?)__/g, '<strong class="font-bold text-foreground">$1</strong>')
+    // 4. Single asterisks (italic)
+    .replace(/\*(.*?)\*/g, '<em class="italic text-foreground/90">$1</em>')
+    // 5. Single underscores (italic)
+    .replace(/_(.*?)_/g, '<em class="italic text-foreground/90">$1</em>')
+    // 6. Strikethrough
+    .replace(/~~(.*?)~~/g, '<del class="line-through text-muted-foreground">$1</del>')
+    // 7. Strip any remaining dangling asterisks or hashes from live streaming incomplete tokens
+    .replace(/\*\*+/g, '')
+    .replace(/##+/g, '');
 }
 
 // Block tokenizer
