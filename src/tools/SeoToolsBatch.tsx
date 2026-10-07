@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { downloadBlob } from '../lib/downloadHelper';
 import {
   FileText, Check, Copy, Download, Search, AlertTriangle, Globe, Share2, Code,
   List, BarChart2, Settings, Layers, Eye, RefreshCw, FileCode, Trash2, Plus,
@@ -20,14 +21,7 @@ const copyToClipboard = async (text: string, setCopied: (v: boolean) => void) =>
 // Helper to download file
 const downloadFile = (filename: string, content: string, type: string = 'text/plain') => {
   const blob = new Blob([content], { type });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+  downloadBlob(blob, filename);
 };
 
 // ============================================================================

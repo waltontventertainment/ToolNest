@@ -1,4 +1,62 @@
-// Global polyfill for Uint8Array.prototype.toHex (required for environments lacking TC39 toHex)
+// Global polyfills for modern JS features used by pdfjs-dist and modern browser libraries
+// 1. Map & WeakMap getOrInsertComputed / getOrInsert (TC39 Stage 3 proposal)
+if (typeof Map !== 'undefined') {
+  if (!('getOrInsertComputed' in Map.prototype)) {
+    (Map.prototype as any).getOrInsertComputed = function (key: any, callbackFunction: (k: any) => any) {
+      if (this.has(key)) {
+        return this.get(key);
+      }
+      const value = callbackFunction(key);
+      this.set(key, value);
+      return value;
+    };
+  }
+  if (!('getOrInsert' in Map.prototype)) {
+    (Map.prototype as any).getOrInsert = function (key: any, defaultValue: any) {
+      if (this.has(key)) {
+        return this.get(key);
+      }
+      this.set(key, defaultValue);
+      return defaultValue;
+    };
+  }
+}
+
+if (typeof WeakMap !== 'undefined') {
+  if (!('getOrInsertComputed' in WeakMap.prototype)) {
+    (WeakMap.prototype as any).getOrInsertComputed = function (key: any, callbackFunction: (k: any) => any) {
+      if (this.has(key)) {
+        return this.get(key);
+      }
+      const value = callbackFunction(key);
+      this.set(key, value);
+      return value;
+    };
+  }
+  if (!('getOrInsert' in WeakMap.prototype)) {
+    (WeakMap.prototype as any).getOrInsert = function (key: any, defaultValue: any) {
+      if (this.has(key)) {
+        return this.get(key);
+      }
+      this.set(key, defaultValue);
+      return defaultValue;
+    };
+  }
+}
+
+// 2. Promise.withResolvers polyfill
+if (typeof Promise !== 'undefined' && !('withResolvers' in Promise)) {
+  (Promise as any).withResolvers = function () {
+    let resolve: any, reject: any;
+    const promise = new Promise((res, rej) => {
+      resolve = res;
+      reject = rej;
+    });
+    return { promise, resolve, reject };
+  };
+}
+
+// 3. Uint8Array toHex polyfill
 const installToHex = (target: any) => {
   if (target && !('toHex' in target.prototype)) {
     try {

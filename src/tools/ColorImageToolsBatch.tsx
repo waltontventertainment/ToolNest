@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
+import { downloadDataUrl } from '../lib/downloadHelper';
 import {
   ImageIcon, Download, Upload, RefreshCw, Copy, Check, Sliders, Crop, Palette,
   Eye, EyeOff, Sparkles, Stamp, ShieldCheck, CheckCircle2, XCircle, FileCode,
@@ -263,13 +264,13 @@ export const ImageResizerConverter: React.FC = () => {
 
             {/* Download Button */}
             {resizedDataUrl && (
-              <a
-                href={resizedDataUrl}
-                download={`${fileName}_resized_${width}x${height}.${extMap[outputFormat]}`}
-                className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-md transition flex items-center justify-center gap-2"
+              <button
+                type="button"
+                onClick={() => downloadDataUrl(resizedDataUrl, `${fileName}_resized_${width}x${height}.${extMap[outputFormat]}`)}
+                className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-md transition flex items-center justify-center gap-2 cursor-pointer"
               >
                 <Download className="w-4 h-4" /> Download Resized Image ({ (resizedSizeBytes / 1024).toFixed(1) } KB)
-              </a>
+              </button>
             )}
           </div>
 
@@ -470,13 +471,13 @@ export const ImageCropperRatio: React.FC = () => {
 
             {/* Download */}
             {croppedUrl && (
-              <a
-                href={croppedUrl}
-                download={`${fileName}_cropped.png`}
-                className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-md transition flex items-center justify-center gap-2"
+              <button
+                type="button"
+                onClick={() => downloadDataUrl(croppedUrl, `${fileName}_cropped.png`)}
+                className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-md transition flex items-center justify-center gap-2 cursor-pointer"
               >
                 <Download className="w-4 h-4" /> Download Cropped PNG
-              </a>
+              </button>
             )}
           </div>
 
@@ -856,13 +857,13 @@ export const ImageFiltersAdjuster: React.FC = () => {
 
             {/* Download */}
             {filteredUrl && (
-              <a
-                href={filteredUrl}
-                download={`${fileName}_edited.jpg`}
-                className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-md transition flex items-center justify-center gap-2"
+              <button
+                type="button"
+                onClick={() => downloadDataUrl(filteredUrl, `${fileName}_edited.jpg`)}
+                className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-md transition flex items-center justify-center gap-2 cursor-pointer"
               >
                 <Download className="w-4 h-4" /> Download Photo
-              </a>
+              </button>
             )}
           </div>
 
@@ -1031,13 +1032,13 @@ export const ImageWatermarkAdder: React.FC = () => {
             </div>
 
             {outputUrl && (
-              <a
-                href={outputUrl}
-                download={`${fileName}_stamped.jpg`}
-                className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-md transition flex items-center justify-center gap-2"
+              <button
+                type="button"
+                onClick={() => downloadDataUrl(outputUrl, `${fileName}_stamped.jpg`)}
+                className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-md transition flex items-center justify-center gap-2 cursor-pointer"
               >
                 <Download className="w-4 h-4" /> Download Watermarked Image
-              </a>
+              </button>
             )}
           </div>
 
@@ -1596,13 +1597,13 @@ export const ImageAnonymizerBlur: React.FC = () => {
             </div>
 
             {outputUrl && (
-              <a
-                href={outputUrl}
-                download={`${fileName}_anonymized.jpg`}
-                className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-md transition flex items-center justify-center gap-2"
+              <button
+                type="button"
+                onClick={() => downloadDataUrl(outputUrl, `${fileName}_anonymized.jpg`)}
+                className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-md transition flex items-center justify-center gap-2 cursor-pointer"
               >
                 <Download className="w-4 h-4" /> Download Anonymized Image
-              </a>
+              </button>
             )}
           </div>
 

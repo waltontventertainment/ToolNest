@@ -139,7 +139,7 @@ export const HeaderSearch: React.FC = () => {
       <button
         type="button"
         onClick={() => setIsOpen(true)}
-        className="btn-signature-header px-3 sm:px-3.5 gap-2 text-foreground/80 hover:text-foreground text-xs font-bold group cursor-pointer"
+        className="btn-signature-header px-2.5 sm:px-3.5 gap-1.5 sm:gap-2 text-foreground/80 hover:text-foreground text-xs font-bold group cursor-pointer"
         title="Search tools (⌘K or /)"
         aria-label="Search tools"
       >

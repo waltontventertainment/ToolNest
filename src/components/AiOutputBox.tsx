@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { Copy, Check, Download, FileText } from 'lucide-react';
+import { Copy, Check, Download, FileText, CloudUpload } from 'lucide-react';
 import { MarkdownRenderer, stripMarkdown } from './MarkdownRenderer';
 import { toast } from 'sonner';
+import { downloadBlob } from '../lib/downloadHelper';
+import { useGoogleDrive } from '../context/GoogleDriveContext';
 
 interface AiOutputBoxProps {
   content: string;
@@ -25,6 +27,8 @@ export const AiOutputBox: React.FC<AiOutputBoxProps> = ({
   minHeightClass = 'min-h-[340px]'
 }) => {
   const [copied, setCopied] = useState(false);
+  const [savingDrive, setSavingDrive] = useState(false);
+  const { accessToken, uploadFile, signIn } = useGoogleDrive();
 
   const handleCopyClean = () => {
     if (!content) return;
@@ -38,13 +42,25 @@ export const AiOutputBox: React.FC<AiOutputBoxProps> = ({
   const handleDownload = () => {
     if (!content) return;
     const blob = new Blob([content], { type: 'text/markdown;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    a.click();
-    URL.revokeObjectURL(url);
+    downloadBlob(blob, filename);
     toast.success('File downloaded!');
+  };
+
+  const handleSaveToDrive = async () => {
+    if (!content) return;
+    if (!accessToken) {
+      toast.info('Connecting to Google Drive...');
+      await signIn();
+      return;
+    }
+
+    setSavingDrive(true);
+    try {
+      const blob = new Blob([content], { type: 'text/markdown;charset=utf-8' });
+      await uploadFile(filename, blob, 'text/markdown');
+    } finally {
+      setSavingDrive(false);
+    }
   };
 
   return (
@@ -71,6 +87,15 @@ export const AiOutputBox: React.FC<AiOutputBoxProps> = ({
             >
               <Download className="w-3.5 h-3.5" />
               <span>Save</span>
+            </button>
+            <button
+              onClick={handleSaveToDrive}
+              disabled={savingDrive}
+              className="btn-signature-header px-2.5 py-1 text-xs gap-1.5 cursor-pointer text-blue-600 dark:text-blue-400 border-blue-400/40 bg-blue-500/10 hover:bg-blue-500/20"
+              title="Upload file directly to Google Drive"
+            >
+              <CloudUpload className={`w-3.5 h-3.5 ${savingDrive ? 'animate-bounce' : ''}`} />
+              <span>Drive</span>
             </button>
           </div>
         </div>

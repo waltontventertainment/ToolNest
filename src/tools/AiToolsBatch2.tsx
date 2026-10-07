@@ -24,6 +24,7 @@ import {
 import { runAutoAiCompletion } from '../lib/aiService';
 import { toast } from 'sonner';
 import { MarkdownRenderer, stripMarkdown } from '../components/MarkdownRenderer';
+import { downloadBlob } from '../lib/downloadHelper';
 
 // Reusable live streaming status & progress component
 export const AiStreamingStatus: React.FC<{ loading: boolean; status: string; wordCount?: number }> = ({ loading, status, wordCount }) => {
@@ -116,12 +117,8 @@ Please format the script in structured Markdown with:
 
   const downloadScript = () => {
     const blob = new Blob([result], { type: 'text/markdown;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `script-${topic.slice(0, 25).toLowerCase().replace(/[^a-z0-9]/g, '-') || 'video'}.md`;
-    a.click();
-    URL.revokeObjectURL(url);
+    const filename = `script-${topic.slice(0, 25).toLowerCase().replace(/[^a-z0-9]/g, '-') || 'video'}.md`;
+    downloadBlob(blob, filename);
     toast.success('Script downloaded as Markdown!');
   };
 

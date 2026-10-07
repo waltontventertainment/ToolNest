@@ -1,15 +1,22 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { Moon, Sun, Wrench, Star, ArrowRight, BookOpen } from 'lucide-react';
+import { Moon, Sun, Wrench, Star, ArrowRight, BookOpen, Cloud } from 'lucide-react';
 import { useLocalStorage } from '../lib/toolkit';
 import { categories, tools } from '../lib/registry';
 import { HeaderSearch } from './HeaderSearch';
 import { ThemeToggle3D } from './ThemeToggle3D';
 import { useFavorites } from '../context/FavoritesContext';
+import { useGoogleDrive } from '../context/GoogleDriveContext';
+import { GoogleDriveModal } from './GoogleDriveModal';
+import { AiSettingsModal } from './AiSettingsModal';
+import { Sparkles } from 'lucide-react';
 
 export const SiteLayout: React.FC = () => {
   const [theme, setTheme] = useLocalStorage<'light' | 'dark'>('toolnest-theme', 'light');
   const { favorites } = useFavorites();
+  const { user, accessToken } = useGoogleDrive();
+  const [isDriveModalOpen, setIsDriveModalOpen] = useState(false);
+  const [isAiModalOpen, setIsAiModalOpen] = useState(false);
   const location = useLocation();
   const { pathname } = location;
 
@@ -38,29 +45,29 @@ export const SiteLayout: React.FC = () => {
               <Wrench className="w-5 h-5 transition-transform duration-300 group-hover:rotate-12 group-hover:scale-115 drop-shadow-[0_2px_4px_rgba(0,0,0,0.4)] text-white" />
             </div>
             <div className="flex flex-col">
-              <span className="text-brand-gradient font-display font-black text-2xl tracking-[-0.035em] leading-none drop-shadow-[0_1px_1px_rgba(0,0,0,0.1)]">
+              <span className="text-brand-gradient font-display font-black text-xl sm:text-2xl tracking-[-0.035em] leading-none drop-shadow-[0_1px_1px_rgba(0,0,0,0.1)]">
                 ToolNest
               </span>
-              <span className="text-kicker text-[9px] text-muted-foreground/80 tracking-widest mt-0.5 font-bold">
+              <span className="text-kicker text-[9px] text-muted-foreground/80 tracking-widest mt-0.5 font-bold hidden sm:block">
                 Online Utility Suite
               </span>
             </div>
           </Link>
 
           {/* Right-side toolbar: Blog, Search, Saved, Dark Mode */}
-          <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
+          <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
             {/* Blog Hub Link */}
             <Link
               to="/blog"
-              className={`btn-signature-header px-3 sm:px-3.5 gap-1.5 text-xs font-bold ${
+              className={`btn-signature-header px-2.5 sm:px-3.5 gap-1.5 text-xs font-bold ${
                 pathname.startsWith('/blog')
                   ? 'bg-primary/15 text-primary border-primary/40 shadow-xs'
                   : 'text-muted-foreground hover:text-foreground'
               }`}
               title="ToolNest Pulse & Insights"
             >
-              <BookOpen className="w-3.5 h-3.5 text-primary" />
-              <span>Blog</span>
+              <BookOpen className="w-3.5 h-3.5 text-primary shrink-0" />
+              <span className="hidden sm:inline">Blog</span>
             </Link>
 
             {/* 1. Search Trigger Button */}
@@ -69,7 +76,7 @@ export const SiteLayout: React.FC = () => {
             {/* 2. Favorites / Saved Button */}
             <Link
               to={pathname === '/' && location.search.includes('favorites=true') ? '/' : '/?favorites=true'}
-              className={`btn-signature-header px-3 sm:px-3.5 gap-2 text-xs font-bold ${
+              className={`btn-signature-header px-2.5 sm:px-3.5 gap-1.5 sm:gap-2 text-xs font-bold ${
                 location.search.includes('favorites=true')
                   ? 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-400 dark:border-amber-600 shadow-amber-500/20'
                   : 'text-muted-foreground hover:text-foreground'
@@ -77,7 +84,7 @@ export const SiteLayout: React.FC = () => {
               title="View Bookmarked Tools"
             >
               <Star 
-                className={`w-4 h-4 transition-transform group-hover:scale-115 ${
+                className={`w-4 h-4 transition-transform group-hover:scale-115 shrink-0 ${
                   favorites.length > 0 ? 'text-amber-500 fill-amber-500 filter drop-shadow-[0_0_6px_rgba(245,158,11,0.5)]' : 'text-amber-500/80'
                 }`} 
               />
@@ -89,11 +96,35 @@ export const SiteLayout: React.FC = () => {
               )}
             </Link>
 
-            {/* 3. 3D Theme Toggle Button & Wave Animation */}
+            {/* 3. Google Drive Sync Button */}
+            <button
+              type="button"
+              onClick={() => setIsDriveModalOpen(true)}
+              className={`btn-signature-header px-2.5 sm:px-3.5 gap-1.5 sm:gap-2 text-xs font-bold cursor-pointer relative ${
+                accessToken
+                  ? 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-400/50 shadow-blue-500/10'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+              title={accessToken ? `Connected as ${user?.displayName || user?.email}` : 'Connect Google Drive Cloud Sync'}
+            >
+              <Cloud className="w-4 h-4 text-blue-500 shrink-0" />
+              <span className="hidden sm:inline">Drive Sync</span>
+              {accessToken && (
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+              )}
+            </button>
+
+            {/* 4. 3D Theme Toggle Button & Wave Animation */}
             <ThemeToggle3D theme={theme} setTheme={setTheme} />
           </div>
         </div>
       </header>
+
+      {/* Google Drive Modal */}
+      <GoogleDriveModal isOpen={isDriveModalOpen} onClose={() => setIsDriveModalOpen(false)} />
+
+      {/* AI Settings Modal */}
+      <AiSettingsModal isOpen={isAiModalOpen} onClose={() => setIsAiModalOpen(false)} />
 
       <main className="flex-1 w-full max-w-7xl mx-auto px-3 sm:px-4 md:px-6 pt-2 sm:pt-4 pb-10 md:pb-16">
         <Outlet />
@@ -158,6 +189,16 @@ export const SiteLayout: React.FC = () => {
               <li><Link to="/privacy-policy" className="hover:text-primary transition-colors">Privacy Policy</Link></li>
               <li><Link to="/terms" className="hover:text-primary transition-colors">Terms of Service</Link></li>
               <li><Link to="/disclaimer" className="hover:text-primary transition-colors">Disclaimer</Link></li>
+              <li>
+                <button
+                  type="button"
+                  onClick={() => setIsAiModalOpen(true)}
+                  className="hover:text-primary transition-colors flex items-center gap-1.5 cursor-pointer text-left font-semibold text-primary/90"
+                >
+                  <Sparkles className="w-3.5 h-3.5 text-primary shrink-0" />
+                  <span>AI Engine Settings</span>
+                </button>
+              </li>
             </ul>
           </div>
         </div>

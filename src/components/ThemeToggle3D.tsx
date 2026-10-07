@@ -17,6 +17,19 @@ export const ThemeToggle3D: React.FC<ThemeToggle3DProps> = ({ theme, setTheme })
 
     const nextTheme = theme === 'dark' ? 'light' : 'dark';
 
+    // Fast zero-latency DOM class update
+    const applyThemeToDom = () => {
+      if (nextTheme === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+      // Sync React state in low priority transition without blocking initial frame
+      React.startTransition(() => {
+        setTheme(nextTheme);
+      });
+    };
+
     // 1. Native View Transitions API with fluid circular ripple
     if (typeof document !== 'undefined' && 'startViewTransition' in document) {
       const rect = e.currentTarget.getBoundingClientRect();
@@ -28,14 +41,7 @@ export const ThemeToggle3D: React.FC<ThemeToggle3DProps> = ({ theme, setTheme })
       );
 
       const transition = (document as any).startViewTransition(() => {
-        flushSync(() => {
-          setTheme(nextTheme);
-          if (nextTheme === 'dark') {
-            document.documentElement.classList.add('dark');
-          } else {
-            document.documentElement.classList.remove('dark');
-          }
-        });
+        applyThemeToDom();
       });
 
       transition.ready
@@ -48,7 +54,7 @@ export const ThemeToggle3D: React.FC<ThemeToggle3DProps> = ({ theme, setTheme })
               ]
             },
             {
-              duration: 620,
+              duration: 520,
               easing: 'cubic-bezier(0.25, 1, 0.4, 1)',
               pseudoElement: '::view-transition-new(root)'
             }
@@ -59,20 +65,17 @@ export const ThemeToggle3D: React.FC<ThemeToggle3DProps> = ({ theme, setTheme })
       return;
     }
 
-    // 2. Synchronized fallback: Hardware-accelerated CSS transition
-    document.documentElement.classList.add('theme-transitioning');
-    flushSync(() => {
-      setTheme(nextTheme);
-      if (nextTheme === 'dark') {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
-    });
+    // 2. Synchronized fallback
+    if (typeof window !== 'undefined' && window.document) {
+      window.document.documentElement.classList.add('theme-transitioning');
+      applyThemeToDom();
 
-    setTimeout(() => {
-      document.documentElement.classList.remove('theme-transitioning');
-    }, 450);
+      setTimeout(() => {
+        if (typeof window !== 'undefined' && window.document) {
+          window.document.documentElement.classList.remove('theme-transitioning');
+        }
+      }, 400);
+    }
   };
 
   return (

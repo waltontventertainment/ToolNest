@@ -1,3 +1,50 @@
+// Global polyfills for modern JS features required by pdfjs-dist
+if (typeof Map !== 'undefined') {
+  if (!('getOrInsertComputed' in Map.prototype)) {
+    (Map.prototype as any).getOrInsertComputed = function (key: any, callbackFunction: (k: any) => any) {
+      if (this.has(key)) {
+        return this.get(key);
+      }
+      const value = callbackFunction(key);
+      this.set(key, value);
+      return value;
+    };
+  }
+  if (!('getOrInsert' in Map.prototype)) {
+    (Map.prototype as any).getOrInsert = function (key: any, defaultValue: any) {
+      if (this.has(key)) {
+        return this.get(key);
+      }
+      this.set(key, defaultValue);
+      return defaultValue;
+    };
+  }
+}
+
+if (typeof WeakMap !== 'undefined') {
+  if (!('getOrInsertComputed' in WeakMap.prototype)) {
+    (WeakMap.prototype as any).getOrInsertComputed = function (key: any, callbackFunction: (k: any) => any) {
+      if (this.has(key)) {
+        return this.get(key);
+      }
+      const value = callbackFunction(key);
+      this.set(key, value);
+      return value;
+    };
+  }
+}
+
+if (typeof Promise !== 'undefined' && !('withResolvers' in Promise)) {
+  (Promise as any).withResolvers = function () {
+    let resolve: any, reject: any;
+    const promise = new Promise((res, rej) => {
+      resolve = res;
+      reject = rej;
+    });
+    return { promise, resolve, reject };
+  };
+}
+
 // Global polyfills for TypedArray toHex
 const installToHex = (target: any) => {
   if (target && !('toHex' in target.prototype)) {
@@ -32,9 +79,10 @@ import {
   ArrowRight, ShieldAlert, Layers, Eye, ZoomIn, ZoomOut, Printer, Search,
   Sliders, ChevronLeft, ChevronRight, Maximize2, CheckSquare, Square,
   MoveUp, MoveDown, Sparkles, X, Filter, BookOpen, ExternalLink, Settings,
-  Type, AlignLeft, Globe
+  Type, AlignLeft, Globe, Archive
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { downloadBlob, downloadDataUrl, downloadFilesAsZip, copyDataUrlToClipboard } from '../lib/downloadHelper';
 
 // Bulletproof PDF.js worker setup: prefer self-contained local worker with polyfills
 if (typeof window !== 'undefined') {
@@ -49,17 +97,19 @@ if (typeof window !== 'undefined') {
 // SHARED ROBUST PDF HELPER FUNCTIONS
 // ----------------------------------------------------
 async function getPdfJsDocument(bytes: Uint8Array) {
+  const safeData = new Uint8Array(bytes.slice(0));
   try {
     const loadingTask = pdfjsLib.getDocument({
-      data: bytes,
+      data: safeData,
       cMapUrl: '/cmaps/',
       cMapPacked: true,
       enableXfa: true,
+      standardFontDataUrl: `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjsLib.version || '6.2.108'}/standard_fonts/`
     });
     return await loadingTask.promise;
   } catch {
     const fallbackTask = pdfjsLib.getDocument({
-      data: bytes,
+      data: safeData,
       cMapUrl: `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjsLib.version || '6.2.108'}/cmaps/`,
       cMapPacked: true,
       enableXfa: true,
@@ -71,22 +121,39 @@ async function getPdfJsDocument(bytes: Uint8Array) {
 async function renderPdfPageToCanvas(
   pdfDoc: any, 
   pageNum: number, 
-  scale: number = 1.0, 
+  scale: number = 2.0, 
   format: 'png' | 'jpeg' | 'webp' = 'png',
-  quality: number = 0.92
+  quality: number = 0.95
 ): Promise<{ dataUrl: string; width: number; height: number }> {
   const page = await pdfDoc.getPage(pageNum);
-  const viewport = page.getViewport({ scale });
+  const safeScale = Math.min(Math.max(scale || 1.5, 0.5), 3.5);
+  const viewport = page.getViewport({ scale: safeScale });
   const canvas = document.createElement('canvas');
-  canvas.width = Math.floor(viewport.width);
-  canvas.height = Math.floor(viewport.height);
+  canvas.width = Math.max(1, Math.floor(viewport.width));
+  canvas.height = Math.max(1, Math.floor(viewport.height));
   const ctx = canvas.getContext('2d');
   if (!ctx) throw new Error('Could not create 2D canvas context');
   
-  await page.render({ canvasContext: ctx, viewport } as any).promise;
+  // Paint crisp white background so JPEG and transparent PDF layers render perfectly
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  
+  const renderTask = page.render({
+    canvasContext: ctx,
+    viewport: viewport
+  });
+  await renderTask.promise;
+
   const mime = format === 'jpeg' ? 'image/jpeg' : format === 'webp' ? 'image/webp' : 'image/png';
+  let dataUrl = '';
+  try {
+    dataUrl = canvas.toDataURL(mime, quality);
+  } catch {
+    dataUrl = canvas.toDataURL('image/png');
+  }
+
   return {
-    dataUrl: canvas.toDataURL(mime, quality),
+    dataUrl,
     width: canvas.width,
     height: canvas.height
   };
@@ -382,12 +449,7 @@ export const PdfMergerTool: React.FC = () => {
       }
       const pdfBytes = await mergedPdf.save();
       const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `Merged_Document_${files.length}_files.pdf`;
-      a.click();
-      URL.revokeObjectURL(url);
+      downloadBlob(blob, `Merged_Document_${files.length}_files.pdf`);
       toast.success(`Successfully combined ${files.length} PDFs (${totalPages} total pages)!`);
     } catch (err) {
       console.error(err);
@@ -667,16 +729,43 @@ export const PdfSplitterTool: React.FC = () => {
 
       const pdfBytes = await newDoc.save();
       const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${file.name.replace('.pdf', '')}_extracted_${selectedCount}_pages.pdf`;
-      a.click();
-      URL.revokeObjectURL(url);
+      downloadBlob(blob, `${file.name.replace(/\.pdf$/i, '')}_extracted_${selectedCount}_pages.pdf`);
       toast.success(`Extracted ${selectedCount} selected page(s) into a new PDF!`);
     } catch (err) {
       console.error(err);
       toast.error('Failed to extract pages');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleExtractZip = async () => {
+    if (!file || selectedCount === 0) {
+      toast.error('Please select pages to split as ZIP');
+      return;
+    }
+    setIsProcessing(true);
+    try {
+      const srcDoc = await PDFDocument.load(file.bytes);
+      const selectedPages = pages.filter(p => p.selected);
+      const filesForZip: Array<{ name: string; content: Uint8Array }> = [];
+
+      for (const p of selectedPages) {
+        const newDoc = await PDFDocument.create();
+        const [copied] = await newDoc.copyPages(srcDoc, [p.pageNum - 1]);
+        newDoc.addPage(copied);
+        const pdfBytes = await newDoc.save();
+        filesForZip.push({
+          name: `${file.name.replace(/\.pdf$/i, '')}_page_${p.pageNum}.pdf`,
+          content: pdfBytes
+        });
+      }
+
+      await downloadFilesAsZip(filesForZip, `${file.name.replace(/\.pdf$/i, '')}_split_pages.zip`);
+      toast.success(`Downloaded ${selectedPages.length} split PDF pages as a single ZIP archive!`);
+    } catch (err) {
+      console.error(err);
+      toast.error('Error creating ZIP archive');
     } finally {
       setIsProcessing(false);
     }
@@ -692,19 +781,17 @@ export const PdfSplitterTool: React.FC = () => {
       const srcDoc = await PDFDocument.load(file.bytes);
       const selectedPages = pages.filter(p => p.selected);
 
-      for (const p of selectedPages) {
+      for (let i = 0; i < selectedPages.length; i++) {
+        const p = selectedPages[i];
         const newDoc = await PDFDocument.create();
         const [copied] = await newDoc.copyPages(srcDoc, [p.pageNum - 1]);
         newDoc.addPage(copied);
 
         const pdfBytes = await newDoc.save();
         const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `${file.name.replace('.pdf', '')}_page_${p.pageNum}.pdf`;
-        a.click();
-        URL.revokeObjectURL(url);
+        setTimeout(() => {
+          downloadBlob(blob, `${file.name.replace(/\.pdf$/i, '')}_page_${p.pageNum}.pdf`);
+        }, i * 200);
       }
       toast.success(`Downloaded ${selectedPages.length} individual page PDF files!`);
     } catch (err) {
@@ -835,23 +922,32 @@ export const PdfSplitterTool: React.FC = () => {
           )}
 
           {/* Action Buttons */}
-          <div className="grid sm:grid-cols-2 gap-3 pt-2">
+          <div className="grid sm:grid-cols-3 gap-2.5 pt-2">
             <button
               onClick={handleExtractMerged}
               disabled={isProcessing || selectedCount === 0}
-              className="py-3.5 btn-3d text-xs font-bold gap-2 cursor-pointer disabled:opacity-50"
+              className="py-3 px-3 btn-3d text-xs font-bold gap-1.5 cursor-pointer disabled:opacity-50"
             >
-              {isProcessing ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
-              <span>Extract Selected ({selectedCount}) into 1 Merged PDF</span>
+              {isProcessing ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
+              <span>Merged PDF ({selectedCount} Pages)</span>
+            </button>
+
+            <button
+              onClick={handleExtractZip}
+              disabled={isProcessing || selectedCount === 0}
+              className="py-3 px-3 btn-signature-header text-xs font-bold text-primary gap-1.5 cursor-pointer disabled:opacity-50 bg-primary/10 border-primary/30"
+            >
+              <Archive className="w-3.5 h-3.5 text-primary" />
+              <span>Download as ZIP Archive (.zip)</span>
             </button>
 
             <button
               onClick={handleSplitIndividual}
               disabled={isProcessing || selectedCount === 0}
-              className="py-3.5 btn-3d-secondary text-xs font-bold gap-2 cursor-pointer disabled:opacity-50"
+              className="py-3 px-3 btn-3d-secondary text-xs font-bold gap-1.5 cursor-pointer disabled:opacity-50"
             >
-              {isProcessing ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Scissors className="w-4 h-4" />}
-              <span>Split Each Selected Page ({selectedCount} Individual PDFs)</span>
+              {isProcessing ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Scissors className="w-3.5 h-3.5" />}
+              <span>Separate Files ({selectedCount} PDFs)</span>
             </button>
           </div>
         </div>
@@ -883,7 +979,7 @@ export const PdfToImagesTool: React.FC = () => {
   const [pagePreviews, setPagePreviews] = useState<{ pageNum: number; thumbUrl: string; width: number; height: number }[]>([]);
   const [selectedPages, setSelectedPages] = useState<Set<number>>(new Set());
   const [rangeInput, setRangeInput] = useState<string>('');
-  const [scaleFactor, setScaleFactor] = useState<number>(3.0); // 3x = ~216-300 DPI Ultra High-Res
+  const [scaleFactor, setScaleFactor] = useState<number>(2.0); // 2.0x = ~150 DPI Crisp HD Default
   const [imageFormat, setImageFormat] = useState<'png' | 'jpeg' | 'webp'>('png');
   const [imageQuality, setImageQuality] = useState<number>(0.95);
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
@@ -1052,58 +1148,50 @@ export const PdfToImagesTool: React.FC = () => {
     }
   };
 
-  const downloadSingle = (dataUrl: string, pageNum: number) => {
+  const downloadSingle = async (dataUrl: string, pageNum: number) => {
     if (!file) return;
     const ext = imageFormat === 'jpeg' ? 'jpg' : imageFormat;
-    const a = document.createElement('a');
-    a.href = dataUrl;
-    a.download = `${file.name.replace(/\.pdf$/i, '')}_page_${pageNum}_${scaleFactor * 72}dpi.${ext}`;
-    a.click();
+    const filename = `${file.name.replace(/\.pdf$/i, '')}_page_${pageNum}_${Math.round(scaleFactor * 72)}dpi.${ext}`;
+    await downloadDataUrl(dataUrl, filename);
+    toast.success(`Downloaded Page ${pageNum} image!`);
   };
 
   const copyImageToClipboard = async (dataUrl: string, pageNum: number) => {
-    try {
-      // Convert dataUrl to blob
-      const res = await fetch(dataUrl);
-      const blob = await res.blob();
-      
-      // ClipboardItem prefers image/png
-      if (blob.type === 'image/png') {
-        await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
-      } else {
-        // Draw to temp canvas to export as PNG for clipboard compatibility
-        const img = new Image();
-        img.src = dataUrl;
-        await new Promise((resolve) => { img.onload = resolve; });
-        const c = document.createElement('canvas');
-        c.width = img.width;
-        c.height = img.height;
-        const ctx = c.getContext('2d');
-        ctx?.drawImage(img, 0, 0);
-        c.toBlob(async (pngBlob) => {
-          if (pngBlob) {
-            await navigator.clipboard.write([new ClipboardItem({ 'image/png': pngBlob })]);
-          }
-        }, 'image/png');
-      }
-
+    const success = await copyDataUrlToClipboard(dataUrl);
+    if (success) {
       setCopiedPage(pageNum);
       toast.success(`Copied Page ${pageNum} image to clipboard!`);
       setTimeout(() => setCopiedPage(null), 2500);
-    } catch (err) {
-      console.error(err);
-      toast.error('Clipboard copy failed. Try downloading instead.');
+    } else {
+      toast.error('Clipboard copy failed. Try saving the image directly.');
     }
   };
 
-  const downloadAll = () => {
+  const downloadAllAsZip = async () => {
+    if (!convertedImages.length || !file) return;
+    try {
+      const ext = imageFormat === 'jpeg' ? 'jpg' : imageFormat;
+      const filesForZip = convertedImages.map(img => ({
+        name: `${file.name.replace(/\.pdf$/i, '')}_page_${img.pageNum}_${Math.round(scaleFactor * 72)}dpi.${ext}`,
+        content: img.dataUrl,
+        isBase64: true
+      }));
+      await downloadFilesAsZip(filesForZip, `${file.name.replace(/\.pdf$/i, '')}_all_pages_images.zip`);
+      toast.success(`Downloaded all ${convertedImages.length} images as a ZIP archive!`);
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to generate ZIP archive. You can download images individually.');
+    }
+  };
+
+  const downloadAllIndividual = () => {
     if (!convertedImages.length) return;
     convertedImages.forEach((img, idx) => {
       setTimeout(() => {
         downloadSingle(img.dataUrl, img.pageNum);
-      }, idx * 250);
+      }, idx * 400);
     });
-    toast.success(`Starting download for all ${convertedImages.length} images!`);
+    toast.success(`Downloading ${convertedImages.length} images one by one!`);
   };
 
   const formatFileSize = (bytes: number) => {
@@ -1175,10 +1263,10 @@ export const PdfToImagesTool: React.FC = () => {
                 <label className="text-xs font-bold text-foreground block mb-2">Resolution / DPI Quality</label>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                   {[
-                    { label: 'Standard', scale: 1.33, dpi: '96 DPI' },
+                    { label: 'Web Fast', scale: 1.25, dpi: '90 DPI' },
                     { label: 'Crisp HD', scale: 2.0, dpi: '150 DPI' },
-                    { label: 'Print Ultra', scale: 4.16, dpi: '300 DPI' },
-                    { label: 'Maximum 4K', scale: 5.5, dpi: '400 DPI' },
+                    { label: 'Print Ultra', scale: 3.0, dpi: '220 DPI' },
+                    { label: 'Maximum 4K', scale: 3.5, dpi: '250 DPI' },
                   ].map((opt) => (
                     <button
                       key={opt.scale}
@@ -1373,12 +1461,18 @@ export const PdfToImagesTool: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
                   <button
-                    onClick={downloadAll}
+                    onClick={downloadAllAsZip}
+                    className="btn-signature-header h-9 px-3.5 text-xs font-bold text-primary gap-1.5 cursor-pointer bg-primary/10 border-primary/30 shadow-xs"
+                  >
+                    <Archive className="w-3.5 h-3.5 text-primary" /> Download All as ZIP (.zip)
+                  </button>
+                  <button
+                    onClick={downloadAllIndividual}
                     className="btn-signature-header h-9 px-3.5 text-xs font-bold text-rose-500 gap-1.5 cursor-pointer"
                   >
-                    <Download className="w-3.5 h-3.5" /> Download All Pages ({convertedImages.length})
+                    <Download className="w-3.5 h-3.5" /> Separate Images ({convertedImages.length})
                   </button>
                 </div>
               </div>
@@ -1740,12 +1834,7 @@ export const TextToPdfTool: React.FC = () => {
 
       const pdfBytes = await doc.save();
       const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${docTitle.trim() || 'Document'}.pdf`;
-      a.click();
-      URL.revokeObjectURL(url);
+      downloadBlob(blob, `${docTitle.trim() || 'Document'}.pdf`);
       toast.success('Successfully downloaded generated PDF document!');
     } catch (err) {
       console.error(err);
@@ -2179,12 +2268,7 @@ export const PdfToTextTool: React.FC = () => {
     }
 
     const blob = new Blob([content], { type: `${mime};charset=utf-8` });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${baseName}_extracted.${ext}`;
-    a.click();
-    URL.revokeObjectURL(url);
+    downloadBlob(blob, `${baseName}_extracted.${ext}`);
     toast.success(`Downloaded .${ext.toUpperCase()} file!`);
   };
 
@@ -2664,12 +2748,7 @@ export const PdfRotateTool: React.FC = () => {
 
       const pdfBytes = await doc.save();
       const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${file.name.replace('.pdf', '')}_rotated.pdf`;
-      a.click();
-      URL.revokeObjectURL(url);
+      downloadBlob(blob, `${file.name.replace(/\.pdf$/i, '')}_rotated.pdf`);
       toast.success('Successfully downloaded rotated PDF document!');
     } catch (err) {
       console.error(err);
@@ -2844,12 +2923,7 @@ export const PdfWatermarkTool: React.FC = () => {
 
       const pdfBytes = await doc.save();
       const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${file.name.replace('.pdf', '')}_watermarked.pdf`;
-      a.click();
-      URL.revokeObjectURL(url);
+      downloadBlob(blob, `${file.name.replace(/\.pdf$/i, '')}_watermarked.pdf`);
       toast.success('Successfully applied watermark across all pages!');
     } catch (err) {
       console.error(err);

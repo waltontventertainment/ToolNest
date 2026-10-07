@@ -22,6 +22,7 @@ import { runAutoAiCompletion } from '../lib/aiService';
 import { toast } from 'sonner';
 import { AiStreamingStatus, AiLiveCursor } from './AiToolsBatch2';
 import { MarkdownRenderer, stripMarkdown } from '../components/MarkdownRenderer';
+import { downloadBlob } from '../lib/downloadHelper';
 
 // ============================================================================
 // 1. AI Article & Blog Post Writer
@@ -89,12 +90,8 @@ Format the output cleanly in Markdown with:
 
   const downloadArticle = () => {
     const blob = new Blob([result], { type: 'text/markdown;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${topic.slice(0, 30).toLowerCase().replace(/[^a-z0-9]/g, '-') || 'article'}.md`;
-    a.click();
-    URL.revokeObjectURL(url);
+    const filename = `${topic.slice(0, 30).toLowerCase().replace(/[^a-z0-9]/g, '-') || 'article'}.md`;
+    downloadBlob(blob, filename);
     toast.success('Article downloaded as Markdown file!');
   };
 

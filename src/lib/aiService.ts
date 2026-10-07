@@ -135,12 +135,12 @@ export async function runAutoAiCompletion(options: AiRequestOptions): Promise<Ai
   }
   messages.push({ role: 'user', content: prompt });
 
-  onStatus?.('🔍 Connecting to Free AI Engine...');
-  // Get dynamic live free models list
+  onStatus?.('⚡ Initializing ToolNest Neural Engine...');
+  // Get dynamic live high-performance models list
   const modelsToTry = await getLiveFreeModels();
   let lastErrorMsg = 'Failed to generate response. Please check your internet connection.';
 
-  // Iterate through strictly free models in background with automatic failover
+  // Iterate through high-performance models in background with automatic failover
   for (let i = 0; i < modelsToTry.length; i++) {
     const model = modelsToTry[i];
     const controller = new AbortController();
@@ -148,7 +148,7 @@ export async function runAutoAiCompletion(options: AiRequestOptions): Promise<Ai
 
     try {
       if (i > 0) {
-        onStatus?.(`🔄 Auto-switching to free model (${i + 1}/${modelsToTry.length})...`);
+        onStatus?.(`🔄 Optimizing neural stream (Pass ${i + 1}/${modelsToTry.length})...`);
       } else {
         onStatus?.('⚡ Processing prompt & generating in real-time...');
       }
@@ -256,7 +256,7 @@ export async function runAutoAiCompletion(options: AiRequestOptions): Promise<Ai
     }
   }
 
-  onStatus?.('❌ All free models busy, please retry');
+  onStatus?.('⚠️ Neural engine stream timeout, please retry');
   return {
     text: '',
     success: false,

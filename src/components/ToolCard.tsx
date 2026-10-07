@@ -5,7 +5,7 @@ import { ToolDefinition } from '../lib/types';
 import { cn } from '../lib/utils';
 import { useFavorites } from '../context/FavoritesContext';
 
-export const ToolCard: React.FC<{ tool: ToolDefinition }> = ({ tool }) => {
+export const ToolCard: React.FC<{ tool: ToolDefinition }> = React.memo(({ tool }) => {
   const { isFavorite: checkFavorite, toggleFavorite: authToggleFavorite } = useFavorites();
   
   const isFavorite = checkFavorite(tool.slug);
@@ -73,4 +73,4 @@ export const ToolCard: React.FC<{ tool: ToolDefinition }> = ({ tool }) => {
       </p>
     </Link>
   );
-};
+});
