@@ -324,6 +324,40 @@ async function startServer() {
     });
   });
 
+  // CORS-Safe Image / Screenshot Download Proxy
+  app.get('/api/proxy-image', async (req, res) => {
+    const imageUrl = req.query.url as string;
+    const filename = (req.query.filename as string) || `Snapshot_${Date.now()}.png`;
+
+    if (!imageUrl) {
+      return res.status(400).json({ error: 'Missing image url query parameter' });
+    }
+
+    try {
+      const response = await fetch(imageUrl, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+        }
+      });
+
+      if (!response.ok) {
+        return res.status(response.status).json({ error: `Remote image fetch failed: ${response.statusText}` });
+      }
+
+      const contentType = response.headers.get('content-type') || 'image/png';
+      const arrayBuffer = await response.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
+
+      res.setHeader('Content-Type', contentType);
+      res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+      res.setHeader('Cache-Control', 'public, max-age=86400');
+      return res.send(buffer);
+    } catch (err: any) {
+      console.error('Image proxy error:', err.message);
+      return res.status(500).json({ error: 'Failed to proxy image download', details: err.message });
+    }
+  });
+
   // Mount Vite development middlewares in non-production environments
   if (process.env.NODE_ENV !== 'production') {
     const { createServer: createViteServer } = await import('vite');

@@ -152,17 +152,9 @@ Language: Please output in ${lang === 'bn' ? 'Bengali' : 'English'}.`;
         <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-2xl pointer-events-none" />
         
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 relative z-10">
-          <div className="space-y-1">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/25 text-xs font-bold text-blue-600 dark:text-blue-400">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Wikipedia Category Tool</span>
-            </div>
-            <h2 className="text-xl sm:text-2xl font-display font-black text-foreground tracking-tight leading-tight">
-              Wikipedia AI Summarizer & Fact Sheet
-            </h2>
-            <p className="text-xs text-muted-foreground">
-              Search any article globally, extract high-precision summaries, and generate beautiful bulleted fact sheets with server-side AI.
-            </p>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/25 text-xs font-bold text-blue-600 dark:text-blue-400">
+            <Sparkles className="w-3.5 h-3.5" />
+            <span>Wikipedia AI Summarizer Engine</span>
           </div>
 
           <div className="flex items-center gap-1.5 bg-secondary p-1 rounded-xl border border-border/50 shrink-0">

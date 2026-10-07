@@ -15,6 +15,21 @@
     <!-- Google AdSense Account Verification & Auto Ads -->
     <meta name="google-adsense-account" content="ca-pub-8769496591745522">
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8769496591745522" crossorigin="anonymous"></script>
+
+    <!-- Instant Theme Bootstrap (Zero Flash) -->
+    <script>
+      (function() {
+        try {
+          var saved = localStorage.getItem('toolnest-theme');
+          var isDark = saved === '"dark"' || saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches);
+          if (isDark) {
+            document.documentElement.classList.add('dark');
+          } else {
+            document.documentElement.classList.remove('dark');
+          }
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

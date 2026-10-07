@@ -187,24 +187,20 @@ Please format your response in structured Markdown with:
 
   return (
     <div className="space-y-6">
-      <div className="card-ambient p-6 sm:p-8 rounded-3xl border border-border/80 shadow-xs relative overflow-hidden">
+      <div className="card-ambient p-5 sm:p-6 rounded-3xl border border-border/80 shadow-xs relative overflow-hidden">
         <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-2xl pointer-events-none" />
         
-        <div className="max-w-xl space-y-4">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-red-500/10 border border-red-500/20 text-xs font-bold text-red-600 dark:text-red-400 shadow-2xs">
-            <Video className="w-3.5 h-3.5 animate-pulse" />
-            <span>YouTube Transcript Extractor</span>
+        <div className="space-y-3">
+          <div className="flex items-center justify-between gap-2 pb-2 border-b border-border/60">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/10 border border-red-500/20 text-xs font-bold text-red-600 dark:text-red-400">
+              <Video className="w-3.5 h-3.5 animate-pulse" />
+              <span>Direct Multilingual Video Engine</span>
+            </div>
+            <span className="text-xs text-muted-foreground font-mono">No API Key Required</span>
           </div>
-          
-          <h2 className="text-xl sm:text-2xl font-display font-black text-foreground leading-tight tracking-tight">
-            Instant Subtitle & Transcript Scraper
-          </h2>
-          <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-            Extract multilingual transcripts, text content, and timelines from any YouTube video in milliseconds. No Google API quota or keys needed!
-          </p>
 
           {/* Search/Url Input Bar */}
-          <div className="flex flex-col sm:flex-row gap-2 pt-2">
+          <div className="flex flex-col sm:flex-row gap-2 pt-1">
             <div className="relative flex-1">
               <Video className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-red-500" />
               <input
