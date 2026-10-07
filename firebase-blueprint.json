@@ -1,0 +1,24 @@
+{
+  "entities": {
+    "TechDigest": {
+      "title": "Daily Tech Digest",
+      "description": "Daily AI-generated tech news summary, developer trends, and insights cached in real-time Firestore",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Date key YYYY-MM-DD" },
+        "date": { "type": "string", "description": "Human readable date string" },
+        "headline": { "type": "string", "description": "Main headline of the day" },
+        "summary": { "type": "string", "description": "Executive summary paragraph" },
+        "keyTakeaway": { "type": "string", "description": "Key actionable takeaway for creators" },
+        "generatedAt": { "type": "string", "description": "Timestamp string" }
+      },
+      "required": ["id", "date", "headline", "summary"]
+    }
+  },
+  "firestore": {
+    "/tech_digests/{digestId}": {
+      "schema": "TechDigest",
+      "description": "Daily tech digest cached document by YYYY-MM-DD"
+    }
+  }
+}

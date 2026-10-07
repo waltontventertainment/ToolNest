@@ -169,8 +169,8 @@ export const HeaderSearch: React.FC = () => {
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  placeholder={`Search ${tools.length}+ tools (e.g. PDF, Image, QR, JSON)...`}
-                  className="w-full h-11 pl-11 pr-20 bg-secondary/50 focus:bg-background border border-border/80 focus:border-primary/60 rounded-xl text-sm font-medium text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-3 focus:ring-primary/15 transition-all"
+                  placeholder={`Search ${tools.length}+ tools (e.g. PDF, Image, QR)...`}
+                  className="w-full h-11 pl-11 pr-32 sm:pr-36 bg-secondary/50 focus:bg-background border border-border/80 focus:border-primary/60 rounded-xl text-sm font-medium text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-3 focus:ring-primary/15 transition-all"
                 />
 
                 <div className="absolute right-2.5 flex items-center gap-1.5">
@@ -190,6 +190,15 @@ export const HeaderSearch: React.FC = () => {
                   <kbd className="hidden sm:inline-flex px-1.5 py-0.5 text-[10px] font-mono text-muted-foreground bg-muted border border-border rounded-md">
                     ESC
                   </kbd>
+                  <button
+                    type="button"
+                    onClick={() => setIsOpen(false)}
+                    className="px-2 py-1 rounded-lg bg-secondary hover:bg-secondary/80 text-foreground text-xs font-bold transition-colors cursor-pointer flex items-center gap-1 border border-border/60 ml-1"
+                    title="Close search"
+                  >
+                    <X className="w-3.5 h-3.5 text-muted-foreground" />
+                    <span>Close</span>
+                  </button>
                 </div>
               </div>
             </form>
@@ -284,15 +293,8 @@ export const HeaderSearch: React.FC = () => {
                   <CornerDownLeft className="w-3 h-3" />
                 </button>
               ) : (
-                <span>Tip: Press <kbd className="px-1.5 py-0.5 bg-card border rounded text-[10px]">ESC</kbd> to exit</span>
+                <span>Tip: Press <kbd className="px-1.5 py-0.5 bg-card border rounded text-[10px]">ESC</kbd> to exit search</span>
               )}
-              <button
-                type="button"
-                onClick={() => setIsOpen(false)}
-                className="text-xs text-muted-foreground hover:text-foreground font-medium"
-              >
-                Close
-              </button>
             </div>
           </div>
         </div>

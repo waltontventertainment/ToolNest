@@ -8,6 +8,8 @@ import { AdSlot } from '../components/AdSlot';
 import { useLocalStorage } from '../lib/toolkit';
 import { useFavorites } from '../context/FavoritesContext';
 import { BlogPost, BUILTIN_BLOG_POSTS, getMergedBlogPosts } from '../lib/blogData';
+import { DailyTechDigest } from '../components/DailyTechDigest';
+import { TypewriterHeading } from '../components/TypewriterHeading';
 
 import heroImg from '../assets/images/hero_visual_1785690377657.jpg';
 import emptyImg from '../assets/images/empty_state_1785690459297.jpg';
@@ -98,12 +100,8 @@ export const Index: React.FC = () => {
             <span className="tracking-tight">{tools.length}+ Free Browser Utilities • Client-Side Privacy</span>
           </div>
           
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-display font-black tracking-[-0.035em] mb-4 text-foreground leading-[1.12]">
-            Every web tool you need.<br />
-            <span className="text-brand-gradient">
-              Zero installation required.
-            </span>
-          </h1>
+          {/* Real Keyboard Typewriter Animation Heading */}
+          <TypewriterHeading />
           
           <p className="text-sm sm:text-base text-muted-foreground mb-8 leading-relaxed max-w-xl font-normal">
             100% free, browser-native processing. Resize images, extract color palettes, format JSON, generate QR codes, and convert files safely without cloud uploads.
@@ -129,6 +127,11 @@ export const Index: React.FC = () => {
               </div>
               <span>{tools.length} Utilities</span>
             </div>
+          </div>
+
+          {/* Daily Tech Digest Widget (Positioned above Search Box) */}
+          <div className="w-full mb-2">
+            <DailyTechDigest />
           </div>
 
           {/* Search Box */}
@@ -171,9 +174,9 @@ export const Index: React.FC = () => {
               alt="Toolzaro Visual" 
               className="w-full max-w-md rounded-3xl shadow-xl border border-border object-cover" 
             />
-            <div className="absolute -bottom-4 -left-4 bg-card/90 backdrop-blur-md border border-border/80 p-3.5 rounded-2xl shadow-lg flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-600 flex items-center justify-center font-bold">
-                <Sparkles className="w-5 h-5" />
+            <div className="absolute -bottom-4 -left-4 bg-card/95 backdrop-blur-md border border-border/80 p-3.5 rounded-2xl shadow-xl flex items-center gap-3 animate-bounce [animation-duration:3s]">
+              <div className="w-10 h-10 rounded-xl bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold shadow-inner">
+                <Sparkles className="w-5 h-5 text-indigo-500 animate-pulse" />
               </div>
               <div>
                 <div className="text-xs font-bold text-foreground">Color & Image Suite</div>
@@ -349,14 +352,14 @@ export const Index: React.FC = () => {
             {blogPosts.map((post) => (
               <article
                 key={post.id}
-                className="group flex flex-col justify-between rounded-3xl bg-card border border-border hover:border-primary/40 transition-all p-5 shadow-2xs hover:shadow-md"
+                className="group flex flex-col justify-between rounded-3xl bg-card border border-border/80 hover:border-primary/50 transition-all duration-300 p-5 shadow-xs hover:shadow-xl hover:-translate-y-1.5 cursor-pointer"
               >
                 <div className="space-y-3">
                   <div className="overflow-hidden rounded-2xl aspect-video relative">
                     <img
                       src={post.coverImage}
                       alt={post.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 ease-out"
                     />
                     <span className="absolute top-2.5 left-2.5 px-2.5 py-1 rounded-lg bg-card/90 backdrop-blur-md text-[10px] font-bold text-foreground border border-border">
                       {post.category}

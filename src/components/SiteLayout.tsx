@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { Moon, Sun, Wrench, Star, ArrowRight, BookOpen, Cloud, Coffee, Bug, MessageSquarePlus } from 'lucide-react';
+import { Moon, Sun, Wrench, Star, ArrowRight, BookOpen, Cloud, Coffee, Bug, MessageSquarePlus, Sparkles, X } from 'lucide-react';
 import { useLocalStorage } from '../lib/toolkit';
 import { categories, tools } from '../lib/registry';
 import { HeaderSearch } from './HeaderSearch';
@@ -18,6 +18,7 @@ export const SiteLayout: React.FC = () => {
   const [isDriveModalOpen, setIsDriveModalOpen] = useState(false);
   const [isCoffeeModalOpen, setIsCoffeeModalOpen] = useState(false);
   const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
+  const [isBannerDismissed, setIsBannerDismissed] = useLocalStorage<boolean>('toolnest_top_banner_dismissed', false);
   const location = useLocation();
   const { pathname } = location;
 
@@ -36,6 +37,45 @@ export const SiteLayout: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground">
+      {/* Premium Top Announcement Banner for Desktop / PC View */}
+      {!isBannerDismissed && (
+        <div className="hidden md:block w-full bg-gradient-to-r from-indigo-950 via-purple-950 to-slate-950 border-b border-primary/30 text-white text-xs relative overflow-hidden transition-all duration-300 shadow-sm">
+          {/* Ambient Specular Glass Reflection Shimmer */}
+          <div className="absolute inset-0 bg-[linear-gradient(110deg,transparent_25%,rgba(255,255,255,0.08)_50%,transparent_75%)] bg-[length:250%_100%] animate-[shimmer_8s_infinite] pointer-events-none" />
+
+          <div className="max-w-7xl mx-auto px-4 py-2 flex items-center justify-between gap-4 relative z-10">
+            <div className="flex items-center gap-3">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-primary/30 border border-primary/40 text-[10px] font-black uppercase tracking-wider text-white shadow-2xs">
+                <Sparkles className="w-3 h-3 text-amber-400 animate-pulse" />
+                <span>Toolzaro 2.0</span>
+              </span>
+              <p className="font-semibold text-slate-200 text-xs">
+                <span className="text-white font-bold">161+ Free Browser Utilities</span> • 100% Client-Side Privacy • Live Tech Digest & Drive Sync
+              </p>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <Link 
+                to="/#tools-grid" 
+                className="inline-flex items-center gap-1 text-[11px] font-bold text-white hover:text-white bg-primary/40 hover:bg-primary/70 px-3 py-1 rounded-lg border border-primary/50 transition-all shadow-2xs hover:scale-105"
+              >
+                <span>Explore All Tools</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+
+              <button
+                type="button"
+                onClick={() => setIsBannerDismissed(true)}
+                className="p-1 text-slate-400 hover:text-white rounded-lg hover:bg-white/10 transition-colors cursor-pointer"
+                title="Close top banner"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <header className="sticky top-0 z-50 w-full backdrop-blur-xl bg-background/90 border-b border-border/80 shadow-xs">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between gap-4 max-w-7xl">
           {/* 3D Extruded Logo on the left */}

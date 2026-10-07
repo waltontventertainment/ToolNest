@@ -70,11 +70,13 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({ isOpen, onCl
             </div>
           </div>
           <button
+            type="button"
             onClick={onClose}
-            className="p-1.5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
-            title="Close"
+            className="px-3 py-1.5 rounded-xl bg-secondary hover:bg-secondary/80 text-foreground text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 border border-border/60 shadow-2xs"
+            title="Close modal"
           >
-            <X className="w-5 h-5" />
+            <X className="w-3.5 h-3.5 text-muted-foreground" />
+            <span>Close</span>
           </button>
         </div>
 
@@ -241,14 +243,11 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({ isOpen, onCl
         </div>
 
         {/* Modal Footer */}
-        <div className="p-4 border-t border-border/70 bg-muted/30 flex items-center justify-between text-xs text-muted-foreground">
-          <span>Google Workspace Drive Sync v1.0</span>
-          <button
-            onClick={onClose}
-            className="px-4 py-2 rounded-xl bg-secondary text-foreground hover:bg-secondary/80 font-bold transition-colors cursor-pointer"
-          >
-            Close
-          </button>
+        <div className="p-3 border-t border-border/70 bg-muted/30 flex items-center justify-between text-xs text-muted-foreground">
+          <span className="flex items-center gap-1.5">
+            <ShieldCheck className="w-4 h-4 text-emerald-500" />
+            <span>Google Workspace Drive Sync Active</span>
+          </span>
         </div>
       </div>
 

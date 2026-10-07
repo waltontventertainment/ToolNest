@@ -574,8 +574,13 @@ export const PdfMergerTool: React.FC = () => {
           <div className="bg-card border border-border p-4 rounded-2xl max-w-md w-full shadow-2xl space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold truncate">{previewModal.title}</span>
-              <button onClick={() => setPreviewModal(null)} className="p-1 text-muted-foreground hover:text-foreground">
-                <X className="w-4 h-4" />
+              <button
+                type="button"
+                onClick={() => setPreviewModal(null)}
+                className="px-2.5 py-1 rounded-lg bg-secondary hover:bg-secondary/80 text-foreground text-xs font-bold transition-all cursor-pointer flex items-center gap-1 border border-border/60"
+              >
+                <X className="w-3.5 h-3.5 text-muted-foreground" />
+                <span>Close</span>
               </button>
             </div>
             <img src={previewModal.url} alt="PDF Preview" className="w-full h-auto max-h-[70vh] object-contain rounded-xl border border-border/80 shadow-md" />
@@ -959,8 +964,13 @@ export const PdfSplitterTool: React.FC = () => {
           <div className="bg-card border border-border p-4 rounded-2xl max-w-lg w-full shadow-2xl space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold">Page Inspection</span>
-              <button onClick={() => setInspectModal(null)} className="p-1 text-muted-foreground hover:text-foreground">
-                <X className="w-4 h-4" />
+              <button
+                type="button"
+                onClick={() => setInspectModal(null)}
+                className="px-2.5 py-1 rounded-lg bg-secondary hover:bg-secondary/80 text-foreground text-xs font-bold transition-all cursor-pointer flex items-center gap-1 border border-border/60"
+              >
+                <X className="w-3.5 h-3.5 text-muted-foreground" />
+                <span>Close</span>
               </button>
             </div>
             <img src={inspectModal} alt="Preview" className="w-full h-auto max-h-[75vh] object-contain rounded-xl border border-border/80 shadow-md" />
@@ -1576,8 +1586,13 @@ export const PdfToImagesTool: React.FC = () => {
                 >
                   <Download className="w-3 h-3" /> Save
                 </button>
-                <button onClick={() => setZoomModal(null)} className="p-1 text-muted-foreground hover:text-foreground cursor-pointer ml-1">
-                  <X className="w-5 h-5" />
+                <button
+                  type="button"
+                  onClick={() => setZoomModal(null)}
+                  className="px-2.5 py-1 rounded-lg bg-secondary hover:bg-secondary/80 text-foreground text-xs font-bold transition-all cursor-pointer flex items-center gap-1 border border-border/60 ml-1"
+                >
+                  <X className="w-3.5 h-3.5 text-muted-foreground" />
+                  <span>Close</span>
                 </button>
               </div>
             </div>

@@ -1,17 +1,11 @@
-import { initializeApp, getApps, getApp } from 'firebase/app';
 import { 
-  getAuth, 
   signInWithPopup, 
   GoogleAuthProvider, 
   onAuthStateChanged, 
   signOut, 
   User 
 } from 'firebase/auth';
-import firebaseConfig from '../../firebase-applet-config.json';
-
-// Initialize Firebase App if not already initialized
-const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
-export const auth = getAuth(app);
+import { auth } from './firebase';
 
 const provider = new GoogleAuthProvider();
 // Workspace Drive Scope
@@ -63,6 +57,14 @@ export const googleSignIn = async (): Promise<{ user: User; accessToken: string 
     cachedAccessToken = credential.accessToken;
     return { user: result.user, accessToken: cachedAccessToken };
   } catch (error: any) {
+    if (
+      error?.code === 'auth/popup-closed-by-user' || 
+      error?.code === 'auth/cancelled-popup-request' ||
+      error?.message?.includes('popup-closed-by-user')
+    ) {
+      // User closed the popup window intentionally before completing authentication
+      return null;
+    }
     console.error('Google Auth error:', error);
     throw error;
   } finally {

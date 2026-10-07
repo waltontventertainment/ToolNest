@@ -72,8 +72,8 @@ export async function getLiveFreeModels(): Promise<string[]> {
         }
       }
     }
-  } catch (err) {
-    console.warn('Could not refresh live free models list, using static free models list:', err);
+  } catch {
+    // Silent fallback to built-in free model list
   }
 
   cachedFreeModels = STATIC_FREE_MODELS;

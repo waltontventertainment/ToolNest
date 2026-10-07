@@ -189,14 +189,14 @@ export const BlogPage: React.FC = () => {
             {gridPosts.map((post) => (
               <article
                 key={post.id}
-                className="group flex flex-col justify-between rounded-3xl bg-card border border-border hover:border-primary/40 transition-all p-5 shadow-2xs hover:shadow-md"
+                className="group flex flex-col justify-between rounded-3xl bg-card border border-border/80 hover:border-primary/50 transition-all duration-300 p-5 shadow-xs hover:shadow-xl hover:-translate-y-1.5 cursor-pointer"
               >
                 <div className="space-y-3.5">
                   <div className="overflow-hidden rounded-2xl aspect-video relative">
                     <img
                       src={post.coverImage}
                       alt={post.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 ease-out"
                     />
                     <span className="absolute top-3 left-3 px-2.5 py-1 rounded-lg bg-card/90 backdrop-blur-md text-[10px] font-bold text-foreground border border-border">
                       {post.category}

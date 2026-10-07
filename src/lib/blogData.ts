@@ -533,8 +533,7 @@ export async function fetchBloggerPosts(bloggerUrl: string): Promise<BlogPost[]>
     });
 
     return posts;
-  } catch (err) {
-    console.warn('Could not load Blogger feed:', err);
+  } catch {
     return [];
   }
 }
