@@ -1,33 +1,53 @@
 import JSZip from 'jszip';
+import { toast } from 'sonner';
 
 /**
  * Universal safe download utility that guarantees browser download prompt execution
- * across iframe previews, mobile Chrome/Safari, and desktop browsers.
+ * across iframe previews (AI Studio wrapper), mobile Chrome/Safari, and desktop browsers.
  */
 export function downloadBlob(blob: Blob, filename: string) {
   if (!blob) return;
 
   try {
     const url = URL.createObjectURL(blob);
+    
+    // Detect if app is running inside an iframe preview wrapper (e.g. AI Studio preview)
+    const isIframe = typeof window !== 'undefined' && window.self !== window.top;
+
     const a = document.createElement('a');
     a.style.display = 'none';
     a.href = url;
     a.download = filename;
     a.setAttribute('download', filename);
-    a.target = '_blank'; // Critical for mobile webviews & iframe sandboxes
+    a.target = '_blank';
     a.rel = 'noopener noreferrer';
     
     document.body.appendChild(a);
-    
-    // Explicit MouseEvent dispatch for maximum browser & iframe compatibility
-    const clickEvent = new MouseEvent('click', {
-      view: window,
-      bubbles: true,
-      cancelable: true,
-    });
-    a.dispatchEvent(clickEvent);
+    a.click();
 
-    // Keep object URL active for 60s so browser download manager finishes the stream
+    // If inside an iframe sandbox where programmatic a.click() is restricted by Chrome
+    if (isIframe) {
+      try {
+        window.open(url, '_blank');
+      } catch {}
+    }
+
+    // Always show action button in toast so user can tap if automatic click was intercepted
+    toast.success(`"${filename}" generated!`, {
+      description: isIframe ? 'Tap "Save / Open File" button below if preview frame blocked download.' : undefined,
+      action: {
+        label: 'Save / Open File',
+        onClick: () => {
+          const win = window.open(url, '_blank');
+          if (!win) {
+            window.location.href = url;
+          }
+        }
+      },
+      duration: 10000,
+    });
+
+    // Keep object URL active for 2 minutes so user can tap action button anytime
     setTimeout(() => {
       if (a.parentNode) {
         document.body.removeChild(a);
@@ -35,13 +55,19 @@ export function downloadBlob(blob: Blob, filename: string) {
       try {
         URL.revokeObjectURL(url);
       } catch {}
-    }, 60000);
+    }, 120000);
   } catch (err) {
     console.error('downloadBlob error:', err);
-    // Fallback: direct window location
     try {
-      const url = URL.createObjectURL(blob);
-      window.open(url, '_blank');
+      const reader = new FileReader();
+      reader.onload = () => {
+        const dataUrl = reader.result as string;
+        const win = window.open(dataUrl, '_blank');
+        if (!win) {
+          window.location.href = dataUrl;
+        }
+      };
+      reader.readAsDataURL(blob);
     } catch {}
   }
 }
@@ -79,7 +105,6 @@ export async function downloadDataUrl(dataUrl: string, filename: string) {
     a.style.display = 'none';
     a.href = dataUrl;
     a.download = filename;
-    a.target = '_blank';
     document.body.appendChild(a);
     a.click();
     setTimeout(() => {

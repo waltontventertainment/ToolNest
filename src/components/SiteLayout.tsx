@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { Moon, Sun, Wrench, Star, ArrowRight, BookOpen, Cloud } from 'lucide-react';
+import { Moon, Sun, Wrench, Star, ArrowRight, BookOpen, Cloud, Coffee } from 'lucide-react';
 import { useLocalStorage } from '../lib/toolkit';
 import { categories, tools } from '../lib/registry';
 import { HeaderSearch } from './HeaderSearch';
@@ -9,6 +9,7 @@ import { useFavorites } from '../context/FavoritesContext';
 import { useGoogleDrive } from '../context/GoogleDriveContext';
 import { GoogleDriveModal } from './GoogleDriveModal';
 import { AiSettingsModal } from './AiSettingsModal';
+import { CoffeeSupportModal } from './CoffeeSupportModal';
 import { Sparkles } from 'lucide-react';
 
 export const SiteLayout: React.FC = () => {
@@ -17,6 +18,7 @@ export const SiteLayout: React.FC = () => {
   const { user, accessToken } = useGoogleDrive();
   const [isDriveModalOpen, setIsDriveModalOpen] = useState(false);
   const [isAiModalOpen, setIsAiModalOpen] = useState(false);
+  const [isCoffeeModalOpen, setIsCoffeeModalOpen] = useState(false);
   const location = useLocation();
   const { pathname } = location;
 
@@ -114,7 +116,18 @@ export const SiteLayout: React.FC = () => {
               )}
             </button>
 
-            {/* 4. 3D Theme Toggle Button & Wave Animation */}
+            {/* 4. Buy Me a Coffee Support Button */}
+            <button
+              type="button"
+              onClick={() => setIsCoffeeModalOpen(true)}
+              className="btn-signature-header px-2.5 sm:px-3 gap-1.5 text-xs font-bold text-amber-600 dark:text-amber-400 bg-amber-500/10 hover:bg-amber-500/20 border-amber-500/30 cursor-pointer"
+              title="Support ToolNest - Buy Me a Coffee"
+            >
+              <Coffee className="w-3.5 h-3.5 fill-amber-500 text-amber-500 shrink-0" />
+              <span className="hidden md:inline">Support Us</span>
+            </button>
+
+            {/* 5. 3D Theme Toggle Button & Wave Animation */}
             <ThemeToggle3D theme={theme} setTheme={setTheme} />
           </div>
         </div>
@@ -125,6 +138,9 @@ export const SiteLayout: React.FC = () => {
 
       {/* AI Settings Modal */}
       <AiSettingsModal isOpen={isAiModalOpen} onClose={() => setIsAiModalOpen(false)} />
+
+      {/* Coffee Support Modal */}
+      <CoffeeSupportModal isOpen={isCoffeeModalOpen} onClose={() => setIsCoffeeModalOpen(false)} />
 
       <main className="flex-1 w-full max-w-7xl mx-auto px-3 sm:px-4 md:px-6 pt-2 sm:pt-4 pb-10 md:pb-16">
         <Outlet />
