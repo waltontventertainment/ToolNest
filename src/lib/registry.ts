@@ -1,4 +1,4 @@
-import { Type, QrCode, Image as ImageIcon, KeyRound, Search, FileText, Binary, Code, Barcode, FileSearch, Timer, Scissors, ArrowDownAZ, Space, Filter, ArrowLeftRight, WrapText, SplitSquareHorizontal, Mail, Link, Hash, FileDiff, Replace, ListPlus, ShieldX, Calculator, Superscript, Clock, Palette, Database, Fingerprint, Scan, Crop, Globe, Heart, Activity, FileCode, Box, Share2, BarChart2, Tag, Zap, BookOpen, Layers as Hierarchy, Volume2, Keyboard, Monitor, Shuffle, Maximize2, Sliders, Stamp, Eye, EyeOff, Sparkles, Merge, RotateCw, ShieldAlert, CheckCircle2, Video, Briefcase, ShoppingBag, Users, GraduationCap, Globe2, Utensils, Scale, Calendar, MapPin } from 'lucide-react';
+import { Type, QrCode, Image as ImageIcon, KeyRound, Search, FileText, Binary, Code, Barcode, FileSearch, Timer, Scissors, ArrowDownAZ, Space, Filter, ArrowLeftRight, WrapText, SplitSquareHorizontal, Mail, Link, Hash, FileDiff, Replace, ListPlus, ShieldX, Calculator, Superscript, Clock, Palette, Database, Fingerprint, Scan, Crop, Globe, Heart, Activity, FileCode, Box, Share2, BarChart2, Tag, Zap, BookOpen, Layers as Hierarchy, Volume2, Keyboard, Monitor, Shuffle, Maximize2, Sliders, Stamp, Eye, EyeOff, Sparkles, Merge, RotateCw, ShieldAlert, CheckCircle2, Video, Briefcase, ShoppingBag, Users, GraduationCap, Globe2, Utensils, Scale, Calendar, MapPin, CloudSun, Smile, Wifi } from 'lucide-react';
 import { ToolDefinition, ToolCategory } from './types';
 import {
   TemperatureConverter, LengthConverter, WeightConverter, VolumeConverter, DataStorageConverter, AngleConverter, Rot13Converter, TextToOctal, OctalToText, RomanNumeralConverter
@@ -36,6 +36,11 @@ import { WikipediaSummarizer } from '../tools/WikipediaSummarizer';
 import { WikipediaHistory } from '../tools/WikipediaHistory';
 import { WikipediaNearby } from '../tools/WikipediaNearby';
 import { WikipediaTrivia } from '../tools/WikipediaTrivia';
+import {
+  RestCountriesTool, LexiconDictionaryTool, OpenLibraryTool, OpenMeteoWeatherTool,
+  AvatarGeneratorTool, QrServerGeneratorTool, LoremPicsumTool, IpifyInspectorTool,
+  JokeQuotableTool, HipolabsUniversitiesTool, WebsiteScreenshotTool
+} from '../tools/FreeApiToolsBatch';
 
 import { 
   CaseConverter, QRGenerator, ImageCompressor, PasswordGenerator, WordCounter, 
@@ -53,17 +58,160 @@ import {
 } from '../tools';
 
 export const categories: ToolCategory[] = [
-  'Wikipedia', 'AI', 'PDF', 'Text', 'Developer', 'Converters', 'Generators', 'QR & Barcode', 'Color & Image', 'Calculators', 'SEO', 'Utility'
+  'Universal Data Suite', 'Wikipedia', 'AI', 'PDF', 'Text', 'Developer', 'Converters', 'Generators', 'QR & Barcode', 'Color & Image', 'Calculators', 'SEO', 'Utility'
 ];
 
 export const tools: ToolDefinition[] = [
+  {
+    slug: 'rest-countries-explorer',
+    name: 'Rest Global Country Directory',
+    category: 'Universal Data Suite',
+    icon: Globe,
+    keywords: ['countries explorer', 'country info', 'country flag', 'currency api', 'population lookup'],
+    metaTitle: 'Rest Global Country Directory',
+    metaDescription: 'Instantly lookup details, flags, capitals, and currencies of 200+ countries.',
+    intro: 'Lookup global country data, capitals, currencies, population, and flag badges instantly.',
+    howTo: ['Enter any country name.', 'Click Search to view comprehensive details.'],
+    faq: [{ q: 'Is it accurate?', a: 'Yes, it uses real-time global datasets.' }],
+    Component: RestCountriesTool
+  },
+  {
+    slug: 'free-dictionary-lookup',
+    name: 'Lexicon Word Definitions',
+    category: 'Universal Data Suite',
+    icon: BookOpen,
+    keywords: ['dictionary', 'word definitions', 'synonyms', 'audio pronunciation'],
+    metaTitle: 'English Dictionary & Audio Pronunciation',
+    metaDescription: 'Lookup English word definitions, phonetic spellings, synonyms, and audio pronunciation.',
+    intro: 'Look up English words to view definitions, parts of speech, and listen to audio pronunciations.',
+    howTo: ['Type any word.', 'Click Define and listen to audio.'],
+    faq: [{ q: 'Does it support synonyms?', a: 'Yes, synonyms are included where available.' }],
+    Component: LexiconDictionaryTool
+  },
+  {
+    slug: 'open-library-book-search',
+    name: 'Universal Library Explorer',
+    category: 'Universal Data Suite',
+    icon: BookOpen,
+    keywords: ['library', 'book search', 'author lookup', 'book covers'],
+    metaTitle: 'Book & Author Search Engine',
+    metaDescription: 'Search millions of books, authors, and cover art seamlessly.',
+    intro: 'Search the vast library database for books, authors, publish years, and cover art.',
+    howTo: ['Search book title or author.'],
+    faq: [{ q: 'Can I see cover art?', a: 'Yes, cover images are displayed when available.' }],
+    Component: OpenLibraryTool
+  },
+  {
+    slug: 'open-meteo-live-weather',
+    name: 'Real-Time Weather Station',
+    category: 'Universal Data Suite',
+    icon: CloudSun,
+    keywords: ['weather', 'live weather', 'temperature forecast'],
+    metaTitle: 'Global Live Weather Station',
+    metaDescription: 'Get real-time weather and temperature for any city.',
+    intro: 'Get real-time weather forecasting for global cities.',
+    howTo: ['Select a city to view current temperature, humidity, and wind speed.'],
+    faq: [{ q: 'Is it real-time?', a: 'Yes, data is updated frequently from weather stations.' }],
+    Component: OpenMeteoWeatherTool
+  },
+  {
+    slug: 'dicebear-robohash-avatar',
+    name: 'Digital Persona Architect',
+    category: 'Universal Data Suite',
+    icon: Smile,
+    keywords: ['avatar', 'profile picture', 'generator', 'cartoon avatars'],
+    metaTitle: 'Avatar & Profile Picture Generator',
+    metaDescription: 'Generate unique cartoon and robot avatars from text instantly.',
+    intro: 'Create unique vector avatars and robot profile pictures from any seed text.',
+    howTo: ['Type seed text and select avatar style.'],
+    faq: [{ q: 'Can I download the avatar?', a: 'Yes, you can download the generated image directly.' }],
+    Component: AvatarGeneratorTool
+  },
+  {
+    slug: 'qr-server-code-maker',
+    name: 'Advanced QR Suite',
+    category: 'Universal Data Suite',
+    icon: QrCode,
+    keywords: ['qr', 'qr code', 'code generator', 'free qr code'],
+    metaTitle: 'QR Code Generator',
+    metaDescription: 'Generate high-resolution QR codes from URLs or text instantly.',
+    intro: 'Create and download QR codes for URLs and text in seconds.',
+    howTo: ['Enter URL or text and download PNG.'],
+    faq: [{ q: 'Are the QR codes permanent?', a: 'Yes, the generated QR codes do not expire.' }],
+    Component: QrServerGeneratorTool
+  },
+  {
+    slug: 'lorem-picsum-placeholder-images',
+    name: 'Dynamic Visual Placeholders',
+    category: 'Universal Data Suite',
+    icon: ImageIcon,
+    keywords: ['placeholder', 'images', 'dummy photos', 'image generator'],
+    metaTitle: 'Placeholder Image Generator',
+    metaDescription: 'Generate unlimited dummy placeholder photos with custom dimensions and filters.',
+    intro: 'Generate and download high-resolution dummy photos with custom width, height, and grayscale filters.',
+    howTo: ['Set width and height and click download.'],
+    faq: [{ q: 'Are these unique images?', a: 'The service provides a variety of high-quality photos.' }],
+    Component: LoremPicsumTool
+  },
+  {
+    slug: 'ipify-public-ip-inspector',
+    name: 'Network IP Identifier',
+    category: 'Universal Data Suite',
+    icon: Wifi,
+    keywords: ['ip', 'public ip address', 'my ip', 'ip lookup'],
+    metaTitle: 'Public IP Address Inspector',
+    metaDescription: 'Instantly inspect your public IP address.',
+    intro: 'View and copy your public IP address instantly.',
+    howTo: ['Open the tool to view your live public IP.'],
+    faq: [{ q: 'Is my IP stored?', a: 'No, we do not store your IP address.' }],
+    Component: IpifyInspectorTool
+  },
+  {
+    slug: 'joke-motivation-hub',
+    name: 'Inspiration & Humor Stream',
+    category: 'Universal Data Suite',
+    icon: Sparkles,
+    keywords: ['jokes', 'motivation', 'random jokes', 'quotes'],
+    metaTitle: 'Motivation & Fun Hub',
+    metaDescription: 'Enjoy random tech jokes and inspirational quotes.',
+    intro: 'Read random developer jokes and motivational quotes on demand.',
+    howTo: ['Click New Mix to fetch fresh jokes and quotes.'],
+    faq: [{ q: 'Is it updated?', a: 'Yes, we fetch new jokes and quotes regularly.' }],
+    Component: JokeQuotableTool
+  },
+  {
+    slug: 'hipolabs-universities-list',
+    name: 'World Academic Directory',
+    category: 'Universal Data Suite',
+    icon: GraduationCap,
+    keywords: ['universities', 'college', 'directory', 'world universities'],
+    metaTitle: 'Global University Directory',
+    metaDescription: 'Directory of universities and colleges across 200+ countries.',
+    intro: 'Search universities and colleges worldwide by country name.',
+    howTo: ['Select a country to view universities and official web links.'],
+    faq: [{ q: 'Are links valid?', a: 'Most entries include direct official website links.' }],
+    Component: HipolabsUniversitiesTool
+  },
+  {
+    slug: 'website-screenshot-capture',
+    name: 'Instant Web Snapshot',
+    category: 'Universal Data Suite',
+    icon: ImageIcon,
+    keywords: ['screenshot', 'website capture', 'web page snapshot', 'url to image'],
+    metaTitle: 'Website Screenshot Generator',
+    metaDescription: 'Generate high-quality full-page screenshots of any website from a URL instantly.',
+    intro: 'Capture and download high-resolution screenshots of any public website by simply entering its URL.',
+    howTo: ['Enter the website URL.', 'Click Capture to generate the snapshot.', 'Download the image to your device.'],
+    faq: [{ q: 'Is it free?', a: 'Yes, this service is 100% free and unlimited.' }],
+    Component: WebsiteScreenshotTool
+  },
   {
     slug: 'wikipedia-ai-summarizer',
     name: 'Wikipedia AI Summarizer & Fact Sheet',
     category: 'Wikipedia',
     icon: Sparkles,
     keywords: ['wikipedia api', 'wikipedia summarizer', 'wikipedia fact sheet', 'summarize article', 'wiki AI helper'],
-    metaTitle: 'Wikipedia AI Summarizer & Fact Sheet - Free AI Utility',
+    metaTitle: 'Wikipedia AI Summarizer & Fact Sheet',
     metaDescription: 'Extract high-precision summaries and generate structured bulleted fact sheets and takeaways using Wikipedia API and server-side AI.',
     intro: 'Search any article globally, extract high-precision summaries, and generate beautiful bulleted fact sheets with server-side AI.',
     howTo: [
@@ -147,7 +295,7 @@ export const tools: ToolDefinition[] = [
     category: 'AI',
     icon: Video,
     keywords: ['youtube transcript', 'youtube subtitles downloader', 'extract youtube text', 'youtube video to text'],
-    metaTitle: 'Free YouTube Transcript Extractor - Video Subtitles Downloader',
+    metaTitle: 'YouTube Transcript Extractor - Video Subtitles Downloader',
     metaDescription: 'Extract, download, and copy subtitles or transcripts from any YouTube video in milliseconds. Powered by high-speed scraping with instant AI summaries.',
     intro: 'Need to quickly read or summarize a YouTube video? Our YouTube Transcript Extractor fetches and parses captions or transcripts from any YouTube URL in milliseconds. Download as TXT, copy timelines, or generate deep AI summaries instantly.',
     howTo: [
@@ -169,7 +317,7 @@ export const tools: ToolDefinition[] = [
     category: 'AI',
     icon: Sparkles,
     keywords: ['ai writer', 'ai article generator', 'blog post generator', 'ai content writer', 'seo article generator'],
-    metaTitle: 'AI Article & Blog Post Writer - Free AI Content Generator',
+    metaTitle: 'AI Article & Blog Post Writer - AI Content Generator',
     metaDescription: 'Generate full-length, SEO-optimized articles, blog posts, and guides instantly with our multi-model AI engine.',
     intro: 'Produce well-researched, high-ranking blog posts and articles in seconds. Features intelligent outline generation, tone adjustment, and multilingual support powered by high-speed AI models.',
     howTo: [

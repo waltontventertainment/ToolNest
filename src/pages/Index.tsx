@@ -78,8 +78,8 @@ export const Index: React.FC = () => {
   return (
     <>
       <Seo 
-        title="Toolzaro - Free Online Developer & Utility Tools" 
-        description="A complete suite of 35+ free, fast, browser-based tools including color tools, image resizers, QR generators, image compressors, and developer utilities."
+        title="Toolzaro - Professional Online Developer & Utility Tools" 
+        description="A complete suite of 35+ fast, browser-based tools including color tools, image resizers, QR generators, image compressors, and developer utilities."
         jsonLd={{
           "@context": "https://schema.org",
           "@type": "WebSite",
@@ -98,14 +98,14 @@ export const Index: React.FC = () => {
         <div className="flex-1 max-w-2xl">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-bold mb-4 border border-primary/20 shadow-2xs">
             <Sparkles className="w-3.5 h-3.5 animate-pulse" />
-            <span className="tracking-tight">{tools.length}+ Free Browser Utilities • Client-Side Privacy</span>
+            <span className="tracking-tight">{tools.length}+ Professional Browser Utilities • Client-Side Privacy</span>
           </div>
           
           {/* Real Keyboard Typewriter Animation Heading */}
           <TypewriterHeading />
           
           <p className="text-sm sm:text-base text-muted-foreground mb-8 leading-relaxed max-w-xl font-normal">
-            100% free, browser-native processing. Resize images, extract color palettes, format JSON, generate QR codes, and convert files safely without cloud uploads.
+            Browser-native processing. Resize images, extract color palettes, format JSON, generate QR codes, and convert files safely without cloud uploads.
           </p>
           
           {/* Quick Stats Badges */}
@@ -432,7 +432,7 @@ export const Index: React.FC = () => {
             </div>
             <h3 className="text-base font-bold mb-1">No Account Needed</h3>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Free to use forever without annoying popups, signups, or paywalls. Simply open and complete your task.
+              Use forever without annoying popups, signups, or paywalls. Simply open and complete your task.
             </p>
           </div>
         </div>

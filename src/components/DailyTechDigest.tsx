@@ -21,12 +21,14 @@ import { doc, onSnapshot } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { 
   TechDigest, 
+  TechHighlight,
   getInstantTechDigest, 
   getOrFetchTodayTechDigest, 
   getTodayKey,
   getFormattedDate 
 } from '../services/techDigestService';
 import { useGoogleDrive } from '../context/GoogleDriveContext';
+import { TechDigestReaderModal } from './TechDigestReaderModal';
 
 export const DailyTechDigest: React.FC = () => {
   // Instant zero-delay state initialization
@@ -35,6 +37,8 @@ export const DailyTechDigest: React.FC = () => {
   const [expanded, setExpanded] = useState<boolean>(false);
   const [copied, setCopied] = useState<boolean>(false);
   const [savingDrive, setSavingDrive] = useState<boolean>(false);
+  const [selectedHighlight, setSelectedHighlight] = useState<TechHighlight | null>(null);
+  const [isReaderOpen, setIsReaderOpen] = useState<boolean>(false);
 
   const driveContext = useGoogleDrive();
 
@@ -206,28 +210,68 @@ export const DailyTechDigest: React.FC = () => {
 
         {/* Line 2: Headline (1 line truncated in compact mode) */}
         <div 
-          onClick={() => setExpanded(!expanded)}
+          onClick={() => {
+            const link = digest.highlights?.[0]?.url;
+            if (link) {
+              window.open(link, '_blank');
+              toast.success(`Opening live story: ${digest.headline}`);
+            } else {
+              toast.info('No external link available.');
+            }
+          }}
           className="cursor-pointer group/title flex items-start justify-between gap-2 pt-0.5"
+          title="Click to open live article"
         >
           <h3 className={`text-xs sm:text-sm font-bold text-foreground group-hover/title:text-amber-500 transition-colors leading-snug ${expanded ? '' : 'line-clamp-1'}`}>
             {digest.headline}
           </h3>
+          <ExternalLink className="w-4 h-4 text-muted-foreground group-hover/title:text-amber-500 shrink-0 mt-0.5" />
         </div>
 
         {/* Line 3: Compact Executive Summary (1 line) */}
         {!expanded && (
-          <div className="flex items-center justify-between gap-2 text-[11px] text-muted-foreground pt-0.5">
-            <p className="line-clamp-1 flex-1">
-              {digest.summary}
-            </p>
-            <button
-              type="button"
-              onClick={() => setExpanded(true)}
-              className="text-[10px] font-bold text-amber-600 dark:text-amber-400 hover:underline shrink-0 flex items-center gap-0.5"
-            >
-              <span>More Details</span>
-              <ChevronDown className="w-3 h-3" />
-            </button>
+          <div className="space-y-1.5 pt-0.5">
+            <div className="flex items-center justify-between gap-2 text-[11px] text-muted-foreground">
+              <p className="line-clamp-1 flex-1">
+                {digest.summary}
+              </p>
+              <button
+                type="button"
+                onClick={() => setExpanded(true)}
+                className="text-[10px] font-bold text-amber-600 dark:text-amber-400 hover:underline shrink-0 flex items-center gap-0.5"
+              >
+                <span>More Details</span>
+                <ChevronDown className="w-3 h-3" />
+              </button>
+            </div>
+
+            {/* Mini Box Thumbnail Strip for all topic images */}
+            {digest.highlights && digest.highlights.filter(h => h.imageUrl).length > 0 && (
+              <div className="flex items-center gap-1.5 pt-1 overflow-x-auto no-scrollbar pb-0.5">
+                <span className="text-[9px] font-extrabold uppercase tracking-wider text-amber-600 dark:text-amber-400 shrink-0">Topics:</span>
+                {digest.highlights.filter(h => h.imageUrl).map((item, idx) => (
+                  <div
+                    key={idx}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (item.url) {
+                        window.open(item.url, '_blank');
+                        toast.success(`Opening: ${item.title}`);
+                      }
+                    }}
+                    className="w-7 h-7 rounded-md overflow-hidden shrink-0 border border-amber-500/40 cursor-pointer hover:scale-110 transition-transform shadow-2xs relative group/thumb"
+                    title={item.title}
+                  >
+                    <img 
+                      src={item.imageUrl} 
+                      alt={item.title} 
+                      className="w-full h-full object-cover"
+                      onError={(e) => { (e.target as HTMLElement).style.display = 'none'; }}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -246,15 +290,39 @@ export const DailyTechDigest: React.FC = () => {
               {digest.highlights.map((item, index) => (
                 <div 
                   key={index} 
-                  className="p-3 rounded-xl bg-card/80 border border-border/80 hover:border-amber-500/30 transition-all space-y-1 shadow-2xs"
+                  onClick={() => {
+                    if (item.url) {
+                      window.open(item.url, '_blank');
+                      toast.success(`Opening live story: ${item.title}`);
+                    } else {
+                      toast.info('No external link available for this item.');
+                    }
+                  }}
+                  className="p-3 rounded-xl bg-card/80 border border-border/80 hover:border-amber-500/50 hover:bg-muted/50 transition-all space-y-1 shadow-2xs cursor-pointer group/card flex flex-col justify-between"
+                  title="Click to open live article on original site"
                 >
-                  <span className="text-[9px] font-extrabold uppercase tracking-wider text-amber-600 dark:text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20">
-                    {item.category}
-                  </span>
-                  <h4 className="text-xs font-bold text-foreground leading-tight pt-1">
-                    {item.title}
-                  </h4>
-                  <p className="text-[11px] text-muted-foreground leading-relaxed">
+                  <div>
+                    {item.imageUrl && (
+                      <div className="w-full h-24 rounded-lg overflow-hidden mb-2 bg-muted/40 relative">
+                        <img 
+                          src={item.imageUrl} 
+                          alt={item.title}
+                          className="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-300"
+                          onError={(e) => { (e.target as HTMLElement).style.display = 'none'; }}
+                        />
+                      </div>
+                    )}
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-[9px] font-extrabold uppercase tracking-wider text-amber-600 dark:text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20">
+                        {item.category}
+                      </span>
+                      <ExternalLink className="w-3.5 h-3.5 text-muted-foreground group-hover/card:text-amber-500 transition-colors" />
+                    </div>
+                    <h4 className="text-xs font-bold text-foreground group-hover/card:text-amber-500 transition-colors leading-tight pt-0.5">
+                      {item.title}
+                    </h4>
+                  </div>
+                  <p className="text-[11px] text-muted-foreground leading-relaxed line-clamp-2 pt-1">
                     {item.detail}
                   </p>
                 </div>
@@ -333,6 +401,13 @@ export const DailyTechDigest: React.FC = () => {
           </div>
         </div>
       )}
+
+      <TechDigestReaderModal
+        item={selectedHighlight}
+        digest={digest}
+        isOpen={isReaderOpen}
+        onClose={() => setIsReaderOpen(false)}
+      />
     </div>
   );
 };

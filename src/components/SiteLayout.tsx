@@ -50,7 +50,7 @@ export const SiteLayout: React.FC = () => {
                 <span>Toolzaro 2.0</span>
               </span>
               <p className="font-semibold text-slate-200 text-xs">
-                <span className="text-white font-bold">161+ Free Browser Utilities</span> • 100% Client-Side Privacy • Live Tech Digest & Drive Sync
+                <span className="text-white font-bold">161+ Professional Browser Utilities</span> • 100% Client-Side Privacy • Live Tech Digest & Drive Sync
               </p>
             </div>
 
@@ -206,7 +206,7 @@ export const SiteLayout: React.FC = () => {
               <span className="text-brand-gradient font-display font-black text-xl tracking-tight">Toolzaro</span>
             </Link>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              100% free, browser-based utilities for developers, designers, and creators. Secure client-side processing with zero server uploads.
+              Browser-based utilities for developers, designers, and creators. Secure client-side processing with zero server uploads.
             </p>
             <div className="inline-flex items-center gap-2 text-xs font-bold text-emerald-900 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-950/80 px-3 py-1.5 rounded-full border border-emerald-300 dark:border-emerald-800 shadow-2xs">
               <span className="w-2.5 h-2.5 rounded-full bg-emerald-600 dark:bg-emerald-400 animate-pulse" />

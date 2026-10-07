@@ -117,9 +117,6 @@ export const ToolPage: React.FC = () => {
             <tool.icon className="w-7 h-7" />
           </div>
           <div>
-            <span className="text-[10px] font-bold text-primary uppercase tracking-wider bg-primary/10 border border-primary/20 px-2.5 py-0.5 rounded-md">
-              {tool.category}
-            </span>
             <h1 className="text-2xl md:text-4xl font-display font-extrabold tracking-tight text-foreground mt-1">
               {tool.name}
             </h1>

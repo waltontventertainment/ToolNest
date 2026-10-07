@@ -26,14 +26,9 @@ function extractVideoId(url: string): string {
 // Active OpenRouter Free Models for automatic failover
 const DEFAULT_OPENROUTER_KEY = ['sk', 'or', 'v1', '22c6ed9e59c42d14c7a12dab4183935cf7f09ae2d6d97715335de0aa14126079'].join('-');
 const STATIC_FREE_MODELS = [
-  'google/gemini-2.0-flash-exp:free',
-  'google/gemini-2.0-flash-thinking-exp:free',
-  'meta-llama/llama-3.3-70b-instruct:free',
-  'meta-llama/llama-3.1-8b-instruct:free',
-  'mistralai/mistral-7b-instruct:free',
-  'qwen/qwen-2.5-coder-32b-instruct:free',
-  'deepseek/deepseek-r1:free',
+  'google/gemini-flash-1.5:free',
   'deepseek/deepseek-chat:free',
+  'meta-llama/llama-3.1-8b-instruct:free',
   'openrouter/free'
 ];
 
@@ -149,19 +144,23 @@ async function startServer() {
       
       // 2. Fallback to Gemini API if OpenRouter models fail
       try {
-        const response = await aiClient.models.generateContent({
-          model: 'gemini-3.8-flash',
-          contents: prompt,
-          config: {
-            systemInstruction: systemPrompt || 'You are a helpful assistant.',
+        const model = aiClient.getGenerativeModel({ 
+          model: 'gemini-1.5-flash',
+          systemInstruction: systemPrompt || 'You are a helpful assistant.'
+        });
+
+        const result = await model.generateContent({
+          contents: [{ role: 'user', parts: [{ text: prompt }] }],
+          generationConfig: {
             temperature: temperature,
             maxOutputTokens: maxTokens,
           }
         });
 
+        const response = await result.response;
         return res.json({
           success: true,
-          text: response.text || ''
+          text: response.text() || ''
         });
       } catch (geminiErr: any) {
         console.error('Gemini fallback also failed:', geminiErr);

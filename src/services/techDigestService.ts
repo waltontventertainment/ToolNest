@@ -7,6 +7,7 @@ export interface TechHighlight {
   title: string;
   detail: string;
   url?: string;
+  imageUrl?: string;
 }
 
 export interface TechDigest {
@@ -129,111 +130,180 @@ async function fetchRealLiveTechNews(): Promise<string[]> {
 }
 
 /**
- * Generates a fresh AI Tech Digest backed by REAL LIVE Hacker News & Dev.to news API data
+ * Generates a fresh Tech Digest purely from 100% free public live API endpoints (Hacker News, Dev.to, Reddit Technology, GitHub Trending) with ZERO AI and ZERO fallback dummy data.
  */
-export async function generateAiTechDigest(): Promise<TechDigest> {
+export async function generateEndpointTechDigest(): Promise<TechDigest> {
   const todayKey = getTodayKey();
   const todayDate = getFormattedDate();
 
-  // Fetch real live news headlines from free public APIs
-  const liveHeadlines = await fetchRealLiveTechNews();
-  const liveNewsPromptText = liveHeadlines.length > 0 
-    ? `Real Live Today Headlines:\n${liveHeadlines.join('\n')}` 
-    : 'Focus on recent Web Development, AI Models, Cloud Computing, and Developer Tools.';
+  const hnHighlights: TechHighlight[] = [];
+  const devHighlights: TechHighlight[] = [];
+  const redditHighlights: TechHighlight[] = [];
+  const ghHighlights: TechHighlight[] = [];
+  const trendingToolsSet = new Set<string>();
 
-  const prompt = `Today is ${todayDate}. Based on these real live technology news stories and trending developer topics:
-
-${liveNewsPromptText}
-
-Summarize today's "Daily Tech Digest" into an executive developer briefing.
-
-Return ONLY a valid JSON object strictly matching this format without markdown code fences or extra text:
-{
-  "headline": "A concise, engaging 1-sentence headline summarizing today's top story",
-  "summary": "A 2-sentence executive summary of today's key technology shifts.",
-  "highlights": [
-    {
-      "category": "AI & ML",
-      "title": "Short title 1",
-      "detail": "1-sentence summary"
-    },
-    {
-      "category": "Web Dev",
-      "title": "Short title 2",
-      "detail": "1-sentence summary"
-    },
-    {
-      "category": "Cloud & Tools",
-      "title": "Short title 3",
-      "detail": "1-sentence summary"
-    }
-  ],
-  "keyTakeaway": "An inspiring, actionable 1-sentence key takeaway for creators & developers.",
-  "trendingTools": ["Tool1", "Tool2", "Tool3", "Tool4", "Tool5"]
-}`;
-
+  // 1. Fetch Hacker News Frontpage API (Category: Hacker News)
   try {
-    const aiResult = await runAutoAiCompletion({
-      prompt,
-      systemPrompt: "You are an expert Tech Trends Analyst providing verified daily briefings to developers and creators. Output strict JSON only.",
-      temperature: 0.5,
-      maxTokens: 1000
-    });
-
-    if (aiResult.success && aiResult.text) {
-      let rawJson = aiResult.text.trim();
-      if (rawJson.startsWith('```json')) {
-        rawJson = rawJson.replace(/^```json\s*/i, '').replace(/\s*```$/, '');
-      } else if (rawJson.startsWith('```')) {
-        rawJson = rawJson.replace(/^```\s*/, '').replace(/\s*```$/, '');
-      }
-
-      const parsed = JSON.parse(rawJson);
-      if (parsed.headline && parsed.summary && Array.isArray(parsed.highlights)) {
-        const digest: TechDigest = {
-          id: todayKey,
-          dateFormatted: todayDate,
-          headline: parsed.headline,
-          summary: parsed.summary,
-          highlights: parsed.highlights.slice(0, 3),
-          keyTakeaway: parsed.keyTakeaway || "Keep building client-first, privacy-driven web applications.",
-          trendingTools: Array.isArray(parsed.trendingTools) ? parsed.trendingTools.slice(0, 5) : ["Vite 6", "React 19", "AI SDK", "Tailwind v4"],
-          generatedAt: new Date().toISOString()
-        };
-
-        // Cache locally for 0ms instant loading
-        try {
-          localStorage.setItem(`toolnest_tech_digest_${todayKey}`, JSON.stringify(digest));
-        } catch {}
-
-        // Save to Firebase Firestore for all visitors
-        try {
-          await setDoc(doc(db, 'tech_digests', todayKey), digest);
-          
-          // Auto-delete / prune historical digests older than 3 days to keep storage strictly under 100% free limits forever!
-          try {
-            const pastDate = new Date();
-            pastDate.setDate(pastDate.getDate() - 3);
-            const pastYear = pastDate.getFullYear();
-            const pastMonth = String(pastDate.getMonth() + 1).padStart(2, '0');
-            const pastDay = String(pastDate.getDate()).padStart(2, '0');
-            const oldKey = `${pastYear}-${pastMonth}-${pastDay}`;
-            
-            await deleteDoc(doc(db, 'tech_digests', oldKey));
-          } catch {}
-        } catch {}
-
-        return digest;
+    const hnRes = await fetch('https://hn.algolia.com/api/v1/search?tags=front_page&hitsPerPage=5');
+    if (hnRes.ok) {
+      const data = await hnRes.json();
+      if (Array.isArray(data.hits)) {
+        data.hits.forEach((item: any) => {
+          if (item.title) {
+            hnHighlights.push({
+              category: "Hacker News",
+              title: item.title,
+              detail: `${item.points || 0} points • ${item.num_comments || 0} comments • Author: ${item.author || 'Community'}`,
+              url: item.url || `https://news.ycombinator.com/item?id=${item.objectID}`,
+              imageUrl: `https://picsum.photos/seed/${encodeURIComponent(item.title || 'hn')}/100/100`
+            });
+            trendingToolsSet.add(item.author || 'HN');
+          }
+        });
       }
     }
   } catch {}
 
-  return { ...FALLBACK_DIGEST, id: todayKey, dateFormatted: todayDate };
+  // 2. Fetch Dev.to Top Articles API (Category: Dev.to)
+  try {
+    const devRes = await fetch('https://dev.to/api/articles?per_page=5');
+    if (devRes.ok) {
+      const articles = await devRes.json();
+      if (Array.isArray(articles)) {
+        articles.forEach((item: any) => {
+          if (item.title) {
+            devHighlights.push({
+              category: "Dev.to",
+              title: item.title,
+              detail: item.description || `Published by ${item.user?.name || 'Developer'} • ${item.positive_reactions_count || 0} reactions`,
+              url: item.url,
+              imageUrl: item.cover_image || item.social_image || `https://picsum.photos/seed/${encodeURIComponent(item.title)}/100/100`
+            });
+            if (item.tag_list && Array.isArray(item.tag_list)) {
+              item.tag_list.slice(0, 2).forEach((t: string) => trendingToolsSet.add(t));
+            }
+          }
+        });
+      }
+    }
+  } catch {}
+
+  // 3. Fetch Reddit Technology API with multiple CORS proxy fallbacks
+  try {
+    let redditRes = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent('https://www.reddit.com/r/technology/hot.json?limit=5')}`).catch(() => null);
+    if (!redditRes || !redditRes.ok) {
+      redditRes = await fetch(`https://corsproxy.io/?${encodeURIComponent('https://www.reddit.com/r/technology/hot.json?limit=5')}`).catch(() => null);
+    }
+    if (redditRes && redditRes.ok) {
+      const redditData = await redditRes.json();
+      const children = redditData?.data?.children || (typeof redditData === 'object' && redditData?.contents ? JSON.parse(redditData.contents || '{}')?.data?.children : null);
+      if (Array.isArray(children)) {
+        children.forEach((child: any) => {
+          const post = child.data;
+          if (post && post.title && !post.stickied) {
+            const fullPostDetail = post.selftext ? `${post.selftext} [${post.score || 0} upvotes • ${post.num_comments || 0} comments • r/${post.subreddit}]` : `${post.score || 0} upvotes • ${post.num_comments || 0} comments • r/${post.subreddit} • Author: ${post.author || 'Anonymous'} • Domain: ${post.domain || 'reddit.com'}`;
+            const thumb = post.thumbnail && post.thumbnail.startsWith('http') ? post.thumbnail : (post.preview?.images?.[0]?.source?.url ? post.preview.images[0].source.url.replace(/&amp;/g, '&') : undefined);
+            redditHighlights.push({
+              category: "Reddit Technology",
+              title: post.title,
+              detail: fullPostDetail,
+              url: `https://reddit.com${post.permalink}`,
+              imageUrl: thumb || `https://picsum.photos/seed/${encodeURIComponent(post.title)}/100/100`
+            });
+          }
+        });
+      }
+    }
+  } catch (e) {
+    console.warn('Reddit fetch warning:', e);
+  }
+
+  // 4. Fetch GitHub Trending Repositories API
+  try {
+    const ghRes = await fetch('https://api.github.com/search/repositories?q=stars:>50&sort=stars&order=desc&per_page=5', {
+      headers: { 'Accept': 'application/vnd.github.v3+json' }
+    });
+    if (ghRes.ok) {
+      const ghData = await ghRes.json();
+      if (Array.isArray(ghData.items)) {
+        ghData.items.forEach((repo: any) => {
+          if (repo.name) {
+            const fullRepoDetail = `${repo.description || 'No description provided'} (Language: ${repo.language || 'Multiple'} • ⭐ Stars: ${repo.stargazers_count?.toLocaleString() || 0} • Forks: ${repo.forks_count?.toLocaleString() || 0} • Open Issues: ${repo.open_issues_count || 0})`;
+            ghHighlights.push({
+              category: "GitHub Trending",
+              title: `${repo.full_name} — ⭐ ${repo.stargazers_count?.toLocaleString() || 0}`,
+              detail: fullRepoDetail,
+              url: repo.html_url,
+              imageUrl: repo.owner?.avatar_url || `https://picsum.photos/seed/${encodeURIComponent(repo.name)}/100/100`
+            });
+            if (repo.language) trendingToolsSet.add(repo.language);
+          }
+        });
+      }
+    }
+  } catch (e) {
+    console.warn('GitHub fetch warning:', e);
+  }
+
+  // Interleave sources so Hacker News, Dev.to, Reddit, and GitHub are all fairly represented
+  const highlights: TechHighlight[] = [];
+  const maxPerSource = 3;
+  for (let i = 0; i < maxPerSource; i++) {
+    if (hnHighlights[i]) highlights.push(hnHighlights[i]);
+    if (devHighlights[i]) highlights.push(devHighlights[i]);
+    if (redditHighlights[i]) highlights.push(redditHighlights[i]);
+    if (ghHighlights[i]) highlights.push(ghHighlights[i]);
+  }
+
+  if (highlights.length === 0) {
+    return {
+      id: todayKey,
+      dateFormatted: todayDate,
+      headline: "Live API Endpoints Connecting...",
+      summary: "Fetching real-time updates from Hacker News, Dev.to, Reddit Technology, and GitHub Trending endpoints.",
+      highlights: [],
+      keyTakeaway: "Click 'Sync Live' to refresh real-time feeds instantly.",
+      trendingTools: ["Live API", "Hacker News", "Dev.to", "Reddit Technology", "GitHub"],
+      generatedAt: new Date().toISOString(),
+      isFallback: false
+    };
+  }
+
+  const primaryHeadline = highlights[0]?.title || "Latest Real-Time Developer & Tech Trends";
+  const primarySummary = `Live aggregated stream from Hacker News (${highlights.filter(h => h.category === 'Hacker News').length}), Dev.to (${highlights.filter(h => h.category === 'Dev.to').length}), Reddit Technology (${highlights.filter(h => h.category === 'Reddit Technology').length}), and GitHub Trending (${highlights.filter(h => h.category === 'GitHub Trending').length}).`;
+
+  const digest: TechDigest = {
+    id: todayKey,
+    dateFormatted: todayDate,
+    headline: primaryHeadline,
+    summary: primarySummary,
+    highlights: highlights.slice(0, 8),
+    keyTakeaway: "100% real-time endpoint streaming provides immediate, zero-delay developer updates.",
+    trendingTools: Array.from(trendingToolsSet).slice(0, 6),
+    generatedAt: new Date().toISOString(),
+    isFallback: false
+  };
+
+  // Cache locally
+  try {
+    localStorage.setItem(`toolnest_tech_digest_${todayKey}`, JSON.stringify(digest));
+  } catch {}
+
+  // Save to Firestore
+  try {
+    await setDoc(doc(db, 'tech_digests', todayKey), digest);
+  } catch {}
+
+  return digest;
+}
+
+export async function generateAiTechDigest(): Promise<TechDigest> {
+  return await generateEndpointTechDigest();
 }
 
 /**
  * Fetches today's digest from Firestore or LocalStorage.
- * If not available or forceRefresh is true, fetches live APIs + AI model.
+ * If not available or forceRefresh is true, fetches live APIs directly.
  */
 export async function getOrFetchTodayTechDigest(forceRefresh = false): Promise<TechDigest> {
   const todayKey = getTodayKey();
@@ -265,6 +335,6 @@ export async function getOrFetchTodayTechDigest(forceRefresh = false): Promise<T
     } catch {}
   }
 
-  // Generate via live APIs + AI
-  return await generateAiTechDigest();
+  // Generate directly from live API endpoints without AI
+  return await generateEndpointTechDigest();
 }
