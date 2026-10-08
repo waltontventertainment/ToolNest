@@ -9,6 +9,7 @@ import { useFavorites } from '../context/FavoritesContext';
 import { useGoogleDrive } from '../context/GoogleDriveContext';
 import { GoogleDriveModal } from './GoogleDriveModal';
 import { FeedbackModal } from './FeedbackModal';
+import { getBloggerAnnouncement } from '../lib/bloggerLayoutAdmin';
 
 export const SiteLayout: React.FC = () => {
   const [theme, setTheme] = useLocalStorage<'light' | 'dark'>('toolnest-theme', 'light');
@@ -33,6 +34,12 @@ export const SiteLayout: React.FC = () => {
     window.scrollTo(0, 0);
   }, [pathname]);
 
+  const bloggerAnnouncement = React.useMemo(() => getBloggerAnnouncement(), []);
+  const bannerBadge = bloggerAnnouncement?.badge || 'Toolzaro 2.0';
+  const bannerText = bloggerAnnouncement?.text || '161+ Professional Browser Utilities • 100% Client-Side Privacy • Live Tech Digest & Drive Sync';
+  const bannerLinkText = bloggerAnnouncement?.linkText || 'Explore All Tools';
+  const bannerLinkUrl = bloggerAnnouncement?.linkUrl || '/';
+
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground">
       {/* Premium Top Announcement Banner for Desktop / PC View */}
@@ -45,24 +52,26 @@ export const SiteLayout: React.FC = () => {
             <div className="flex items-center gap-3">
               <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-primary/30 border border-primary/40 text-[10px] font-black uppercase tracking-wider text-white shadow-2xs">
                 <Sparkles className="w-3 h-3 text-amber-400 animate-pulse" />
-                <span>Toolzaro 2.0</span>
+                <span>{bannerBadge}</span>
               </span>
               <p className="font-semibold text-slate-200 text-xs">
-                <span className="text-white font-bold">161+ Professional Browser Utilities</span> • 100% Client-Side Privacy • Live Tech Digest & Drive Sync
+                {bannerText}
               </p>
             </div>
 
             <div className="flex items-center gap-3">
               <Link 
-                to="/" 
+                to={bannerLinkUrl} 
                 onClick={() => {
-                  setTimeout(() => {
-                    document.getElementById('tools-grid')?.scrollIntoView({ behavior: 'smooth' });
-                  }, 60);
+                  if (bannerLinkUrl === '/') {
+                    setTimeout(() => {
+                      document.getElementById('tools-grid')?.scrollIntoView({ behavior: 'smooth' });
+                    }, 60);
+                  }
                 }}
                 className="inline-flex items-center gap-1 text-[11px] font-bold text-white hover:text-white bg-primary/40 hover:bg-primary/70 px-3 py-1 rounded-lg border border-primary/50 transition-all shadow-2xs hover:scale-105"
               >
-                <span>Explore All Tools</span>
+                <span>{bannerLinkText}</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </Link>
 

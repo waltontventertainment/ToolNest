@@ -237,9 +237,10 @@ export const BlogPage: React.FC = () => {
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
               {filteredPosts.slice(0, visiblePostsCount).map((post) => (
-                <article
+                <Link
                   key={post.id}
-                  className="group flex flex-col justify-between overflow-hidden rounded-2xl bg-card border border-border hover:border-primary/40 transition-all shadow-2xs hover:shadow-md"
+                  to={`/blog/${post.slug}`}
+                  className="group flex flex-col justify-between overflow-hidden rounded-2xl bg-card border border-border hover:border-primary/50 transition-all duration-300 shadow-2xs hover:shadow-lg cursor-pointer text-left block"
                 >
                   <div>
                     <div className="aspect-16/10 overflow-hidden relative border-b border-border/60">
@@ -262,11 +263,11 @@ export const BlogPage: React.FC = () => {
                         <span>{post.readTimeMinutes} min read</span>
                       </div>
 
-                      <Link to={`/blog/${post.slug}`} className="block group-hover:text-primary transition-colors">
-                        <h3 className="text-sm sm:text-base font-bold text-foreground line-clamp-2 leading-snug">
+                      <div className="block">
+                        <h3 className="text-sm sm:text-base font-bold text-foreground line-clamp-2 leading-snug group-hover:text-primary transition-colors">
                           {post.title}
                         </h3>
-                      </Link>
+                      </div>
 
                       <p className="text-xs text-muted-foreground line-clamp-3 leading-relaxed">
                         {post.excerpt}
@@ -279,7 +280,7 @@ export const BlogPage: React.FC = () => {
                       <img
                         src={post.author.avatar}
                         alt={post.author.name}
-                        className="w-6 h-6 rounded-full object-cover border border-border"
+                        className="w-6 h-6 rounded-full object-cover border border-border shrink-0 shadow-2xs"
                       />
                       <span className="text-[11px] font-medium text-foreground truncate max-w-[120px]">
                         {post.author.name}
@@ -287,16 +288,13 @@ export const BlogPage: React.FC = () => {
                     </div>
 
                     <div className="flex items-center gap-2">
-                      <Link
-                        to={`/blog/${post.slug}`}
-                        className="text-xs font-bold text-primary hover:underline flex items-center gap-1 group-hover:gap-1.5 transition-all"
-                      >
+                      <span className="text-xs font-bold text-primary flex items-center gap-1 group-hover:gap-1.5 group-hover:underline transition-all">
                         <span>Read</span>
-                        <ArrowRight className="w-3 h-3" />
-                      </Link>
+                        <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+                      </span>
                     </div>
                   </div>
-                </article>
+                </Link>
               ))}
             </div>
 

@@ -2,15 +2,15 @@
 TOOLZARO BLOGGER INTEGRATION - JSDELIVR HIGH-SPEED CDN & THEME XML
 ====================================================================
 Repository: ToolNest/ToolNest
-Cache-Buster: muzrudo7
+Cache-Buster: muztk1wz
 
 1. PRIMARY JSDELIVR GLOBAL CDN LINKS (Ultra-Fast Edge Delivery):
-   CSS: https://cdn.jsdelivr.net/gh/ToolNest/ToolNest@gh-pages/assets/index-EYA8knTk.css?v=muzrudo7
-   JS:  https://cdn.jsdelivr.net/gh/ToolNest/ToolNest@gh-pages/assets/index-jHquZTNq.js?v=muzrudo7
+   CSS: https://cdn.jsdelivr.net/gh/ToolNest/ToolNest@gh-pages/assets/index-CJM-HBi8.css?v=muztk1wz
+   JS:  https://cdn.jsdelivr.net/gh/ToolNest/ToolNest@gh-pages/assets/index-DgoBRVgv.js?v=muztk1wz
 
 2. SECONDARY GITHUB PAGES DIRECT LINKS (Fallback):
-   CSS: https://ToolNest.github.io/ToolNest/assets/index-EYA8knTk.css
-   JS:  https://ToolNest.github.io/ToolNest/assets/index-jHquZTNq.js
+   CSS: https://ToolNest.github.io/ToolNest/assets/index-CJM-HBi8.css
+   JS:  https://ToolNest.github.io/ToolNest/assets/index-DgoBRVgv.js
 
 HOW TO SET UP ON BLOGGER:
 --------------------------------------------------------------------

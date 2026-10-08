@@ -12,6 +12,7 @@ export interface BlogPost {
     name: string;
     role: string;
     avatar: string;
+    profileUrl?: string;
   };
   publishedAt: string;
   readTimeMinutes: number;

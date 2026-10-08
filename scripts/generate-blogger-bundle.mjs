@@ -138,7 +138,7 @@ const bloggerEmbedHtml = `<!-- =================================================
 // =========================================================================
 const bloggerThemeXml = `<?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE html>
-<html b:css='false' b:responsive='true' b:version='2' class='scroll-smooth dark' lang='en' xmlns='http://www.w3.org/1999/xhtml' xmlns:b='http://www.google.com/2005/gml/b' xmlns:data='http://www.google.com/2005/gml/data' xmlns:expr='http://www.google.com/2005/gml/expr'>
+<html b:css='false' b:layoutsVersion='3' b:responsive='true' b:version='2' class='scroll-smooth dark' lang='en' xmlns='http://www.w3.org/1999/xhtml' xmlns:b='http://www.google.com/2005/gml/b' xmlns:data='http://www.google.com/2005/gml/data' xmlns:expr='http://www.google.com/2005/gml/expr'>
 <head>
   <meta charset='UTF-8'/>
   <meta content='width=device-width, initial-scale=1.0' name='viewport'/>
@@ -243,32 +243,47 @@ const bloggerThemeXml = `<?xml version="1.0" encoding="UTF-8" ?>
   <!-- In Blogger -> Layout, you can add, configure, edit and rearrange all widgets below -->
   <div class='blogger-sections-container' style='display:none;'>
     <!-- Header Section -->
-    <b:section class='header' id='header' maxwidgets='2' showaddelement='yes'>
-      <b:widget id='Header1' locked='false' title='Toolzaro Header' type='Header'/>
+    <b:section class='header' id='header' maxwidgets='2' name='Header' showaddelement='yes'>
+      <b:widget id='Header1' locked='false' title='Toolzaro Header' type='Header'>
+        <b:includable id='main'>
+          <div id='blogger-header-widget' style='display:none;'>
+            <h1><data:title/></h1>
+            <p><data:description/></p>
+          </div>
+        </b:includable>
+      </b:widget>
     </b:section>
 
     <!-- Navigation / Menus Section -->
-    <b:section class='navbar' id='navbar' showaddelement='yes'>
-      <b:widget id='LinkList1' locked='false' title='Top Navigation Menu' type='LinkList'/>
+    <b:section class='navbar' id='navbar' name='Top Navigation Menu' showaddelement='yes'>
+      <b:widget id='LinkList1' locked='false' title='Top Navigation Menu' type='LinkList'>
+        <b:includable id='main'>
+          <div id='blogger-linklist-widget' style='display:none;'>
+            <b:loop values='data:links' var='link'>
+              <a expr:href='data:link.target'><data:link.name/></a>
+            </b:loop>
+          </div>
+        </b:includable>
+      </b:widget>
     </b:section>
 
     <!-- Website Admin Control Panel Section (Manage Inbuilt Posts, Hero & Banner from Blogger Dashboard -> Layout) -->
-    <b:section class='admin-panel' id='admin_panel' showaddelement='yes'>
-      <b:widget id='HTML3' locked='false' title='Admin: Edit Inbuilt Posts (JSON)' type='HTML'>
+    <b:section class='admin-panel' id='admin_panel' name='Website Admin Control Panel' showaddelement='yes'>
+      <b:widget id='HTML3' locked='false' title='Admin: Edit Inbuilt Posts (JSON or Key-Value)' type='HTML'>
         <b:includable id='main'>
           <div id='blogger-override-inbuilt-posts' style='display:none;'>
             <data:content/>
           </div>
         </b:includable>
       </b:widget>
-      <b:widget id='HTML4' locked='false' title='Admin: Hero Banner Settings' type='HTML'>
+      <b:widget id='HTML4' locked='false' title='Admin: Hero Banner (Title, Subtitle &amp; Badge)' type='HTML'>
         <b:includable id='main'>
           <div id='blogger-override-hero' style='display:none;'>
             <data:content/>
           </div>
         </b:includable>
       </b:widget>
-      <b:widget id='HTML5' locked='false' title='Admin: Top Announcement Bar' type='HTML'>
+      <b:widget id='HTML5' locked='false' title='Admin: Top Announcement Notice Bar' type='HTML'>
         <b:includable id='main'>
           <div id='blogger-override-announcement' style='display:none;'>
             <data:content/>
@@ -278,7 +293,7 @@ const bloggerThemeXml = `<?xml version="1.0" encoding="UTF-8" ?>
     </b:section>
 
     <!-- Main Content & Blog Posts Section with Inbuilt Blogger Loop Bridge -->
-    <b:section class='main' id='main' showaddelement='yes'>
+    <b:section class='main' id='main' name='Main Blog Posts Feed' showaddelement='yes'>
       <b:widget id='Blog1' locked='false' title='Blog Posts' type='Blog'>
         <b:includable id='main' var='top'>
           <!-- Inbuilt Blogger Post Records (Read directly by React BlogPage) -->
@@ -293,6 +308,12 @@ const bloggerThemeXml = `<?xml version="1.0" encoding="UTF-8" ?>
                    expr:data-timestamp='data:post.timestamp'
                    expr:data-author='data:post.author'
                    expr:data-thumbnail='data:post.firstImageUrl'>
+                <b:if cond='data:post.authorPhoto.url'>
+                  <span class='author-avatar-url' style='display:none;'><data:post.authorPhoto.url/></span>
+                </b:if>
+                <b:if cond='data:post.authorUrl'>
+                  <span class='author-profile-url' style='display:none;'><data:post.authorUrl/></span>
+                </b:if>
                 <div class='blogger-post-labels'>
                   <b:loop values='data:post.labels' var='label'>
                     <span class='label-tag'><data:label.name/></span>
@@ -317,6 +338,8 @@ const bloggerThemeXml = `<?xml version="1.0" encoding="UTF-8" ?>
                     if (lt.textContent) labels.push(lt.textContent.trim());
                   });
                   var contentEl = r.querySelector('.blogger-post-content');
+                  var avatarEl = r.querySelector('.author-avatar-url');
+                  var profileEl = r.querySelector('.author-profile-url');
                   posts.push({
                     id: r.getAttribute('data-id') || ('blogger-' + index),
                     title: r.getAttribute('data-title') || '',
@@ -324,6 +347,8 @@ const bloggerThemeXml = `<?xml version="1.0" encoding="UTF-8" ?>
                     snippet: r.getAttribute('data-snippet') || '',
                     date: r.getAttribute('data-date') || r.getAttribute('data-timestamp') || '',
                     author: r.getAttribute('data-author') || 'Toolzaro Author',
+                    authorAvatar: avatarEl ? avatarEl.textContent.trim() : '',
+                    authorProfile: profileEl ? profileEl.textContent.trim() : '',
                     thumbnail: r.getAttribute('data-thumbnail') || '',
                     labels: labels,
                     body: contentEl ? contentEl.innerHTML : ''
@@ -351,14 +376,34 @@ const bloggerThemeXml = `<?xml version="1.0" encoding="UTF-8" ?>
     </b:section>
 
     <!-- Sidebar Section for Ads, Custom Gadgets, and Widgets -->
-    <b:section class='sidebar' id='sidebar' showaddelement='yes'>
-      <b:widget id='HTML1' locked='false' title='Custom HTML / AdSense Gadget' type='HTML'/>
-      <b:widget id='PopularPosts1' locked='false' title='Popular Articles' type='PopularPosts'/>
+    <b:section class='sidebar' id='sidebar' name='Sidebar Gadgets &amp; Ads' showaddelement='yes'>
+      <b:widget id='HTML1' locked='false' title='Custom HTML / AdSense Gadget' type='HTML'>
+        <b:includable id='main'>
+          <div id='blogger-sidebar-html' style='display:none;'>
+            <data:content/>
+          </div>
+        </b:includable>
+      </b:widget>
+      <b:widget id='PopularPosts1' locked='false' title='Popular Articles' type='PopularPosts'>
+        <b:includable id='main'>
+          <div id='blogger-popular-posts' style='display:none;'>
+            <b:loop values='data:posts' var='post'>
+              <a expr:href='data:post.href'><data:post.title/></a>
+            </b:loop>
+          </div>
+        </b:includable>
+      </b:widget>
     </b:section>
 
     <!-- Footer Section -->
-    <b:section class='footer' id='footer' maxwidgets='4' showaddelement='yes'>
-      <b:widget id='HTML2' locked='false' title='Footer Links &amp; Copyright' type='HTML'/>
+    <b:section class='footer' id='footer' maxwidgets='4' name='Footer Widgets' showaddelement='yes'>
+      <b:widget id='HTML2' locked='false' title='Footer Links &amp; Copyright' type='HTML'>
+        <b:includable id='main'>
+          <div id='blogger-footer-html' style='display:none;'>
+            <data:content/>
+          </div>
+        </b:includable>
+      </b:widget>
     </b:section>
   </div>
 

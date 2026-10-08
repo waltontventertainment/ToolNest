@@ -49,7 +49,6 @@ export function getCachedBloggerPosts(): BlogPost[] {
   return [];
 }
 
-// Convert Blogger string title to URL-safe slug
 export interface RawBloggerXmlPost {
   id?: string;
   title?: string;
@@ -57,9 +56,47 @@ export interface RawBloggerXmlPost {
   snippet?: string;
   date?: string;
   author?: string;
+  authorAvatar?: string;
+  authorProfile?: string;
   thumbnail?: string;
   labels?: string[];
   body?: string;
+}
+
+/**
+ * Resolves the author avatar:
+ * 1. If Blogger provides a real photo, upgrades to high-res (/s160-c/)
+ * 2. If Blogger returns the default generic silhouette or empty, generates a personalized
+ *    avatar with the author's real initials and Toolzaro's brand palette.
+ */
+export function resolveAuthorAvatar(rawAvatarUrl?: string, authorName?: string): string {
+  const cleanName = (authorName || 'Toolzaro Author').trim();
+
+  if (rawAvatarUrl && rawAvatarUrl.trim()) {
+    let url = rawAvatarUrl.trim();
+    if (url.startsWith('//')) {
+      url = 'https:' + url;
+    }
+
+    const isGenericIcon = 
+      url.includes('b16-rounded.gif') || 
+      url.includes('blank.gif') || 
+      url.includes('pixel.gif') ||
+      url.includes('avatar_blue_m_96.png') ||
+      url.includes('g.co/blogger/avatar');
+
+    if (!isGenericIcon && (url.startsWith('http://') || url.startsWith('https://'))) {
+      // Upgrade Google / Blogger photo thumbnail to high resolution
+      return url
+        .replace(/\/s\d+(-c)?\//, '/s160-c/')
+        .replace(/\/w\d+-h\d+[^/]*\//, '/s160-c/')
+        .replace(/=s\d+(-c)?$/, '=s160-c');
+    }
+  }
+
+  // Generate crisp brand avatar with the author's real initials
+  const encodedName = encodeURIComponent(cleanName);
+  return `https://ui-avatars.com/api/?name=${encodedName}&background=8b5cf6&color=ffffff&bold=true&size=160&rounded=true`;
 }
 
 export function getNativeBloggerXmlPosts(): BlogPost[] {
@@ -101,8 +138,9 @@ export function getNativeBloggerXmlPosts(): BlogPost[] {
       category,
       author: {
         name: authorName,
-        role: 'Editorial Contributor',
-        avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80'
+        role: 'Blogger Author',
+        avatar: resolveAuthorAvatar(p.authorAvatar, authorName),
+        profileUrl: p.authorProfile || undefined
       },
       publishedAt: date,
       readTimeMinutes: readTime,
@@ -279,7 +317,9 @@ export async function fetchBloggerPosts(bloggerUrl?: string): Promise<BlogPost[]
     const contentHtml = entry.content?.$t || entry.summary?.$t || '';
     const publishedAt = entry.published?.$t ? entry.published.$t.slice(0, 10) : new Date().toISOString().slice(0, 10);
     const authorName = entry.author?.[0]?.name?.$t || 'Toolzaro Contributor';
-    const authorAvatar = entry.author?.[0]?.gd$image?.src || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80';
+    const rawAvatar = entry.author?.[0]?.gd$image?.src;
+    const authorAvatar = resolveAuthorAvatar(rawAvatar, authorName);
+    const authorProfile = entry.author?.[0]?.uri?.$t;
     
     // Find original Blogger post link
     const alternateLink = (entry.link || []).find((l: any) => l.rel === 'alternate')?.href || cleanBase;
@@ -306,8 +346,9 @@ export async function fetchBloggerPosts(bloggerUrl?: string): Promise<BlogPost[]
       category,
       author: {
         name: authorName,
-        role: 'Editorial Contributor',
-        avatar: authorAvatar
+        role: 'Blogger Author',
+        avatar: authorAvatar,
+        profileUrl: authorProfile || undefined
       },
       publishedAt,
       readTimeMinutes: readTime,

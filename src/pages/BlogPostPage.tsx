@@ -22,6 +22,7 @@ import { Seo } from '../components/Seo';
 import { BreadcrumbNavigation } from '../components/BreadcrumbNavigation';
 import { AdSlot } from '../components/AdSlot';
 import { MarkdownRenderer } from '../components/MarkdownRenderer';
+import { cleanPostContentHtml } from '../lib/bloggerContentCleaner';
 import { toast } from 'sonner';
 
 export const BlogPostPage: React.FC = () => {
@@ -179,7 +180,20 @@ export const BlogPostPage: React.FC = () => {
               className="w-11 h-11 rounded-full object-cover border-2 border-border shadow-xs"
             />
             <div>
-              <p className="text-sm font-bold text-foreground">{post.author.name}</p>
+              <div className="flex items-center gap-1.5">
+                <p className="text-sm font-bold text-foreground">{post.author.name}</p>
+                {post.author.profileUrl && (
+                  <a
+                    href={post.author.profileUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-primary hover:underline inline-flex items-center gap-0.5"
+                    title="View Blogger Profile"
+                  >
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
+                )}
+              </div>
               <p className="text-xs text-muted-foreground">{post.author.role}</p>
             </div>
           </div>
@@ -213,7 +227,7 @@ export const BlogPostPage: React.FC = () => {
         {post.source === 'blogger' ? (
           <div 
             className="prose dark:prose-invert max-w-none text-xs md:text-sm text-foreground leading-relaxed space-y-4 [&_img]:rounded-2xl [&_img]:shadow-md [&_img]:max-w-full [&_img]:h-auto [&_img]:my-6 [&_a]:text-primary [&_a]:underline [&_h1]:text-2xl [&_h2]:text-xl [&_h3]:text-lg [&_h1]:font-extrabold [&_h2]:font-bold [&_h3]:font-bold [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_blockquote]:border-l-4 [&_blockquote]:border-primary/50 [&_blockquote]:pl-4 [&_blockquote]:italic"
-            dangerouslySetInnerHTML={{ __html: post.content }} 
+            dangerouslySetInnerHTML={{ __html: cleanPostContentHtml(post.content, post.coverImage) }} 
           />
         ) : (
           <MarkdownRenderer content={post.content} />
