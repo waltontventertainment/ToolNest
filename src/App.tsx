@@ -64,8 +64,13 @@ function isHashRoutingRequired(): boolean {
     return true;
   }
 
-  // 6. Existing hash routing in URL
-  if (window.location.hash.startsWith('#/')) {
+  // 6. Explicit Blogger flag or existing hash routing
+  if (
+    (window as any).__USE_HASH_ROUTER__ === true ||
+    window.location.hash.startsWith('#/') ||
+    window.location.pathname.includes('/p/') ||
+    window.location.pathname.includes('/b/')
+  ) {
     return true;
   }
 

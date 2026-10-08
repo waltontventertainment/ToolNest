@@ -1,0 +1,81 @@
+<!-- ================================================================= -->
+<!-- TOOLZARO - PREMIUM SUITE FOR BLOGGER (PAGE / POST HTML EMBED)     -->
+<!-- File Size: ~3.5 KB (Super Lightweight & Fast)                     -->
+<!-- CSS & JS are loaded directly from GitHub Pages / jsDelivr CDN      -->
+<!-- ================================================================= -->
+
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Toolzaro - Premium Online Utility Suite</title>
+<meta name="description" content="Premium Online Utility Suite - 160+ browser-based tools for developers, designers and creators. Fast, private, and 100% client-side." />
+
+<!-- Google Fonts Preconnect & Stylesheets -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Hind+Siliguri:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<!-- Google AdSense Account Verification & Auto Ads -->
+<meta name="google-adsense-account" content="ca-pub-8769496591745522">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8769496591745522" crossorigin="anonymous"></script>
+
+<!-- Toolzaro Core Stylesheet (Hosted on GitHub Pages / CDN) -->
+<!-- Primary URL (GitHub Pages): -->
+<link rel="stylesheet" crossorigin="anonymous" href="https://ToolNest.github.io/ToolNest/assets/index-CzH50FCL.css">
+<!-- Alternative jsDelivr CDN (If GitHub Pages is not yet enabled, you can use this):
+<link rel="stylesheet" crossorigin="anonymous" href="https://cdn.jsdelivr.net/gh/ToolNest/ToolNest@gh-pages/assets/index-CzH50FCL.css">
+-->
+
+<!-- Blogger Full-Screen & Theme Reset CSS -->
+<style>
+  /* Reset Blogger margins and containers so Toolzaro occupies full screen */
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    min-height: 100vh !important;
+    background-color: #0b0f19 !important;
+    color: #f8fafc !important;
+  }
+  #root {
+    min-height: 100vh !important;
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+  /* Hide typical default Blogger widgets/headers if embedded in standard template */
+  .post-title, .post-header, .post-footer, .blog-pager, .comments, #comments, .sidebar-wrapper, .navbar, .header-widget {
+    display: none !important;
+  }
+  .main-inner, .content-inner, .post-body, .post {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+</style>
+
+<!-- Instant Dark/Light Theme Bootstrap & Blogger Router Flag (Zero Flash) -->
+<script>
+  window.__USE_HASH_ROUTER__ = true;
+  (function() {
+    try {
+      var saved = localStorage.getItem('toolnest-theme');
+      var isDark = saved === '"dark"' || saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches);
+      if (isDark) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    } catch (e) {}
+  })();
+</script>
+
+<!-- Toolzaro Root Mounting Container -->
+<div id="root"></div>
+
+<!-- Toolzaro Core JavaScript Bundle (Hosted on GitHub Pages / CDN) -->
+<!-- Primary URL (GitHub Pages): -->
+<script type="module" crossorigin="anonymous" src="https://ToolNest.github.io/ToolNest/assets/index-ETVP9Dbz.js"></script>
+<!-- Alternative jsDelivr CDN (If GitHub Pages is not yet enabled, you can use this):
+<script type="module" crossorigin="anonymous" src="https://cdn.jsdelivr.net/gh/ToolNest/ToolNest@gh-pages/assets/index-ETVP9Dbz.js"></script>
+-->

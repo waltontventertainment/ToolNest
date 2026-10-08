@@ -1,0 +1,25 @@
+TOOLZARO BLOGGER INTEGRATION LINKS
+==================================
+Repository: ToolNest/ToolNest
+
+1. GITHUB PAGES ASSET LINKS:
+CSS Link: https://ToolNest.github.io/ToolNest/assets/index-CzH50FCL.css
+JS Link:  https://ToolNest.github.io/ToolNest/assets/index-ETVP9Dbz.js
+
+2. JSDELIVR CDN ASSET LINKS (Alternative):
+CSS Link: https://cdn.jsdelivr.net/gh/ToolNest/ToolNest@gh-pages/assets/index-CzH50FCL.css
+JS Link:  https://cdn.jsdelivr.net/gh/ToolNest/ToolNest@gh-pages/assets/index-ETVP9Dbz.js
+
+HOW TO USE IN BLOGGER:
+----------------------
+Method 1: Blogger Full Website (Recommended)
+1. Go to Blogger Dashboard -> Theme
+2. Click the dropdown next to 'Customize' -> 'Edit HTML'
+3. Delete everything and paste the entire content of 'blogger-theme.xml'
+4. Click Save. Your entire Blogger site is now Toolzaro!
+
+Method 2: Blogger Page (Embed in a single page)
+1. Go to Blogger Dashboard -> Pages -> New Page
+2. Switch to 'HTML view' (pencil icon -> HTML view)
+3. Paste the entire content of 'blogger-embed.html'
+4. Publish the page.

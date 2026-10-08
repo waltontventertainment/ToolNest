@@ -1,4 +1,4 @@
-name: Build Single File HTML & Deploy
+name: 🚀 Build & Deploy (Blogger, GitHub Pages & Single HTML)
 
 on:
   push:
@@ -14,7 +14,7 @@ on:
   workflow_dispatch:
     inputs:
       create_release:
-        description: 'Create a GitHub Release with single HTML file?'
+        description: 'Create a GitHub Release with assets?'
         required: false
         type: boolean
         default: false
@@ -29,8 +29,8 @@ permissions:
   id-token: write
 
 jobs:
-  build:
-    name: 🚀 Build Single HTML & Deploy
+  build-and-deploy:
+    name: 📦 Build, Separate Assets & Deploy
     runs-on: ubuntu-latest
 
     steps:
@@ -45,67 +45,112 @@ jobs:
       - name: 📦 Install Dependencies
         run: |
           if [ -f "package-lock.json" ]; then
-            echo "package-lock.json found. Installing with fallback..."
+            echo "package-lock.json found. Installing..."
             npm ci || npm install --legacy-peer-deps
           else
-            echo "No package-lock.json found. Running npm install..."
+            echo "No lockfile found. Running npm install..."
             npm install --legacy-peer-deps
           fi
 
-      - name: 🔍 Typecheck Code
+      - name: 🔍 Typecheck & Lint
         run: |
           npm run lint
 
-      - name: ⚡ Build Single-File HTML Website
+      - name: ⚡ Step 1: Build Standard Separated Assets (HTML, CSS, JS)
         run: |
-          npm run build:single
+          npm run build:blogger
         env:
-          BUILD_SINGLEFILE: 'true'
           VITE_ROUTER_MODE: 'hash'
           NODE_ENV: production
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
 
-      - name: 📊 Verify and Inspect Single HTML Output
+      - name: ⚡ Step 2: Build Standalone Single HTML (Optional Offline Backup)
         run: |
-          echo "### 📦 Build Summary" >> $GITHUB_STEP_SUMMARY
-          if [ -f "dist/index.html" ]; then
-            FILESIZE=$(ls -lh dist/index.html | awk '{print $5}')
-            echo "✅ **Single HTML File Generated:** \`dist/index.html\`" >> $GITHUB_STEP_SUMMARY
-            echo "📏 **File Size:** $FILESIZE" >> $GITHUB_STEP_SUMMARY
-            echo "✨ All JavaScript, CSS, and SVG assets are bundled directly inside this one standalone HTML file!" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "❌ Error: dist/index.html was not found!" >> $GITHUB_STEP_SUMMARY
-            exit 1
-          fi
-
-      - name: 📁 Prepare Artifact Directory
-        run: |
+          BUILD_SINGLEFILE=true VITE_ROUTER_MODE=hash npx vite build --outDir dist-single
           mkdir -p release-artifact
-          cp dist/index.html release-artifact/index.html
-          cp dist/index.html release-artifact/toolzaro-single.html
+          if [ -f "dist-single/index.html" ]; then
+            cp dist-single/index.html release-artifact/toolzaro-single.html
+          fi
+        continue-on-error: true
 
-      - name: 📤 Upload Single HTML as Artifact
+      - name: 🌐 Step 3: Deploy Dist Assets to GitHub Pages Branch (gh-pages)
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+          publish_branch: gh-pages
+          force_orphan: false
+          commit_message: "Deploy separated website assets to GitHub Pages [skip ci]"
+
+      - name: 📊 Step 4: Generate Workflow Summary & Links
+        run: |
+          CSS_FILE=$(find dist/assets -name "*.css" -exec basename {} \; | head -n 1)
+          JS_FILE=$(find dist/assets -name "*.js" -exec basename {} \; | head -n 1)
+          HTML_SIZE=$(ls -lh dist/index.html | awk '{print $5}')
+          CSS_SIZE=$(ls -lh dist/assets/$CSS_FILE | awk '{print $5}')
+          JS_SIZE=$(ls -lh dist/assets/$JS_FILE | awk '{print $5}')
+
+          GHPAGES_CSS="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/assets/${CSS_FILE}"
+          GHPAGES_JS="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/assets/${JS_FILE}"
+          JSDELIVR_CSS="https://cdn.jsdelivr.net/gh/${{ github.repository }}@gh-pages/assets/${CSS_FILE}"
+          JSDELIVR_JS="https://cdn.jsdelivr.net/gh/${{ github.repository }}@gh-pages/assets/${JS_FILE}"
+
+          echo "## 🎉 Toolzaro Build & Blogger Deployment Ready!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📏 File Sizes (Assets Separated):" >> $GITHUB_STEP_SUMMARY
+          echo "- **Blogger HTML Size:** \`$HTML_SIZE\` *(Ultra-fast, fits Blogger limit easily!)*" >> $GITHUB_STEP_SUMMARY
+          echo "- **CSS Bundle:** \`$CSS_FILE\` (\`$CSS_SIZE\`)" >> $GITHUB_STEP_SUMMARY
+          echo "- **JS Bundle:** \`$JS_FILE\` (\`$JS_SIZE\`)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🔗 Live Hosted Asset Links:" >> $GITHUB_STEP_SUMMARY
+          echo "#### Option 1: GitHub Pages (Recommended)" >> $GITHUB_STEP_SUMMARY
+          echo "- **CSS:** \`$GHPAGES_CSS\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **JS:** \`$GHPAGES_JS\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "#### Option 2: jsDelivr Worldwide Free CDN (Immediate mirror)" >> $GITHUB_STEP_SUMMARY
+          echo "- **CSS:** \`$JSDELIVR_CSS\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **JS:** \`$JSDELIVR_JS\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📝 How to Host on Blogger:" >> $GITHUB_STEP_SUMMARY
+          echo "1. **Full Website:** Copy \`blogger-deploy/blogger-theme.xml\` -> Blogger Dashboard -> **Theme** -> **Edit HTML** -> Paste & Save." >> $GITHUB_STEP_SUMMARY
+          echo "2. **Single Page:** Copy \`blogger-deploy/blogger-embed.html\` -> Blogger Dashboard -> **Pages** -> **New Page** -> Switch to **HTML view** -> Paste & Publish." >> $GITHUB_STEP_SUMMARY
+          echo "3. In GitHub repo settings, go to **Settings** -> **Pages** -> Source: Deploy from branch **gh-pages** (/root)." >> $GITHUB_STEP_SUMMARY
+
+      - name: 📤 Step 5: Upload Blogger Ready Files Artifact (~3.5 KB)
         uses: actions/upload-artifact@v4
         with:
-          name: toolzaro-single-file-html
-          path: release-artifact/
+          name: toolzaro-blogger-ready-files
+          path: blogger-deploy/
           retention-days: 30
 
-      - name: 📤 Upload Full Dist Package
+      - name: 📤 Step 6: Upload Full Separated Dist Package
         uses: actions/upload-artifact@v4
         with:
-          name: toolzaro-full-dist
+          name: toolzaro-full-separated-dist
           path: dist/
           retention-days: 30
 
-      - name: 🏷️ Create GitHub Release (Tags or Manual Trigger)
+      - name: 📤 Step 7: Upload Standalone Single HTML (If Generated)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: toolzaro-standalone-single-html
+          path: release-artifact/
+          retention-days: 30
+
+      - name: 🏷️ Step 8: Create GitHub Release (On Tag or Manual Dispatch)
         if: startsWith(github.ref, 'refs/tags/v') || github.event.inputs.create_release == 'true'
         uses: softprops/action-gh-release@v2
         with:
           files: |
+            blogger-deploy/blogger-embed.html
+            blogger-deploy/blogger-theme.xml
+            blogger-deploy/LINKS.txt
             release-artifact/toolzaro-single.html
-            release-artifact/index.html
           tag_name: ${{ github.ref_name || 'latest-release' }}
-          name: Release ${{ github.ref_name || 'Latest Single HTML' }}
+          name: Release ${{ github.ref_name || 'Latest Blogger & Web Suite' }}
           draft: false
           prerelease: false
           generate_release_notes: true

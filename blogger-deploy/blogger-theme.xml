@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html>
+<html b:css='false' b:responsive='true' b:version='2' class='scroll-smooth dark' lang='en' xmlns='http://www.w3.org/1999/xhtml' xmlns:b='http://www.google.com/2005/gml/b' xmlns:data='http://www.google.com/2005/gml/data' xmlns:expr='http://www.google.com/2005/gml/expr'>
+<head>
+  <meta charset='UTF-8'/>
+  <meta content='width=device-width, initial-scale=1.0' name='viewport'/>
+  <title><data:blog.pageTitle/></title>
+  <meta content='Premium Online Utility Suite - 160+ browser-based tools for developers, designers and creators. Fast, private, and 100% client-side.' name='description'/>
+  <meta content='Toolzaro - Premium Online Utility Suite' property='og:title'/>
+  <meta content='160+ browser-based tools for developers, designers and creators.' property='og:description'/>
+
+  <!-- Google Fonts -->
+  <link href='https://fonts.googleapis.com' rel='preconnect'/>
+  <link crossorigin='anonymous' href='https://fonts.gstatic.com' rel='preconnect'/>
+  <link href='https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=Hind+Siliguri:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;family=Outfit:wght@400;500;600;700;800;900&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap' rel='stylesheet'/>
+
+  <!-- Google AdSense Account Verification &amp; Auto Ads -->
+  <meta content='ca-pub-8769496591745522' name='google-adsense-account'/>
+  <script async='async' crossorigin='anonymous' src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8769496591745522'></script>
+
+  <!-- Required Blogger Minimal Skin -->
+  <b:skin><![CDATA[
+    html, body {
+      margin: 0 !important;
+      padding: 0 !important;
+      width: 100% !important;
+      min-height: 100vh !important;
+      background-color: #0b0f19 !important;
+      color: #f8fafc !important;
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif !important;
+    }
+    #root {
+      min-height: 100vh !important;
+      width: 100% !important;
+      display: flex !important;
+      flex-direction: column !important;
+    }
+    .quickedit, .widget, .blogger-clickContent {
+      display: none !important;
+    }
+  ]]></b:skin>
+
+  <!-- Toolzaro Core Stylesheet from GitHub Pages / CDN -->
+  <link crossorigin='anonymous' href='https://ToolNest.github.io/ToolNest/assets/index-CzH50FCL.css' rel='stylesheet'/>
+
+  <!-- Instant Theme Bootstrap & Blogger Router Flag -->
+  <script>
+    window.__USE_HASH_ROUTER__ = true;
+    (function() {
+      try {
+        var saved = localStorage.getItem('toolnest-theme');
+        var isDark = saved === '"dark"' || saved === 'dark' || (!saved &amp;&amp; window.matchMedia('(prefers-color-scheme: dark)').matches);
+        if (isDark) {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      } catch (e) {}
+    })();
+  </script>
+</head>
+
+<body>
+  <!-- Required Blogger Sections (Hidden to let React SPA take 100% control) -->
+  <div style='display:none;'>
+    <b:section id='header' maxwidgets='1' showaddelement='no'/>
+    <b:section id='main' showaddelement='no'/>
+    <b:section id='footer' maxwidgets='1' showaddelement='no'/>
+  </div>
+
+  <!-- React Single Page Application Root -->
+  <div id='root'></div>
+
+  <!-- Toolzaro Core JavaScript Bundle from GitHub Pages / CDN -->
+  <script crossorigin='anonymous' src='https://ToolNest.github.io/ToolNest/assets/index-ETVP9Dbz.js' type='module'></script>
+</body>
+</html>

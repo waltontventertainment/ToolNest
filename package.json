@@ -7,9 +7,10 @@
     "dev": "tsx server.ts",
     "build": "vite build",
     "build:single": "BUILD_SINGLEFILE=true VITE_ROUTER_MODE=hash vite build",
+    "build:blogger": "VITE_ROUTER_MODE=hash vite build && node scripts/generate-blogger-bundle.mjs",
     "start": "node server.ts",
     "preview": "vite preview",
-    "clean": "rm -rf dist server.js",
+    "clean": "rm -rf dist server.js blogger-deploy",
     "lint": "tsc --noEmit"
   },
   "dependencies": {
