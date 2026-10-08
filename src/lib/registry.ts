@@ -22,20 +22,10 @@ import {
 import {
   ImageResizerConverter, ImageCropperRatio, ImagePaletteExtractor, ImageFiltersAdjuster, ImageWatermarkAdder, ColorContrastWcagChecker, SvgToCssDataUriConverter, ColorGradientMeshGenerator, ColorBlindnessSimulator, ImageAnonymizerBlur
 } from '../tools/ColorImageToolsBatch';
-import {
-  AiArticleWriter, AiTextSummarizer, AiSmartTranslator, AiGrammarPolisher, AiCodeExplainer,
-  AiImagePromptGenerator, AiEmailWriter, AiSeoGenerator, AiRegexSqlGenerator, AiSocialPostGenerator
-} from '../tools/AiToolsBatch';
-import {
-  AiYoutubeScriptGenerator, AiResumeBioBuilder, AiProductDescription, AiInterviewPrep,
-  AiStoryPlotGenerator, AiMathProblemSolver, AiQuizFlashcardMaker, AiDomainStartupNamer,
-  AiRecipeMealPlanner, AiContractLegalExplainer
-} from '../tools/AiToolsBatch2';
 import { YoutubeTranscriptTool } from '../tools/YoutubeTranscriptTool';
 import { WikipediaSummarizer } from '../tools/WikipediaSummarizer';
 import { WikipediaHistory } from '../tools/WikipediaHistory';
 import { WikipediaNearby } from '../tools/WikipediaNearby';
-import { WikipediaTrivia } from '../tools/WikipediaTrivia';
 import {
   RestCountriesTool, LexiconDictionaryTool, OpenLibraryTool, OpenMeteoWeatherTool,
   AvatarGeneratorTool, QrServerGeneratorTool, LoremPicsumTool, IpifyInspectorTool,
@@ -58,7 +48,7 @@ import {
 } from '../tools';
 
 export const categories: ToolCategory[] = [
-  'Universal Data Suite', 'Wikipedia', 'AI', 'PDF', 'Text', 'Developer', 'Converters', 'Generators', 'QR & Barcode', 'Color & Image', 'Calculators', 'SEO', 'Utility'
+  'Universal Data Suite', 'Wikipedia', 'PDF', 'Text', 'Developer', 'Converters', 'Generators', 'QR & Barcode', 'Color & Image', 'Calculators', 'SEO', 'Utility'
 ];
 
 export const tools: ToolDefinition[] = [
@@ -217,23 +207,22 @@ export const tools: ToolDefinition[] = [
     Component: WebsiteScreenshotTool
   },
   {
-    slug: 'wikipedia-ai-summarizer',
-    name: 'Wikipedia AI Summarizer & Fact Sheet',
+    slug: 'wikipedia-summarizer',
+    name: 'Wikipedia Article & Summary Explorer',
     category: 'Wikipedia',
-    icon: Sparkles,
-    keywords: ['wikipedia api', 'wikipedia summarizer', 'wikipedia fact sheet', 'summarize article', 'wiki AI helper'],
-    metaTitle: 'Wikipedia AI Summarizer & Fact Sheet',
-    metaDescription: 'Extract high-precision summaries and generate structured bulleted fact sheets and takeaways using Wikipedia API and server-side AI.',
-    intro: 'Search any article globally, extract high-precision summaries, and generate beautiful bulleted fact sheets with server-side AI.',
+    icon: BookOpen,
+    keywords: ['wikipedia api', 'wikipedia summarizer', 'summarize article', 'wiki search', 'article reader'],
+    metaTitle: 'Wikipedia Article & Summary Explorer',
+    metaDescription: 'Search any Wikipedia article globally, extract high-precision summaries, and read full articles in English or Bengali.',
+    intro: 'Search any article globally, extract high-precision summaries, and read full articles with our streamlined Wikipedia explorer.',
     howTo: [
       'Enter any search term or topic keyword.',
-      'Click the article search icon and select your matching article from the results.',
-      'Read the summary loaded instantly from Wikipedia API.',
-      'Click "Generate AI Fact Sheet" to prompt the server-side AI for comprehensive takeaways.'
+      'Select your matching article from the instant search results list.',
+      'Read the summary loaded from Wikipedia API or click "Read Full Article" to open the interactive reader.'
     ],
     faq: [
       { q: 'Is this tool free and compliant?', a: 'Yes! It utilizes official Wikipedia summaries and clearly attributes content under the CC BY-SA 3.0 license.' },
-      { q: 'Can I generate fact sheets in Bengali?', a: 'Yes! You can toggle between English and Bengali using the header language selector.' }
+      { q: 'Does it support Bengali articles?', a: 'Yes! You can toggle between English and Bengali using the language selector.' }
     ],
     Component: WikipediaSummarizer
   },
@@ -280,40 +269,18 @@ export const tools: ToolDefinition[] = [
     Component: WikipediaNearby
   },
   {
-    slug: 'wikipedia-random-ai-trivia',
-    name: 'Wikipedia Random AI Trivia',
-    category: 'Wikipedia',
-    icon: Shuffle,
-    keywords: ['wikipedia trivia', 'random quiz', 'wikipedia flashcards', 'trivia generator', 'AI quiz maker'],
-    metaTitle: 'Wikipedia Random AI Trivia & Quiz Card Generator',
-    metaDescription: 'Retrieve a random Wikipedia topic and use server-side AI to construct an educational multiple-choice quiz card.',
-    intro: 'Spawns a random interesting topic from Wikipedia and uses server-side AI to construct a multiple choice quiz card.',
-    howTo: [
-      'Click "Generate Random Quiz" to pull a random Wikipedia article.',
-      'Read the summarized introduction about the randomly selected topic.',
-      'Test your knowledge with the 3 multiple choice questions generated by AI.',
-      'Click "Show Answers" to view correct options and short educational explanations.'
-    ],
-    faq: [
-      { q: 'How many times can I generate quizzes?', a: 'It is completely free and unlimited. Each shuffle pulls a brand new encyclopedic topic!' },
-      { q: 'Does it support Bengali quizzes?', a: 'Yes! Switch to Bengali in the header language selector to generate quizzes in Bengali.' }
-    ],
-    Component: WikipediaTrivia
-  },
-  {
     slug: 'youtube-transcript-extractor',
     name: 'YouTube Transcript Extractor',
-    category: 'AI',
+    category: 'Universal Data Suite',
     icon: Video,
     keywords: ['youtube transcript', 'youtube subtitles downloader', 'extract youtube text', 'youtube video to text'],
     metaTitle: 'YouTube Transcript Extractor - Video Subtitles Downloader',
-    metaDescription: 'Extract, download, and copy subtitles or transcripts from any YouTube video in milliseconds. Powered by high-speed scraping with instant AI summaries.',
-    intro: 'Need to quickly read or summarize a YouTube video? Our YouTube Transcript Extractor fetches and parses captions or transcripts from any YouTube URL in milliseconds. Download as TXT, copy timelines, or generate deep AI summaries instantly.',
+    metaDescription: 'Extract, download, and copy subtitles or transcripts from any YouTube video in milliseconds. Powered by high-speed scraping with direct caption fetching.',
+    intro: 'Need to quickly read a YouTube video? Our YouTube Transcript Extractor fetches and parses captions or transcripts from any YouTube URL in milliseconds. Download as TXT, copy timelines, or save directly to Google Drive.',
     howTo: [
       'Paste any YouTube video URL or ID into the search input.',
       'Click "Get Transcript" to fetch and format subtitles instantly.',
       'Use the timestamps list or copy the full paragraph.',
-      'Click "AI Summarize" to generate executive outlines and takeaway briefs.',
       'Click "Save to Drive" to directly back up to your Google Drive.'
     ],
     faq: [
@@ -321,387 +288,6 @@ export const tools: ToolDefinition[] = [
       { q: 'Does it support auto-generated captions?', a: 'Yes! It seamlessly extracts both official creator-provided captions and YouTube auto-generated subtitle tracks.' }
     ],
     Component: YoutubeTranscriptTool
-  },
-  {
-    slug: 'ai-article-writer',
-    name: 'AI Article & Blog Writer',
-    category: 'AI',
-    icon: Sparkles,
-    keywords: ['ai writer', 'ai article generator', 'blog post generator', 'ai content writer', 'seo article generator'],
-    metaTitle: 'AI Article & Blog Post Writer - AI Content Generator',
-    metaDescription: 'Generate full-length, SEO-optimized articles, blog posts, and guides instantly with our multi-model AI engine.',
-    intro: 'Produce well-researched, high-ranking blog posts and articles in seconds. Features intelligent outline generation, tone adjustment, and multilingual support powered by high-speed AI models.',
-    howTo: [
-      'Enter your article topic or headline.',
-      'Specify your target SEO keywords and desired writing tone.',
-      'Choose output length and language.',
-      'Click Generate Article to receive structured Markdown content.'
-    ],
-    faq: [
-      { q: 'Is this AI writer completely free?', a: 'Yes! It is fully accessible and powered by the Toolzaro Neural Engine with automatic multi-stream failover.' },
-      { q: 'Can I write articles in different languages?', a: 'Yes, it supports English, Bengali, Spanish, French, German, Hindi, Arabic, and more.' }
-    ],
-    Component: AiArticleWriter
-  },
-  {
-    slug: 'ai-text-summarizer',
-    name: 'AI Text Summarizer',
-    category: 'AI',
-    icon: FileText,
-    keywords: ['ai summarizer', 'text summary', 'summarize article', 'key takeaways', 'bullet point summarizer'],
-    metaTitle: 'AI Text Summarizer - Condense Long Articles & Documents',
-    metaDescription: 'Quickly summarize long documents, meeting notes, essays, and articles into bullet points or executive summaries.',
-    intro: 'Distill lengthy text, transcripts, and reports into clear, actionable bullet points and concise summaries without losing vital information.',
-    howTo: [
-      'Paste your raw text or article into the input box.',
-      'Select your desired summary format (Executive Bullets, TL;DR, or Paragraph).',
-      'Click Summarize Text to generate an instant briefing.'
-    ],
-    faq: [
-      { q: 'What is the maximum text length?', a: 'You can paste thousands of words, and the AI model will extract key insights.' }
-    ],
-    Component: AiTextSummarizer
-  },
-  {
-    slug: 'ai-smart-translator',
-    name: 'AI Smart Translator',
-    category: 'AI',
-    icon: Globe,
-    keywords: ['ai translator', 'smart translation', 'contextual translator', 'multilingual ai', 'translate text'],
-    metaTitle: 'AI Smart Translator - Context-Aware Multilingual Translation',
-    metaDescription: 'Translate text naturally across 20+ languages with nuance and cultural context preservation.',
-    intro: 'Go beyond literal word-for-word translation. Our AI understands idioms, slang, and technical context to deliver fluent, human-like translations.',
-    howTo: [
-      'Choose source and target languages.',
-      'Paste or type the text you want translated.',
-      'Click Translate with AI and copy the output.'
-    ],
-    faq: [
-      { q: 'Does it support Bengali and non-Latin scripts?', a: 'Yes, full support for Bengali (বাংলা), Hindi, Arabic, Japanese, Chinese, and European languages.' }
-    ],
-    Component: AiSmartTranslator
-  },
-  {
-    slug: 'ai-grammar-polisher',
-    name: 'AI Grammar & Paraphraser',
-    category: 'AI',
-    icon: CheckCircle2,
-    keywords: ['grammar checker', 'ai paraphraser', 'sentence rewriter', 'proofreading ai', 'fix grammar'],
-    metaTitle: 'AI Grammar Checker & Paraphraser - Polish Your Writing',
-    metaDescription: 'Instantly fix grammar mistakes, improve sentence flow, and rephrase text for academic, professional, or casual clarity.',
-    intro: 'Elevate your writing with intelligent grammar correction, vocabulary enhancement, and tone adaptation for emails, essays, and publications.',
-    howTo: [
-      'Paste your draft text.',
-      'Choose whether to fix grammar, simplify, expand, or rewrite formally.',
-      'Click Polish & Paraphrase to view the perfected version.'
-    ],
-    faq: [
-      { q: 'Does it explain the corrections?', a: 'Yes, it provides an edited version along with concise bullet points explaining key grammar and flow improvements.' }
-    ],
-    Component: AiGrammarPolisher
-  },
-  {
-    slug: 'ai-code-explainer',
-    name: 'AI Code Generator & Explainer',
-    category: 'AI',
-    icon: Code,
-    keywords: ['ai code generator', 'code explainer', 'debug code ai', 'code converter', 'programming assistant'],
-    metaTitle: 'AI Code Generator & Explainer - Debug, Convert & Write Code',
-    metaDescription: 'Write code snippets, explain complex functions, find bugs, and convert code between programming languages.',
-    intro: 'Accelerate your programming workflow. Ask AI to write code, explain algorithms line-by-line, diagnose runtime bugs, or refactor legacy code.',
-    howTo: [
-      'Select your task (Generate Code, Explain Code, Debug / Fix, or Convert Language).',
-      'Enter your prompt or paste existing code.',
-      'Click Process with AI to get syntax-highlighted code and analysis.'
-    ],
-    faq: [
-      { q: 'Which programming languages are supported?', a: 'All major languages including JavaScript, TypeScript, Python, Go, Rust, Java, C++, PHP, and SQL.' }
-    ],
-    Component: AiCodeExplainer
-  },
-  {
-    slug: 'ai-image-prompt-generator',
-    name: 'AI Image Prompt Crafter',
-    category: 'AI',
-    icon: ImageIcon,
-    keywords: ['midjourney prompt generator', 'dall-e prompt', 'stable diffusion prompt', 'ai art prompt', 'flux prompt'],
-    metaTitle: 'AI Image Prompt Crafter - Midjourney & DALL-E Prompt Builder',
-    metaDescription: 'Turn simple ideas into rich, cinematic prompts optimized for Midjourney v6, DALL-E 3, Stable Diffusion, and Flux.',
-    intro: 'Craft breathtaking AI art prompts with lighting modifiers, camera lenses, aspect ratios, artist styles, and rendering engine tags.',
-    howTo: [
-      'Type a simple concept (e.g. "futuristic cyberpunk market").',
-      'Select target model (Midjourney, DALL-E 3, Flux) and artistic style.',
-      'Click Craft Prompts to generate 4 detailed variations with prompt parameters.'
-    ],
-    faq: [
-      { q: 'Does it include negative prompts?', a: 'Yes, it provides both positive prompts with parameters and recommended negative prompts.' }
-    ],
-    Component: AiImagePromptGenerator
-  },
-  {
-    slug: 'ai-email-writer',
-    name: 'AI Email & Letter Writer',
-    category: 'AI',
-    icon: Mail,
-    keywords: ['ai email writer', 'professional email generator', 'cold email generator', 'resignation letter ai', 'reply assistant'],
-    metaTitle: 'AI Email & Letter Writer - Craft Professional Emails Quickly',
-    metaDescription: 'Draft persuasive sales outreach, client replies, cover letters, and formal inquiries with perfect etiquette.',
-    intro: 'Never struggle with blank email drafts again. Generate polished, context-appropriate emails for any workplace or personal situation in seconds.',
-    howTo: [
-      'Describe the purpose of your email (e.g., "Follow up after interview").',
-      'Select tone (Professional, Friendly, Urgent, Persuasive).',
-      'Click Generate Email to get subject lines and complete email body.'
-    ],
-    faq: [
-      { q: 'Can it generate multiple subject lines?', a: 'Yes, it generates 3 high-open-rate subject lines plus the full email body.' }
-    ],
-    Component: AiEmailWriter
-  },
-  {
-    slug: 'ai-seo-generator',
-    name: 'AI SEO Meta & Title Suite',
-    category: 'AI',
-    icon: Search,
-    keywords: ['seo title generator', 'meta description ai', 'keyword generator', 'seo metadata tool', 'serp optimizer'],
-    metaTitle: 'AI SEO Meta & Title Suite',
-    metaDescription: 'Generate high-CTR title tags, 155-character meta descriptions, and keyword clusters for any webpage.',
-    intro: 'Maximize your search engine click-through rate with pixel-perfect titles, compelling meta descriptions, and long-tail keyword clusters.',
-    howTo: [
-      'Enter your page topic, product, or target keyword.',
-      'Click Generate SEO Package to get title variations and meta descriptions.'
-    ],
-    faq: [
-      { q: 'Are character limits strictly enforced?', a: 'Yes, titles stay under 60 characters and meta descriptions under 155 characters.' }
-    ],
-    Component: AiSeoGenerator
-  },
-  {
-    slug: 'ai-regex-sql-generator',
-    name: 'AI Regex & SQL Generator',
-    category: 'AI',
-    icon: Database,
-    keywords: ['ai regex generator', 'ai sql generator', 'regex builder', 'sql query writer', 'natural language to sql'],
-    metaTitle: 'AI Regex & SQL Query Generator - Plain English to Code',
-    metaDescription: 'Convert plain English instructions into complex Regular Expressions or optimized SQL queries with explanations.',
-    intro: 'Transform natural language descriptions into bulletproof regular expressions and high-performance SQL queries for PostgreSQL, MySQL, and SQLite.',
-    howTo: [
-      'Choose Regex Pattern or SQL Query mode.',
-      'Describe what pattern or database query you need.',
-      'Click Generate to view the query, explanations, and test cases.'
-    ],
-    faq: [
-      { q: 'Does it provide test cases for Regex?', a: 'Yes, it includes positive and negative test cases to verify your pattern.' }
-    ],
-    Component: AiRegexSqlGenerator
-  },
-  {
-    slug: 'ai-social-post-generator',
-    name: 'AI Social Post & Hashtag Crafter',
-    category: 'AI',
-    icon: Zap,
-    keywords: ['social media post generator', 'twitter thread generator', 'linkedin post ai', 'hashtag generator', 'viral hook writer'],
-    metaTitle: 'AI Social Post & Hashtag Crafter',
-    metaDescription: 'Create high-engagement posts, hooks, and hashtags for Twitter/X, LinkedIn, Instagram, Facebook, and Threads.',
-    intro: 'Generate viral hooks, engaging captions, and trending hashtags customized for any social network to boost your organic reach and engagement.',
-    howTo: [
-      'Enter your topic, product launch, or announcement.',
-      'Select your platform (Twitter/X, LinkedIn, Instagram, etc.).',
-      'Click Generate Viral Social Posts and copy your favorite version.'
-    ],
-    faq: [
-      { q: 'Does it format specifically for LinkedIn?', a: 'Yes, LinkedIn mode formats with proper line breaks, storytelling pacing, and professional formatting.' }
-    ],
-    Component: AiSocialPostGenerator
-  },
-  {
-    slug: 'ai-youtube-script',
-    name: 'AI YouTube & Video Scriptwriter',
-    category: 'AI',
-    icon: Video,
-    keywords: ['youtube script generator', 'video script ai', 'shorts script generator', 'tiktok script writer', 'video hook generator'],
-    metaTitle: 'AI YouTube & Video Scriptwriter',
-    metaDescription: 'Generate scene-by-scene YouTube video scripts, viral hooks, visual B-roll prompts, and CTAs in seconds.',
-    intro: 'Create high-retention YouTube, Shorts, TikTok, and documentary scripts with structured scene timestamps, voiceover copy, and B-roll instructions.',
-    howTo: [
-      'Enter your video topic or headline idea.',
-      'Select video format (YouTube Long-form, Shorts/Reels, or Documentary).',
-      'Click Generate Full Video Script to stream your scene-by-scene script.'
-    ],
-    faq: [
-      { q: 'Does it include B-roll and visual cues?', a: 'Yes! Every scene includes timestamp markers, visual director notes, and spoken dialogue.' }
-    ],
-    Component: AiYoutubeScriptGenerator
-  },
-  {
-    slug: 'ai-resume-bio-builder',
-    name: 'AI Resume & LinkedIn Bio Builder',
-    category: 'AI',
-    icon: Briefcase,
-    keywords: ['resume builder ai', 'linkedin bio generator', 'ats resume bullets', 'executive summary writer', 'cv writer'],
-    metaTitle: 'AI Resume & LinkedIn Bio Builder - ATS-Friendly Bullets & Summaries',
-    metaDescription: 'Craft metric-driven XYZ-formula resume bullet points, ATS keywords, and executive LinkedIn summary bios.',
-    intro: 'Transform your career history into powerful, metric-driven accomplishments using Google-style XYZ formulas that pass Applicant Tracking Systems.',
-    howTo: [
-      'Enter your target job role and brief background experience.',
-      'Add key skills and tools you want highlighted.',
-      'Click Generate ATS-Ready Content and copy your polished resume sections.'
-    ],
-    faq: [
-      { q: 'Is this formatted for ATS systems?', a: 'Yes, it outputs clean text with standard bullet formatting and dense keyword clusters.' }
-    ],
-    Component: AiResumeBioBuilder
-  },
-  {
-    slug: 'ai-product-description',
-    name: 'AI Product Copywriter',
-    category: 'AI',
-    icon: ShoppingBag,
-    keywords: ['product description generator', 'shopify copywriter', 'amazon listing copy', 'ecommerce sales copy', 'etsy description ai'],
-    metaTitle: 'AI Product Copywriter - High-Converting E-Commerce Copy',
-    metaDescription: 'Generate emotional, benefit-driven product listings for Shopify, Amazon, and Etsy with high-converting buyer triggers.',
-    intro: 'Boost conversion rates with persuasive product descriptions. Features emotional storytelling hooks, benefit-driven feature bullets, and SEO keywords.',
-    howTo: [
-      'Enter your product name and key specs or features.',
-      'Select target marketplace (Shopify, Amazon, Etsy).',
-      'Click Generate Product Copy to receive headlines, feature bullets, and guarantee copy.'
-    ],
-    faq: [
-      { q: 'Does it include SEO keywords?', a: 'Yes, every generated product listing includes a list of top commercial-intent search keywords.' }
-    ],
-    Component: AiProductDescription
-  },
-  {
-    slug: 'ai-interview-prep',
-    name: 'AI Job Interview STAR Coach',
-    category: 'AI',
-    icon: Users,
-    keywords: ['interview question generator', 'star method answers', 'job interview prep', 'mock interview ai', 'behavioral interview'],
-    metaTitle: 'AI Job Interview STAR Coach',
-    metaDescription: 'Master any job interview with expected behavioral questions, model STAR answers, and reverse-interview questions.',
-    intro: 'Prepare for high-stakes interviews with tailored behavioral and technical questions, battle-tested STAR answers, and smart questions to ask recruiters.',
-    howTo: [
-      'Enter your target job title and company or industry.',
-      'Select interview round (Behavioral, Technical, or HR Screening).',
-      'Click Generate Interview Answers to study model responses.'
-    ],
-    faq: [
-      { q: 'What is the STAR method?', a: 'STAR stands for Situation, Task, Action, and Result—the standard structure used by top employers like Google, Amazon, and Fortune 500s.' }
-    ],
-    Component: AiInterviewPrep
-  },
-  {
-    slug: 'ai-story-generator',
-    name: 'AI Creative Story & Plot Crafter',
-    category: 'AI',
-    icon: BookOpen,
-    keywords: ['story generator', 'creative writing ai', 'novel plot generator', 'sci fi story writer', 'fiction generator'],
-    metaTitle: 'AI Creative Story & Plot Crafter - Fiction & Novel Generator',
-    metaDescription: 'Generate immersive creative stories, character arcs, three-act plot outlines, and dialogue in any genre.',
-    intro: 'Unleash your imagination. Generate captivating fiction stories, rich world-building descriptions, plot twists, and multi-layered characters.',
-    howTo: [
-      'Type your creative story premise or idea.',
-      'Choose genre (Sci-Fi, Fantasy, Thriller, Horror, Romance).',
-      'Click Generate Creative Story to stream rich prose and dialogue.'
-    ],
-    faq: [
-      { q: 'Can I choose specific narrative formats?', a: 'Yes, you can generate complete short stories, opening chapters, or three-act plot outlines.' }
-    ],
-    Component: AiStoryPlotGenerator
-  },
-  {
-    slug: 'ai-math-solver',
-    name: 'AI Step-by-Step Math Solver',
-    category: 'AI',
-    icon: Calculator,
-    keywords: ['math problem solver', 'step by step math ai', 'calculus solver', 'algebra solver', 'word problem solver'],
-    metaTitle: 'AI Step-by-Step Math Solver',
-    metaDescription: 'Solve complex math equations, calculus integrals, geometry proofs, and word problems with clear step-by-step logic.',
-    intro: 'Demystify mathematics. Get clear, step-by-step derivations, verified proofs, and alternative shortcuts for algebra, calculus, and logic puzzles.',
-    howTo: [
-      'Type or paste your math equation or word problem.',
-      'Select difficulty or subject level (Algebra, Calculus, Statistics, etc.).',
-      'Click Solve Math Problem to stream the step-by-step derivation.'
-    ],
-    faq: [
-      { q: 'Does it support word problems?', a: 'Yes! It translates complex natural language word problems into algebraic equations and solves them step-by-step.' }
-    ],
-    Component: AiMathProblemSolver
-  },
-  {
-    slug: 'ai-quiz-flashcard-maker',
-    name: 'AI Quiz & Flashcard Generator',
-    category: 'AI',
-    icon: GraduationCap,
-    keywords: ['quiz generator', 'flashcard maker ai', 'test prep ai', 'multiple choice maker', 'study card generator'],
-    metaTitle: 'AI Quiz & Flashcard Generator',
-    metaDescription: 'Transform study notes and textbook passages into multiple-choice quizzes, flashcards, and summary study sheets.',
-    intro: 'Accelerate your learning. Turn any study topic or pasted text into interactive 4-choice questions, concept flashcards, and key takeaways.',
-    howTo: [
-      'Enter your study topic or paste a lecture transcript/article.',
-      'Select number of questions and difficulty level.',
-      'Click Generate Quiz & Flashcards to create your custom study set.'
-    ],
-    faq: [
-      { q: 'Are correct answers explained?', a: 'Yes, each question includes the correct answer along with an explanation of why other choices are incorrect.' }
-    ],
-    Component: AiQuizFlashcardMaker
-  },
-  {
-    slug: 'ai-brand-startup-namer',
-    name: 'AI Startup & Brand Namer',
-    category: 'AI',
-    icon: Globe2,
-    keywords: ['startup name generator', 'brand name generator', 'company name ideas', 'domain name generator', 'slogan generator'],
-    metaTitle: 'AI Startup & Brand Namer',
-    metaDescription: 'Generate 15+ modern brandable company names, domain extension ideas, and catchy taglines for your next project.',
-    intro: 'Find the perfect identity for your venture. Brainstorm punchy, pronounceable brand names, available domain ideas, and viral taglines.',
-    howTo: [
-      'Describe your startup or project idea.',
-      'Select naming vibe (Modern SaaS, Short 4-Letter, Playful, or Elite).',
-      'Click Generate Startup Names to view candidate names with slogans.'
-    ],
-    faq: [
-      { q: 'Does it provide domain extension suggestions?', a: 'Yes, it provides .com, .io, .ai, and .app domain candidate pairs for each name.' }
-    ],
-    Component: AiDomainStartupNamer
-  },
-  {
-    slug: 'ai-recipe-meal-planner',
-    name: 'AI Recipe & Meal Planner',
-    category: 'AI',
-    icon: Utensils,
-    keywords: ['recipe generator ai', 'meal planner ai', 'fridge leftover recipe', 'macro meal planner', 'custom cooking ai'],
-    metaTitle: 'AI Recipe & Meal Planner',
-    metaDescription: 'Turn whatever is in your fridge into gourmet, macro-balanced recipes with precise cooking steps and nutrition info.',
-    intro: 'Cook delicious meals without grocery runs. Input the ingredients in your pantry to generate customized recipes with macro estimates and chef tips.',
-    howTo: [
-      'List whatever ingredients you have in your fridge/pantry.',
-      'Select dietary goal (High Protein, Keto, Vegetarian, Vegan).',
-      'Click Generate Recipe & Macros to receive cooking steps and nutrition facts.'
-    ],
-    faq: [
-      { q: 'Does it calculate calories and macros?', a: 'Yes, it provides estimated protein, carbs, fats, and total calories per serving.' }
-    ],
-    Component: AiRecipeMealPlanner
-  },
-  {
-    slug: 'ai-contract-legal-explainer',
-    name: 'AI Legal & Contract Explainer',
-    category: 'AI',
-    icon: Scale,
-    keywords: ['legal document explainer', 'contract summary ai', 'terms of service simplifier', 'nda reader ai', 'contract red flags'],
-    metaTitle: 'AI Legal & Contract Explainer',
-    metaDescription: 'Translate complex legalese into plain English. Detect arbitration clauses, auto-renewals, and liability risks instantly.',
-    intro: 'Never sign blind agreements again. Audit Terms of Service, client contracts, and NDAs to uncover hidden red flags, IP clauses, and termination terms.',
-    howTo: [
-      'Paste the text of the legal contract or Terms of Service.',
-      'Select document type (Terms of Service,lance Contract, NDA).',
-      'Click Explain in Plain English to receive risk ratings and summary clauses.'
-    ],
-    faq: [
-      { q: 'Is this legal advice?', a: 'No, this tool provides informational plain-English summaries and highlights common risk clauses to assist in your review.' }
-    ],
-    Component: AiContractLegalExplainer
   },
   {
     slug: 'pdf-merge',

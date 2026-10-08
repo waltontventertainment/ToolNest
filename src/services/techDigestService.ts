@@ -1,6 +1,5 @@
 import { doc, getDoc, setDoc, deleteDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
-import { runAutoAiCompletion } from '../lib/aiService';
 
 export interface TechHighlight {
   category: string;
@@ -52,27 +51,27 @@ export function getFormattedDate(): string {
 const FALLBACK_DIGEST: TechDigest = {
   id: getTodayKey(),
   dateFormatted: getFormattedDate(),
-  headline: "AI Model Efficiency Breakthroughs & Next-Gen Web Standards Lead Today's Tech Shift",
-  summary: "Open-weights AI models continue to close the gap with proprietary systems while client-side WebAssembly and modern browser tools empower fast, private web utilities globally.",
+  headline: "Next-Gen Web Standards & Modern Client-Side Architectures Lead Today's Tech Shift",
+  summary: "Client-side WebAssembly, modern browser APIs, and high-performance frontend tooling empower fast, private, and secure developer utilities globally.",
   highlights: [
-    {
-      category: "AI & ML",
-      title: "Open-Weights Efficiency Leap",
-      detail: "Lightweight 7B & 14B models are outperforming last-year 70B benchmarks directly in browser & edge hardware."
-    },
     {
       category: "Web Dev",
       title: "Vite & Client-First Architecture",
-      detail: "Modern web apps shift towards zero-backend, client-heavy architectures to improve privacy and eliminate server bills."
+      detail: "Modern web apps shift towards zero-backend, client-heavy architectures to improve privacy, performance, and eliminate server overhead."
     },
     {
       category: "Cloud & Security",
       title: "Zero-Trust Browser Sandboxing",
-      detail: "Localized data processing and client-side processing become standard for developer utility suites."
+      detail: "Localized client-side processing becomes standard for developer utility suites and privacy-first tools."
+    },
+    {
+      category: "Tooling",
+      title: "High-Performance Developer Toolkits",
+      detail: "Standalone offline-capable browser utilities replace heavyweight desktop applications for day-to-day conversion and formatting tasks."
     }
   ],
-  keyTakeaway: "Building privacy-first, client-side tools with AI automation gives creators maximum speed with zero server overhead.",
-  trendingTools: ["DeepSeek-R1", "Vite 6", "Tailwind CSS v4", "OpenRouter Free", "Firebase Web SDK"],
+  keyTakeaway: "Building privacy-first, client-side tools gives developers maximum speed and privacy with zero server latency.",
+  trendingTools: ["Vite 6", "Tailwind CSS v4", "TypeScript 5", "Web Workers", "Firebase Web SDK"],
   generatedAt: new Date().toISOString(),
   isFallback: true
 };

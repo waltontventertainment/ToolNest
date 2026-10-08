@@ -6,7 +6,6 @@ import {
   Copy, 
   Check, 
   Download, 
-  Sparkles, 
   CloudUpload,
   ExternalLink,
   Zap,
@@ -16,7 +15,6 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useGoogleDrive } from '../context/GoogleDriveContext';
-import { runAutoAiCompletion } from '../lib/aiService';
 import { downloadBlob } from '../lib/downloadHelper';
 
 interface TranscriptLine {
@@ -41,11 +39,6 @@ export const YoutubeTranscriptTool: React.FC = () => {
   const [data, setData] = useState<TranscriptData | null>(null);
   const [copied, setCopied] = useState(false);
   
-  // AI summary state
-  const [aiLoading, setAiLoading] = useState(false);
-  const [aiStatus, setAiStatus] = useState('');
-  const [aiSummary, setAiSummary] = useState('');
-  
   // Google Drive
   const [savingDrive, setSavingDrive] = useState(false);
   const driveContext = useGoogleDrive();
@@ -58,7 +51,6 @@ export const YoutubeTranscriptTool: React.FC = () => {
 
     setLoading(true);
     setData(null);
-    setAiSummary('');
     
     try {
       const response = await fetch(`/api/youtube-transcript?v=${encodeURIComponent(videoUrl.trim())}`);
@@ -88,49 +80,6 @@ export const YoutubeTranscriptTool: React.FC = () => {
       toast.error(err.message || 'No captions or transcript track available for this video.');
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleAiSummarize = async () => {
-    if (!data) return;
-    setAiLoading(true);
-    setAiSummary('');
-    setAiStatus('Analyzing transcript with AI...');
-
-    const prompt = `Read the following YouTube video transcript and write an exhaustive, structured, highly professional summary and article outline.
-Video ID: ${data.videoId}
-Language: ${data.languageName}
-
-Transcript Text:
-"${data.fullParagraph.substring(0, 10000)}"
-
-Please format your response in structured Markdown with:
-1. **Executive Summary** (A concise 3-sentence summary of the video's core message).
-2. **Key Takeaways & Bullet Points** (The top 5 most actionable insights).
-3. **Structured Timestamps / Scene Breakdown** (A logical timeline sequence).
-4. **Conclusion & CTA** (Closing remarks).`;
-
-    try {
-      const result = await runAutoAiCompletion({
-        prompt,
-        systemPrompt: 'You are an elite video content analyst and summary specialist. Extract the absolute best insights and structure them professionally.',
-        temperature: 0.6,
-        maxTokens: 2000,
-        onChunk: (chunk) => setAiSummary(chunk),
-        onStatus: (st) => setAiStatus(st)
-      });
-
-      if (!result.success) {
-        toast.error('AI Summary failed. Please try again.');
-      } else {
-        toast.success('Summary generated successfully!');
-      }
-    } catch (err) {
-      console.error(err);
-      toast.error('Error generating AI Summary');
-    } finally {
-      setAiLoading(false);
-      setAiStatus('');
     }
   };
 
@@ -164,9 +113,6 @@ Please format your response in structured Markdown with:
     setSavingDrive(true);
     try {
       let content = `# YouTube Video Transcript (ID: ${data.videoId})\nVideo URL: ${data.videoUrl}\n\n`;
-      if (aiSummary) {
-        content += `## AI Executive Summary\n${aiSummary}\n\n---\n\n`;
-      }
       content += `## Transcript\n` + data.lines.map(l => `- **[${l.timestamp}]** ${l.text}`).join('\n');
 
       const fileName = `YouTube_Transcript_${data.videoId}.md`;
@@ -236,7 +182,7 @@ Please format your response in structured Markdown with:
       {data && (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start animate-in fade-in-0 duration-200">
           {/* Main Transcript Display Column */}
-          <div className="lg:col-span-7 space-y-4">
+          <div className="lg:col-span-8 space-y-4">
             <div className="bg-card border border-border/80 rounded-2xl shadow-sm overflow-hidden flex flex-col h-[75vh]">
               {/* Header actions */}
               <div className="p-4 border-b border-border/70 bg-muted/20 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
@@ -290,8 +236,8 @@ Please format your response in structured Markdown with:
             </div>
           </div>
 
-          {/* AI summaries & details column */}
-          <div className="lg:col-span-5 space-y-4">
+          {/* Details column */}
+          <div className="lg:col-span-4 space-y-4">
             {/* Quick Video Stats & Cover */}
             <div className="bg-card border border-border/80 p-4 rounded-2xl shadow-sm space-y-4 text-center sm:text-left">
               <div className="aspect-video w-full rounded-xl overflow-hidden border border-border relative bg-secondary">
@@ -312,42 +258,7 @@ Please format your response in structured Markdown with:
                 <p className="text-sm font-bold text-foreground">Subtitle Lines: {data.lines.length}</p>
                 <p className="text-xs text-muted-foreground">Approx. Word Count: {data.fullParagraph.split(/\s+/).length} words</p>
               </div>
-
-              <button
-                onClick={handleAiSummarize}
-                disabled={aiLoading}
-                className="w-full h-11 bg-primary text-primary-foreground font-bold text-xs rounded-xl hover:bg-primary/95 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-md disabled:opacity-50"
-              >
-                <Sparkles className="w-4 h-4 fill-current animate-pulse" />
-                <span>{aiLoading ? 'Summarizing with AI...' : 'AI Summarize & Outline'}</span>
-              </button>
             </div>
-
-            {/* AI Summary Output Display */}
-            {(aiLoading || aiSummary) && (
-              <div className="bg-card border border-border/80 rounded-2xl p-4 sm:p-5 shadow-sm space-y-3">
-                <div className="flex items-center justify-between border-b border-border/70 pb-2">
-                  <h4 className="text-xs font-bold text-foreground flex items-center gap-1.5 uppercase tracking-wider">
-                    <Sparkles className="w-4 h-4 text-primary" />
-                    <span>AI Analysis Output</span>
-                  </h4>
-                  {aiLoading && (
-                    <span className="text-[10px] text-primary animate-pulse font-bold">{aiStatus || 'Processing...'}</span>
-                  )}
-                </div>
-
-                <div className="text-xs text-foreground leading-relaxed prose prose-sm dark:prose-invert max-h-[45vh] overflow-y-auto">
-                  {aiSummary ? (
-                    <div className="whitespace-pre-wrap">{aiSummary}</div>
-                  ) : (
-                    <div className="py-8 text-center text-muted-foreground space-y-2">
-                      <RefreshCw className="w-6 h-6 animate-spin text-primary mx-auto" />
-                      <p>AI is reading and dissecting the video transcripts...</p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
           </div>
         </div>
       )}

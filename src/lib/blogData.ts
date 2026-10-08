@@ -7,7 +7,7 @@ export interface BlogPost {
   title: string;
   excerpt: string;
   content: string; // Full markdown / HTML content
-  category: 'AI & Machine Learning' | 'Developer Workflows' | 'SEO & Growth' | 'Security & Privacy' | 'Design & UX';
+  category: 'Developer Workflows' | 'SEO & Growth' | 'Security & Privacy' | 'Design & UX';
   author: {
     name: string;
     role: string;
@@ -23,93 +23,6 @@ export interface BlogPost {
 }
 
 export const BUILTIN_BLOG_POSTS: BlogPost[] = [
-  {
-    id: 'post-1',
-    slug: 'how-to-use-free-ai-models-for-productivity-in-2026',
-    title: 'How to Leverage 100% Free AI Models for Daily Workflows & Content Creation',
-    excerpt: 'Discover how open-source and free AI models can automate article writing, code refactoring, SQL query building, and SEO optimization with zero subscription fees.',
-    category: 'AI & Machine Learning',
-    author: {
-      name: 'Toolzaro Team',
-      role: 'Toolzaro Official Editorial',
-      avatar: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150&auto=format&fit=crop&q=80'
-    },
-    publishedAt: '2026-10-04',
-    readTimeMinutes: 6,
-    coverImage: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1200&auto=format&fit=crop&q=80',
-    tags: ['AI Tools', 'Open Source AI', 'Productivity', 'Automation', 'Content Writing'],
-    relatedToolSlugs: ['ai-article-writer', 'ai-code-explainer', 'ai-regex-sql-generator', 'ai-social-post-generator'],
-    source: 'builtin',
-    content: `
-# How to Leverage 100% Free AI Models for Daily Workflows & Content Creation
-
-Artificial intelligence has evolved from experimental research into the backbone of daily software development, copywriting, and digital marketing. However, commercial subscriptions for multiple AI tools quickly compound in cost.
-
-In this guide, we explore how modern open-source models and free AI engines provide state-of-the-art results without subscription lock-in.
-
----
-
-## 1. The Power of Dynamic Model Routing & Fallbacks
-
-When relying on free AI services, individual models can occasionally experience traffic spikes or temporary rate-limiting. The key architectural secret is **dynamic auto-failover**:
-
-- **Primary Free Engine**: Ultra-fast latency for real-time text processing.
-- **Secondary Reasoning Models**: Used automatically for step-by-step logic, code compilation, and structured data tasks.
-- **Client-Side Failover**: Switching models invisibly in the browser so users experience zero friction.
-
-\`\`\`typescript
-// Client-side failover concept
-for (const model of FREE_MODELS) {
-  try {
-    const response = await fetchChatCompletion(model, prompt);
-    if (response.ok) return response.data;
-  } catch (err) {
-    console.warn(\`Model \${model} unavailable, switching to next free model...\`);
-  }
-}
-\`\`\`
-
----
-
-## 2. Supercharging Content Production
-
-Whether drafting long-form blog articles or crafting high-converting social copy, structured prompting yields 10x better outputs:
-
-1. **Define the Target Persona**: Always specify tone (e.g., *authoritative and engaging* vs. *casual*).
-2. **Set Rigid Markdown Boundaries**: Request clear H2/H3 subheadings, bullet lists, and summary takeaways.
-3. **Embed Primary & Secondary SEO Keywords**: Ensure natural keyword placement without keyword stuffing.
-
-> **Pro Tip:** Use the **AI Article & Blog Writer** in our suite to generate structured drafts with subheadings in seconds, then polish them using the **AI Grammar & Paraphraser**.
-
----
-
-## 3. Developer Automation: From Natural Language to Regex & SQL
-
-Writing complex regular expressions for email parsing or multi-table SQL joins with window functions often consumes unnecessary time. Free code-specialized AI models excel at translating plain English requirements into battle-tested syntax.
-
-### Example: Natural Language to SQL
-- **Input**: *"Find top 5 spending customers who purchased in the last 30 days with total order value."*
-- **Generated SQL**:
-\`\`\`sql
-SELECT 
-  u.id, 
-  u.name, 
-  SUM(o.total_amount) AS total_spent
-FROM users u
-JOIN orders o ON u.id = o.user_id
-WHERE o.created_at >= NOW() - INTERVAL '30 days'
-GROUP BY u.id, u.name
-ORDER BY total_spent DESC
-LIMIT 5;
-\`\`\`
-
----
-
-## Conclusion
-
-By adopting client-side, zero-backend toolchains powered by resilient neural engines, developers and creators can build completely sovereign, high-speed workflows that run anywhere—even on static Blogger sites.
-    `
-  },
   {
     id: 'post-2',
     slug: 'mastering-client-side-browser-utilities-privacy',
@@ -264,7 +177,7 @@ Adding structured data enables Google to display rich snippets, review stars, FA
     readTimeMinutes: 6,
     coverImage: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=1200&auto=format&fit=crop&q=80',
     tags: ['Regex', 'SQL', 'Development', 'Database', 'Cheat Sheet'],
-    relatedToolSlugs: ['regex-tester', 'ai-regex-sql-generator', 'sql-minifier', 'json-to-typescript'],
+    relatedToolSlugs: ['regex-tester', 'sql-minifier', 'json-to-typescript'],
     source: 'builtin',
     content: `
 # Regex & SQL Mastery: 15 Practical Patterns Every Developer Needs
@@ -327,7 +240,7 @@ GROUP BY DATE_TRUNC('month', created_at);
 
 ## Summary
 
-Keep these patterns accessible or use the **AI Regex & SQL Generator** to create custom expressions tailored to your exact database schema.
+Keep these patterns accessible or use our Regex & SQL tools to validate your expressions.
     `
   },
   {
@@ -507,7 +420,7 @@ export async function fetchBloggerPosts(bloggerUrl: string): Promise<BlogPost[]>
 
       const slug = 'blogger-' + (rawTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || `post-${index + 1}`);
 
-      const categoriesList: any[] = ['AI & Machine Learning', 'Developer Workflows', 'SEO & Growth', 'Security & Privacy', 'Design & UX'];
+      const categoriesList: any[] = ['Developer Workflows', 'SEO & Growth', 'Security & Privacy', 'Design & UX'];
       const rawCat = entry.category?.[0]?.term;
       const category = categoriesList.includes(rawCat) ? rawCat : 'Developer Workflows';
 

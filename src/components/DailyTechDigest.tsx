@@ -97,7 +97,7 @@ export const DailyTechDigest: React.FC = () => {
     try {
       const data = await getOrFetchTodayTechDigest(true);
       setDigest(data);
-      toast.success('Updated with fresh live Hacker News & AI Tech Digest!');
+      toast.success('Updated with fresh live Hacker News & Tech Digest!');
     } catch (err) {
       console.error('Refresh failed:', err);
       toast.error('Could not refresh tech digest.');
@@ -142,7 +142,7 @@ export const DailyTechDigest: React.FC = () => {
 
     setSavingDrive(true);
     try {
-      const content = `# Toolzaro Daily Tech Digest (${digest.dateFormatted})\n\n**Headline:** ${digest.headline}\n\n**Summary:**\n${digest.summary}\n\n## Key Highlights\n${digest.highlights.map(h => `- **[${h.category}] ${h.title}:** ${h.detail}`).join('\n')}\n\n**Key Takeaway:**\n${digest.keyTakeaway}\n\n**Trending Tools:**\n${digest.trendingTools.join(', ')}\n\n*Synced via Live Hacker News/Dev.to APIs & Toolzaro Neural Engine on ${digest.generatedAt}*`;
+      const content = `# Toolzaro Daily Tech Digest (${digest.dateFormatted})\n\n**Headline:** ${digest.headline}\n\n**Summary:**\n${digest.summary}\n\n## Key Highlights\n${digest.highlights.map(h => `- **[${h.category}] ${h.title}:** ${h.detail}`).join('\n')}\n\n**Key Takeaway:**\n${digest.keyTakeaway}\n\n**Trending Tools:**\n${digest.trendingTools.join(', ')}\n\n*Synced via Live Hacker News & Dev.to APIs on ${digest.generatedAt}*`;
 
       const fileName = `TechDigest_${digest.id}.md`;
       const result = await driveContext?.uploadFile(fileName, content, 'text/markdown');
@@ -180,7 +180,7 @@ export const DailyTechDigest: React.FC = () => {
             </span>
             <span className="hidden md:inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/25">
               <Globe className="w-3 h-3 text-emerald-500" />
-              <span>Hacker News & AI Synced</span>
+              <span>Hacker News & Tech Synced</span>
             </span>
           </div>
 
@@ -191,7 +191,7 @@ export const DailyTechDigest: React.FC = () => {
               onClick={handleManualRefresh}
               disabled={refreshing}
               className="px-2 py-1 rounded-lg bg-secondary hover:bg-secondary/80 text-foreground text-[11px] font-bold transition-all cursor-pointer border border-border/70 flex items-center gap-1 disabled:opacity-50"
-              title="Sync latest live Hacker News & AI news"
+              title="Sync latest live Hacker News & tech news"
             >
               <RefreshCw className={`w-3 h-3 text-amber-500 ${refreshing ? 'animate-spin' : ''}`} />
               <span className="hidden sm:inline">{refreshing ? 'Syncing...' : 'Sync Live'}</span>

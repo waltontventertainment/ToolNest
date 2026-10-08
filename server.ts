@@ -1,20 +1,9 @@
 import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { GoogleGenAI } from '@google/genai';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
-// Initialize Gemini Client
-const aiClient = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY,
-  httpOptions: {
-    headers: {
-      'User-Agent': 'aistudio-build',
-    }
-  }
-});
 
 // Helper to extract YouTube Video ID
 function extractVideoId(url: string): string {
@@ -23,147 +12,12 @@ function extractVideoId(url: string): string {
   return (match && match[2].length === 11) ? match[2] : url;
 }
 
-// Active OpenRouter Free Models for automatic failover
-const DEFAULT_OPENROUTER_KEY = ['sk', 'or', 'v1', '22c6ed9e59c42d14c7a12dab4183935cf7f09ae2d6d97715335de0aa14126079'].join('-');
-const STATIC_FREE_MODELS = [
-  'google/gemini-flash-1.5:free',
-  'deepseek/deepseek-chat:free',
-  'meta-llama/llama-3.1-8b-instruct:free',
-  'openrouter/free'
-];
-
-async function runServerOpenRouterCompletion(prompt: string, systemPrompt?: string, temperature = 0.6, maxTokens = 1200): Promise<string> {
-  const messages = [];
-  if (systemPrompt) {
-    messages.push({ role: 'system', content: systemPrompt });
-  }
-  messages.push({ role: 'user', content: prompt });
-
-  let modelsToTry = [...STATIC_FREE_MODELS];
-  try {
-    const res = await fetch('https://openrouter.ai/api/v1/models');
-    if (res.ok) {
-      const data = await res.json();
-      if (Array.isArray(data.data)) {
-        const liveFree = data.data
-          .filter((m: any) => {
-            const id = m.id || '';
-            const isZeroCost = m.pricing && (m.pricing.prompt === '0' || m.pricing.prompt === 0) && (m.pricing.completion === '0' || m.pricing.completion === 0);
-            return id.endsWith(':free') || id === 'openrouter/free' || isZeroCost;
-          })
-          .map((m: any) => m.id as string)
-          .filter((id: string) => id && (id.endsWith(':free') || id === 'openrouter/free'));
-
-        if (liveFree.length > 0) {
-          modelsToTry = Array.from(new Set(['openrouter/free', ...STATIC_FREE_MODELS, ...liveFree]));
-        }
-      }
-    }
-  } catch (e: any) {
-    console.warn('Could not fetch live OpenRouter models, using static list:', e.message);
-  }
-
-  let lastErrorMsg = 'All free models failed to generate a response.';
-
-  for (const model of modelsToTry) {
-    try {
-      console.log(`[AI Server] Attempting: ${model}`);
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 18000); // 15-18s timeout per model
-
-      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-        method: 'POST',
-        signal: controller.signal,
-        headers: {
-          'Authorization': `Bearer ${DEFAULT_OPENROUTER_KEY}`,
-          'HTTP-Referer': 'https://toolnest.com',
-          'X-Title': 'Toolzaro Server AI Suite',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          model: model,
-          messages: messages,
-          temperature: temperature,
-          max_tokens: maxTokens,
-          stream: false
-        })
-      });
-
-      clearTimeout(timeoutId);
-
-      if (response.ok) {
-        const data = await response.json();
-        let text = data?.choices?.[0]?.message?.content || data?.choices?.[0]?.text || '';
-        
-        if (text) {
-          text = text.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
-          if (text.length > 0) {
-            console.log(`[AI Server] Success with: ${model}`);
-            return text;
-          }
-        }
-      } else {
-        const errJson = await response.json().catch(() => null);
-        console.warn(`[AI Server] Model ${model} failed with status ${response.status}`);
-        if (errJson?.error?.message) {
-          lastErrorMsg = errJson.error.message;
-        }
-      }
-    } catch (err: any) {
-      console.warn(`[AI Server] Model ${model} caught error:`, err.message);
-      lastErrorMsg = err.message;
-    }
-  }
-
-  throw new Error(lastErrorMsg);
-}
-
 async function startServer() {
   const app = express();
   const PORT = 3000;
 
   // Support JSON bodies
   app.use(express.json());
-
-  // Reliable Server-Side AI Completion Endpoint with Multi-Model Fallback
-  app.post('/api/ai/completion', async (req, res) => {
-    const { prompt, systemPrompt, temperature = 0.6, maxTokens = 1200 } = req.body;
-    if (!prompt) {
-      return res.status(400).json({ error: 'Missing prompt in request body.' });
-    }
-
-    try {
-      // 1. Try server-side OpenRouter free models in a failover loop
-      const resultText = await runServerOpenRouterCompletion(prompt, systemPrompt, temperature, maxTokens);
-      return res.json({
-        success: true,
-        text: resultText
-      });
-    } catch (openRouterErr: any) {
-      console.warn('OpenRouter free models failed, falling back to server Gemini API...', openRouterErr.message);
-      
-      // 2. Fallback to Gemini API if OpenRouter models fail
-      try {
-        const response = await aiClient.models.generateContent({
-          model: 'gemini-2.5-flash',
-          contents: prompt,
-          config: {
-            systemInstruction: systemPrompt || 'You are a helpful assistant.',
-            temperature: temperature,
-            maxOutputTokens: maxTokens,
-          }
-        });
-
-        return res.json({
-          success: true,
-          text: response.text || ''
-        });
-      } catch (geminiErr: any) {
-        console.error('Gemini fallback also failed:', geminiErr);
-        return res.status(500).json({ error: 'All AI models and fallbacks failed to generate content: ' + geminiErr.message });
-      }
-    }
-  });
 
   // 100% Free & Unlimited YouTube Transcript Scraper API
   app.get('/api/youtube-transcript', async (req, res) => {

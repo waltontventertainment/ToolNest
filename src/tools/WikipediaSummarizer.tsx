@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { 
   Search, 
-  Sparkles, 
   BookOpen, 
   ExternalLink, 
   Copy, 
@@ -37,10 +36,6 @@ export const WikipediaSummarizer: React.FC = () => {
   const [searchLoading, setSearchLoading] = useState(false);
   const [selectedArticle, setSelectedArticle] = useState<WikiSummary | null>(null);
   const [articleLoading, setArticleLoading] = useState(false);
-  
-  // AI Fact Sheet States
-  const [aiLoading, setAiLoading] = useState(false);
-  const [aiFactSheet, setAiFactSheet] = useState<string>('');
   const [readerArticle, setReaderArticle] = useState<string | null>(null);
 
   const handleCopyText = (text: string, id: string) => {
@@ -58,7 +53,6 @@ export const WikipediaSummarizer: React.FC = () => {
     setSearchLoading(true);
     setSearchResults([]);
     setSelectedArticle(null);
-    setAiFactSheet('');
 
     try {
       const res = await fetch(`https://${lang}.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(searchQuery)}&utf8=1&format=json&origin=*`);
@@ -84,7 +78,6 @@ export const WikipediaSummarizer: React.FC = () => {
   const selectArticle = async (title: string) => {
     setArticleLoading(true);
     setSelectedArticle(null);
-    setAiFactSheet('');
     try {
       const res = await fetch(`https://${lang}.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`);
       if (res.ok) {
@@ -101,51 +94,6 @@ export const WikipediaSummarizer: React.FC = () => {
     }
   };
 
-  const generateAiFactSheet = async () => {
-    if (!selectedArticle) return;
-    setAiLoading(true);
-    setAiFactSheet('');
-
-    const prompt = `Based on the following Wikipedia article summary of "${selectedArticle.title}":
-"${selectedArticle.extract}"
-
-Generate an interactive developer and creator "Fact Sheet" formatted in beautiful Markdown:
-1. **Quick Takeaways**: 3 bullet points with direct insights.
-2. **Simplified Core Facts**: Explain the key concepts in a highly engaging, readable format.
-3. **Application & Use Cases**: How a content creator, developer, or student can apply this knowledge.
-
-Language: Please output in ${lang === 'bn' ? 'Bengali' : 'English'}.`;
-
-    try {
-      const response = await fetch('/api/ai/completion', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          prompt,
-          systemPrompt: 'You are an elite educational research assistant. Summarize complex encyclopedic topics into ultra-readable, professional markdown fact sheets.',
-          temperature: 0.6,
-          maxTokens: 1200
-        })
-      });
-
-      const result = await response.json();
-
-      if (result.success && result.text) {
-        setAiFactSheet(result.text);
-        toast.success('AI Fact Sheet generated successfully!');
-      } else {
-        throw new Error(result.error || 'Server returned an error');
-      }
-    } catch (err: any) {
-      console.error(err);
-      toast.error(err.message || 'Failed to generate AI Fact Sheet. Please try again.');
-    } finally {
-      setAiLoading(false);
-    }
-  };
-
   return (
     <div className="space-y-6">
       <div className="card-ambient p-5 sm:p-6 rounded-3xl border border-border/80 shadow-xs relative overflow-hidden">
@@ -153,8 +101,8 @@ Language: Please output in ${lang === 'bn' ? 'Bengali' : 'English'}.`;
         
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 relative z-10">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/25 text-xs font-bold text-blue-600 dark:text-blue-400">
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>Wikipedia AI Summarizer Engine</span>
+            <BookOpen className="w-3.5 h-3.5" />
+            <span>Wikipedia Article & Summary Explorer</span>
           </div>
 
           <div className="flex items-center gap-1.5 bg-secondary p-1 rounded-xl border border-border/50 shrink-0">
@@ -306,60 +254,7 @@ Language: Please output in ${lang === 'bn' ? 'Bengali' : 'English'}.`;
                     </div>
                   </div>
                 </div>
-
-                <div className="pt-2 border-t border-border/70 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                  <div className="space-y-0.5">
-                    <h4 className="text-xs font-bold text-foreground">
-                      {lang === 'bn' ? 'স্মার্ট এআই ফ্যাক্ট শিট' : 'AI Fact Sheet Generator'}
-                    </h4>
-                    <p className="text-[10px] text-muted-foreground">
-                      {lang === 'bn' ? 'ফ্রি এআই ব্যবহার করে আর্টিকেলের অত্যন্ত দরকারী সারসংক্ষেপ তৈরি করুন।' : 'Analyze the article using server-side AI to generate interactive bullets and key takeaways.'}
-                    </p>
-                  </div>
-
-                  <button
-                    onClick={generateAiFactSheet}
-                    disabled={aiLoading}
-                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-bold text-xs rounded-xl shadow-md cursor-pointer transition-all flex items-center gap-1.5 shrink-0 self-end sm:self-auto"
-                  >
-                    <Sparkles className="w-3.5 h-3.5 fill-current animate-pulse" />
-                    <span>{aiLoading ? 'Analyzing...' : (lang === 'bn' ? 'এআই ফ্যাক্ট শিট তৈরি করুন' : 'Generate AI Fact Sheet')}</span>
-                  </button>
-                </div>
               </div>
-
-              {/* AI Output Display */}
-              {(aiLoading || aiFactSheet) && (
-                <div className="bg-card border border-border/80 rounded-2xl p-5 sm:p-6 shadow-sm space-y-3 relative overflow-hidden">
-                  <div className="absolute top-0 left-0 h-1 bg-gradient-to-r from-blue-500 to-indigo-500 animate-pulse" style={{ width: '100%' }} />
-                  <div className="flex items-center justify-between border-b border-border/70 pb-2">
-                    <h4 className="text-xs font-bold text-foreground flex items-center gap-1.5 uppercase tracking-wider">
-                      <Sparkles className="w-4 h-4 text-blue-500" />
-                      <span>{lang === 'bn' ? 'এআই জেনারেটেড ফ্যাক্ট শিট' : 'AI-Generated Briefing'}</span>
-                    </h4>
-                    <button
-                      onClick={() => handleCopyText(aiFactSheet, 'ai_brief')}
-                      className="p-1 rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-all"
-                      title="Copy fact sheet"
-                    >
-                      {copied === 'ai_brief' ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
-                    </button>
-                  </div>
-                  {aiLoading && !aiFactSheet && (
-                    <div className="text-center py-6 text-muted-foreground text-xs flex items-center justify-center gap-2">
-                      <span className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
-                      <span>Neural Engine processing text...</span>
-                    </div>
-                  )}
-                  <div className="text-xs font-medium text-foreground leading-relaxed space-y-2 whitespace-pre-wrap font-sans">
-                    {aiFactSheet}
-                  </div>
-
-                  <div className="text-[10px] text-muted-foreground text-right italic pt-2 border-t border-border/50">
-                    Source: Wikipedia (CC BY-SA 3.0)
-                  </div>
-                </div>
-              )}
             </div>
           )}
         </div>

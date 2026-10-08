@@ -45,7 +45,7 @@ export const BlogPage: React.FC = () => {
     }
   };
 
-  const categories = ['All', 'AI & Machine Learning', 'Developer Workflows', 'SEO & Growth', 'Security & Privacy', 'Design & UX'];
+  const categories = ['All', 'Developer Workflows', 'SEO & Growth', 'Security & Privacy', 'Design & UX'];
 
   const filteredPosts = useMemo(() => {
     return posts.filter(post => {
@@ -64,8 +64,8 @@ export const BlogPage: React.FC = () => {
   return (
     <div className="space-y-6 sm:space-y-8 md:space-y-10">
       <Seo
-        title="Toolzaro Pulse & Insights - Web, AI & Developer Guides"
-        description="Explore in-depth technical guides, free AI workflows, developer cheatsheets, and SEO optimization strategies."
+        title="Toolzaro Pulse & Insights - Web & Developer Guides"
+        description="Explore in-depth technical guides, developer cheatsheets, and SEO optimization strategies."
         url="https://toolnest.com/blog"
       />
 
@@ -92,7 +92,7 @@ export const BlogPage: React.FC = () => {
           </h1>
 
           <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed max-w-2xl">
-            In-depth guides, practical developer workflows, free AI model tutorials, and technical SEO strategies designed for modern creators.
+            In-depth guides, practical developer workflows, and technical SEO strategies designed for modern creators.
           </p>
 
           <div className="pt-2 flex flex-wrap items-center gap-3">

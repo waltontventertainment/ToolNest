@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { Moon, Sun, Wrench, Star, ArrowRight, BookOpen, Cloud, Coffee, Bug, MessageSquarePlus, Sparkles, X } from 'lucide-react';
+import { Moon, Sun, Wrench, Star, ArrowRight, BookOpen, Cloud, Bug, MessageSquarePlus, Sparkles, X } from 'lucide-react';
 import { useLocalStorage } from '../lib/toolkit';
 import { categories, tools } from '../lib/registry';
 import { HeaderSearch } from './HeaderSearch';
@@ -8,7 +8,6 @@ import { ThemeToggle3D } from './ThemeToggle3D';
 import { useFavorites } from '../context/FavoritesContext';
 import { useGoogleDrive } from '../context/GoogleDriveContext';
 import { GoogleDriveModal } from './GoogleDriveModal';
-import { CoffeeSupportModal } from './CoffeeSupportModal';
 import { FeedbackModal } from './FeedbackModal';
 
 export const SiteLayout: React.FC = () => {
@@ -16,7 +15,6 @@ export const SiteLayout: React.FC = () => {
   const { favorites } = useFavorites();
   const { user, accessToken } = useGoogleDrive();
   const [isDriveModalOpen, setIsDriveModalOpen] = useState(false);
-  const [isCoffeeModalOpen, setIsCoffeeModalOpen] = useState(false);
   const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
   const [isBannerDismissed, setIsBannerDismissed] = useLocalStorage<boolean>('toolnest_top_banner_dismissed', false);
   const location = useLocation();
@@ -155,18 +153,7 @@ export const SiteLayout: React.FC = () => {
               )}
             </button>
 
-            {/* 4. Buy Me a Coffee Support Button */}
-            <button
-              type="button"
-              onClick={() => setIsCoffeeModalOpen(true)}
-              className="btn-signature-header px-2.5 sm:px-3 gap-1.5 text-xs font-bold text-amber-600 dark:text-amber-400 bg-amber-500/10 hover:bg-amber-500/20 border-amber-500/30 cursor-pointer"
-              title="Support Toolzaro - Buy Me a Coffee"
-            >
-              <Coffee className="w-3.5 h-3.5 fill-amber-500 text-amber-500 shrink-0" />
-              <span className="hidden md:inline">Support Us</span>
-            </button>
-
-            {/* 5. Report Bug Button (AdSense Safe Header Placement) */}
+            {/* 4. Report Bug Button (AdSense Safe Header Placement) */}
             <button
               type="button"
               onClick={() => setIsFeedbackModalOpen(true)}
@@ -177,7 +164,7 @@ export const SiteLayout: React.FC = () => {
               <span className="hidden lg:inline">Report Bug</span>
             </button>
 
-            {/* 6. 3D Theme Toggle Button & Wave Animation */}
+            {/* 5. 3D Theme Toggle Button & Wave Animation */}
             <ThemeToggle3D theme={theme} setTheme={setTheme} />
           </div>
         </div>
@@ -185,9 +172,6 @@ export const SiteLayout: React.FC = () => {
 
       {/* Google Drive Modal */}
       <GoogleDriveModal isOpen={isDriveModalOpen} onClose={() => setIsDriveModalOpen(false)} />
-
-      {/* Coffee Support Modal */}
-      <CoffeeSupportModal isOpen={isCoffeeModalOpen} onClose={() => setIsCoffeeModalOpen(false)} />
 
       {/* Feedback & Bug Report Modal */}
       <FeedbackModal isOpen={isFeedbackModalOpen} onClose={() => setIsFeedbackModalOpen(false)} />

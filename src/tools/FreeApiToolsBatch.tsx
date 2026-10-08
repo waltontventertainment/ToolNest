@@ -2912,7 +2912,7 @@ export const AvatarGeneratorTool: React.FC = () => {
     const hash = clean.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
     const titles = [
       'Senior UX Architect & Design Lead',
-      'Principal AI Systems Researcher',
+      'Principal Distributed Systems Researcher',
       'Cloud Infrastructure Specialist',
       'Creative Frontend Artisan',
       'Cybersecurity & Zero-Trust Engineer',
@@ -2927,7 +2927,7 @@ export const AvatarGeneratorTool: React.FC = () => {
     const quotes = [
       'Crafting seamless user experiences through empathetic design and precision engineering.',
       'Building scalable distributed systems that empower the next generation of web applications.',
-      'Exploring the frontiers of generative artificial intelligence and human-computer symbiosis.',
+      'Building high-performance client-side architectures and intuitive interfaces.',
       'Turning chaotic complexity into clean, modular, and maintainable software architecture.',
       'Transforming bold creative visions into reality pixel by pixel, line by line.'
     ];

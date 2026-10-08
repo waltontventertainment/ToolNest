@@ -4,7 +4,6 @@ import React from 'react';
 export type ToolCategory = 
   | 'Universal Data Suite'
   | 'Wikipedia'
-  | 'AI'
   | 'Text' 
   | 'Developer' 
   | 'Converters' 

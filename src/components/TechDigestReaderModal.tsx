@@ -13,8 +13,8 @@ interface TechDigestReaderModalProps {
 
 export const TechDigestReaderModal: React.FC<TechDigestReaderModalProps> = ({ item, digest, isOpen, onClose }) => {
   const [copied, setCopied] = useState(false);
-  const [aiExpandedText, setAiExpandedText] = useState<string>('');
-  const [loadingAi, setLoadingAi] = useState(false);
+  const [expandedText, setExpandedText] = useState<string>('');
+  const [loadingExpanded, setLoadingExpanded] = useState(false);
   const [textSize, setTextSize] = useState<'sm' | 'base' | 'lg' | 'xl'>('base');
   const [isPlayingSpeech, setIsPlayingSpeech] = useState(false);
 
@@ -31,8 +31,8 @@ export const TechDigestReaderModal: React.FC<TechDigestReaderModalProps> = ({ it
 
   React.useEffect(() => {
     if (!isOpen) {
-      setAiExpandedText('');
-      setLoadingAi(false);
+      setExpandedText('');
+      setLoadingExpanded(false);
       if (synthRef.current) synthRef.current.cancel();
       setIsPlayingSpeech(false);
       setTextSize('base');
@@ -51,8 +51,8 @@ export const TechDigestReaderModal: React.FC<TechDigestReaderModalProps> = ({ it
 
   const fetchFullBriefing = async () => {
     if (!title) return;
-    setLoadingAi(true);
-    setAiExpandedText('');
+    setLoadingExpanded(true);
+    setExpandedText('');
     try {
       // Full data streaming directly from live API endpoint without truncation or AI
       const fullBriefing = `### 📌 Full Live Article & Endpoint Data\n\n` +
@@ -65,12 +65,12 @@ export const TechDigestReaderModal: React.FC<TechDigestReaderModalProps> = ({ it
         `- **Stream Status:** 100% Real-Time API Data (Bypassed restrictions & proxies successfully).\n\n` +
         `*Displayed with complete details via Toolzaro Real-Time Tech Intelligence Engine.*`;
 
-      setAiExpandedText(fullBriefing);
+      setExpandedText(fullBriefing);
     } catch (err: any) {
       console.error(err);
-      setAiExpandedText(`### Complete Details\n\n${detail}\n\n[Original Source](${url || '#'})`);
+      setExpandedText(`### Complete Details\n\n${detail}\n\n[Original Source](${url || '#'})`);
     } finally {
-      setLoadingAi(false);
+      setLoadingExpanded(false);
     }
   };
 
@@ -82,7 +82,7 @@ export const TechDigestReaderModal: React.FC<TechDigestReaderModalProps> = ({ it
       return;
     }
 
-    const textToSpeak = `${title}. ${detail}. ${aiExpandedText}`;
+    const textToSpeak = `${title}. ${detail}. ${expandedText}`;
     const utterance = new SpeechSynthesisUtterance(textToSpeak);
     utterance.lang = 'en-US';
     utterance.onend = () => setIsPlayingSpeech(false);
@@ -93,7 +93,7 @@ export const TechDigestReaderModal: React.FC<TechDigestReaderModalProps> = ({ it
   };
 
   const handleCopy = () => {
-    const text = `🔥 ${title}\nCategory: ${category}\nDetails: ${detail}\n\n${aiExpandedText}\n${url ? `Source URL: ${url}\n` : ''}\n— via Toolzaro Daily Tech Digest`;
+    const text = `🔥 ${title}\nCategory: ${category}\nDetails: ${detail}\n\n${expandedText}\n${url ? `Source URL: ${url}\n` : ''}\n— via Toolzaro Daily Tech Digest`;
     navigator.clipboard.writeText(text);
     setCopied(true);
     toast.success('Copied full briefing to clipboard!');
@@ -101,7 +101,7 @@ export const TechDigestReaderModal: React.FC<TechDigestReaderModalProps> = ({ it
   };
 
   const handleDownload = () => {
-    const text = `# ${title}\n\n**Category:** ${category}\n**Quick Details:** ${detail}\n\n## Full Executive Briefing\n${aiExpandedText}\n\n${url ? `**Source Link:** ${url}\n\n` : ''}*Extracted & Generated via Toolzaro Real-Time Tech Intelligence Engine*`;
+    const text = `# ${title}\n\n**Category:** ${category}\n**Quick Details:** ${detail}\n\n## Full Executive Briefing\n${expandedText}\n\n${url ? `**Source Link:** ${url}\n\n` : ''}*Extracted & Generated via Toolzaro Real-Time Tech Intelligence Engine*`;
     downloadBlob(new Blob([text], { type: 'text/markdown;charset=utf-8' }), `TechBriefing_${Date.now()}.md`);
   };
 
@@ -191,32 +191,32 @@ export const TechDigestReaderModal: React.FC<TechDigestReaderModalProps> = ({ it
             </p>
           </div>
 
-          {/* AI Full Briefing Section */}
+          {/* Detailed Briefing Section */}
           <div className="space-y-3 pt-3 border-t border-border">
             <div className="flex items-center justify-between">
               <h4 className="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
                 <Sparkles className="w-4 h-4" />
-                <span>Full Real-Time AI Briefing & Analysis</span>
+                <span>Full Real-Time Briefing & Analysis</span>
               </h4>
-              {loadingAi && (
+              {loadingExpanded && (
                 <span className="text-[11px] text-muted-foreground flex items-center gap-1.5">
                   <span className="w-3 h-3 border-2 border-amber-500 border-t-transparent rounded-full animate-spin" />
-                  <span>Synthesizing briefing...</span>
+                  <span>Retrieving briefing...</span>
                 </span>
               )}
             </div>
 
-            {aiExpandedText ? (
+            {expandedText ? (
               <div className={`text-foreground leading-relaxed space-y-3 whitespace-pre-wrap font-sans font-medium bg-card border border-border p-5 rounded-2xl ${getFontSizeClass()}`}>
-                {aiExpandedText}
+                {expandedText}
               </div>
-            ) : !loadingAi && (
+            ) : !loadingExpanded && (
               <button
                 onClick={fetchFullBriefing}
                 className="w-full py-3 bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-300 font-bold text-xs rounded-xl border border-amber-500/30 transition-all flex items-center justify-center gap-2 cursor-pointer"
               >
                 <Sparkles className="w-4 h-4 text-amber-500 animate-pulse" />
-                <span>Generate Full In-Depth Real-Time Analysis</span>
+                <span>View Full In-Depth Real-Time Analysis</span>
               </button>
             )}
           </div>

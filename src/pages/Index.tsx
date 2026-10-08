@@ -88,7 +88,7 @@ export const Index: React.FC = () => {
   // Curated category order for intuitive exploration
   const orderedCategories = useMemo(() => {
     const desiredOrder = [
-      'AI', 'PDF', 'Text',
+      'PDF', 'Text',
       'Developer', 'Converters', 'Generators',
       'Calculators', 'Color & Image', 'QR & Barcode',
       'SEO', 'Utility', 'Wikipedia', 'Universal Data Suite'
@@ -548,7 +548,7 @@ export const Index: React.FC = () => {
                 Latest Guides & Developer Dispatches
               </h2>
               <p className="text-xs text-muted-foreground mt-0.5">
-                Technical tutorials, AI workflows, and client-side web utility architectures.
+                Technical tutorials, developer guides, and client-side web utility architectures.
               </p>
             </div>
 
