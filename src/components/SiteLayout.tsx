@@ -54,7 +54,12 @@ export const SiteLayout: React.FC = () => {
 
             <div className="flex items-center gap-3">
               <Link 
-                to="/#tools-grid" 
+                to="/" 
+                onClick={() => {
+                  setTimeout(() => {
+                    document.getElementById('tools-grid')?.scrollIntoView({ behavior: 'smooth' });
+                  }, 60);
+                }}
                 className="inline-flex items-center gap-1 text-[11px] font-bold text-white hover:text-white bg-primary/40 hover:bg-primary/70 px-3 py-1 rounded-lg border border-primary/50 transition-all shadow-2xs hover:scale-105"
               >
                 <span>Explore All Tools</span>

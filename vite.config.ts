@@ -7,6 +7,7 @@ import {viteSingleFile} from 'vite-plugin-singlefile';
 export default defineConfig(() => {
   const isSingleFile = process.env.BUILD_SINGLEFILE === 'true';
   return {
+    base: './',
     plugins: [
       react(),
       tailwindcss(),

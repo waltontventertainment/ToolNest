@@ -15,7 +15,9 @@ interface BreadcrumbNavigationProps {
 export const BreadcrumbNavigation: React.FC<BreadcrumbNavigationProps> = ({ items, className = '' }) => {
   if (!items || items.length === 0) return null;
 
-  const origin = typeof window !== 'undefined' ? window.location.origin : 'https://toolzaro.com';
+  const origin = (typeof window !== 'undefined' && window.location.origin && window.location.origin !== 'null')
+    ? window.location.origin 
+    : 'https://toolzaro.com';
 
   // Generate Schema.org JSON-LD BreadcrumbList
   const breadcrumbJsonLd = {

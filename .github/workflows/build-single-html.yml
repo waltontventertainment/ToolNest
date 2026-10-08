@@ -61,6 +61,7 @@ jobs:
           npm run build:single
         env:
           BUILD_SINGLEFILE: 'true'
+          VITE_ROUTER_MODE: 'hash'
           NODE_ENV: production
 
       - name: 📊 Verify and Inspect Single HTML Output
