@@ -19,9 +19,42 @@ async function startServer() {
   // Support JSON bodies
   app.use(express.json());
 
-  // 100% Free & Unlimited YouTube Transcript Scraper API
+  // In-memory cache for Firebase anonymous auth token
+  let cachedIoToken: string | null = null;
+  let cachedIoTokenExpiry = 0;
+
+  async function getIoAuthToken(): Promise<string | null> {
+    const now = Date.now();
+    if (cachedIoToken && cachedIoTokenExpiry > now + 60000) {
+      return cachedIoToken;
+    }
+
+    try {
+      const apiKey = "AIzaSyC02AJ8YNuHAUKTf8e8u8orfZwTrLmqBeo";
+      const authRes = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${apiKey}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ returnSecureToken: true }),
+        signal: AbortSignal.timeout(6000)
+      });
+
+      if (authRes.ok) {
+        const data = await authRes.json();
+        if (data.idToken) {
+          cachedIoToken = data.idToken;
+          cachedIoTokenExpiry = now + (Number(data.expiresIn || 3600) * 1000);
+          return cachedIoToken;
+        }
+      }
+    } catch (err: any) {
+      console.warn('Failed to retrieve IO auth token:', err.message);
+    }
+    return null;
+  }
+
+  // 100% Free & Unlimited YouTube Transcript Multi-Engine API
   app.get('/api/youtube-transcript', async (req, res) => {
-    const { v: videoUrl } = req.query;
+    const { v: videoUrl, lang: requestedLang } = req.query;
     if (!videoUrl || typeof videoUrl !== 'string') {
       return res.status(400).json({ error: 'Missing "v" query parameter representing YouTube URL or Video ID.' });
     }
@@ -43,135 +76,306 @@ async function startServer() {
     };
 
     let lines: { text: string; start: number; duration: number; timestamp: string }[] = [];
-    let selectedLanguageCode = 'en';
+    let selectedLanguageCode = (typeof requestedLang === 'string' && requestedLang) ? requestedLang : 'en';
     let selectedLanguageName = 'English';
+    let videoTitle = '';
+    let authorName = '';
+    let availableLanguages: { label: string; languageCode: string }[] = [];
 
+    // --- Provider 1: High-Speed Primary Provider (youtube-transcript.io engine) ---
     try {
-      // --- Method 1: Direct YouTube Scraper ---
-      const youtubeUrl = `https://www.youtube.com/watch?v=${videoId}`;
-      const response = await fetch(youtubeUrl, {
-        headers: {
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-          'Accept-Language': 'en-US,en;q=0.9,bn;q=0.8'
-        }
-      });
+      const idToken = await getIoAuthToken();
+      if (idToken) {
+        const hex = Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join('');
+        const ioRes = await fetch('https://www.youtube-transcript.io/api/transcripts', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+            'Authorization': 'Bearer ' + idToken,
+            'X-Hash': hex
+          },
+          body: JSON.stringify({ ids: [videoId] }),
+          signal: AbortSignal.timeout(8000)
+        });
 
-      if (response.ok) {
-        const html = await response.text();
+        if (ioRes.ok) {
+          const rawData = await ioRes.json();
+          const item = Array.isArray(rawData) ? rawData[0] : rawData;
+          if (item && Array.isArray(item.tracks) && item.tracks.length > 0) {
+            videoTitle = item.title || '';
+            authorName = item.author || '';
 
-        // Try extracting playerCaptionsTracklistRenderer JSON
-        const captionRegex = /"playerCaptionsTracklistRenderer":\s*({.*?})\s*,\s*"videoDetails"/;
-        const captionMatch = html.match(captionRegex);
-        
-        let captionTracks: any[] = [];
-        
-        if (captionMatch) {
-          try {
-            const json = JSON.parse(captionMatch[1]);
-            captionTracks = json?.captionTracks || [];
-          } catch {}
-        } else {
-          // Alternate fallback regex matching
-          const altRegex = /"captionTracks":\s*(\[.*?\])/;
-          const altMatch = html.match(altRegex);
-          if (altMatch) {
-            try {
-              captionTracks = JSON.parse(altMatch[1]);
-            } catch {}
+            // Map available languages
+            if (Array.isArray(item.languages) && item.languages.length > 0) {
+              availableLanguages = item.languages.map((l: any) => ({
+                label: l.label || l.languageCode,
+                languageCode: l.languageCode
+              }));
+            } else {
+              availableLanguages = item.tracks.map((t: any) => ({
+                label: t.language || 'Default',
+                languageCode: t.language?.toLowerCase().includes('english') ? 'en' : (t.language || 'en')
+              }));
+            }
+
+            // Find best matching track
+            let track = item.tracks[0];
+            if (requestedLang && typeof requestedLang === 'string') {
+              const reqLower = requestedLang.toLowerCase();
+              const langEntry = (item.languages || []).find((l: any) => 
+                (l.languageCode && l.languageCode.toLowerCase() === reqLower) ||
+                (l.label && l.label.toLowerCase() === reqLower)
+              );
+              if (langEntry) {
+                const byLabel = item.tracks.find((t: any) => t.language === langEntry.label);
+                if (byLabel) track = byLabel;
+              } else {
+                const byCode = item.tracks.find((t: any) => 
+                  (t.languageCode && t.languageCode.toLowerCase() === reqLower) ||
+                  (t.language && t.language.toLowerCase().startsWith(reqLower))
+                );
+                if (byCode) track = byCode;
+              }
+            } else {
+              // Default: prefer English, then first available
+              const enEntry = (item.languages || []).find((l: any) => (l.languageCode === 'en' || (l.label || '').toLowerCase().includes('english')));
+              if (enEntry) {
+                const enTrack = item.tracks.find((t: any) => t.language === enEntry.label);
+                if (enTrack) track = enTrack;
+              }
+            }
+
+            if (track && Array.isArray(track.transcript) && track.transcript.length > 0) {
+              selectedLanguageName = track.language || 'Default';
+              const matchedLangObj = (item.languages || []).find((l: any) => l.label === track.language);
+              selectedLanguageCode = matchedLangObj?.languageCode || (selectedLanguageName.toLowerCase().includes('english') ? 'en' : requestedLang || 'en');
+
+              lines = track.transcript.map((cue: any) => {
+                const start = typeof cue.start === 'number' ? cue.start : parseFloat(cue.start || '0');
+                const duration = typeof cue.dur === 'number' ? cue.dur : parseFloat(cue.dur || cue.duration || '0');
+                return {
+                  text: String(cue.text || '')
+                    .replace(/&amp;/g, '&')
+                    .replace(/&lt;/g, '<')
+                    .replace(/&gt;/g, '>')
+                    .replace(/&quot;/g, '"')
+                    .replace(/&#39;/g, "'")
+                    .trim(),
+                  start,
+                  duration,
+                  timestamp: formatTime(start)
+                };
+              }).filter((l: any) => Boolean(l.text));
+            }
           }
         }
+      }
+    } catch (ioErr: any) {
+      console.warn('Primary transcript provider failed, trying InnerTube fallback:', ioErr.message);
+    }
 
-        if (captionTracks && captionTracks.length > 0) {
-          // Prefer English, then Bangla, then first available
-          let selectedTrack = captionTracks.find((t: any) => t.languageCode === 'en') ||
-                              captionTracks.find((t: any) => t.languageCode === 'bn') ||
-                              captionTracks[0];
+    // --- Provider 2: InnerTube Android Mobile Client ---
+    if (lines.length === 0) {
+      try {
+        const innertubeRes = await fetch('https://www.youtube.com/youtubei/v1/player?prettyPrint=false', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'User-Agent': 'com.google.android.youtube/20.10.38 (Linux; U; Android 14)'
+          },
+          body: JSON.stringify({
+            context: {
+              client: {
+                clientName: 'ANDROID',
+                clientVersion: '20.10.38',
+                hl: 'en',
+                gl: 'US'
+              }
+            },
+            videoId
+          }),
+          signal: AbortSignal.timeout(6000)
+        });
 
-          if (selectedTrack && selectedTrack.baseUrl) {
-            selectedLanguageCode = selectedTrack.languageCode || 'en';
-            selectedLanguageName = selectedTrack.name?.simpleText || 'Default';
+        if (innertubeRes.ok) {
+          const ytData = await innertubeRes.json();
+          videoTitle = videoTitle || ytData?.videoDetails?.title || '';
+          authorName = authorName || ytData?.videoDetails?.author || '';
 
-            // Fetch the raw XML captions track
-            const trackRes = await fetch(selectedTrack.baseUrl);
-            if (trackRes.ok) {
-              const xml = await trackRes.text();
+          const captionTracks = ytData?.captions?.playerCaptionsTracklistRenderer?.captionTracks || [];
+          if (Array.isArray(captionTracks) && captionTracks.length > 0) {
+            availableLanguages = captionTracks.map((t: any) => ({
+              label: t.name?.runs?.[0]?.text || t.name?.simpleText || t.languageCode,
+              languageCode: t.languageCode
+            }));
 
-              // Parse XML: <text start="12.34" dur="2.1">hello world</text>
-              const textRegex = /<text start="([\d.]+)" dur="([\d.]+)".*?>(.*?)<\/text>/g;
-              let match;
+            let chosenTrack = captionTracks[0];
+            if (requestedLang && typeof requestedLang === 'string') {
+              const matched = captionTracks.find((t: any) => t.languageCode === requestedLang);
+              if (matched) chosenTrack = matched;
+            } else {
+              const en = captionTracks.find((t: any) => t.languageCode === 'en');
+              if (en) chosenTrack = en;
+            }
 
-              while ((match = textRegex.exec(xml)) !== null) {
-                const start = parseFloat(match[1]);
-                const duration = parseFloat(match[2]);
-                
-                // Clean XML entities and HTML tags
-                let text = match[3]
-                  .replace(/&amp;/g, '&')
-                  .replace(/&lt;/g, '<')
-                  .replace(/&gt;/g, '>')
-                  .replace(/&quot;/g, '"')
-                  .replace(/&#39;/g, "'")
-                  .replace(/<[^>]*>/g, '')
-                  .trim();
+            if (chosenTrack && chosenTrack.baseUrl) {
+              selectedLanguageCode = chosenTrack.languageCode || 'en';
+              selectedLanguageName = chosenTrack.name?.runs?.[0]?.text || chosenTrack.name?.simpleText || 'Default';
 
-                if (text) {
-                  lines.push({
-                    text,
-                    start,
-                    duration,
-                    timestamp: formatTime(start)
-                  });
+              // Fetch timedtext XML via direct or proxy cascade
+              const xmlUrls = [
+                chosenTrack.baseUrl,
+                `https://api.allorigins.win/raw?url=${encodeURIComponent(chosenTrack.baseUrl)}`
+              ];
+
+              for (const targetUrl of xmlUrls) {
+                try {
+                  const xRes = await fetch(targetUrl, { signal: AbortSignal.timeout(4000) });
+                  if (xRes.ok) {
+                    const xml = await xRes.text();
+                    if (xml && (xml.includes('<p ') || xml.includes('<text '))) {
+                      // Format 3: <p t="18640" d="3240">text</p>
+                      const pRegex = /<p t="(\d+)"(?: d="(\d+)")?[^>]*>(.*?)<\/p>/g;
+                      let m;
+                      while ((m = pRegex.exec(xml)) !== null) {
+                        const startMs = parseFloat(m[1]);
+                        const durMs = m[2] ? parseFloat(m[2]) : 2000;
+                        const startSec = startMs / 1000;
+                        const durSec = durMs / 1000;
+                        const text = m[3]
+                          .replace(/&amp;/g, '&')
+                          .replace(/&lt;/g, '<')
+                          .replace(/&gt;/g, '>')
+                          .replace(/&quot;/g, '"')
+                          .replace(/&#39;/g, "'")
+                          .replace(/<[^>]*>/g, '')
+                          .trim();
+
+                        if (text) {
+                          lines.push({
+                            text,
+                            start: startSec,
+                            duration: durSec,
+                            timestamp: formatTime(startSec)
+                          });
+                        }
+                      }
+
+                      // Format Standard: <text start="12.34" dur="2.1">text</text>
+                      if (lines.length === 0) {
+                        const textRegex = /<text start="([\d.]+)" dur="([\d.]+)".*?>(.*?)<\/text>/g;
+                        while ((m = textRegex.exec(xml)) !== null) {
+                          const start = parseFloat(m[1]);
+                          const duration = parseFloat(m[2]);
+                          const text = m[3]
+                            .replace(/&amp;/g, '&')
+                            .replace(/&lt;/g, '<')
+                            .replace(/&gt;/g, '>')
+                            .replace(/&quot;/g, '"')
+                            .replace(/&#39;/g, "'")
+                            .replace(/<[^>]*>/g, '')
+                            .trim();
+
+                          if (text) {
+                            lines.push({
+                              text,
+                              start,
+                              duration,
+                              timestamp: formatTime(start)
+                            });
+                          }
+                        }
+                      }
+
+                      if (lines.length > 0) break;
+                    }
+                  }
+                } catch {}
+              }
+            }
+          }
+        }
+      } catch (innerErr: any) {
+        console.warn('InnerTube extraction failed:', innerErr.message);
+      }
+    }
+
+    // --- Provider 3: Web Page Scraping Fallback ---
+    if (lines.length === 0) {
+      try {
+        const youtubeUrl = `https://www.youtube.com/watch?v=${videoId}`;
+        const response = await fetch(youtubeUrl, {
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+            'Accept-Language': 'en-US,en;q=0.9'
+          },
+          signal: AbortSignal.timeout(5000)
+        });
+
+        if (response.ok) {
+          const html = await response.text();
+          const titleMatch = html.match(/<title>(.*?)<\/title>/);
+          if (titleMatch && !videoTitle) {
+            videoTitle = titleMatch[1].replace('- YouTube', '').trim();
+          }
+
+          const captionRegex = /"captionTracks":\s*(\[.*?\])/;
+          const captionMatch = html.match(captionRegex);
+          if (captionMatch) {
+            const tracks = JSON.parse(captionMatch[1]);
+            if (Array.isArray(tracks) && tracks[0]?.baseUrl) {
+              const resXml = await fetch(tracks[0].baseUrl, { signal: AbortSignal.timeout(4000) });
+              if (resXml.ok) {
+                const xml = await resXml.text();
+                const textRegex = /<text start="([\d.]+)" dur="([\d.]+)".*?>(.*?)<\/text>/g;
+                let match;
+                while ((match = textRegex.exec(xml)) !== null) {
+                  const start = parseFloat(match[1]);
+                  const duration = parseFloat(match[2]);
+                  const text = match[3]
+                    .replace(/&amp;/g, '&')
+                    .replace(/&lt;/g, '<')
+                    .replace(/&gt;/g, '>')
+                    .replace(/&quot;/g, '"')
+                    .replace(/&#39;/g, "'")
+                    .replace(/<[^>]*>/g, '')
+                    .trim();
+
+                  if (text) {
+                    lines.push({
+                      text,
+                      start,
+                      duration,
+                      timestamp: formatTime(start)
+                    });
+                  }
                 }
               }
             }
           }
         }
-      }
-    } catch (scrapeErr: any) {
-      console.warn('Direct YouTube scraping rate-limited or failed, trying fallback...', scrapeErr.message);
-    }
-
-    // --- Method 2: Public Vercel Proxy Fallback ---
-    if (lines.length === 0) {
-      try {
-        console.log(`Direct scraping failed. Attempting Vercel API proxy fallback for video ID: ${videoId}`);
-        const fallbackUrl = `https://youtube-transcript-api-tau-one.vercel.app/transcript?v=${videoId}`;
-        const fallbackRes = await fetch(fallbackUrl);
-        
-        if (fallbackRes.ok) {
-          const rawLines = await fallbackRes.json();
-          if (Array.isArray(rawLines) && rawLines.length > 0) {
-            lines = rawLines.map((item: any) => {
-              const start = typeof item.start === 'number' ? item.start : parseFloat(item.start || '0');
-              const duration = typeof item.duration === 'number' ? item.duration : parseFloat(item.duration || '0');
-              return {
-                text: String(item.text || ''),
-                start,
-                duration,
-                timestamp: formatTime(start)
-              };
-            });
-            selectedLanguageCode = 'en';
-            selectedLanguageName = 'English (Auto-fetched via Proxy)';
-            console.log(`Successfully fetched ${lines.length} transcript lines from fallback proxy!`);
-          }
-        }
-      } catch (fallbackErr: any) {
-        console.error('Fallback proxy fetch failed:', fallbackErr.message);
+      } catch (pageErr: any) {
+        console.warn('Web page scraping fallback failed:', pageErr.message);
       }
     }
 
     if (lines.length === 0) {
-      return res.status(404).json({ error: 'No subtitles/transcripts available for this YouTube video. Make sure the video is public and has captions.' });
+      return res.status(404).json({
+        error: 'No subtitles/transcripts available for this YouTube video. Ensure the video is public and has captions enabled, or use the manual transcript import option.'
+      });
     }
 
     const fullParagraph = lines.map(l => l.text).join(' ');
 
     return res.json({
       videoId,
+      videoTitle: videoTitle || `YouTube Video (${videoId})`,
+      author: authorName,
       videoUrl: `https://www.youtube.com/watch?v=${videoId}`,
       languageCode: selectedLanguageCode,
       languageName: selectedLanguageName,
+      availableLanguages: availableLanguages.length > 0 ? availableLanguages : [{ label: selectedLanguageName, languageCode: selectedLanguageCode }],
       linesCount: lines.length,
       lines,
       fullParagraph

@@ -1,7 +1,23 @@
 import React, { useState } from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
-import { ChevronRight, HelpCircle, Star, Share2, Check, ArrowLeft } from 'lucide-react';
+import { 
+  ChevronRight, 
+  HelpCircle, 
+  Star, 
+  Share2, 
+  Check, 
+  ArrowLeft,
+  Cpu,
+  Zap,
+  ShieldCheck,
+  Briefcase,
+  CheckCircle2,
+  Lightbulb,
+  Sparkles,
+  Info
+} from 'lucide-react';
 import { tools } from '../lib/registry';
+import { getToolKnowledge } from '../lib/toolKnowledgeBase';
 import { Seo } from '../components/Seo';
 import { AdSlot } from '../components/AdSlot';
 import { BreadcrumbNavigation } from '../components/BreadcrumbNavigation';
@@ -20,6 +36,7 @@ export const ToolPage: React.FC = () => {
   }
 
   const isFavorite = checkFavorite(tool.slug);
+  const knowledge = getToolKnowledge(tool);
 
   const toggleFavorite = () => {
     authToggleFavorite(tool.slug);
@@ -34,6 +51,7 @@ export const ToolPage: React.FC = () => {
 
   const { Component } = tool;
 
+  // Rich Schema.org structured data (WebApplication, FAQPage, HowTo)
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "WebApplication",
@@ -51,7 +69,7 @@ export const ToolPage: React.FC = () => {
   const faqLd = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    "mainEntity": tool.faq.map(f => ({
+    "mainEntity": knowledge.extendedFaqs.map(f => ({
       "@type": "Question",
       "name": f.q,
       "acceptedAnswer": {
@@ -61,12 +79,23 @@ export const ToolPage: React.FC = () => {
     }))
   };
 
+  const howToLd = {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    "name": `How to use ${tool.name}`,
+    "step": tool.howTo.map((step, idx) => ({
+      "@type": "HowToStep",
+      "position": idx + 1,
+      "text": step
+    }))
+  };
+
   return (
     <>
       <Seo 
         title={tool.metaTitle} 
         description={tool.metaDescription} 
-        jsonLd={[jsonLd, faqLd]}
+        jsonLd={[jsonLd, faqLd, howToLd]}
       />
       
       {/* Breadcrumbs & Navigation Header */}
@@ -122,50 +151,164 @@ export const ToolPage: React.FC = () => {
         </p>
       </div>
 
-      {/* Main Tool Component View */}
-      <section className="mb-10 sm:mb-12 md:mb-16">
+      {/* Main Interactive Tool Component */}
+      <section className="mb-8 sm:mb-10 md:mb-12">
         <Component />
       </section>
 
+      {/* Mid-Page Ad Slot (Compliant content-to-ad ratio) */}
       <div className="my-6 sm:my-8">
         <AdSlot slot="tool-mid" format="horizontal" />
       </div>
 
-      {/* Instructions & FAQs */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 md:gap-10 max-w-6xl">
-        <div className="md:col-span-2 space-y-6 sm:space-y-8">
-          {/* How to use */}
-          <section className="bg-card border border-border/80 p-5 sm:p-6 rounded-2xl">
-            <h2 className="text-base sm:text-lg font-bold mb-3 sm:mb-4 font-display">How to use {tool.name}</h2>
-            <ol className="space-y-2.5 sm:space-y-3">
+      {/* High-Value Editorial Documentation Suite */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
+        <div className="lg:col-span-8 space-y-8 sm:space-y-10">
+          {/* Section 1: Technical Overview & Architecture */}
+          <section className="bg-card border border-border/80 p-6 sm:p-7 rounded-2xl shadow-xs space-y-4">
+            <div className="flex items-center gap-2.5 pb-2 border-b border-border/60">
+              <div className="w-8 h-8 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                <Cpu className="w-4 h-4" />
+              </div>
+              <h2 className="text-base sm:text-lg font-bold font-display text-foreground">
+                Overview & Technical Principles
+              </h2>
+            </div>
+            <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+              {knowledge.technicalOverview}
+            </p>
+            <div className="p-3 bg-secondary/50 rounded-xl border border-border/60 flex items-start gap-3">
+              <ShieldCheck className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
+              <div className="text-xs space-y-0.5">
+                <p className="font-bold text-foreground">Privacy & Zero-Knowledge Architecture</p>
+                <p className="text-muted-foreground">
+                  Toolzaro executes calculations, file parsing, and transformations directly inside your browser’s isolated JavaScript sandbox. Zero inputs are stored on remote servers or logged to third-party databases.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          {/* Section 2: Step-by-Step Workflow Guide */}
+          <section className="bg-card border border-border/80 p-6 sm:p-7 rounded-2xl shadow-xs space-y-4">
+            <div className="flex items-center gap-2.5 pb-2 border-b border-border/60">
+              <div className="w-8 h-8 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                <Sparkles className="w-4 h-4" />
+              </div>
+              <h2 className="text-base sm:text-lg font-bold font-display text-foreground">
+                Step-by-Step Practical Guide
+              </h2>
+            </div>
+            <ol className="space-y-3 pt-1">
               {tool.howTo.map((step, idx) => (
-                <li key={idx} className="flex gap-2.5 sm:gap-3 text-xs leading-relaxed text-muted-foreground">
-                  <span className="flex-shrink-0 w-6 h-6 rounded-lg icon-squircle text-primary font-bold flex items-center justify-center font-mono text-[11px]">
+                <li key={idx} className="flex items-start gap-3 text-xs sm:text-sm text-muted-foreground leading-relaxed">
+                  <span className="shrink-0 w-6 h-6 rounded-lg bg-primary/10 text-primary font-bold flex items-center justify-center font-mono text-[11px] mt-0.5 border border-primary/20">
                     {idx + 1}
                   </span>
-                  <span className="pt-0.5">{step}</span>
+                  <span className="pt-0.5 text-foreground/90 font-medium">{step}</span>
                 </li>
               ))}
             </ol>
           </section>
 
-          {/* FAQ */}
-          <section className="bg-card border border-border/80 p-5 sm:p-6 rounded-2xl">
-            <h2 className="text-base sm:text-lg font-bold mb-3 sm:mb-4 font-display">Frequently Asked Questions</h2>
-            <div className="space-y-2.5 sm:space-y-3">
-              {tool.faq.map((f, idx) => (
+          {/* Section 3: Key Features & Technical Specifications */}
+          <section className="bg-card border border-border/80 p-6 sm:p-7 rounded-2xl shadow-xs space-y-4">
+            <div className="flex items-center gap-2.5 pb-2 border-b border-border/60">
+              <div className="w-8 h-8 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                <Zap className="w-4 h-4" />
+              </div>
+              <h2 className="text-base sm:text-lg font-bold font-display text-foreground">
+                Key Features & Capabilities
+              </h2>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-1">
+              {knowledge.features.map((feat, idx) => (
+                <div key={idx} className="p-3.5 rounded-xl bg-secondary/40 border border-border/60 space-y-1">
+                  <h3 className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                    <span>{feat.title}</span>
+                  </h3>
+                  <p className="text-[11px] text-muted-foreground leading-relaxed pl-5">
+                    {feat.description}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Section 4: Real-World Industry Use Cases */}
+          <section className="bg-card border border-border/80 p-6 sm:p-7 rounded-2xl shadow-xs space-y-4">
+            <div className="flex items-center gap-2.5 pb-2 border-b border-border/60">
+              <div className="w-8 h-8 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                <Briefcase className="w-4 h-4" />
+              </div>
+              <h2 className="text-base sm:text-lg font-bold font-display text-foreground">
+                Real-World Applications & Use Cases
+              </h2>
+            </div>
+            <div className="space-y-3 pt-1">
+              {knowledge.useCases.map((uc, idx) => (
+                <div key={idx} className="p-3.5 rounded-xl bg-secondary/30 border border-border/50 space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-primary/10 text-primary">
+                      {uc.audience}
+                    </span>
+                    <h3 className="text-xs font-bold text-foreground">{uc.title}</h3>
+                  </div>
+                  <p className="text-xs text-muted-foreground leading-relaxed pt-1">
+                    {uc.scenario}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Section 5: Best Practices & Pro-Tips */}
+          <section className="bg-card border border-border/80 p-6 sm:p-7 rounded-2xl shadow-xs space-y-4">
+            <div className="flex items-center gap-2.5 pb-2 border-b border-border/60">
+              <div className="w-8 h-8 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center">
+                <Lightbulb className="w-4 h-4" />
+              </div>
+              <h2 className="text-base sm:text-lg font-bold font-display text-foreground">
+                Best Practices & Pro-Tips
+              </h2>
+            </div>
+            <div className="space-y-3 pt-1">
+              {knowledge.bestPractices.map((bp, idx) => (
+                <div key={idx} className="flex items-start gap-3 p-3 rounded-xl bg-background/60 border border-border/60">
+                  <div className="w-1.5 h-1.5 rounded-full bg-amber-500 mt-2 shrink-0" />
+                  <div className="text-xs space-y-0.5">
+                    <p className="font-bold text-foreground">{bp.title}</p>
+                    <p className="text-muted-foreground leading-relaxed">{bp.advice}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Section 6: Interactive FAQ Accordion */}
+          <section className="bg-card border border-border/80 p-6 sm:p-7 rounded-2xl shadow-xs space-y-4">
+            <div className="flex items-center gap-2.5 pb-2 border-b border-border/60">
+              <div className="w-8 h-8 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                <HelpCircle className="w-4 h-4" />
+              </div>
+              <h2 className="text-base sm:text-lg font-bold font-display text-foreground">
+                Frequently Asked Questions
+              </h2>
+            </div>
+            <div className="space-y-2.5 pt-1">
+              {knowledge.extendedFaqs.map((f, idx) => (
                 <div key={idx} className="border border-border/80 rounded-xl overflow-hidden bg-background/50">
                   <button 
                     onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
-                    className="w-full text-left px-3.5 sm:px-4 py-2.5 sm:py-3 flex items-center justify-between text-xs font-bold text-foreground hover:bg-secondary/40 transition-colors cursor-pointer"
+                    className="w-full text-left px-4 py-3 flex items-center justify-between text-xs font-bold text-foreground hover:bg-secondary/40 transition-colors cursor-pointer"
                   >
                     <span className="pr-2">{f.q}</span>
                     <div className="w-5 h-5 rounded-md bg-secondary/80 flex items-center justify-center shrink-0">
-                      <HelpCircle className={`w-3.5 h-3.5 text-muted-foreground transition-transform ${openFaq === idx ? 'rotate-180 text-primary' : ''}`} />
+                      <HelpCircle className={`w-3.5 h-3.5 text-muted-foreground transition-transform duration-200 ${openFaq === idx ? 'rotate-180 text-primary' : ''}`} />
                     </div>
                   </button>
                   {openFaq === idx && (
-                    <div className="px-3.5 sm:px-4 pb-3 text-xs text-muted-foreground border-t border-border/50 pt-2 leading-relaxed">
+                    <div className="px-4 pb-3.5 text-xs text-muted-foreground border-t border-border/50 pt-2.5 leading-relaxed">
                       {f.a}
                     </div>
                   )}
@@ -175,14 +318,20 @@ export const ToolPage: React.FC = () => {
           </section>
         </div>
         
-        {/* Sidebar */}
-        <aside className="space-y-5 sm:space-y-6">
-          <div className="bg-card border border-border/80 rounded-2xl p-4 sm:p-5">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3">More {tool.category} Tools</h3>
-            <ul className="space-y-1.5 sm:space-y-2">
-              {tools.filter(t => t.category === tool.category && t.slug !== tool.slug).slice(0, 6).map(t => (
+        {/* Sidebar Column */}
+        <aside className="lg:col-span-4 space-y-6">
+          <div className="bg-card border border-border/80 rounded-2xl p-5 shadow-xs">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3 flex items-center gap-1.5">
+              <Info className="w-3.5 h-3.5 text-primary" />
+              <span>Related {tool.category} Tools</span>
+            </h3>
+            <ul className="space-y-1.5">
+              {tools.filter(t => t.category === tool.category && t.slug !== tool.slug).slice(0, 8).map(t => (
                 <li key={t.slug}>
-                  <Link to={`/tools/${t.slug}`} className="flex items-center gap-2 text-xs font-medium text-muted-foreground hover:text-primary transition-colors p-2 rounded-xl hover:bg-secondary/50">
+                  <Link 
+                    to={`/tools/${t.slug}`} 
+                    className="flex items-center gap-2.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-all p-2 rounded-xl hover:bg-secondary/60 border border-transparent hover:border-border/60"
+                  >
                     <div className="w-6 h-6 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
                       <t.icon className="w-3.5 h-3.5" />
                     </div>
@@ -200,3 +349,4 @@ export const ToolPage: React.FC = () => {
   );
 };
 
+export default ToolPage;
