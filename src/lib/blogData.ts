@@ -760,5 +760,10 @@ function safeBase64ToUnicode(base64: string): string {
 ];
 
 export async function getMergedBlogPosts(): Promise<BlogPost[]> {
-  return BUILTIN_BLOG_POSTS;
+  try {
+    const { getMergedPostsWithBlogger } = await import('./bloggerSync');
+    return await getMergedPostsWithBlogger();
+  } catch {
+    return BUILTIN_BLOG_POSTS;
+  }
 }

@@ -15,7 +15,8 @@ import {
   ExternalLink,
   ChevronLeft
 } from 'lucide-react';
-import { BlogPost, BUILTIN_BLOG_POSTS, getMergedBlogPosts } from '../lib/blogData';
+import { BlogPost, BUILTIN_BLOG_POSTS } from '../lib/blogData';
+import { getMergedPostsWithBlogger } from '../lib/bloggerSync';
 import { tools } from '../lib/registry';
 import { Seo } from '../components/Seo';
 import { BreadcrumbNavigation } from '../components/BreadcrumbNavigation';
@@ -39,7 +40,7 @@ export const BlogPostPage: React.FC = () => {
   const loadPost = async () => {
     setLoading(true);
     try {
-      const posts = await getMergedBlogPosts();
+      const posts = await getMergedPostsWithBlogger();
       setAllPosts(posts);
       const found = posts.find(p => p.slug === slug || p.id === slug);
       setPost(found || null);
@@ -222,7 +223,7 @@ export const BlogPostPage: React.FC = () => {
       <div className="bg-card border border-border rounded-3xl p-6 md:p-10 shadow-xs">
         {post.source === 'blogger' ? (
           <div 
-            className="prose dark:prose-invert max-w-none text-xs md:text-sm text-foreground leading-relaxed space-y-4"
+            className="prose dark:prose-invert max-w-none text-xs md:text-sm text-foreground leading-relaxed space-y-4 [&_img]:rounded-2xl [&_img]:shadow-md [&_img]:max-w-full [&_img]:h-auto [&_img]:my-6 [&_a]:text-primary [&_a]:underline [&_h1]:text-2xl [&_h2]:text-xl [&_h3]:text-lg [&_h1]:font-extrabold [&_h2]:font-bold [&_h3]:font-bold [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_blockquote]:border-l-4 [&_blockquote]:border-primary/50 [&_blockquote]:pl-4 [&_blockquote]:italic"
             dangerouslySetInnerHTML={{ __html: post.content }} 
           />
         ) : (

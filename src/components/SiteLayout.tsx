@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { Moon, Sun, Wrench, Star, ArrowRight, BookOpen, Cloud, Bug, MessageSquarePlus, Sparkles, X } from 'lucide-react';
+import { Moon, Sun, Wrench, Star, ArrowRight, BookOpen, Cloud, Bug, MessageSquarePlus, Sparkles, X, ArrowUp } from 'lucide-react';
 import { useLocalStorage } from '../lib/toolkit';
 import { categories, tools } from '../lib/registry';
 import { HeaderSearch } from './HeaderSearch';
@@ -181,6 +181,26 @@ export const SiteLayout: React.FC = () => {
       </main>
 
       <footer className="border-t border-border bg-card/60 backdrop-blur-xs py-10 sm:py-14 mt-12 sm:mt-16 md:mt-20">
+        {/* Inline Safe Header with Back to Top */}
+        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8 mb-8 border-b border-border/60 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-2.5 text-xs text-muted-foreground">
+            <span className="w-2 h-2 rounded-full bg-primary" />
+            <span className="font-semibold text-foreground">Toolzaro Directory &amp; Navigation</span>
+            <span>•</span>
+            <span>All utilities run locally in your browser</span>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            className="btn-signature-header px-4 py-2 text-xs font-bold gap-2 text-foreground hover:text-primary cursor-pointer transition-all self-stretch sm:self-auto justify-center"
+            title="Safe Scroll to Top"
+          >
+            <ArrowUp className="w-3.5 h-3.5 text-primary" />
+            <span>Scroll to Top</span>
+          </button>
+        </div>
+
         <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
           <div className="space-y-3">
             <Link to="/" className="flex items-center gap-3 group" aria-label="Toolzaro Home">

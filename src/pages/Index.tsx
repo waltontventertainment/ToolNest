@@ -25,11 +25,16 @@ export const Index: React.FC = () => {
   // Show 24 tools initially on the homepage grid (22-25 range requested)
   const [displayCount, setDisplayCount] = useState(24);
   const [incrementCount, setIncrementCount] = useState(24);
-  const [blogPosts, setBlogPosts] = useState<BlogPost[]>(BUILTIN_BLOG_POSTS.slice(0, 3));
+  
+  // Blog state with automatic Blogger synchronization
+  const [allBlogPosts, setAllBlogPosts] = useState<BlogPost[]>(BUILTIN_BLOG_POSTS);
+  const [visibleBlogCount, setVisibleBlogCount] = useState(3);
+  const [hasBloggerPosts, setHasBloggerPosts] = useState(false);
 
   useEffect(() => {
     getMergedBlogPosts().then(posts => {
-      setBlogPosts(posts.slice(0, 3));
+      setAllBlogPosts(posts);
+      setHasBloggerPosts(posts.some(p => p.source === 'blogger'));
     });
   }, []);
 
@@ -536,33 +541,44 @@ export const Index: React.FC = () => {
       </div>
 
       {/* Featured Blog & Insights Section */}
-      {blogPosts.length > 0 && !showFavoritesOnly && !search && (
-        <section className="mt-12 sm:mt-16 md:mt-20 pt-8 sm:pt-10 border-t border-border/60 space-y-5 sm:space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      {allBlogPosts.length > 0 && !showFavoritesOnly && !search && (
+        <section className="mt-12 sm:mt-16 md:mt-20 pt-8 sm:pt-10 border-t border-border/60 space-y-6">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-[11px] font-bold text-primary mb-2">
-                <BookOpen className="w-3.5 h-3.5" />
-                <span>Toolzaro Pulse & Insights</span>
+              <div className="flex flex-wrap items-center gap-2 mb-2">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-[11px] font-bold text-primary">
+                  <BookOpen className="w-3.5 h-3.5" />
+                  <span>Toolzaro Pulse &amp; Insights</span>
+                </div>
+                {hasBloggerPosts && (
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/25 text-[10px] font-bold text-amber-600 dark:text-amber-400">
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+                    <span>Live Blogger Sync Active</span>
+                  </span>
+                )}
               </div>
-              <h2 className="text-2xl font-extrabold text-foreground tracking-tight font-display">
-                Latest Guides & Developer Dispatches
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight font-display">
+                Latest Guides &amp; Developer Dispatches
               </h2>
-              <p className="text-xs text-muted-foreground mt-0.5">
-                Technical tutorials, developer guides, and client-side web utility architectures.
+              <p className="text-xs sm:text-sm text-muted-foreground mt-1 max-w-2xl">
+                Practical web utility architectures, client-side encryption guides, and SEO optimization dispatches.
               </p>
             </div>
 
-            <Link
-              to="/blog"
-              className="btn-signature-header px-4 py-2.5 text-xs font-bold gap-2 text-foreground self-start sm:self-auto cursor-pointer"
-            >
-              <span>Explore All Articles</span>
-              <ArrowRight className="w-4 h-4 text-primary" />
-            </Link>
+            <div className="flex items-center gap-2.5 self-start md:self-auto">
+              <Link
+                to="/blog"
+                className="btn-signature-primary px-4 py-2 text-xs font-bold gap-2 cursor-pointer"
+              >
+                <span>Explore All Articles</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6">
-            {blogPosts.map((post) => (
+          {/* Responsive Blog Grid: 1 col on mobile, 2 col on tablet, 3 col on PC */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+            {allBlogPosts.slice(0, visibleBlogCount).map((post) => (
               <Link
                 key={post.id}
                 to={`/blog/${post.slug}`}
@@ -575,9 +591,17 @@ export const Index: React.FC = () => {
                       alt={post.title}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 ease-out"
                     />
-                    <span className="absolute top-2.5 left-2.5 px-2.5 py-1 rounded-lg bg-card/90 backdrop-blur-md text-[10px] font-bold text-foreground border border-border">
-                      {post.category}
-                    </span>
+                    <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5">
+                      <span className="px-2.5 py-1 rounded-lg bg-card/90 backdrop-blur-md text-[10px] font-bold text-foreground border border-border">
+                        {post.category}
+                      </span>
+                      {post.source === 'blogger' && (
+                        <span className="px-2 py-0.5 rounded-lg bg-linear-to-r from-amber-500 to-orange-500 text-white text-[9px] font-black uppercase tracking-wider flex items-center gap-1 shadow-xs">
+                          <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                          <span>New</span>
+                        </span>
+                      )}
+                    </div>
                   </div>
 
                   <div className="flex items-center gap-2.5 text-[11px] text-muted-foreground">
@@ -592,7 +616,7 @@ export const Index: React.FC = () => {
                     </span>
                   </div>
 
-                  <h3 className="font-bold text-sm text-foreground group-hover:text-primary transition-colors line-clamp-2 leading-snug">
+                  <h3 className="font-bold text-sm sm:text-base text-foreground group-hover:text-primary transition-colors line-clamp-2 leading-snug">
                     {post.title}
                   </h3>
 
@@ -612,6 +636,37 @@ export const Index: React.FC = () => {
                 </div>
               </Link>
             ))}
+          </div>
+
+          {/* Load More Bar for Home Blog Section */}
+          <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-3 bg-muted/20 border border-border/60 rounded-2xl p-4">
+            <div className="text-xs text-muted-foreground text-center sm:text-left">
+              Showing <strong className="text-foreground">{Math.min(visibleBlogCount, allBlogPosts.length)}</strong> of <strong className="text-foreground">{allBlogPosts.length}</strong> published guides &amp; articles.
+            </div>
+
+            <div className="flex items-center gap-2.5 w-full sm:w-auto justify-center">
+              {allBlogPosts.length > visibleBlogCount ? (
+                <button
+                  type="button"
+                  onClick={() => setVisibleBlogCount(prev => Math.min(prev + 3, allBlogPosts.length))}
+                  className="btn-signature-primary px-5 py-2 text-xs font-bold gap-2 cursor-pointer w-full sm:w-auto justify-center"
+                >
+                  <span>Load More Articles ({allBlogPosts.length - visibleBlogCount} left)</span>
+                </button>
+              ) : (
+                <span className="text-xs font-medium text-muted-foreground py-1">
+                  All articles displayed.
+                </span>
+              )}
+
+              <Link
+                to="/blog"
+                className="btn-signature-header px-4 py-2 text-xs font-bold gap-1.5 text-foreground cursor-pointer shrink-0"
+              >
+                <span>Blog Hub</span>
+                <ChevronRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
           </div>
         </section>
       )}

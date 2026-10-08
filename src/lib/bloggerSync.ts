@@ -1,0 +1,306 @@
+import { BlogPost, BUILTIN_BLOG_POSTS } from './blogData';
+
+const DEFAULT_BLOGGER_KEY = 'toolnest_custom_blogger_url';
+const BLOGGER_POSTS_CACHE_KEY = 'toolnest_cached_blogger_posts';
+const BLOGGER_LAST_SYNC_KEY = 'toolnest_blogger_last_sync';
+
+export const TARGET_BLOGGER_URL = 'https://toolzaro.blogspot.com';
+
+export function getSavedBloggerUrl(): string {
+  try {
+    return localStorage.getItem(DEFAULT_BLOGGER_KEY) || TARGET_BLOGGER_URL;
+  } catch {
+    return TARGET_BLOGGER_URL;
+  }
+}
+
+export function saveBloggerUrl(url: string): void {
+  try {
+    let clean = url.trim();
+    if (clean) {
+      if (!clean.startsWith('http://') && !clean.startsWith('https://')) {
+        clean = 'https://' + clean;
+      }
+      clean = clean.replace(/\/+$/, '');
+    }
+    localStorage.setItem(DEFAULT_BLOGGER_KEY, clean);
+  } catch {}
+}
+
+export function getLastSyncTime(): string | null {
+  try {
+    return localStorage.getItem(BLOGGER_LAST_SYNC_KEY);
+  } catch {
+    return null;
+  }
+}
+
+export function getCachedBloggerPosts(): BlogPost[] {
+  try {
+    const raw = localStorage.getItem(BLOGGER_POSTS_CACHE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed;
+      }
+    }
+  } catch {}
+  return [];
+}
+
+// Convert Blogger string title to URL-safe slug
+function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, '')
+    .trim()
+    .replace(/\s+/g, '-')
+    .slice(0, 80);
+}
+
+// Extract high-res thumbnail from Blogger entry or body HTML
+function extractThumbnail(entry: any, contentHtml: string): string {
+  if (entry?.media$thumbnail?.url) {
+    // Replace Blogger small s72-c thumbnail with high-res s1600
+    return entry.media$thumbnail.url
+      .replace(/\/s\d+(-c)?\//, '/s1600/')
+      .replace(/\/w\d+-h\d+[^/]*\//, '/s1600/');
+  }
+
+  // Look for first <img> tag in HTML body
+  const imgMatch = contentHtml.match(/<img[^>]+src=["']([^"']+)["']/i);
+  if (imgMatch && imgMatch[1]) {
+    return imgMatch[1];
+  }
+
+  // Fallback high-res editorial banner
+  return 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=1200&auto=format&fit=crop&q=80';
+}
+
+// Strip HTML tags for clean excerpt
+function createExcerpt(html: string, maxLength = 160): string {
+  const text = html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+  if (text.length <= maxLength) return text;
+  return text.slice(0, maxLength).trim() + '...';
+}
+
+/**
+ * Strategy 1: JSONP Fetch
+ * Blogger natively supports `alt=json-in-script&callback=fn`.
+ * This executes purely in the browser using a dynamic <script> tag,
+ * which 100% bypasses CORS restrictions on any static hosting (GitHub Pages, Vercel, cPanel, etc.).
+ */
+function fetchViaJsonp(cleanBaseUrl: string): Promise<any> {
+  return new Promise((resolve, reject) => {
+    if (typeof window === 'undefined' || typeof document === 'undefined') {
+      return reject(new Error('JSONP only supported in browser environment'));
+    }
+
+    const callbackName = 'blogger_cb_' + Math.random().toString(36).slice(2, 10);
+    const script = document.createElement('script');
+
+    const timer = setTimeout(() => {
+      cleanup();
+      reject(new Error('JSONP timeout'));
+    }, 8000);
+
+    const cleanup = () => {
+      clearTimeout(timer);
+      try {
+        delete (window as any)[callbackName];
+      } catch {}
+      if (script.parentNode) {
+        script.parentNode.removeChild(script);
+      }
+    };
+
+    (window as any)[callbackName] = (data: any) => {
+      cleanup();
+      resolve(data);
+    };
+
+    script.onerror = () => {
+      cleanup();
+      reject(new Error('JSONP load error'));
+    };
+
+    script.src = `${cleanBaseUrl}/feeds/posts/default?alt=json-in-script&callback=${callbackName}&max-results=50`;
+    document.head.appendChild(script);
+  });
+}
+
+/**
+ * Strategy 2: Direct Fetch
+ */
+async function fetchViaDirect(cleanBaseUrl: string): Promise<any> {
+  const url = `${cleanBaseUrl}/feeds/posts/default?alt=json&max-results=50`;
+  const res = await fetch(url, { signal: AbortSignal.timeout(6000) });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return await res.json();
+}
+
+/**
+ * Strategy 3: Server-side Proxy (if running under Node / Express server)
+ */
+async function fetchViaServerProxy(cleanBaseUrl: string): Promise<any> {
+  const url = `/api/blogger-feed?url=${encodeURIComponent(cleanBaseUrl)}`;
+  const res = await fetch(url, { signal: AbortSignal.timeout(6000) });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return await res.json();
+}
+
+/**
+ * Strategy 4: Public CORS Proxy Fallback
+ */
+async function fetchViaPublicProxy(cleanBaseUrl: string): Promise<any> {
+  const target = `${cleanBaseUrl}/feeds/posts/default?alt=json&max-results=50`;
+  const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(target)}`;
+  const res = await fetch(proxyUrl, { signal: AbortSignal.timeout(8000) });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return await res.json();
+}
+
+/**
+ * Fetch and parse posts from any Blogger / Blogspot URL using a multi-strategy pipeline.
+ */
+export async function fetchBloggerPosts(bloggerUrl?: string): Promise<BlogPost[]> {
+  const targetUrl = (bloggerUrl || getSavedBloggerUrl()).trim();
+  if (!targetUrl) return [];
+
+  const cleanBase = targetUrl.replace(/\/+$/, '');
+  let feedData: any = null;
+
+  // 1. Try JSONP in browser (zero CORS issues)
+  try {
+    feedData = await fetchViaJsonp(cleanBase);
+  } catch {
+    // Continue to next strategy
+  }
+
+  // 2. Try direct fetch
+  if (!feedData) {
+    try {
+      feedData = await fetchViaDirect(cleanBase);
+    } catch {
+      // Continue to next strategy
+    }
+  }
+
+  // 3. Try server proxy (if available)
+  if (!feedData) {
+    try {
+      feedData = await fetchViaServerProxy(cleanBase);
+    } catch {
+      // Continue to next strategy
+    }
+  }
+
+  // 4. Try public CORS proxy
+  if (!feedData) {
+    try {
+      feedData = await fetchViaPublicProxy(cleanBase);
+    } catch (err: any) {
+      console.warn('All Blogger feed fetch strategies exhausted:', err.message);
+    }
+  }
+
+  if (!feedData || !feedData.feed || !Array.isArray(feedData.feed.entry)) {
+    return [];
+  }
+
+  const entries = feedData.feed.entry;
+  const parsedPosts: BlogPost[] = entries.map((entry: any, index: number) => {
+    const title = entry.title?.$t || 'Untitled Post';
+    const contentHtml = entry.content?.$t || entry.summary?.$t || '';
+    const publishedAt = entry.published?.$t ? entry.published.$t.slice(0, 10) : new Date().toISOString().slice(0, 10);
+    const authorName = entry.author?.[0]?.name?.$t || 'Toolzaro Contributor';
+    const authorAvatar = entry.author?.[0]?.gd$image?.src || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80';
+    
+    // Find original Blogger post link
+    const alternateLink = (entry.link || []).find((l: any) => l.rel === 'alternate')?.href || cleanBase;
+    
+    // Extract categories/labels
+    const rawCategories = Array.isArray(entry.category) 
+      ? entry.category.map((c: any) => c.term || c.label).filter(Boolean)
+      : [];
+    const tags = rawCategories.length > 0 ? rawCategories : ['Blogger', 'Articles'];
+
+    // Map first tag or default to category
+    let category: 'Developer Workflows' | 'SEO & Growth' | 'Security & Privacy' | 'Design & UX' = 'Developer Workflows';
+    const lowerTags = tags.map((t: string) => t.toLowerCase());
+    if (lowerTags.some((t: string) => t.includes('seo') || t.includes('growth') || t.includes('marketing'))) {
+      category = 'SEO & Growth';
+    } else if (lowerTags.some((t: string) => t.includes('security') || t.includes('privacy') || t.includes('crypto'))) {
+      category = 'Security & Privacy';
+    } else if (lowerTags.some((t: string) => t.includes('design') || t.includes('css') || t.includes('ui') || t.includes('ux'))) {
+      category = 'Design & UX';
+    }
+
+    const wordCount = contentHtml.replace(/<[^>]*>/g, ' ').split(/\s+/).filter(Boolean).length;
+    const readTime = Math.max(2, Math.ceil(wordCount / 200));
+
+    const id = `blogger-${entry.id?.$t?.split('.post-')?.[1] || index}`;
+    const slug = slugify(title) || id;
+
+    return {
+      id,
+      slug,
+      title,
+      excerpt: createExcerpt(contentHtml),
+      content: contentHtml,
+      category,
+      author: {
+        name: authorName,
+        role: 'Blogger Contributor',
+        avatar: authorAvatar
+      },
+      publishedAt,
+      readTimeMinutes: readTime,
+      coverImage: extractThumbnail(entry, contentHtml),
+      tags,
+      source: 'blogger' as const,
+      bloggerUrl: alternateLink
+    };
+  });
+
+  // Cache in localStorage for immediate offline/refresh access
+  try {
+    localStorage.setItem(BLOGGER_POSTS_CACHE_KEY, JSON.stringify(parsedPosts));
+    localStorage.setItem(BLOGGER_LAST_SYNC_KEY, new Date().toLocaleTimeString());
+  } catch {}
+
+  return parsedPosts;
+}
+
+/**
+ * Get merged posts: Live Blogger posts + Built-in high-value guides.
+ * Blogger posts appear first so new articles are immediately visible at the top!
+ */
+export async function getMergedPostsWithBlogger(): Promise<BlogPost[]> {
+  const savedUrl = getSavedBloggerUrl();
+  let bloggerPosts: BlogPost[] = getCachedBloggerPosts();
+
+  if (savedUrl) {
+    try {
+      const live = await fetchBloggerPosts(savedUrl);
+      if (live.length > 0) {
+        bloggerPosts = live;
+      }
+    } catch {
+      // Keep cached posts if offline
+    }
+  }
+
+  // Merge: Live Blogger posts first, followed by built-in authoritative guides
+  const combined = [...bloggerPosts, ...BUILTIN_BLOG_POSTS];
+  
+  // Deduplicate by slug and id
+  const seenSlugs = new Set<string>();
+  const seenIds = new Set<string>();
+  return combined.filter(post => {
+    if (seenSlugs.has(post.slug) || seenIds.has(post.id)) return false;
+    seenSlugs.add(post.slug);
+    seenIds.add(post.id);
+    return true;
+  });
+}

@@ -416,6 +416,38 @@ async function startServer() {
     }
   });
 
+  // Blogger Feed Server-Side Proxy
+  app.get('/api/blogger-feed', async (req, res) => {
+    const rawUrl = (req.query.url as string) || 'https://toolzaro.blogspot.com';
+    try {
+      let cleanBase = rawUrl.trim();
+      if (!cleanBase.startsWith('http://') && !cleanBase.startsWith('https://')) {
+        cleanBase = 'https://' + cleanBase;
+      }
+      cleanBase = cleanBase.replace(/\/+$/, '');
+      const feedUrl = `${cleanBase}/feeds/posts/default?alt=json&max-results=50`;
+
+      const response = await fetch(feedUrl, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+          'Accept': 'application/json, text/plain, */*'
+        },
+        signal: AbortSignal.timeout(8000)
+      });
+
+      if (!response.ok) {
+        return res.status(response.status).json({ error: `Blogger returned HTTP ${response.status}` });
+      }
+
+      const data = await response.json();
+      res.setHeader('Cache-Control', 'public, max-age=60');
+      return res.json(data);
+    } catch (err: any) {
+      console.error('Blogger feed proxy error:', err.message);
+      return res.status(500).json({ error: 'Failed to retrieve Blogger feed', details: err.message });
+    }
+  });
+
   // Mount Vite development middlewares in non-production environments
   if (process.env.NODE_ENV !== 'production') {
     const { createServer: createViteServer } = await import('vite');
