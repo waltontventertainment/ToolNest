@@ -19,7 +19,6 @@ on:
         type: boolean
         default: false
 
-# Concurrency control: cancel ongoing runs for the same branch/PR
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -38,15 +37,20 @@ jobs:
       - name: 📥 Checkout Repository
         uses: actions/checkout@v4
 
-      - name: 🟢 Setup Node.js
+      - name: 🟢 Setup Node.js (Active LTS 22)
         uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: 'npm'
+          node-version: 22
 
       - name: 📦 Install Dependencies
         run: |
-          npm ci || npm install --legacy-peer-deps
+          if [ -f "package-lock.json" ]; then
+            echo "package-lock.json found. Installing with fallback..."
+            npm ci || npm install --legacy-peer-deps
+          else
+            echo "No package-lock.json found. Running npm install..."
+            npm install --legacy-peer-deps
+          fi
 
       - name: 🔍 Typecheck Code
         run: |
