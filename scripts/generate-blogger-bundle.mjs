@@ -18,12 +18,15 @@ if (!fs.existsSync(indexHtmlPath)) {
   process.exit(1);
 }
 
-const indexHtml = fs.readFileSync(indexHtmlPath, 'utf8');
-
 // Detect repository from environment or default
 const fullRepo = process.env.GITHUB_REPOSITORY || 'ToolNest/ToolNest';
 const repoOwner = process.env.GITHUB_REPOSITORY_OWNER || fullRepo.split('/')[0] || 'ToolNest';
 const repoName = fullRepo.includes('/') ? fullRepo.split('/')[1] : fullRepo;
+
+// Cache buster: Git commit SHA or build timestamp
+const cacheBuster = process.env.BUILD_COMMIT_SHA 
+  ? process.env.BUILD_COMMIT_SHA.substring(0, 10) 
+  : Date.now().toString(36);
 
 // Find asset files in dist/assets
 const assetsDir = path.join(distDir, 'assets');
@@ -39,24 +42,26 @@ if (fs.existsSync(assetsDir)) {
 const mainCssFile = cssFiles.find(f => f.startsWith('index-')) || cssFiles[0] || 'index.css';
 const mainJsFile = jsFiles.find(f => f.startsWith('index-')) || jsFiles[0] || 'index.js';
 
-// URL templates
-// 1. GitHub Pages URL: https://<owner>.github.io/<repo>/assets/<file>
+// Primary CDN URLs: jsDelivr CDN via gh-pages branch (Global Edge, Ultra-Fast Brotli Compression)
+const cdnCssUrl = `https://cdn.jsdelivr.net/gh/${repoOwner}/${repoName}@gh-pages/assets/${mainCssFile}?v=${cacheBuster}`;
+const cdnJsUrl = `https://cdn.jsdelivr.net/gh/${repoOwner}/${repoName}@gh-pages/assets/${mainJsFile}?v=${cacheBuster}`;
+
+// Secondary Fallback URLs: GitHub Pages Direct
 const ghPagesCssUrl = `https://${repoOwner}.github.io/${repoName}/assets/${mainCssFile}`;
 const ghPagesJsUrl = `https://${repoOwner}.github.io/${repoName}/assets/${mainJsFile}`;
 
-// 2. jsDelivr CDN URL (via gh-pages branch or releases):
-const cdnCssUrl = `https://cdn.jsdelivr.net/gh/${repoOwner}/${repoName}@gh-pages/assets/${mainCssFile}`;
-const cdnJsUrl = `https://cdn.jsdelivr.net/gh/${repoOwner}/${repoName}@gh-pages/assets/${mainJsFile}`;
-
 console.log(`Repository: ${repoOwner}/${repoName}`);
-console.log(`Detected CSS: ${mainCssFile}`);
-console.log(`Detected JS:  ${mainJsFile}`);
+console.log(`Build Cache-Buster: ${cacheBuster}`);
+console.log(`Primary CDN CSS: ${cdnCssUrl}`);
+console.log(`Primary CDN JS:  ${cdnJsUrl}`);
 
-// Generate blogger-embed.html (For Blogger Pages / Posts)
+// =========================================================================
+// 1. blogger-embed.html (For embedding in Blogger Pages / Posts)
+// =========================================================================
 const bloggerEmbedHtml = `<!-- ================================================================= -->
-<!-- TOOLZARO - PREMIUM SUITE FOR BLOGGER (PAGE / POST HTML EMBED)     -->
-<!-- File Size: ~3.5 KB (Super Lightweight & Fast)                     -->
-<!-- CSS & JS are loaded directly from GitHub Pages / jsDelivr CDN      -->
+<!-- TOOLZARO - HIGH SPEED BLOGGER EMBED (PAGE / POST HTML VIEW)       -->
+<!-- Global Ultra-Fast Delivery via jsDelivr CDN (Cache-Busted)        -->
+<!-- Size: ~3.8 KB (Instant Rendering, Zero Blogger Bloat)             -->
 <!-- ================================================================= -->
 
 <meta charset="UTF-8" />
@@ -73,41 +78,8 @@ const bloggerEmbedHtml = `<!-- =================================================
 <meta name="google-adsense-account" content="ca-pub-8769496591745522">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8769496591745522" crossorigin="anonymous"></script>
 
-<!-- Toolzaro Core Stylesheet (Hosted on GitHub Pages / CDN) -->
-<!-- Primary URL (GitHub Pages): -->
-<link rel="stylesheet" crossorigin="anonymous" href="${ghPagesCssUrl}">
-<!-- Alternative jsDelivr CDN (If GitHub Pages is not yet enabled, you can use this):
+<!-- Toolzaro Primary Stylesheet (Ultra-Fast jsDelivr CDN) -->
 <link rel="stylesheet" crossorigin="anonymous" href="${cdnCssUrl}">
--->
-
-<!-- Blogger Full-Screen & Theme Reset CSS -->
-<style>
-  /* Reset Blogger margins and containers so Toolzaro occupies full screen */
-  html, body {
-    margin: 0 !important;
-    padding: 0 !important;
-    width: 100% !important;
-    min-height: 100vh !important;
-    background-color: #0b0f19 !important;
-    color: #f8fafc !important;
-  }
-  #root {
-    min-height: 100vh !important;
-    width: 100% !important;
-    display: flex !important;
-    flex-direction: column !important;
-  }
-  /* Hide typical default Blogger widgets/headers if embedded in standard template */
-  .post-title, .post-header, .post-footer, .blog-pager, .comments, #comments, .sidebar-wrapper, .navbar, .header-widget {
-    display: none !important;
-  }
-  .main-inner, .content-inner, .post-body, .post {
-    padding: 0 !important;
-    margin: 0 !important;
-    max-width: 100% !important;
-    width: 100% !important;
-  }
-</style>
 
 <!-- Instant Dark/Light Theme Bootstrap & Blogger Router Flag (Zero Flash) -->
 <script>
@@ -125,18 +97,45 @@ const bloggerEmbedHtml = `<!-- =================================================
   })();
 </script>
 
-<!-- Toolzaro Root Mounting Container -->
-<div id="root"></div>
+<!-- Blogger Full-Screen & Theme Reset CSS -->
+<style>
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    min-height: 100vh !important;
+    background-color: #0b0f19 !important;
+    color: #f8fafc !important;
+  }
+  #root {
+    min-height: 100vh !important;
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+  /* Suppress default Blogger chrome when embedded */
+  .quickedit, .post-footer, .comments, .sidebar-wrapper, .blog-pager, .feed-links {
+    display: none !important;
+  }
+</style>
 
-<!-- Toolzaro Core JavaScript Bundle (Hosted on GitHub Pages / CDN) -->
-<!-- Primary URL (GitHub Pages): -->
-<script type="module" crossorigin="anonymous" src="${ghPagesJsUrl}"></script>
-<!-- Alternative jsDelivr CDN (If GitHub Pages is not yet enabled, you can use this):
+<!-- React Application Root Container -->
+<div id="root">
+  <!-- Minimalist Loading Screen during first-paint bundle download -->
+  <div style="min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background-color: #0b0f19; color: #94a3b8; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; gap: 16px;">
+    <div style="width: 48px; height: 48px; border: 3px solid rgba(139, 92, 246, 0.2); border-top-color: #8b5cf6; border-radius: 50%; animation: tz-spin 0.8s linear infinite;"></div>
+    <div style="font-size: 14px; font-weight: 600; letter-spacing: -0.01em; color: #e2e8f0;">Loading Toolzaro...</div>
+    <style>@keyframes tz-spin { to { transform: rotate(360deg); } }</style>
+  </div>
+</div>
+
+<!-- Toolzaro Primary JavaScript Bundle (Ultra-Fast jsDelivr CDN) -->
 <script type="module" crossorigin="anonymous" src="${cdnJsUrl}"></script>
--->
 `;
 
-// Generate blogger-theme.xml (For Full Blogger Theme replacement)
+// =========================================================================
+// 2. blogger-theme.xml (Full Blogger XML Theme with Layout & Widgets)
+// =========================================================================
 const bloggerThemeXml = `<?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE html>
 <html b:css='false' b:responsive='true' b:version='2' class='scroll-smooth dark' lang='en' xmlns='http://www.w3.org/1999/xhtml' xmlns:b='http://www.google.com/2005/gml/b' xmlns:data='http://www.google.com/2005/gml/data' xmlns:expr='http://www.google.com/2005/gml/expr'>
@@ -144,43 +143,83 @@ const bloggerThemeXml = `<?xml version="1.0" encoding="UTF-8" ?>
   <meta charset='UTF-8'/>
   <meta content='width=device-width, initial-scale=1.0' name='viewport'/>
   <title><data:blog.pageTitle/></title>
-  <meta content='Premium Online Utility Suite - 160+ browser-based tools for developers, designers and creators. Fast, private, and 100% client-side.' name='description'/>
+  <meta content='Toolzaro - Premium Online Utility Suite. 160+ browser-based tools for developers, designers and creators.' name='description'/>
   <meta content='Toolzaro - Premium Online Utility Suite' property='og:title'/>
   <meta content='160+ browser-based tools for developers, designers and creators.' property='og:description'/>
 
   <!-- Google Fonts -->
   <link href='https://fonts.googleapis.com' rel='preconnect'/>
   <link crossorigin='anonymous' href='https://fonts.gstatic.com' rel='preconnect'/>
-  <link href='https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=Hind+Siliguri:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;family=Outfit:wght@400;500;600;700;800;900&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap' rel='stylesheet'/>
+  <link href='https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&amp;family=Hind+Siliguri:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;family=Outfit:wght@400;500;600;700;800&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap' rel='stylesheet'/>
 
-  <!-- Google AdSense Account Verification &amp; Auto Ads -->
+  <!-- Google AdSense -->
   <meta content='ca-pub-8769496591745522' name='google-adsense-account'/>
   <script async='async' crossorigin='anonymous' src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8769496591745522'></script>
 
-  <!-- Required Blogger Minimal Skin -->
+  <!-- Blogger Theme Skin with Layout & Customizer Variables -->
   <b:skin><![CDATA[
-    html, body {
-      margin: 0 !important;
-      padding: 0 !important;
-      width: 100% !important;
-      min-height: 100vh !important;
-      background-color: #0b0f19 !important;
-      color: #f8fafc !important;
-      font-family: 'Plus Jakarta Sans', system-ui, sans-serif !important;
-    }
-    #root {
-      min-height: 100vh !important;
-      width: 100% !important;
-      display: flex !important;
-      flex-direction: column !important;
-    }
-    .quickedit, .widget, .blogger-clickContent {
-      display: none !important;
-    }
+  /*
+  -----------------------------------------------
+  Theme Name: Toolzaro - Next-Gen Online Utility Suite
+  Theme URI: https://github.com/${repoOwner}/${repoName}
+  Author: Toolzaro Core Team
+  Version: 2.1.0 (jsDelivr CDN High Speed Edition)
+  -----------------------------------------------
+  */
+  /* Variable definitions
+     ====================
+     <Variable name="body.background" description="Body Background Color" type="color" default="#0b0f19" value="#0b0f19"/>
+     <Variable name="body.color" description="Text Color" type="color" default="#f8fafc" value="#f8fafc"/>
+     <Variable name="primary.color" description="Primary Brand Accent Color" type="color" default="#8b5cf6" value="#8b5cf6"/>
+     <Variable name="card.background" description="Card Background Color" type="color" default="#131b2e" value="#131b2e"/>
+     <Variable name="body.font" description="Main Font" type="font" default="normal normal 15px 'Plus Jakarta Sans', system-ui, sans-serif" value="normal normal 15px 'Plus Jakarta Sans', system-ui, sans-serif"/>
+  */
+
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    min-height: 100vh !important;
+    background-color: $(body.background) !important;
+    color: $(body.color) !important;
+    font-family: $(body.font) !important;
+  }
+  #root {
+    min-height: 100vh !important;
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  /* Blogger Dashboard Layout Editor Styling */
+  body.layout-mode {
+    background: #1e293b !important;
+    padding: 20px !important;
+    color: #f1f5f9 !important;
+  }
+  body.layout-mode .blogger-layout-section {
+    background: #0f172a;
+    border: 2px dashed #475569;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    padding: 16px;
+  }
+  body.layout-mode .blogger-layout-section h3 {
+    margin: 0 0 10px 0;
+    font-size: 14px;
+    color: #a855f7;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  /* Hide raw quickedit marks in production */
+  .quickedit, .blogger-clickContent {
+    display: none !important;
+  }
   ]]></b:skin>
 
-  <!-- Toolzaro Core Stylesheet from GitHub Pages / CDN -->
-  <link crossorigin='anonymous' href='${ghPagesCssUrl}' rel='stylesheet'/>
+  <!-- Toolzaro Primary Stylesheet from jsDelivr CDN -->
+  <link crossorigin='anonymous' href='${cdnCssUrl}' rel='stylesheet'/>
 
   <!-- Instant Theme Bootstrap & Blogger Router Flag -->
   <script>
@@ -200,47 +239,184 @@ const bloggerThemeXml = `<?xml version="1.0" encoding="UTF-8" ?>
 </head>
 
 <body>
-  <!-- Required Blogger Sections (Hidden to let React SPA take 100% control) -->
-  <div style='display:none;'>
-    <b:section id='header' maxwidgets='1' showaddelement='no'/>
-    <b:section id='main' showaddelement='no'/>
-    <b:section id='footer' maxwidgets='1' showaddelement='no'/>
+  <!-- Blogger Layout Sections for Dashboard Widget Management -->
+  <!-- In Blogger -> Layout, you can add, configure, edit and rearrange all widgets below -->
+  <div class='blogger-sections-container' style='display:none;'>
+    <!-- Header Section -->
+    <b:section class='header' id='header' maxwidgets='2' showaddelement='yes'>
+      <b:widget id='Header1' locked='false' title='Toolzaro Header' type='Header'/>
+    </b:section>
+
+    <!-- Navigation / Menus Section -->
+    <b:section class='navbar' id='navbar' showaddelement='yes'>
+      <b:widget id='LinkList1' locked='false' title='Top Navigation Menu' type='LinkList'/>
+    </b:section>
+
+    <!-- Website Admin Control Panel Section (Manage Inbuilt Posts, Hero & Banner from Blogger Dashboard -> Layout) -->
+    <b:section class='admin-panel' id='admin_panel' showaddelement='yes'>
+      <b:widget id='HTML3' locked='false' title='Admin: Edit Inbuilt Posts (JSON)' type='HTML'>
+        <b:includable id='main'>
+          <div id='blogger-override-inbuilt-posts' style='display:none;'>
+            <data:content/>
+          </div>
+        </b:includable>
+      </b:widget>
+      <b:widget id='HTML4' locked='false' title='Admin: Hero Banner Settings' type='HTML'>
+        <b:includable id='main'>
+          <div id='blogger-override-hero' style='display:none;'>
+            <data:content/>
+          </div>
+        </b:includable>
+      </b:widget>
+      <b:widget id='HTML5' locked='false' title='Admin: Top Announcement Bar' type='HTML'>
+        <b:includable id='main'>
+          <div id='blogger-override-announcement' style='display:none;'>
+            <data:content/>
+          </div>
+        </b:includable>
+      </b:widget>
+    </b:section>
+
+    <!-- Main Content & Blog Posts Section with Inbuilt Blogger Loop Bridge -->
+    <b:section class='main' id='main' showaddelement='yes'>
+      <b:widget id='Blog1' locked='false' title='Blog Posts' type='Blog'>
+        <b:includable id='main' var='top'>
+          <!-- Inbuilt Blogger Post Records (Read directly by React BlogPage) -->
+          <div id='blogger-post-records' style='display:none;'>
+            <b:loop values='data:posts' var='post'>
+              <div class='blogger-post-record'
+                   expr:data-id='data:post.id'
+                   expr:data-title='data:post.title'
+                   expr:data-url='data:post.url'
+                   expr:data-snippet='data:post.snippet'
+                   expr:data-date='data:post.dateHeader'
+                   expr:data-timestamp='data:post.timestamp'
+                   expr:data-author='data:post.author'
+                   expr:data-thumbnail='data:post.firstImageUrl'>
+                <div class='blogger-post-labels'>
+                  <b:loop values='data:post.labels' var='label'>
+                    <span class='label-tag'><data:label.name/></span>
+                  </b:loop>
+                </div>
+                <div class='blogger-post-content'><data:post.body/></div>
+              </div>
+            </b:loop>
+          </div>
+
+          <!-- Direct Inbuilt Data Bridge Script -->
+          <script type='text/javascript'>
+            //<![CDATA[
+            (function() {
+              try {
+                var records = document.querySelectorAll('.blogger-post-record');
+                var posts = [];
+                Array.prototype.forEach.call(records, function(r, index) {
+                  var labelTags = r.querySelectorAll('.label-tag');
+                  var labels = [];
+                  Array.prototype.forEach.call(labelTags, function(lt) {
+                    if (lt.textContent) labels.push(lt.textContent.trim());
+                  });
+                  var contentEl = r.querySelector('.blogger-post-content');
+                  posts.push({
+                    id: r.getAttribute('data-id') || ('blogger-' + index),
+                    title: r.getAttribute('data-title') || '',
+                    url: r.getAttribute('data-url') || '',
+                    snippet: r.getAttribute('data-snippet') || '',
+                    date: r.getAttribute('data-date') || r.getAttribute('data-timestamp') || '',
+                    author: r.getAttribute('data-author') || 'Toolzaro Author',
+                    thumbnail: r.getAttribute('data-thumbnail') || '',
+                    labels: labels,
+                    body: contentEl ? contentEl.innerHTML : ''
+                  });
+                });
+                window.__BLOGGER_POSTS__ = posts;
+              } catch (e) {}
+            })();
+            //]]>
+          </script>
+
+          <!-- Native SEO & Noscript Crawler Fallback -->
+          <noscript>
+            <div class='blogger-native-posts'>
+              <b:loop values='data:posts' var='post'>
+                <article class='blogger-post-item' expr:id='data:post.id'>
+                  <h2 class='blogger-post-title'><a expr:href='data:post.url'><data:post.title/></a></h2>
+                  <div class='blogger-post-body'><data:post.body/></div>
+                </article>
+              </b:loop>
+            </div>
+          </noscript>
+        </b:includable>
+      </b:widget>
+    </b:section>
+
+    <!-- Sidebar Section for Ads, Custom Gadgets, and Widgets -->
+    <b:section class='sidebar' id='sidebar' showaddelement='yes'>
+      <b:widget id='HTML1' locked='false' title='Custom HTML / AdSense Gadget' type='HTML'/>
+      <b:widget id='PopularPosts1' locked='false' title='Popular Articles' type='PopularPosts'/>
+    </b:section>
+
+    <!-- Footer Section -->
+    <b:section class='footer' id='footer' maxwidgets='4' showaddelement='yes'>
+      <b:widget id='HTML2' locked='false' title='Footer Links &amp; Copyright' type='HTML'/>
+    </b:section>
   </div>
 
-  <!-- React Single Page Application Root -->
-  <div id='root'></div>
+  <!-- React Single Page Application Root Container -->
+  <div id='root'>
+    <div style='min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background-color: #0b0f19; color: #94a3b8; font-family: "Plus Jakarta Sans", system-ui, sans-serif; gap: 16px;'>
+      <div style='width: 48px; height: 48px; border: 3px solid rgba(139, 92, 246, 0.2); border-top-color: #8b5cf6; border-radius: 50%; animation: tz-spin 0.8s linear infinite;'></div>
+      <div style='font-size: 14px; font-weight: 600; letter-spacing: -0.01em; color: #e2e8f0;'>Loading Toolzaro...</div>
+      <style>@keyframes tz-spin { to { transform: rotate(360deg); } }</style>
+    </div>
+  </div>
 
-  <!-- Toolzaro Core JavaScript Bundle from GitHub Pages / CDN -->
-  <script crossorigin='anonymous' src='${ghPagesJsUrl}' type='module'></script>
+  <!-- Toolzaro Primary JavaScript Bundle from jsDelivr CDN -->
+  <script crossorigin='anonymous' src='${cdnJsUrl}' type='module'></script>
 </body>
 </html>
 `;
 
-// Generate LINKS.txt
-const linksTxt = `TOOLZARO BLOGGER INTEGRATION LINKS
-==================================
+// =========================================================================
+// 3. LINKS.txt (Detailed Integration Instructions and URLs)
+// =========================================================================
+const linksTxt = `====================================================================
+TOOLZARO BLOGGER INTEGRATION - JSDELIVR HIGH-SPEED CDN & THEME XML
+====================================================================
 Repository: ${repoOwner}/${repoName}
+Cache-Buster: ${cacheBuster}
 
-1. GITHUB PAGES ASSET LINKS:
-CSS Link: ${ghPagesCssUrl}
-JS Link:  ${ghPagesJsUrl}
+1. PRIMARY JSDELIVR GLOBAL CDN LINKS (Ultra-Fast Edge Delivery):
+   CSS: ${cdnCssUrl}
+   JS:  ${cdnJsUrl}
 
-2. JSDELIVR CDN ASSET LINKS (Alternative):
-CSS Link: ${cdnCssUrl}
-JS Link:  ${cdnJsUrl}
+2. SECONDARY GITHUB PAGES DIRECT LINKS (Fallback):
+   CSS: ${ghPagesCssUrl}
+   JS:  ${ghPagesJsUrl}
 
-HOW TO USE IN BLOGGER:
-----------------------
-Method 1: Blogger Full Website (Recommended)
-1. Go to Blogger Dashboard -> Theme
-2. Click the dropdown next to 'Customize' -> 'Edit HTML'
-3. Delete everything and paste the entire content of 'blogger-theme.xml'
-4. Click Save. Your entire Blogger site is now Toolzaro!
+HOW TO SET UP ON BLOGGER:
+--------------------------------------------------------------------
+Method 1: Full Blogger Theme XML with Full Layout Control (Recommended)
+1. Go to Blogger Dashboard (https://www.blogger.com) -> Theme
+2. Click the downward arrow next to 'Customize' -> Click 'Edit HTML'
+3. Select and DELETE all existing code in the editor
+4. Copy the entire contents of 'blogger-deploy/blogger-theme.xml' and paste it
+5. Click Save (disk icon) in the top right.
+6. Now go to Blogger -> 'Layout':
+   You have a complete Website Admin Panel right in your Blogger Dashboard:
+   - 'Admin: Edit Inbuilt Posts (JSON)' (Widget HTML3): Change titles, categories, excerpts, images of any inbuilt post or add new custom posts!
+   - 'Admin: Hero Banner Settings' (Widget HTML4): Change the Hero title, subtitle, and badge!
+   - 'Blog Posts' (Widget Blog1): Any post you write in Blogger (Posts -> New Post) automatically shows up inside 'Latest Publications' in the exact same card box format, and its Labels automatically become category filters!
+   - 'Top Navigation Menu' (LinkList1): Add custom menu links!
+   - 'Sidebar & AdSense' (HTML1): Add ads and custom widgets!
+   - 'Footer' (HTML2): Add custom footer links and copyright!
+7. Also go to Blogger -> 'Theme' -> 'Customize': You can customize theme colors
+   and fonts via Blogger's built-in Theme Designer!
 
-Method 2: Blogger Page (Embed in a single page)
+Method 2: Blogger Page (Embed inside a single page)
 1. Go to Blogger Dashboard -> Pages -> New Page
-2. Switch to 'HTML view' (pencil icon -> HTML view)
-3. Paste the entire content of 'blogger-embed.html'
+2. Switch to 'HTML view' (pencil icon on top-left -> HTML view)
+3. Copy the entire contents of 'blogger-deploy/blogger-embed.html' and paste it
 4. Publish the page.
 `;
 

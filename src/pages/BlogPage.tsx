@@ -10,45 +10,47 @@ import {
   Layers, 
   Filter, 
   Share2, 
-  Tag,
-  Wrench,
-  ChevronRight,
-  Rss,
-  RefreshCw,
-  Globe,
-  CheckCircle2,
-  ExternalLink,
-  Edit3,
-  ArrowDown
+  Tag, 
+  Wrench, 
+  ChevronRight, 
+  Rss, 
+  CheckCircle2, 
+  ExternalLink, 
+  ArrowDown 
 } from 'lucide-react';
 import { BlogPost, BUILTIN_BLOG_POSTS } from '../lib/blogData';
 import { 
   getMergedPostsWithBlogger, 
+  getNativeBloggerXmlPosts,
   getSavedBloggerUrl, 
-  saveBloggerUrl, 
-  fetchBloggerPosts,
   getLastSyncTime 
 } from '../lib/bloggerSync';
+import { getBloggerHeroSettings, applyBloggerPostOverrides } from '../lib/bloggerLayoutAdmin';
 import { tools } from '../lib/registry';
 import { Seo } from '../components/Seo';
 import { AdSlot } from '../components/AdSlot';
 import { BreadcrumbNavigation } from '../components/BreadcrumbNavigation';
-import { toast } from 'sonner';
 
 export const BlogPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [posts, setPosts] = useState<BlogPost[]>(BUILTIN_BLOG_POSTS);
+  const [posts, setPosts] = useState<BlogPost[]>(() => {
+    const effectiveBuiltin = applyBloggerPostOverrides(BUILTIN_BLOG_POSTS);
+    const native = getNativeBloggerXmlPosts();
+    if (native.length > 0) {
+      const combined = [...native, ...effectiveBuiltin];
+      const seen = new Set<string>();
+      return combined.filter(p => {
+        if (seen.has(p.id)) return false;
+        seen.add(p.id);
+        return true;
+      });
+    }
+    return effectiveBuiltin;
+  });
   const [loading, setLoading] = useState(false);
-  const [syncing, setSyncing] = useState(false);
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   
-  // Blogger configuration modal & status
-  const [bloggerUrl, setBloggerUrl] = useState(getSavedBloggerUrl());
-  const [showConfigModal, setShowConfigModal] = useState(false);
-  const [inputUrl, setInputUrl] = useState(getSavedBloggerUrl());
-  const [lastSync, setLastSync] = useState(getLastSyncTime());
-
   // Responsive Pagination: 6 for mobile/tablet, 9 for desktop
   const [visiblePostsCount, setVisiblePostsCount] = useState(6);
 
@@ -69,77 +71,79 @@ export const BlogPage: React.FC = () => {
     });
   };
 
-  // Load merged posts automatically on mount
+  // Load merged posts automatically on mount (silently)
   useEffect(() => {
     loadPosts();
   }, []);
 
-  const loadPosts = async (showToast = false) => {
+  const loadPosts = async () => {
     setLoading(true);
     try {
       const allPosts = await getMergedPostsWithBlogger();
       setPosts(allPosts);
-      setLastSync(getLastSyncTime());
-      if (showToast) {
-        const bloggerCount = allPosts.filter(p => p.source === 'blogger').length;
-        toast.success(`Synced with Blogger! ${bloggerCount > 0 ? `Loaded ${bloggerCount} posts from ${bloggerUrl}` : 'No new posts found on blog.'}`);
-      }
     } catch (err) {
-      console.error(err);
-      if (showToast) toast.error('Failed to sync with Blogger.');
+      console.error('Failed to load blog posts:', err);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleManualSync = async () => {
-    setSyncing(true);
-    try {
-      const liveBloggerPosts = await fetchBloggerPosts(bloggerUrl);
-      const allPosts = await getMergedPostsWithBlogger();
-      setPosts(allPosts);
-      setLastSync(new Date().toLocaleTimeString());
-      toast.success(`Synced with ${bloggerUrl.replace('https://', '')}! Found ${liveBloggerPosts.length} posts.`);
-    } catch (err: any) {
-      toast.error('Sync failed: ' + err.message);
-    } finally {
-      setSyncing(false);
-    }
-  };
+  const heroSettings = useMemo(() => getBloggerHeroSettings(), []);
 
-  const handleSaveBloggerConfig = () => {
-    if (!inputUrl.trim()) {
-      toast.error('Please enter your Blogspot address.');
-      return;
-    }
-    saveBloggerUrl(inputUrl);
-    setBloggerUrl(getSavedBloggerUrl());
-    setShowConfigModal(false);
-    toast.success('Blogger address updated!');
-    loadPosts(true);
-  };
+  // Categories: ONLY actual categories of inbuilt posts + labels of Blogger posts!
+  const categories = useMemo(() => {
+    const set = new Set<string>();
+    set.add('All');
 
-  const categories = ['All', 'Developer Workflows', 'SEO & Growth', 'Security & Privacy', 'Design & UX'];
+    // 1. Categories from inbuilt posts (only actual category field, no random internal tags)
+    posts.forEach(post => {
+      if (post.source === 'builtin' && post.category && post.category !== 'All') {
+        const cat = post.category.trim();
+        if (cat) set.add(cat);
+      }
+    });
+
+    // 2. Categories from Blogger posts (primary category + custom labels)
+    posts.forEach(post => {
+      if (post.source === 'blogger') {
+        if (post.category && post.category !== 'All') {
+          const cat = post.category.trim();
+          if (cat) set.add(cat);
+        }
+        if (Array.isArray(post.tags)) {
+          post.tags.forEach(t => {
+            if (t && t.trim() && t !== 'Articles' && t !== 'Blogger' && t !== 'All') {
+              set.add(t.trim());
+            }
+          });
+        }
+      }
+    });
+
+    return Array.from(set);
+  }, [posts]);
 
   const filteredPosts = useMemo(() => {
     return posts.filter(post => {
-      const matchesCategory = selectedCategory === 'All' || post.category === selectedCategory;
+      const matchesCategory = 
+        selectedCategory === 'All' || 
+        post.category === selectedCategory || 
+        (Array.isArray(post.tags) && post.tags.includes(selectedCategory));
       const matchesSearch = 
+        !search.trim() ||
         post.title.toLowerCase().includes(search.toLowerCase()) ||
         post.excerpt.toLowerCase().includes(search.toLowerCase()) ||
-        post.tags.some(t => t.toLowerCase().includes(search.toLowerCase()));
+        post.category.toLowerCase().includes(search.toLowerCase()) ||
+        (Array.isArray(post.tags) && post.tags.some(t => t.toLowerCase().includes(search.toLowerCase())));
       return matchesCategory && matchesSearch;
     });
   }, [posts, selectedCategory, search]);
 
-  const featuredPost = filteredPosts[0];
-  const gridPosts = filteredPosts.filter(p => p.id !== (selectedCategory === 'All' && !search ? featuredPost?.id : ''));
-
   return (
     <div className="space-y-6 sm:space-y-8 md:space-y-10">
       <Seo
-        title="Toolzaro Pulse & Insights - Web, Technology & Developer Guides"
-        description="Explore in-depth technical guides, developer cheatsheets, and SEO optimization strategies synchronized live with toolzaro.blogspot.com."
+        title="Toolzaro Knowledge Hub & Engineering Journal"
+        description="Explore in-depth technical guides, developer cheatsheets, SEO optimization strategies, and modern web tool architectures."
         url="https://toolnest.com/blog"
       />
 
@@ -153,123 +157,37 @@ export const BlogPage: React.FC = () => {
         />
       </div>
 
-      {/* Hero Header */}
+      {/* Hero Header (Customizable via Blogger Layout Settings) */}
       <section className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-linear-to-br from-card via-card to-primary/5 border border-border p-6 sm:p-8 md:p-10 shadow-sm">
-        <div className="max-w-3xl space-y-3.5 sm:space-y-4">
-          <div className="flex flex-wrap items-center gap-2">
-            <div className="inline-flex items-center gap-2 px-3 sm:px-3.5 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-xs font-bold text-primary">
-              <Rss className="w-3.5 h-3.5" />
-              <span>Toolzaro Pulse & Insights</span>
-            </div>
-
-            {/* Live Blogger Sync Badge */}
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span>Synced with {bloggerUrl.replace('https://', '')}</span>
-              <button
-                type="button"
-                onClick={handleManualSync}
-                disabled={syncing}
-                className="hover:text-foreground transition-colors p-0.5 cursor-pointer ml-1"
-                title="Sync latest posts from Blogger now"
-              >
-                <RefreshCw className={`w-3 h-3 ${syncing ? 'animate-spin' : ''}`} />
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setInputUrl(bloggerUrl);
-                  setShowConfigModal(true);
-                }}
-                className="hover:text-foreground transition-colors p-0.5 cursor-pointer"
-                title="Edit Blogger address"
-              >
-                <Edit3 className="w-3 h-3 opacity-70 hover:opacity-100" />
-              </button>
-            </div>
+        <div className="max-w-3xl space-y-3 sm:space-y-4">
+          <div className="flex items-center gap-2 text-xs font-semibold text-primary">
+            <BookOpen className="w-4 h-4" />
+            <span>{heroSettings?.badge || 'Engineering Journal & Tech Insights'}</span>
           </div>
 
           <h1 className="text-2xl sm:text-3xl md:text-5xl font-extrabold tracking-tight text-foreground font-display">
-            Knowledge Hub & Engineering Journal
+            {heroSettings?.title || 'Knowledge Hub & Engineering Journal'}
           </h1>
 
           <p className="text-xs sm:text-sm md:text-base text-muted-foreground leading-relaxed max-w-2xl">
-            In-depth guides, practical developer workflows, and technical SEO strategies. Every post published on <strong className="text-foreground">{bloggerUrl.replace('https://', '')}</strong> automatically synchronizes here in real time.
+            {heroSettings?.subtitle || 'In-depth guides, practical developer workflows, and technical SEO strategies to build faster and smarter.'}
           </p>
 
-          <div className="pt-2 flex flex-wrap items-center gap-3">
+          <div className="pt-2 max-w-md w-full">
             {/* Search Bar */}
-            <div className="relative flex-1 min-w-[260px] max-w-md">
+            <div className="relative w-full">
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <input
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search articles, topics, keywords..."
-                className="w-full pl-10 pr-4 py-2.5 text-xs bg-card border border-border rounded-xl focus:outline-hidden focus:border-primary"
+                className="w-full pl-10 pr-4 py-2.5 text-xs bg-card border border-border rounded-xl focus:outline-hidden focus:border-primary transition-colors"
               />
             </div>
-
-            <button
-              onClick={handleManualSync}
-              disabled={syncing}
-              className="px-4 py-2.5 rounded-xl bg-secondary hover:bg-secondary/80 text-foreground text-xs font-bold transition-all border border-border/80 flex items-center gap-2 cursor-pointer shrink-0"
-            >
-              <RefreshCw className={`w-3.5 h-3.5 ${syncing ? 'animate-spin text-primary' : ''}`} />
-              <span>{syncing ? 'Syncing...' : 'Sync Blogger'}</span>
-            </button>
           </div>
         </div>
       </section>
-
-      {/* Blogger Config Modal */}
-      {showConfigModal && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in-0 duration-150">
-          <div className="bg-card border border-border rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4">
-            <div className="flex items-center justify-between pb-2 border-b border-border/60">
-              <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
-                <Globe className="w-4 h-4 text-primary" />
-                <span>Configure Blogger (Blogspot) Address</span>
-              </h3>
-              <button
-                onClick={() => setShowConfigModal(false)}
-                className="text-muted-foreground hover:text-foreground text-xs font-bold"
-              >
-                ✕
-              </button>
-            </div>
-
-            <div className="space-y-2 text-xs">
-              <label className="text-muted-foreground font-semibold">Your Blogspot or Custom Domain URL:</label>
-              <input
-                type="text"
-                value={inputUrl}
-                onChange={(e) => setInputUrl(e.target.value)}
-                placeholder="https://toolzaro.blogspot.com"
-                className="w-full h-10 px-3 rounded-xl border border-border bg-secondary/50 text-xs font-mono focus:border-primary focus:outline-none"
-              />
-              <p className="text-[11px] text-muted-foreground leading-relaxed pt-1">
-                Whenever you publish new articles in this Blogger account, Toolzaro will automatically pull the posts via Blogger's free, unlimited public feed.
-              </p>
-            </div>
-
-            <div className="flex justify-end gap-2 pt-2">
-              <button
-                onClick={() => setShowConfigModal(false)}
-                className="px-4 py-2 rounded-xl bg-secondary text-xs font-semibold hover:bg-secondary/80 cursor-pointer"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSaveBloggerConfig}
-                className="px-4 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-bold hover:bg-primary/90 cursor-pointer shadow-xs"
-              >
-                Save & Sync
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Category Filter Pills */}
       <section className="flex flex-wrap items-center gap-1.5 sm:gap-2">
@@ -288,75 +206,7 @@ export const BlogPage: React.FC = () => {
         ))}
       </section>
 
-      {/* Featured Hero Article (when showing all and no search query) */}
-      {selectedCategory === 'All' && !search && featuredPost && (
-        <section className="group relative overflow-hidden rounded-2xl sm:rounded-3xl bg-card border border-border hover:border-primary/40 transition-all shadow-xs hover:shadow-lg">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 p-5 sm:p-6 md:p-8 items-center">
-            <div className="lg:col-span-7 space-y-3 sm:space-y-4">
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="px-3 py-1 rounded-full bg-primary/10 text-primary text-[11px] font-bold">
-                  {featuredPost.category}
-                </span>
-                {featuredPost.source === 'blogger' && (
-                  <span className="px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 text-[10px] font-extrabold uppercase tracking-wider">
-                    Live Blogger
-                  </span>
-                )}
-                <span className="text-xs text-muted-foreground flex items-center gap-1">
-                  <Calendar className="w-3.5 h-3.5" />
-                  <span>{featuredPost.publishedAt}</span>
-                </span>
-                <span className="text-xs text-muted-foreground flex items-center gap-1">
-                  <Clock className="w-3.5 h-3.5" />
-                  <span>{featuredPost.readTimeMinutes} min read</span>
-                </span>
-              </div>
-
-              <Link to={`/blog/${featuredPost.slug}`} className="block group-hover:text-primary transition-colors">
-                <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold font-display text-foreground tracking-tight leading-snug">
-                  {featuredPost.title}
-                </h2>
-              </Link>
-
-              <p className="text-xs sm:text-sm text-muted-foreground line-clamp-3 leading-relaxed">
-                {featuredPost.excerpt}
-              </p>
-
-              <div className="flex items-center justify-between pt-2">
-                <div className="flex items-center gap-2.5">
-                  <img
-                    src={featuredPost.author.avatar}
-                    alt={featuredPost.author.name}
-                    className="w-8 h-8 rounded-full object-cover border border-border"
-                  />
-                  <div>
-                    <p className="text-xs font-bold text-foreground">{featuredPost.author.name}</p>
-                    <p className="text-[10px] text-muted-foreground">{featuredPost.author.role}</p>
-                  </div>
-                </div>
-
-                <Link
-                  to={`/blog/${featuredPost.slug}`}
-                  className="btn-signature-primary px-4 py-2 text-xs font-bold inline-flex items-center gap-1.5 shadow-sm group-hover:gap-2.5 transition-all"
-                >
-                  <span>Read Article</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </Link>
-              </div>
-            </div>
-
-            <div className="lg:col-span-5 overflow-hidden rounded-2xl aspect-16/10 border border-border/80">
-              <img
-                src={featuredPost.coverImage}
-                alt={featuredPost.title}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-              />
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Grid of Remaining Articles */}
+      {/* Latest Publications Grid (All posts render in identical unified card boxes) */}
       <section className="space-y-4">
         <div className="flex items-center justify-between pb-2 border-b border-border/60">
           <div className="flex items-center gap-2">
@@ -386,7 +236,7 @@ export const BlogPage: React.FC = () => {
         ) : (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
-              {gridPosts.slice(0, visiblePostsCount).map((post) => (
+              {filteredPosts.slice(0, visiblePostsCount).map((post) => (
                 <article
                   key={post.id}
                   className="group flex flex-col justify-between overflow-hidden rounded-2xl bg-card border border-border hover:border-primary/40 transition-all shadow-2xs hover:shadow-md"
@@ -402,12 +252,6 @@ export const BlogPage: React.FC = () => {
                         <span className="px-2.5 py-0.5 rounded-full bg-background/90 backdrop-blur-xs text-[10px] font-bold text-foreground border border-border/60">
                           {post.category}
                         </span>
-                        {post.source === 'blogger' && (
-                          <span className="px-2 py-0.5 rounded-full bg-linear-to-r from-amber-500 to-orange-500 text-white text-[9px] font-black uppercase tracking-wider flex items-center gap-1 shadow-xs">
-                            <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-                            <span>Live Blogger</span>
-                          </span>
-                        )}
                       </div>
                     </div>
 
@@ -443,17 +287,6 @@ export const BlogPage: React.FC = () => {
                     </div>
 
                     <div className="flex items-center gap-2">
-                      {post.bloggerUrl && (
-                        <a
-                          href={post.bloggerUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-xs text-muted-foreground hover:text-primary transition-colors p-1"
-                          title="Open original Blogger post"
-                        >
-                          <ExternalLink className="w-3.5 h-3.5" />
-                        </a>
-                      )}
                       <Link
                         to={`/blog/${post.slug}`}
                         className="text-xs font-bold text-primary hover:underline flex items-center gap-1 group-hover:gap-1.5 transition-all"
@@ -470,17 +303,17 @@ export const BlogPage: React.FC = () => {
             {/* Responsive Pagination & Load More Controls */}
             <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-3 bg-muted/20 border border-border/60 rounded-2xl p-4">
               <div className="text-xs text-muted-foreground text-center sm:text-left">
-                Showing <strong className="text-foreground">{Math.min(visiblePostsCount, gridPosts.length)}</strong> of <strong className="text-foreground">{gridPosts.length}</strong> articles.
+                Showing <strong className="text-foreground">{Math.min(visiblePostsCount, filteredPosts.length)}</strong> of <strong className="text-foreground">{filteredPosts.length}</strong> articles.
               </div>
 
               <div className="flex flex-wrap items-center gap-2.5 w-full sm:w-auto justify-center">
-                {gridPosts.length > visiblePostsCount ? (
+                {filteredPosts.length > visiblePostsCount ? (
                   <button
                     type="button"
                     onClick={handleLoadMore}
                     className="btn-signature-primary px-6 py-2.5 text-xs font-bold gap-2 cursor-pointer w-full sm:w-auto justify-center shadow-xs"
                   >
-                    <span>Load More Articles ({gridPosts.length - visiblePostsCount} left)</span>
+                    <span>Load More Articles ({filteredPosts.length - visiblePostsCount} left)</span>
                   </button>
                 ) : (
                   <span className="text-xs font-medium text-muted-foreground py-1">

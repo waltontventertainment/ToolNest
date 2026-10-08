@@ -1,4 +1,5 @@
 import { BlogPost, BUILTIN_BLOG_POSTS } from './blogData';
+import { applyBloggerPostOverrides } from './bloggerLayoutAdmin';
 
 const DEFAULT_BLOGGER_KEY = 'toolnest_custom_blogger_url';
 const BLOGGER_POSTS_CACHE_KEY = 'toolnest_cached_blogger_posts';
@@ -49,6 +50,70 @@ export function getCachedBloggerPosts(): BlogPost[] {
 }
 
 // Convert Blogger string title to URL-safe slug
+export interface RawBloggerXmlPost {
+  id?: string;
+  title?: string;
+  url?: string;
+  snippet?: string;
+  date?: string;
+  author?: string;
+  thumbnail?: string;
+  labels?: string[];
+  body?: string;
+}
+
+export function getNativeBloggerXmlPosts(): BlogPost[] {
+  if (typeof window === 'undefined') return [];
+  const rawPosts: RawBloggerXmlPost[] = (window as any).__BLOGGER_POSTS__;
+  if (!Array.isArray(rawPosts) || rawPosts.length === 0) return [];
+
+  return rawPosts.map((p, index) => {
+    const title = (p.title || 'Untitled Post').trim();
+    const content = p.body || p.snippet || '';
+    const date = p.date ? p.date.slice(0, 10) : new Date().toISOString().slice(0, 10);
+    const authorName = (p.author || 'Toolzaro Author').trim();
+    const url = p.url || '';
+    const tags = Array.isArray(p.labels) && p.labels.length > 0 ? p.labels : ['Developer Workflows'];
+    const category = tags[0] || 'Developer Workflows';
+
+    const wordCount = content.replace(/<[^>]*>/g, ' ').split(/\s+/).filter(Boolean).length;
+    const readTime = Math.max(2, Math.ceil(wordCount / 200));
+    const id = p.id ? `blogger-${p.id}` : `blogger-native-${index}`;
+    const slug = slugify(title) || id;
+
+    let coverImage = p.thumbnail || '';
+    if (!coverImage && content) {
+      const imgMatch = content.match(/<img[^>]+src=["']([^"']+)["']/i);
+      if (imgMatch && imgMatch[1]) {
+        coverImage = imgMatch[1];
+      }
+    }
+    if (!coverImage) {
+      coverImage = 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=1200&auto=format&fit=crop&q=80';
+    }
+
+    return {
+      id,
+      slug,
+      title,
+      excerpt: p.snippet || createExcerpt(content),
+      content,
+      category,
+      author: {
+        name: authorName,
+        role: 'Editorial Contributor',
+        avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80'
+      },
+      publishedAt: date,
+      readTimeMinutes: readTime,
+      coverImage,
+      tags,
+      source: 'blogger' as const,
+      bloggerUrl: url
+    };
+  });
+}
+
 function slugify(text: string): string {
   return text
     .toLowerCase()
@@ -223,18 +288,8 @@ export async function fetchBloggerPosts(bloggerUrl?: string): Promise<BlogPost[]
     const rawCategories = Array.isArray(entry.category) 
       ? entry.category.map((c: any) => c.term || c.label).filter(Boolean)
       : [];
-    const tags = rawCategories.length > 0 ? rawCategories : ['Blogger', 'Articles'];
-
-    // Map first tag or default to category
-    let category: 'Developer Workflows' | 'SEO & Growth' | 'Security & Privacy' | 'Design & UX' = 'Developer Workflows';
-    const lowerTags = tags.map((t: string) => t.toLowerCase());
-    if (lowerTags.some((t: string) => t.includes('seo') || t.includes('growth') || t.includes('marketing'))) {
-      category = 'SEO & Growth';
-    } else if (lowerTags.some((t: string) => t.includes('security') || t.includes('privacy') || t.includes('crypto'))) {
-      category = 'Security & Privacy';
-    } else if (lowerTags.some((t: string) => t.includes('design') || t.includes('css') || t.includes('ui') || t.includes('ux'))) {
-      category = 'Design & UX';
-    }
+    const tags = rawCategories.length > 0 ? rawCategories : ['Developer Workflows'];
+    const category = tags[0] || 'Developer Workflows';
 
     const wordCount = contentHtml.replace(/<[^>]*>/g, ' ').split(/\s+/).filter(Boolean).length;
     const readTime = Math.max(2, Math.ceil(wordCount / 200));
@@ -251,7 +306,7 @@ export async function fetchBloggerPosts(bloggerUrl?: string): Promise<BlogPost[]
       category,
       author: {
         name: authorName,
-        role: 'Blogger Contributor',
+        role: 'Editorial Contributor',
         avatar: authorAvatar
       },
       publishedAt,
@@ -277,6 +332,24 @@ export async function fetchBloggerPosts(bloggerUrl?: string): Promise<BlogPost[]
  * Blogger posts appear first so new articles are immediately visible at the top!
  */
 export async function getMergedPostsWithBlogger(): Promise<BlogPost[]> {
+  // Apply any edits/overrides configured from Blogger Dashboard -> Layout widgets
+  const effectiveBuiltinPosts = applyBloggerPostOverrides(BUILTIN_BLOG_POSTS);
+
+  // 1. Highest Priority: Native Blogger XML posts injected by Blogger's theme engine!
+  const nativeXmlPosts = getNativeBloggerXmlPosts();
+  if (nativeXmlPosts.length > 0) {
+    const combined = [...nativeXmlPosts, ...effectiveBuiltinPosts];
+    const seenSlugs = new Set<string>();
+    const seenIds = new Set<string>();
+    return combined.filter(post => {
+      if (seenSlugs.has(post.slug) || seenIds.has(post.id)) return false;
+      seenSlugs.add(post.slug);
+      seenIds.add(post.id);
+      return true;
+    });
+  }
+
+  // 2. Standalone / Preview environment fallback:
   const savedUrl = getSavedBloggerUrl();
   let bloggerPosts: BlogPost[] = getCachedBloggerPosts();
 
@@ -292,7 +365,7 @@ export async function getMergedPostsWithBlogger(): Promise<BlogPost[]> {
   }
 
   // Merge: Live Blogger posts first, followed by built-in authoritative guides
-  const combined = [...bloggerPosts, ...BUILTIN_BLOG_POSTS];
+  const combined = [...bloggerPosts, ...effectiveBuiltinPosts];
   
   // Deduplicate by slug and id
   const seenSlugs = new Set<string>();

@@ -193,17 +193,6 @@ export const BlogPostPage: React.FC = () => {
               {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
               <span>{copied ? 'Copied' : 'Share Link'}</span>
             </button>
-            {post.bloggerUrl && (
-              <a
-                href={post.bloggerUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-signature-header px-3 py-2 text-xs font-semibold gap-1.5 text-orange-600 dark:text-orange-400"
-              >
-                <ExternalLink className="w-3.5 h-3.5" />
-                <span>Original Post</span>
-              </a>
-            )}
           </div>
         </div>
       </header>

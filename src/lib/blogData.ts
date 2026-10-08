@@ -7,7 +7,7 @@ export interface BlogPost {
   title: string;
   excerpt: string;
   content: string; // Full markdown content
-  category: 'Developer Workflows' | 'SEO & Growth' | 'Security & Privacy' | 'Design & UX';
+  category: 'Developer Workflows' | 'SEO & Growth' | 'Security & Privacy' | 'Design & UX' | string;
   author: {
     name: string;
     role: string;

@@ -64,6 +64,7 @@ jobs:
           NODE_ENV: production
           GITHUB_REPOSITORY: ${{ github.repository }}
           GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
+          BUILD_COMMIT_SHA: ${{ github.sha }}
 
       - name: "Step 2 - Build Standalone Single HTML (Optional Offline Backup)"
         run: |
@@ -81,8 +82,8 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
           publish_branch: gh-pages
-          force_orphan: false
-          commit_message: "Deploy separated website assets to GitHub Pages [skip ci]"
+          force_orphan: true
+          commit_message: "Clean update: deploy latest website assets [skip ci]"
 
       - name: "Step 4 - Generate Workflow Summary and Links"
         run: |
@@ -91,32 +92,33 @@ jobs:
           HTML_SIZE=$(ls -lh dist/index.html | awk '{print $5}')
           CSS_SIZE=$(ls -lh dist/assets/$CSS_FILE | awk '{print $5}')
           JS_SIZE=$(ls -lh dist/assets/$JS_FILE | awk '{print $5}')
+          SHORT_SHA=$(echo "${{ github.sha }}" | cut -c1-10)
 
+          JSDELIVR_CSS="https://cdn.jsdelivr.net/gh/${{ github.repository }}@gh-pages/assets/${CSS_FILE}?v=${SHORT_SHA}"
+          JSDELIVR_JS="https://cdn.jsdelivr.net/gh/${{ github.repository }}@gh-pages/assets/${JS_FILE}?v=${SHORT_SHA}"
           GHPAGES_CSS="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/assets/${CSS_FILE}"
           GHPAGES_JS="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/assets/${JS_FILE}"
-          JSDELIVR_CSS="https://cdn.jsdelivr.net/gh/${{ github.repository }}@gh-pages/assets/${CSS_FILE}"
-          JSDELIVR_JS="https://cdn.jsdelivr.net/gh/${{ github.repository }}@gh-pages/assets/${JS_FILE}"
 
-          echo "## Toolzaro Build & Blogger Deployment Ready!" >> $GITHUB_STEP_SUMMARY
+          echo "## ⚡ Toolzaro Build & Blogger Deployment Ready!" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### File Sizes (Assets Separated):" >> $GITHUB_STEP_SUMMARY
-          echo "- **Blogger HTML Size:** \`$HTML_SIZE\` *(Ultra-fast, fits Blogger limit easily!)*" >> $GITHUB_STEP_SUMMARY
+          echo "### 📦 Generated Asset Sizes (Separated & Lightweight):" >> $GITHUB_STEP_SUMMARY
+          echo "- **Blogger HTML Size:** \`$HTML_SIZE\` *(Instant load, fits Blogger limit easily!)*" >> $GITHUB_STEP_SUMMARY
           echo "- **CSS Bundle:** \`$CSS_FILE\` (\`$CSS_SIZE\`)" >> $GITHUB_STEP_SUMMARY
           echo "- **JS Bundle:** \`$JS_FILE\` (\`$JS_SIZE\`)" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### Live Hosted Asset Links:" >> $GITHUB_STEP_SUMMARY
-          echo "#### Option 1: GitHub Pages (Recommended)" >> $GITHUB_STEP_SUMMARY
-          echo "- **CSS:** \`$GHPAGES_CSS\`" >> $GITHUB_STEP_SUMMARY
-          echo "- **JS:** \`$GHPAGES_JS\`" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "#### Option 2: jsDelivr Worldwide Free CDN (Immediate mirror)" >> $GITHUB_STEP_SUMMARY
+          echo "### 🚀 Live Hosted Asset Links:" >> $GITHUB_STEP_SUMMARY
+          echo "#### Option 1: jsDelivr Worldwide Global CDN (Primary - Ultra Fast):" >> $GITHUB_STEP_SUMMARY
           echo "- **CSS:** \`$JSDELIVR_CSS\`" >> $GITHUB_STEP_SUMMARY
           echo "- **JS:** \`$JSDELIVR_JS\`" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### How to Host on Blogger:" >> $GITHUB_STEP_SUMMARY
-          echo "1. **Full Website:** Copy \`blogger-deploy/blogger-theme.xml\` -> Blogger Dashboard -> **Theme** -> **Edit HTML** -> Paste & Save." >> $GITHUB_STEP_SUMMARY
-          echo "2. **Single Page:** Copy \`blogger-deploy/blogger-embed.html\` -> Blogger Dashboard -> **Pages** -> **New Page** -> Switch to **HTML view** -> Paste & Publish." >> $GITHUB_STEP_SUMMARY
-          echo "3. In GitHub repo settings, go to **Settings** -> **Pages** -> Source: Deploy from branch **gh-pages** (/root)." >> $GITHUB_STEP_SUMMARY
+          echo "#### Option 2: GitHub Pages Direct:" >> $GITHUB_STEP_SUMMARY
+          echo "- **CSS:** \`$GHPAGES_CSS\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **JS:** \`$GHPAGES_JS\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🎨 How to Set Up in Blogger:" >> $GITHUB_STEP_SUMMARY
+          echo "1. **Full Website with Full Layout Control:** Copy \`blogger-deploy/blogger-theme.xml\` -> Blogger Dashboard -> **Theme** -> **Edit HTML** -> Paste & Save." >> $GITHUB_STEP_SUMMARY
+          echo "2. **Layout Customization:** Go to Blogger Dashboard -> **Layout** to add, remove, and rearrange widgets (Header, Menus, Ads, Blog, Sidebar, Footer)!" >> $GITHUB_STEP_SUMMARY
+          echo "3. **Single Page:** Copy \`blogger-deploy/blogger-embed.html\` -> Blogger Dashboard -> **Pages** -> **New Page** -> Switch to **HTML view** -> Paste & Publish." >> $GITHUB_STEP_SUMMARY
 
       - name: "Step 5 - Upload Blogger Ready Files Artifact"
         uses: actions/upload-artifact@v4

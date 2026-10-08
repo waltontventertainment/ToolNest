@@ -1,25 +1,38 @@
-TOOLZARO BLOGGER INTEGRATION LINKS
-==================================
+====================================================================
+TOOLZARO BLOGGER INTEGRATION - JSDELIVR HIGH-SPEED CDN & THEME XML
+====================================================================
 Repository: ToolNest/ToolNest
+Cache-Buster: muzrudo7
 
-1. GITHUB PAGES ASSET LINKS:
-CSS Link: https://ToolNest.github.io/ToolNest/assets/index-CzH50FCL.css
-JS Link:  https://ToolNest.github.io/ToolNest/assets/index-ETVP9Dbz.js
+1. PRIMARY JSDELIVR GLOBAL CDN LINKS (Ultra-Fast Edge Delivery):
+   CSS: https://cdn.jsdelivr.net/gh/ToolNest/ToolNest@gh-pages/assets/index-EYA8knTk.css?v=muzrudo7
+   JS:  https://cdn.jsdelivr.net/gh/ToolNest/ToolNest@gh-pages/assets/index-jHquZTNq.js?v=muzrudo7
 
-2. JSDELIVR CDN ASSET LINKS (Alternative):
-CSS Link: https://cdn.jsdelivr.net/gh/ToolNest/ToolNest@gh-pages/assets/index-CzH50FCL.css
-JS Link:  https://cdn.jsdelivr.net/gh/ToolNest/ToolNest@gh-pages/assets/index-ETVP9Dbz.js
+2. SECONDARY GITHUB PAGES DIRECT LINKS (Fallback):
+   CSS: https://ToolNest.github.io/ToolNest/assets/index-EYA8knTk.css
+   JS:  https://ToolNest.github.io/ToolNest/assets/index-jHquZTNq.js
 
-HOW TO USE IN BLOGGER:
-----------------------
-Method 1: Blogger Full Website (Recommended)
-1. Go to Blogger Dashboard -> Theme
-2. Click the dropdown next to 'Customize' -> 'Edit HTML'
-3. Delete everything and paste the entire content of 'blogger-theme.xml'
-4. Click Save. Your entire Blogger site is now Toolzaro!
+HOW TO SET UP ON BLOGGER:
+--------------------------------------------------------------------
+Method 1: Full Blogger Theme XML with Full Layout Control (Recommended)
+1. Go to Blogger Dashboard (https://www.blogger.com) -> Theme
+2. Click the downward arrow next to 'Customize' -> Click 'Edit HTML'
+3. Select and DELETE all existing code in the editor
+4. Copy the entire contents of 'blogger-deploy/blogger-theme.xml' and paste it
+5. Click Save (disk icon) in the top right.
+6. Now go to Blogger -> 'Layout':
+   You have a complete Website Admin Panel right in your Blogger Dashboard:
+   - 'Admin: Edit Inbuilt Posts (JSON)' (Widget HTML3): Change titles, categories, excerpts, images of any inbuilt post or add new custom posts!
+   - 'Admin: Hero Banner Settings' (Widget HTML4): Change the Hero title, subtitle, and badge!
+   - 'Blog Posts' (Widget Blog1): Any post you write in Blogger (Posts -> New Post) automatically shows up inside 'Latest Publications' in the exact same card box format, and its Labels automatically become category filters!
+   - 'Top Navigation Menu' (LinkList1): Add custom menu links!
+   - 'Sidebar & AdSense' (HTML1): Add ads and custom widgets!
+   - 'Footer' (HTML2): Add custom footer links and copyright!
+7. Also go to Blogger -> 'Theme' -> 'Customize': You can customize theme colors
+   and fonts via Blogger's built-in Theme Designer!
 
-Method 2: Blogger Page (Embed in a single page)
+Method 2: Blogger Page (Embed inside a single page)
 1. Go to Blogger Dashboard -> Pages -> New Page
-2. Switch to 'HTML view' (pencil icon -> HTML view)
-3. Paste the entire content of 'blogger-embed.html'
+2. Switch to 'HTML view' (pencil icon on top-left -> HTML view)
+3. Copy the entire contents of 'blogger-deploy/blogger-embed.html' and paste it
 4. Publish the page.

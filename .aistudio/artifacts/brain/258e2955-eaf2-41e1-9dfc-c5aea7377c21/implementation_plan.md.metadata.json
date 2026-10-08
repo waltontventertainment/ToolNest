@@ -1,6 +1,6 @@
 {
-  "summary":  "Implementation plan for responsive blog layout with Load More, AdSense-safe Back to Top navigation, automatic Blogger sync on Home & Blog sections, and complete Blogger SEO, ads.txt, and sitemap indexing configuration.",
-  "updatedAt":  "2026-10-08T02:12:27.611044113Z",
+  "summary":  "Implementation plan to make Blogger posts render in the exact same unified box style as built-in posts:\n1. Remove all 'Live Blogger' badges, glowing indicators, and disparate 'Read Article' button styles from BlogPage.tsx.\n2. Standardize all post cards (both featured and grid) to share the exact same clean, cohesive layout: thumbnail on top, clean category badge, date, title, excerpt, and author avatar with a matching 'Read ->' link.\n3. Dynamically generate category filter tabs from Blogger labels alongside standard categories.\n4. Map Blogger post primary labels directly to post.category so articles reflect custom labels accurately.\n5. Ensure in-app reading view in BlogPostPage.tsx feels 100% native with consistent typography, author layout, and breadcrumb navigation.",
+  "updatedAt":  "2026-10-08T16:26:17.246073831Z",
   "requestFeedback":  true,
   "userFacing":  true
 }

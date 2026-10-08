@@ -1,7 +1,7 @@
 <!-- ================================================================= -->
-<!-- TOOLZARO - PREMIUM SUITE FOR BLOGGER (PAGE / POST HTML EMBED)     -->
-<!-- File Size: ~3.5 KB (Super Lightweight & Fast)                     -->
-<!-- CSS & JS are loaded directly from GitHub Pages / jsDelivr CDN      -->
+<!-- TOOLZARO - HIGH SPEED BLOGGER EMBED (PAGE / POST HTML VIEW)       -->
+<!-- Global Ultra-Fast Delivery via jsDelivr CDN (Cache-Busted)        -->
+<!-- Size: ~3.8 KB (Instant Rendering, Zero Blogger Bloat)             -->
 <!-- ================================================================= -->
 
 <meta charset="UTF-8" />
@@ -18,41 +18,8 @@
 <meta name="google-adsense-account" content="ca-pub-8769496591745522">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8769496591745522" crossorigin="anonymous"></script>
 
-<!-- Toolzaro Core Stylesheet (Hosted on GitHub Pages / CDN) -->
-<!-- Primary URL (GitHub Pages): -->
-<link rel="stylesheet" crossorigin="anonymous" href="https://ToolNest.github.io/ToolNest/assets/index-CzH50FCL.css">
-<!-- Alternative jsDelivr CDN (If GitHub Pages is not yet enabled, you can use this):
-<link rel="stylesheet" crossorigin="anonymous" href="https://cdn.jsdelivr.net/gh/ToolNest/ToolNest@gh-pages/assets/index-CzH50FCL.css">
--->
-
-<!-- Blogger Full-Screen & Theme Reset CSS -->
-<style>
-  /* Reset Blogger margins and containers so Toolzaro occupies full screen */
-  html, body {
-    margin: 0 !important;
-    padding: 0 !important;
-    width: 100% !important;
-    min-height: 100vh !important;
-    background-color: #0b0f19 !important;
-    color: #f8fafc !important;
-  }
-  #root {
-    min-height: 100vh !important;
-    width: 100% !important;
-    display: flex !important;
-    flex-direction: column !important;
-  }
-  /* Hide typical default Blogger widgets/headers if embedded in standard template */
-  .post-title, .post-header, .post-footer, .blog-pager, .comments, #comments, .sidebar-wrapper, .navbar, .header-widget {
-    display: none !important;
-  }
-  .main-inner, .content-inner, .post-body, .post {
-    padding: 0 !important;
-    margin: 0 !important;
-    max-width: 100% !important;
-    width: 100% !important;
-  }
-</style>
+<!-- Toolzaro Primary Stylesheet (Ultra-Fast jsDelivr CDN) -->
+<link rel="stylesheet" crossorigin="anonymous" href="https://cdn.jsdelivr.net/gh/ToolNest/ToolNest@gh-pages/assets/index-EYA8knTk.css?v=muzrudo7">
 
 <!-- Instant Dark/Light Theme Bootstrap & Blogger Router Flag (Zero Flash) -->
 <script>
@@ -70,12 +37,37 @@
   })();
 </script>
 
-<!-- Toolzaro Root Mounting Container -->
-<div id="root"></div>
+<!-- Blogger Full-Screen & Theme Reset CSS -->
+<style>
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    min-height: 100vh !important;
+    background-color: #0b0f19 !important;
+    color: #f8fafc !important;
+  }
+  #root {
+    min-height: 100vh !important;
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+  /* Suppress default Blogger chrome when embedded */
+  .quickedit, .post-footer, .comments, .sidebar-wrapper, .blog-pager, .feed-links {
+    display: none !important;
+  }
+</style>
 
-<!-- Toolzaro Core JavaScript Bundle (Hosted on GitHub Pages / CDN) -->
-<!-- Primary URL (GitHub Pages): -->
-<script type="module" crossorigin="anonymous" src="https://ToolNest.github.io/ToolNest/assets/index-ETVP9Dbz.js"></script>
-<!-- Alternative jsDelivr CDN (If GitHub Pages is not yet enabled, you can use this):
-<script type="module" crossorigin="anonymous" src="https://cdn.jsdelivr.net/gh/ToolNest/ToolNest@gh-pages/assets/index-ETVP9Dbz.js"></script>
--->
+<!-- React Application Root Container -->
+<div id="root">
+  <!-- Minimalist Loading Screen during first-paint bundle download -->
+  <div style="min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background-color: #0b0f19; color: #94a3b8; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; gap: 16px;">
+    <div style="width: 48px; height: 48px; border: 3px solid rgba(139, 92, 246, 0.2); border-top-color: #8b5cf6; border-radius: 50%; animation: tz-spin 0.8s linear infinite;"></div>
+    <div style="font-size: 14px; font-weight: 600; letter-spacing: -0.01em; color: #e2e8f0;">Loading Toolzaro...</div>
+    <style>@keyframes tz-spin { to { transform: rotate(360deg); } }</style>
+  </div>
+</div>
+
+<!-- Toolzaro Primary JavaScript Bundle (Ultra-Fast jsDelivr CDN) -->
+<script type="module" crossorigin="anonymous" src="https://cdn.jsdelivr.net/gh/ToolNest/ToolNest@gh-pages/assets/index-jHquZTNq.js?v=muzrudo7"></script>
