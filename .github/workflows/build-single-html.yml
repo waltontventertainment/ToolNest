@@ -1,4 +1,4 @@
-name: 🚀 Build & Deploy (Blogger, GitHub Pages & Single HTML)
+name: "Build and Deploy for Blogger, GitHub Pages and Standalone"
 
 on:
   push:
@@ -14,7 +14,7 @@ on:
   workflow_dispatch:
     inputs:
       create_release:
-        description: 'Create a GitHub Release with assets?'
+        description: "Create a GitHub Release with assets?"
         required: false
         type: boolean
         default: false
@@ -30,19 +30,19 @@ permissions:
 
 jobs:
   build-and-deploy:
-    name: 📦 Build, Separate Assets & Deploy
+    name: "Build, Separate Assets and Deploy"
     runs-on: ubuntu-latest
 
     steps:
-      - name: 📥 Checkout Repository
+      - name: "Checkout Repository"
         uses: actions/checkout@v4
 
-      - name: 🟢 Setup Node.js (Active LTS 22)
+      - name: "Setup Node.js (Active LTS 22)"
         uses: actions/setup-node@v4
         with:
           node-version: 22
 
-      - name: 📦 Install Dependencies
+      - name: "Install Dependencies"
         run: |
           if [ -f "package-lock.json" ]; then
             echo "package-lock.json found. Installing..."
@@ -52,11 +52,11 @@ jobs:
             npm install --legacy-peer-deps
           fi
 
-      - name: 🔍 Typecheck & Lint
+      - name: "Typecheck and Lint"
         run: |
           npm run lint
 
-      - name: ⚡ Step 1: Build Standard Separated Assets (HTML, CSS, JS)
+      - name: "Step 1 - Build Standard Separated Assets (HTML, CSS, JS)"
         run: |
           npm run build:blogger
         env:
@@ -65,7 +65,7 @@ jobs:
           GITHUB_REPOSITORY: ${{ github.repository }}
           GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
 
-      - name: ⚡ Step 2: Build Standalone Single HTML (Optional Offline Backup)
+      - name: "Step 2 - Build Standalone Single HTML (Optional Offline Backup)"
         run: |
           BUILD_SINGLEFILE=true VITE_ROUTER_MODE=hash npx vite build --outDir dist-single
           mkdir -p release-artifact
@@ -74,7 +74,7 @@ jobs:
           fi
         continue-on-error: true
 
-      - name: 🌐 Step 3: Deploy Dist Assets to GitHub Pages Branch (gh-pages)
+      - name: "Step 3 - Deploy Dist Assets to GitHub Pages Branch (gh-pages)"
         if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
         uses: peaceiris/actions-gh-pages@v4
         with:
@@ -84,7 +84,7 @@ jobs:
           force_orphan: false
           commit_message: "Deploy separated website assets to GitHub Pages [skip ci]"
 
-      - name: 📊 Step 4: Generate Workflow Summary & Links
+      - name: "Step 4 - Generate Workflow Summary and Links"
         run: |
           CSS_FILE=$(find dist/assets -name "*.css" -exec basename {} \; | head -n 1)
           JS_FILE=$(find dist/assets -name "*.js" -exec basename {} \; | head -n 1)
@@ -97,14 +97,14 @@ jobs:
           JSDELIVR_CSS="https://cdn.jsdelivr.net/gh/${{ github.repository }}@gh-pages/assets/${CSS_FILE}"
           JSDELIVR_JS="https://cdn.jsdelivr.net/gh/${{ github.repository }}@gh-pages/assets/${JS_FILE}"
 
-          echo "## 🎉 Toolzaro Build & Blogger Deployment Ready!" >> $GITHUB_STEP_SUMMARY
+          echo "## Toolzaro Build & Blogger Deployment Ready!" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### 📏 File Sizes (Assets Separated):" >> $GITHUB_STEP_SUMMARY
+          echo "### File Sizes (Assets Separated):" >> $GITHUB_STEP_SUMMARY
           echo "- **Blogger HTML Size:** \`$HTML_SIZE\` *(Ultra-fast, fits Blogger limit easily!)*" >> $GITHUB_STEP_SUMMARY
           echo "- **CSS Bundle:** \`$CSS_FILE\` (\`$CSS_SIZE\`)" >> $GITHUB_STEP_SUMMARY
           echo "- **JS Bundle:** \`$JS_FILE\` (\`$JS_SIZE\`)" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### 🔗 Live Hosted Asset Links:" >> $GITHUB_STEP_SUMMARY
+          echo "### Live Hosted Asset Links:" >> $GITHUB_STEP_SUMMARY
           echo "#### Option 1: GitHub Pages (Recommended)" >> $GITHUB_STEP_SUMMARY
           echo "- **CSS:** \`$GHPAGES_CSS\`" >> $GITHUB_STEP_SUMMARY
           echo "- **JS:** \`$GHPAGES_JS\`" >> $GITHUB_STEP_SUMMARY
@@ -113,26 +113,26 @@ jobs:
           echo "- **CSS:** \`$JSDELIVR_CSS\`" >> $GITHUB_STEP_SUMMARY
           echo "- **JS:** \`$JSDELIVR_JS\`" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### 📝 How to Host on Blogger:" >> $GITHUB_STEP_SUMMARY
+          echo "### How to Host on Blogger:" >> $GITHUB_STEP_SUMMARY
           echo "1. **Full Website:** Copy \`blogger-deploy/blogger-theme.xml\` -> Blogger Dashboard -> **Theme** -> **Edit HTML** -> Paste & Save." >> $GITHUB_STEP_SUMMARY
           echo "2. **Single Page:** Copy \`blogger-deploy/blogger-embed.html\` -> Blogger Dashboard -> **Pages** -> **New Page** -> Switch to **HTML view** -> Paste & Publish." >> $GITHUB_STEP_SUMMARY
           echo "3. In GitHub repo settings, go to **Settings** -> **Pages** -> Source: Deploy from branch **gh-pages** (/root)." >> $GITHUB_STEP_SUMMARY
 
-      - name: 📤 Step 5: Upload Blogger Ready Files Artifact (~3.5 KB)
+      - name: "Step 5 - Upload Blogger Ready Files Artifact"
         uses: actions/upload-artifact@v4
         with:
           name: toolzaro-blogger-ready-files
           path: blogger-deploy/
           retention-days: 30
 
-      - name: 📤 Step 6: Upload Full Separated Dist Package
+      - name: "Step 6 - Upload Full Separated Dist Package"
         uses: actions/upload-artifact@v4
         with:
           name: toolzaro-full-separated-dist
           path: dist/
           retention-days: 30
 
-      - name: 📤 Step 7: Upload Standalone Single HTML (If Generated)
+      - name: "Step 7 - Upload Standalone Single HTML (If Generated)"
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -140,7 +140,7 @@ jobs:
           path: release-artifact/
           retention-days: 30
 
-      - name: 🏷️ Step 8: Create GitHub Release (On Tag or Manual Dispatch)
+      - name: "Step 8 - Create GitHub Release (On Tag or Manual Dispatch)"
         if: startsWith(github.ref, 'refs/tags/v') || github.event.inputs.create_release == 'true'
         uses: softprops/action-gh-release@v2
         with:
