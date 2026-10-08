@@ -1,0 +1,108 @@
+name: Build Single File HTML & Deploy
+
+on:
+  push:
+    branches:
+      - main
+      - master
+    tags:
+      - 'v*.*.*'
+  pull_request:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+    inputs:
+      create_release:
+        description: 'Create a GitHub Release with single HTML file?'
+        required: false
+        type: boolean
+        default: false
+
+# Concurrency control: cancel ongoing runs for the same branch/PR
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    name: 🚀 Build Single HTML & Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: 📦 Install Dependencies
+        run: |
+          npm ci || npm install --legacy-peer-deps
+
+      - name: 🔍 Typecheck Code
+        run: |
+          npm run lint
+
+      - name: ⚡ Build Single-File HTML Website
+        run: |
+          npm run build:single
+        env:
+          BUILD_SINGLEFILE: 'true'
+          NODE_ENV: production
+
+      - name: 📊 Verify and Inspect Single HTML Output
+        run: |
+          echo "### 📦 Build Summary" >> $GITHUB_STEP_SUMMARY
+          if [ -f "dist/index.html" ]; then
+            FILESIZE=$(ls -lh dist/index.html | awk '{print $5}')
+            echo "✅ **Single HTML File Generated:** \`dist/index.html\`" >> $GITHUB_STEP_SUMMARY
+            echo "📏 **File Size:** $FILESIZE" >> $GITHUB_STEP_SUMMARY
+            echo "✨ All JavaScript, CSS, and SVG assets are bundled directly inside this one standalone HTML file!" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ Error: dist/index.html was not found!" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+
+      - name: 📁 Prepare Artifact Directory
+        run: |
+          mkdir -p release-artifact
+          cp dist/index.html release-artifact/index.html
+          cp dist/index.html release-artifact/toolzaro-single.html
+
+      - name: 📤 Upload Single HTML as Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: toolzaro-single-file-html
+          path: release-artifact/
+          retention-days: 30
+
+      - name: 📤 Upload Full Dist Package
+        uses: actions/upload-artifact@v4
+        with:
+          name: toolzaro-full-dist
+          path: dist/
+          retention-days: 30
+
+      - name: 🏷️ Create GitHub Release (Tags or Manual Trigger)
+        if: startsWith(github.ref, 'refs/tags/v') || github.event.inputs.create_release == 'true'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            release-artifact/toolzaro-single.html
+            release-artifact/index.html
+          tag_name: ${{ github.ref_name || 'latest-release' }}
+          name: Release ${{ github.ref_name || 'Latest Single HTML' }}
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
