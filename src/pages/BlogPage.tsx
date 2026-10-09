@@ -26,6 +26,7 @@ import {
   getLastSyncTime 
 } from '../lib/bloggerSync';
 import { getBloggerHeroSettings, applyBloggerPostOverrides } from '../lib/bloggerLayoutAdmin';
+import { getBlogPostUrl } from '../lib/appUrls';
 import { tools } from '../lib/registry';
 import { Seo } from '../components/Seo';
 import { AdSlot } from '../components/AdSlot';
@@ -239,7 +240,7 @@ export const BlogPage: React.FC = () => {
               {filteredPosts.slice(0, visiblePostsCount).map((post) => (
                 <Link
                   key={post.id}
-                  to={`/blog/${post.slug}`}
+                  to={getBlogPostUrl(post.slug, post.url)}
                   className="group flex flex-col justify-between overflow-hidden rounded-2xl bg-card border border-border hover:border-primary/50 transition-all duration-300 shadow-2xs hover:shadow-lg cursor-pointer text-left block"
                 >
                   <div>

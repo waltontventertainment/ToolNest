@@ -1,13 +1,15 @@
 import React from 'react';
-import { useParams, Navigate, Link } from 'react-router-dom';
+import { useParams, useSearchParams, Navigate, Link } from 'react-router-dom';
 import { tools, categories } from '../lib/registry';
 import { ToolCard } from '../components/ToolCard';
 import { Seo } from '../components/Seo';
 import { AdSlot } from '../components/AdSlot';
 import { BreadcrumbNavigation } from '../components/BreadcrumbNavigation';
 
-export const CategoryPage: React.FC = () => {
-  const { slug } = useParams();
+export const CategoryPage: React.FC<{ forcedSlug?: string }> = ({ forcedSlug }) => {
+  const { slug: routeSlug } = useParams();
+  const [searchParams] = useSearchParams();
+  const slug = forcedSlug || routeSlug || searchParams.get('category') || '';
   
   const [displayCount, setDisplayCount] = React.useState(12);
   const [incrementCount, setIncrementCount] = React.useState(12);

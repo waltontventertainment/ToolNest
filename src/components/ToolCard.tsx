@@ -4,6 +4,7 @@ import { Star, ArrowUpRight } from 'lucide-react';
 import { ToolDefinition } from '../lib/types';
 import { cn } from '../lib/utils';
 import { useFavorites } from '../context/FavoritesContext';
+import { getToolUrl } from '../lib/appUrls';
 
 export const ToolCard: React.FC<{ tool: ToolDefinition }> = React.memo(({ tool }) => {
   const { isFavorite: checkFavorite, toggleFavorite: authToggleFavorite } = useFavorites();
@@ -20,7 +21,7 @@ export const ToolCard: React.FC<{ tool: ToolDefinition }> = React.memo(({ tool }
 
   return (
     <Link 
-      to={`/tools/${tool.slug}`}
+      to={getToolUrl(tool.slug)}
       className="group relative flex flex-col p-4 sm:p-5 bg-card hover:bg-card border border-border/80 hover:border-primary/50 rounded-2xl md:rounded-3xl shadow-xs hover:shadow-xl transition-all duration-200 no-underline h-full hover:-translate-y-1 active:scale-[0.98] overflow-hidden"
     >
       {/* Top ambient highlight line on hover */}

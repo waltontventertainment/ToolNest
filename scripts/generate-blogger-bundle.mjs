@@ -50,7 +50,19 @@ const cdnJsUrl = `https://cdn.jsdelivr.net/gh/${repoOwner}/${repoName}@gh-pages/
 const ghPagesCssUrl = `https://${repoOwner}.github.io/${repoName}/assets/${mainCssFile}`;
 const ghPagesJsUrl = `https://${repoOwner}.github.io/${repoName}/assets/${mainJsFile}`;
 
+// Automatically detect live tool count from src/lib/registry.ts
+let liveToolCount = 156;
+const registryPath = path.resolve('src/lib/registry.ts');
+if (fs.existsSync(registryPath)) {
+  const regContent = fs.readFileSync(registryPath, 'utf-8');
+  const toolMatches = regContent.match(/\{\s*slug:\s*["\x27]([^"\x27]+)["\x27]/g);
+  if (toolMatches && toolMatches.length > 0) {
+    liveToolCount = toolMatches.length;
+  }
+}
+
 console.log(`Repository: ${repoOwner}/${repoName}`);
+console.log(`Live Tool Count: ${liveToolCount}`);
 console.log(`Build Cache-Buster: ${cacheBuster}`);
 console.log(`Primary CDN CSS: ${cdnCssUrl}`);
 console.log(`Primary CDN JS:  ${cdnJsUrl}`);
@@ -67,7 +79,7 @@ const bloggerEmbedHtml = `<!-- =================================================
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Toolzaro - Premium Online Utility Suite</title>
-<meta name="description" content="Premium Online Utility Suite - 160+ browser-based tools for developers, designers and creators. Fast, private, and 100% client-side." />
+<meta name="description" content="Premium Online Utility Suite - ${liveToolCount} browser-based tools for developers, designers and creators. Fast, private, and 100% client-side." />
 
 <!-- Google Fonts Preconnect & Stylesheets -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -143,9 +155,9 @@ const bloggerThemeXml = `<?xml version="1.0" encoding="UTF-8" ?>
   <meta charset='UTF-8'/>
   <meta content='width=device-width, initial-scale=1.0' name='viewport'/>
   <title><data:blog.pageTitle/></title>
-  <meta content='Toolzaro - Premium Online Utility Suite. 160+ browser-based tools for developers, designers and creators.' name='description'/>
+  <meta content='Toolzaro - Premium Online Utility Suite. ${liveToolCount} browser-based tools for developers, designers and creators.' name='description'/>
   <meta content='Toolzaro - Premium Online Utility Suite' property='og:title'/>
-  <meta content='160+ browser-based tools for developers, designers and creators.' property='og:description'/>
+  <meta content='${liveToolCount} browser-based tools for developers, designers and creators.' property='og:description'/>
 
   <!-- Google Fonts -->
   <link href='https://fonts.googleapis.com' rel='preconnect'/>
@@ -191,25 +203,18 @@ const bloggerThemeXml = `<?xml version="1.0" encoding="UTF-8" ?>
     flex-direction: column !important;
   }
 
-  /* Blogger Dashboard Layout Editor Styling */
-  body.layout-mode {
-    background: #1e293b !important;
-    padding: 20px !important;
-    color: #f1f5f9 !important;
+  /* Live Frontend vs Blogger Layout Mode Styles */
+  body:not(#layout) .blogger-sections-container {
+    display: none !important;
   }
-  body.layout-mode .blogger-layout-section {
-    background: #0f172a;
-    border: 2px dashed #475569;
-    border-radius: 8px;
-    margin-bottom: 16px;
-    padding: 16px;
+  body#layout #root {
+    display: none !important;
   }
-  body.layout-mode .blogger-layout-section h3 {
-    margin: 0 0 10px 0;
-    font-size: 14px;
-    color: #a855f7;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+  body#layout .blogger-sections-container {
+    display: block !important;
+    max-width: 1000px !important;
+    margin: 20px auto !important;
+    padding: 10px !important;
   }
 
   /* Hide raw quickedit marks in production */
@@ -218,14 +223,69 @@ const bloggerThemeXml = `<?xml version="1.0" encoding="UTF-8" ?>
   }
   ]]></b:skin>
 
+  <!-- Official Blogger Layout Editor Template Skin -->
+  <b:template-skin><![CDATA[
+    body#layout {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+      background: #f1f5f9 !important;
+      color: #0f172a !important;
+      padding: 24px !important;
+    }
+    body#layout #root {
+      display: none !important;
+    }
+    body#layout .blogger-sections-container {
+      display: block !important;
+      max-width: 1020px !important;
+      margin: 0 auto !important;
+    }
+    body#layout div.section {
+      margin-bottom: 24px !important;
+      padding: 18px !important;
+      background: #ffffff !important;
+      border: 2px dashed #94a3b8 !important;
+      border-radius: 10px !important;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06) !important;
+    }
+    body#layout div.section h4 {
+      margin: 0 0 12px 0 !important;
+      font-size: 14px !important;
+      font-weight: 700 !important;
+      color: #7c3aed !important;
+      text-transform: uppercase !important;
+      letter-spacing: 0.05em !important;
+    }
+    body#layout div.widget {
+      background: #f8fafc !important;
+      border: 1px solid #cbd5e1 !important;
+      border-radius: 8px !important;
+      margin: 10px 0 !important;
+      padding: 14px !important;
+    }
+    body#layout .widget .edit, body#layout .widget .delete {
+      color: #2563eb !important;
+      font-weight: 600 !important;
+    }
+  ]]></b:template-skin>
+
   <!-- Toolzaro Primary Stylesheet from jsDelivr CDN -->
   <link crossorigin='anonymous' href='${cdnCssUrl}' rel='stylesheet'/>
 
-  <!-- Instant Theme Bootstrap & Blogger Router Flag -->
+  <link expr:href='data:blog.canonicalUrl' rel='canonical'/>
+
+  <!-- Instant Theme Bootstrap & Blogger Clean Router Setup -->
   <script>
-    window.__USE_HASH_ROUTER__ = true;
+    window.__USE_HASH_ROUTER__ = false;
+    window.__IS_BLOGGER__ = true;
     (function() {
       try {
+        // Instant hash cleanup if accessed via legacy hash links (converts /#/path -> /path)
+        if (window.location.hash &amp;&amp; window.location.hash.indexOf('#/') === 0) {
+          var clean = window.location.hash.substring(2);
+          var target = clean ? '/' + clean : '/';
+          window.history.replaceState(null, '', target);
+        }
+
         var saved = localStorage.getItem('toolnest-theme');
         var isDark = saved === '"dark"' || saved === 'dark' || (!saved &amp;&amp; window.matchMedia('(prefers-color-scheme: dark)').matches);
         if (isDark) {
@@ -241,7 +301,7 @@ const bloggerThemeXml = `<?xml version="1.0" encoding="UTF-8" ?>
 <body>
   <!-- Blogger Layout Sections for Dashboard Widget Management -->
   <!-- In Blogger -> Layout, you can add, configure, edit and rearrange all widgets below -->
-  <div class='blogger-sections-container' style='display:none;'>
+  <div class='blogger-sections-container'>
     <!-- Header Section -->
     <b:section class='header' id='header' maxwidgets='2' name='Header' showaddelement='yes'>
       <b:widget id='Header1' locked='false' title='Toolzaro Header' type='Header'>

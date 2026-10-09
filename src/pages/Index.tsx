@@ -11,6 +11,7 @@ import { BlogPost, BUILTIN_BLOG_POSTS, getMergedBlogPosts } from '../lib/blogDat
 import { DailyTechDigest } from '../components/DailyTechDigest';
 import { TypewriterHeading } from '../components/TypewriterHeading';
 import { HeroShowcase } from '../components/HeroShowcase';
+import { getBlogUrl, getBlogPostUrl } from '../lib/appUrls';
 
 import heroImg from '../assets/images/hero_visual_premium_1791369917245.jpg';
 import emptyImg from '../assets/images/empty_state_1785690459297.jpg';
@@ -129,7 +130,7 @@ export const Index: React.FC = () => {
     <>
       <Seo 
         title={showFavoritesOnly ? "Saved Bookmarked Tools - Toolzaro" : "Toolzaro - Professional Online Developer & Utility Tools"} 
-        description={showFavoritesOnly ? "Your personal collection of bookmarked developer and utility tools on Toolzaro." : "A complete suite of 35+ fast, browser-based tools including color tools, image resizers, QR generators, image compressors, and developer utilities."}
+        description={showFavoritesOnly ? "Your personal collection of bookmarked developer and utility tools on Toolzaro." : `A complete suite of ${tools.length} fast, browser-based tools including color tools, image resizers, QR generators, image compressors, and developer utilities.`}
         jsonLd={{
           "@context": "https://schema.org",
           "@type": "WebSite",
@@ -567,7 +568,7 @@ export const Index: React.FC = () => {
 
             <div className="flex items-center gap-2.5 self-start md:self-auto">
               <Link
-                to="/blog"
+                to={getBlogUrl()}
                 className="btn-signature-primary px-4 py-2 text-xs font-bold gap-2 cursor-pointer"
               >
                 <span>Explore All Articles</span>
@@ -581,7 +582,7 @@ export const Index: React.FC = () => {
             {allBlogPosts.slice(0, visibleBlogCount).map((post) => (
               <Link
                 key={post.id}
-                to={`/blog/${post.slug}`}
+                to={getBlogPostUrl(post.slug, post.url)}
                 className="group flex flex-col justify-between rounded-3xl bg-card border border-border/80 hover:border-primary/50 transition-all duration-300 p-5 shadow-xs hover:shadow-xl hover:-translate-y-1.5 cursor-pointer no-underline select-none"
               >
                 <div className="space-y-3">
@@ -660,7 +661,7 @@ export const Index: React.FC = () => {
               )}
 
               <Link
-                to="/blog"
+                to={getBlogUrl()}
                 className="btn-signature-header px-4 py-2 text-xs font-bold gap-1.5 text-foreground cursor-pointer shrink-0"
               >
                 <span>Blog Hub</span>

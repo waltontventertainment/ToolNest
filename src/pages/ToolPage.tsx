@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useParams, Link, Navigate } from 'react-router-dom';
+import { useParams, useSearchParams, Link, Navigate } from 'react-router-dom';
 import { 
   ChevronRight, 
   HelpCircle, 
@@ -24,8 +24,10 @@ import { BreadcrumbNavigation } from '../components/BreadcrumbNavigation';
 import { useFavorites } from '../context/FavoritesContext';
 import { toast } from 'sonner';
 
-export const ToolPage: React.FC = () => {
-  const { slug } = useParams();
+export const ToolPage: React.FC<{ forcedSlug?: string }> = ({ forcedSlug }) => {
+  const { slug: routeSlug } = useParams();
+  const [searchParams] = useSearchParams();
+  const slug = forcedSlug || routeSlug || searchParams.get('tool') || '';
   const tool = tools.find(t => t.slug === slug);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [copiedLink, setCopiedLink] = useState(false);

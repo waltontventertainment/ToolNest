@@ -147,7 +147,8 @@ export function getNativeBloggerXmlPosts(): BlogPost[] {
       coverImage,
       tags,
       source: 'blogger' as const,
-      bloggerUrl: url
+      bloggerUrl: url,
+      url: url
     };
   });
 }

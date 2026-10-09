@@ -1,6 +1,6 @@
 {
   "name": "Toolzaro",
-  "description": "Premium Online Utility Suite - 160+ browser-based tools for developers, designers and creators.",
+  "description": "Premium Online Utility Suite - 156 browser-based tools for developers, designers and creators.",
   "requestFramePermissions": ["camera"],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

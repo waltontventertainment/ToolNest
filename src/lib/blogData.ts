@@ -21,6 +21,7 @@ export interface BlogPost {
   relatedToolSlugs?: string[];
   source?: 'builtin' | 'blogger';
   bloggerUrl?: string;
+  url?: string;
 }
 
 export const BUILTIN_BLOG_POSTS: BlogPost[] = [

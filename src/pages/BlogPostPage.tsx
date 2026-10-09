@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, useSearchParams, Link, useNavigate } from 'react-router-dom';
 import { 
   ArrowLeft, 
   Calendar, 
@@ -11,7 +11,7 @@ import {
   Wrench, 
   ArrowRight, 
   BookOpen, 
-  Sparkles,
+  Sparkles, 
   ExternalLink,
   ChevronLeft
 } from 'lucide-react';
@@ -23,10 +23,14 @@ import { BreadcrumbNavigation } from '../components/BreadcrumbNavigation';
 import { AdSlot } from '../components/AdSlot';
 import { MarkdownRenderer } from '../components/MarkdownRenderer';
 import { cleanPostContentHtml } from '../lib/bloggerContentCleaner';
+import { extractSlugFromBloggerPath, getBlogPostUrl, getToolUrl } from '../lib/appUrls';
 import { toast } from 'sonner';
 
-export const BlogPostPage: React.FC = () => {
-  const { slug } = useParams<{ slug: string }>();
+export const BlogPostPage: React.FC<{ forcedSlug?: string }> = ({ forcedSlug }) => {
+  const { slug: routeSlug } = useParams<{ slug: string }>();
+  const [searchParams] = useSearchParams();
+  const pathSlug = typeof window !== 'undefined' ? extractSlugFromBloggerPath(window.location.pathname) : null;
+  const slug = forcedSlug || routeSlug || searchParams.get('blog') || pathSlug || '';
   const navigate = useNavigate();
   const [post, setPost] = useState<BlogPost | null>(null);
   const [allPosts, setAllPosts] = useState<BlogPost[]>(BUILTIN_BLOG_POSTS);
@@ -53,7 +57,8 @@ export const BlogPostPage: React.FC = () => {
   };
 
   const handleCopyLink = () => {
-    navigator.clipboard.writeText(window.location.href);
+    const copyTarget = post?.url || window.location.href.replace(/#.*$/, '');
+    navigator.clipboard.writeText(copyTarget);
     setCopied(true);
     toast.success('Article link copied to clipboard!');
     setTimeout(() => setCopied(false), 2000);
@@ -99,7 +104,7 @@ export const BlogPostPage: React.FC = () => {
       <Seo
         title={`${post.title} - Toolzaro Pulse`}
         description={post.excerpt}
-        url={`https://toolnest.com/blog/${post.slug}`}
+        url={post.url || post.bloggerUrl || (typeof window !== 'undefined' ? window.location.href.replace(/#.*$/, '') : undefined)}
         image={post.coverImage}
         type="article"
         jsonLd={{
@@ -271,7 +276,7 @@ export const BlogPostPage: React.FC = () => {
               return (
                 <Link
                   key={tool.slug}
-                  to={`/tools/${tool.slug}`}
+                  to={getToolUrl(tool.slug)}
                   className="flex items-center justify-between p-3.5 rounded-2xl bg-card border border-border hover:border-primary/50 transition-all group"
                 >
                   <div className="flex items-center gap-3">
@@ -299,7 +304,7 @@ export const BlogPostPage: React.FC = () => {
       <nav className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-6 border-t border-border">
         {prevPost ? (
           <Link
-            to={`/blog/${prevPost.slug}`}
+            to={getBlogPostUrl(prevPost.slug, prevPost.url || prevPost.bloggerUrl)}
             className="p-4 rounded-2xl bg-card border border-border hover:border-primary/40 transition-all flex flex-col justify-between group"
           >
             <span className="text-[11px] font-bold text-muted-foreground flex items-center gap-1 mb-1">
@@ -313,7 +318,7 @@ export const BlogPostPage: React.FC = () => {
 
         {nextPost ? (
           <Link
-            to={`/blog/${nextPost.slug}`}
+            to={getBlogPostUrl(nextPost.slug, nextPost.url || nextPost.bloggerUrl)}
             className="p-4 rounded-2xl bg-card border border-border hover:border-primary/40 transition-all flex flex-col justify-between items-end text-right group md:col-start-2"
           >
             <span className="text-[11px] font-bold text-muted-foreground flex items-center gap-1 mb-1">

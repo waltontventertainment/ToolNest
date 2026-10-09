@@ -10,6 +10,7 @@ import { useGoogleDrive } from '../context/GoogleDriveContext';
 import { GoogleDriveModal } from './GoogleDriveModal';
 import { FeedbackModal } from './FeedbackModal';
 import { getBloggerAnnouncement } from '../lib/bloggerLayoutAdmin';
+import { getBlogUrl, getCategoryUrl, getStaticPageUrl } from '../lib/appUrls';
 
 export const SiteLayout: React.FC = () => {
   const [theme, setTheme] = useLocalStorage<'light' | 'dark'>('toolnest-theme', 'light');
@@ -111,9 +112,9 @@ export const SiteLayout: React.FC = () => {
           <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
             {/* Blog Hub Link */}
             <Link
-              to="/blog"
+              to={getBlogUrl()}
               className={`btn-signature-header px-2.5 sm:px-3.5 gap-1.5 text-xs font-bold ${
-                pathname.startsWith('/blog')
+                pathname.startsWith('/blog') || (typeof window !== 'undefined' && window.location.search.includes('page=blog'))
                   ? 'bg-primary/15 text-primary border-primary/40 shadow-xs'
                   : 'text-muted-foreground hover:text-foreground'
               }`}
@@ -239,7 +240,7 @@ export const SiteLayout: React.FC = () => {
                 const slug = cat.toLowerCase().replace(/ & /g, '-').replace(/ /g, '-');
                 return (
                   <li key={cat}>
-                    <Link to={`/category/${slug}`} className="hover:text-primary transition-colors flex items-center gap-1.5">
+                    <Link to={getCategoryUrl(slug)} className="hover:text-primary transition-colors flex items-center gap-1.5">
                       <ArrowRight className="w-3 h-3 text-muted-foreground/50" /> {cat}
                     </Link>
                   </li>
@@ -255,7 +256,7 @@ export const SiteLayout: React.FC = () => {
                 const slug = cat.toLowerCase().replace(/ & /g, '-').replace(/ /g, '-');
                 return (
                   <li key={cat}>
-                    <Link to={`/category/${slug}`} className="hover:text-primary transition-colors flex items-center gap-1.5">
+                    <Link to={getCategoryUrl(slug)} className="hover:text-primary transition-colors flex items-center gap-1.5">
                       <ArrowRight className="w-3 h-3 text-muted-foreground/50" /> {cat}
                     </Link>
                   </li>
@@ -267,12 +268,12 @@ export const SiteLayout: React.FC = () => {
           <div>
             <h4 className="font-bold text-xs uppercase tracking-wider text-muted-foreground mb-3">Resources & Guides</h4>
             <ul className="space-y-2 text-xs font-medium text-muted-foreground">
-              <li><Link to="/blog" className="hover:text-primary transition-colors flex items-center gap-1.5"><BookOpen className="w-3.5 h-3.5 text-primary" /> Blog & Insights</Link></li>
-              <li><Link to="/about" className="hover:text-primary transition-colors">About Toolzaro</Link></li>
-              <li><Link to="/contact" className="hover:text-primary transition-colors">Contact Support</Link></li>
-              <li><Link to="/privacy-policy" className="hover:text-primary transition-colors">Privacy Policy</Link></li>
-              <li><Link to="/terms" className="hover:text-primary transition-colors">Terms of Service</Link></li>
-              <li><Link to="/disclaimer" className="hover:text-primary transition-colors">Disclaimer</Link></li>
+              <li><Link to={getBlogUrl()} className="hover:text-primary transition-colors flex items-center gap-1.5"><BookOpen className="w-3.5 h-3.5 text-primary" /> Blog & Insights</Link></li>
+              <li><Link to={getStaticPageUrl('about')} className="hover:text-primary transition-colors">About Toolzaro</Link></li>
+              <li><Link to={getStaticPageUrl('contact')} className="hover:text-primary transition-colors">Contact Support</Link></li>
+              <li><Link to={getStaticPageUrl('privacy-policy')} className="hover:text-primary transition-colors">Privacy Policy</Link></li>
+              <li><Link to={getStaticPageUrl('terms')} className="hover:text-primary transition-colors">Terms of Service</Link></li>
+              <li><Link to={getStaticPageUrl('disclaimer')} className="hover:text-primary transition-colors">Disclaimer</Link></li>
               <li>
                 <button
                   type="button"
