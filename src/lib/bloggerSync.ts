@@ -116,7 +116,16 @@ export function getNativeBloggerXmlPosts(): BlogPost[] {
     const wordCount = content.replace(/<[^>]*>/g, ' ').split(/\s+/).filter(Boolean).length;
     const readTime = Math.max(2, Math.ceil(wordCount / 200));
     const id = p.id ? `blogger-${p.id}` : `blogger-native-${index}`;
-    const slug = slugify(title) || id;
+    let slug = '';
+    if (url) {
+      const match = url.match(/\/\d{4}\/\d{2}\/([^/]+)\.html$/i) || url.match(/\/p\/([^/]+)\.html$/i);
+      if (match && match[1]) {
+        slug = match[1];
+      }
+    }
+    if (!slug) {
+      slug = slugify(title) || id;
+    }
 
     let coverImage = p.thumbnail || '';
     if (!coverImage && content) {

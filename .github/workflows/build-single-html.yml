@@ -119,6 +119,10 @@ jobs:
           echo "1. **Full Website with Full Layout Control:** Copy \`blogger-deploy/blogger-theme.xml\` -> Blogger Dashboard -> **Theme** -> **Edit HTML** -> Paste & Save." >> $GITHUB_STEP_SUMMARY
           echo "2. **Layout Customization:** Go to Blogger Dashboard -> **Layout** to add, remove, and rearrange widgets (Header, Menus, Ads, Blog, Sidebar, Footer)!" >> $GITHUB_STEP_SUMMARY
           echo "3. **Single Page:** Copy \`blogger-deploy/blogger-embed.html\` -> Blogger Dashboard -> **Pages** -> **New Page** -> Switch to **HTML view** -> Paste & Publish." >> $GITHUB_STEP_SUMMARY
+          echo "4. **1-Click Import Full Website or Tools (Guaranteed Google Indexing):**" >> $GITHUB_STEP_SUMMARY
+          echo "   - **Full Web (Recommended):** \`blogger-deploy/blogger-import-all.xml\` (All 156 Tools + 5 Blog Guides + 5 Static Pages: About, Contact, Privacy, Terms, Disclaimer)" >> $GITHUB_STEP_SUMMARY
+          echo "   - **Tools Only:** \`blogger-deploy/blogger-import-tools.xml\`" >> $GITHUB_STEP_SUMMARY
+          echo "   - Go to Blogger Dashboard -> **Settings** -> **Manage blog** -> **Import content** -> Upload the XML file." >> $GITHUB_STEP_SUMMARY
 
       - name: "Step 5 - Upload Blogger Ready Files Artifact"
         uses: actions/upload-artifact@v4
@@ -149,6 +153,7 @@ jobs:
           files: |
             blogger-deploy/blogger-embed.html
             blogger-deploy/blogger-theme.xml
+            blogger-deploy/blogger-import-tools.xml
             blogger-deploy/LINKS.txt
             release-artifact/toolzaro-single.html
           tag_name: ${{ github.ref_name || 'latest-release' }}

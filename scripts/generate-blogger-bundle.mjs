@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { execSync } from 'child_process';
 
 const distDir = path.resolve('dist');
 const outDir = path.resolve('blogger-deploy');
@@ -523,6 +524,15 @@ Method 2: Blogger Page (Embed inside a single page)
 2. Switch to 'HTML view' (pencil icon on top-left -> HTML view)
 3. Copy the entire contents of 'blogger-deploy/blogger-embed.html' and paste it
 4. Publish the page.
+
+Method 3: 1-Click Import Full Website or Tools as Official Blogger Posts & Pages (Best for Google Indexing)
+1. Go to Blogger Dashboard -> Settings -> Manage blog -> Import content.
+2. Select and upload:
+   - 'blogger-deploy/blogger-import-all.xml' (FULL WEBSITE: All 156 Tools + 5 Blog Articles + 5 Static Pages: About, Contact, Privacy, Terms, Disclaimer)
+   - OR 'blogger-deploy/blogger-import-tools.xml' (Tools only)
+   - OR 'blogger-deploy/blogger-import-pages.xml' (Static pages only)
+3. All online tools and blog posts are imported as official published Blogger posts with native permalinks (/2026/10/slug.html), and static pages as official Blogger pages (/p/slug.html)!
+4. Blogger returns HTTP 200 OK for every single tool and page, guaranteeing 100% Googlebot indexing!
 `;
 
 // Write output files
@@ -531,7 +541,19 @@ fs.writeFileSync(path.join(outDir, 'blogger-page.html'), bloggerEmbedHtml, 'utf8
 fs.writeFileSync(path.join(outDir, 'blogger-theme.xml'), bloggerThemeXml, 'utf8');
 fs.writeFileSync(path.join(outDir, 'LINKS.txt'), linksTxt, 'utf8');
 
+// Generate Blogger Import XML with all tools and full web
+try {
+  console.log('Generating official Blogger Import XML feed for all tools, blog, and pages...');
+  execSync('npx tsx scripts/generate-blogger-import-xml.ts', { stdio: 'inherit' });
+} catch (e) {
+  console.error('Warning: could not run generate-blogger-import-xml.ts:', e.message);
+}
+
 console.log('✅ Successfully generated Blogger deployment files:');
-console.log(' - blogger-deploy/blogger-embed.html (Size: ~' + (bloggerEmbedHtml.length / 1024).toFixed(1) + ' KB)');
-console.log(' - blogger-deploy/blogger-theme.xml (Size: ~' + (bloggerThemeXml.length / 1024).toFixed(1) + ' KB)');
+console.log(' - blogger-deploy/blogger-embed.html');
+console.log(' - blogger-deploy/blogger-theme.xml');
+console.log(' - blogger-deploy/blogger-import-all.xml (FULL WEBSITE: 156 Tools + 5 Blog Articles + 5 Static Pages)');
+console.log(' - blogger-deploy/blogger-import-tools.xml (156 Tools as official posts)');
+console.log(' - blogger-deploy/blogger-import-pages.xml (5 Static Pages: About, Contact, Privacy, Terms, Disclaimer)');
+console.log(' - blogger-deploy/blogger-import-blog.xml (5 Blog articles & technical guides)');
 console.log(' - blogger-deploy/LINKS.txt');

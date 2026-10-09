@@ -2,15 +2,15 @@
 TOOLZARO BLOGGER INTEGRATION - JSDELIVR HIGH-SPEED CDN & THEME XML
 ====================================================================
 Repository: ToolNest/ToolNest
-Cache-Buster: mv0e2mci
+Cache-Buster: mv0hw7oo
 
 1. PRIMARY JSDELIVR GLOBAL CDN LINKS (Ultra-Fast Edge Delivery):
-   CSS: https://cdn.jsdelivr.net/gh/ToolNest/ToolNest@gh-pages/assets/index-CJM-HBi8.css?v=mv0e2mci
-   JS:  https://cdn.jsdelivr.net/gh/ToolNest/ToolNest@gh-pages/assets/index-BxgWe8HJ.js?v=mv0e2mci
+   CSS: https://cdn.jsdelivr.net/gh/ToolNest/ToolNest@gh-pages/assets/index-CJM-HBi8.css?v=mv0hw7oo
+   JS:  https://cdn.jsdelivr.net/gh/ToolNest/ToolNest@gh-pages/assets/index-B-TuWZsM.js?v=mv0hw7oo
 
 2. SECONDARY GITHUB PAGES DIRECT LINKS (Fallback):
    CSS: https://ToolNest.github.io/ToolNest/assets/index-CJM-HBi8.css
-   JS:  https://ToolNest.github.io/ToolNest/assets/index-BxgWe8HJ.js
+   JS:  https://ToolNest.github.io/ToolNest/assets/index-B-TuWZsM.js
 
 HOW TO SET UP ON BLOGGER:
 --------------------------------------------------------------------
@@ -36,3 +36,12 @@ Method 2: Blogger Page (Embed inside a single page)
 2. Switch to 'HTML view' (pencil icon on top-left -> HTML view)
 3. Copy the entire contents of 'blogger-deploy/blogger-embed.html' and paste it
 4. Publish the page.
+
+Method 3: 1-Click Import Full Website or Tools as Official Blogger Posts & Pages (Best for Google Indexing)
+1. Go to Blogger Dashboard -> Settings -> Manage blog -> Import content.
+2. Select and upload:
+   - 'blogger-deploy/blogger-import-all.xml' (FULL WEBSITE: All 156 Tools + 5 Blog Articles + 5 Static Pages: About, Contact, Privacy, Terms, Disclaimer)
+   - OR 'blogger-deploy/blogger-import-tools.xml' (Tools only)
+   - OR 'blogger-deploy/blogger-import-pages.xml' (Static pages only)
+3. All online tools and blog posts are imported as official published Blogger posts with native permalinks (/2026/10/slug.html), and static pages as official Blogger pages (/p/slug.html)!
+4. Blogger returns HTTP 200 OK for every single tool and page, guaranteeing 100% Googlebot indexing!

@@ -16,7 +16,7 @@ import {
   ChevronLeft
 } from 'lucide-react';
 import { BlogPost, BUILTIN_BLOG_POSTS } from '../lib/blogData';
-import { getMergedPostsWithBlogger } from '../lib/bloggerSync';
+import { getMergedPostsWithBlogger, getNativeBloggerXmlPosts } from '../lib/bloggerSync';
 import { tools } from '../lib/registry';
 import { Seo } from '../components/Seo';
 import { BreadcrumbNavigation } from '../components/BreadcrumbNavigation';
@@ -47,7 +47,45 @@ export const BlogPostPage: React.FC<{ forcedSlug?: string }> = ({ forcedSlug }) 
     try {
       const posts = await getMergedPostsWithBlogger();
       setAllPosts(posts);
-      const found = posts.find(p => p.slug === slug || p.id === slug);
+
+      const targetSlug = slug.toLowerCase().trim();
+
+      // 1. Direct match by slug or id
+      let found = posts.find(p => p.slug.toLowerCase() === targetSlug || p.id.toLowerCase() === targetSlug);
+
+      // 2. URL slug match from p.url or p.bloggerUrl
+      if (!found) {
+        found = posts.find(p => {
+          const uSlug = p.url ? extractSlugFromBloggerPath(p.url)?.toLowerCase() : null;
+          const bSlug = p.bloggerUrl ? extractSlugFromBloggerPath(p.bloggerUrl)?.toLowerCase() : null;
+          return uSlug === targetSlug || bSlug === targetSlug;
+        });
+      }
+
+      // 3. Normalized similarity match (handles trailing hyphens, length truncation by Blogger)
+      if (!found && targetSlug) {
+        const cleanTarget = targetSlug.replace(/[^a-z0-9]/g, '');
+        if (cleanTarget.length >= 3) {
+          found = posts.find(p => {
+            const pClean = p.slug.toLowerCase().replace(/[^a-z0-9]/g, '');
+            return pClean.includes(cleanTarget) || cleanTarget.includes(pClean);
+          });
+        }
+      }
+
+      // 4. Native Blogger Fallback: On a single post page, Blogger only prints that exact post!
+      if (!found && typeof window !== 'undefined') {
+        const nativePosts = getNativeBloggerXmlPosts();
+        if (nativePosts.length === 1) {
+          found = nativePosts[0];
+        } else if (nativePosts.length > 0) {
+          found = nativePosts.find(np => {
+            const npSlug = np.url ? extractSlugFromBloggerPath(np.url)?.toLowerCase() : null;
+            return npSlug === targetSlug || np.slug.toLowerCase() === targetSlug;
+          }) || nativePosts[0];
+        }
+      }
+
       setPost(found || null);
     } catch (err) {
       console.error(err);

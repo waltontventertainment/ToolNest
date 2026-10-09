@@ -1,5 +1,5 @@
 import React, { useMemo, useEffect } from 'react';
-import { BrowserRouter, HashRouter, Routes, Route, useSearchParams, useLocation, useNavigate } from 'react-router-dom';
+import { BrowserRouter, HashRouter, Routes, Route, useSearchParams, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { Toaster } from 'sonner';
 import { FavoritesProvider } from './context/FavoritesContext';
@@ -182,33 +182,104 @@ function SmartSpaLinkInterceptor() {
 }
 
 /**
+ * Dedicated Viewer for Blogger Post Permalinks:
+ * Matches /:year/:month/:postSlug (e.g. /2026/10/dicebear-robohash-avatar.html or /2026/10/article.html)
+ * Dynamically resolves whether this permalink belongs to an interactive Tool or a Blog Publication.
+ */
+function ToolOrPostViewer() {
+  const { postSlug } = useParams<{ year?: string; month?: string; postSlug?: string }>();
+  const [searchParams] = useSearchParams();
+  const rawSlug = (postSlug || searchParams.get('tool') || searchParams.get('blog') || '')
+    .replace(/\.html$/i, '')
+    .trim();
+
+  const normalized = rawSlug.toLowerCase();
+
+  // 1. Direct or fuzzy match for all 156+ tools
+  const matchedTool = tools.find(t => {
+    const tSlug = t.slug.toLowerCase();
+    return (
+      tSlug === normalized ||
+      normalized.startsWith(tSlug) ||
+      tSlug.startsWith(normalized) ||
+      tSlug.replace(/[^a-z0-9]/g, '') === normalized.replace(/[^a-z0-9]/g, '')
+    );
+  });
+
+  if (matchedTool) {
+    return <ToolPage forcedSlug={matchedTool.slug} />;
+  }
+
+  // 2. Otherwise render as official Blog Post
+  return <BlogPostPage forcedSlug={rawSlug} />;
+}
+
+/**
+ * Dedicated Viewer for Blogger Static Pages:
+ * Matches /p/:pageSlug (e.g. /p/about.html, /p/privacy-policy.html, /p/terms.html, etc.)
+ */
+function StaticPageView() {
+  const { pageSlug } = useParams<{ pageSlug?: string }>();
+  const [searchParams] = useSearchParams();
+  const raw = (pageSlug || searchParams.get('page') || '')
+    .replace(/\.html$/i, '')
+    .toLowerCase()
+    .trim();
+
+  if (raw === 'about' || raw.includes('about')) return <About />;
+  if (raw === 'privacy' || raw.includes('privacy')) return <PrivacyPolicy />;
+  if (raw === 'terms' || raw.includes('term') || raw.includes('tos')) return <TermsOfService />;
+  if (raw === 'disclaimer' || raw.includes('disclaimer')) return <Disclaimer />;
+  if (raw === 'contact' || raw.includes('contact')) return <Contact />;
+  if (raw === 'blog' || raw.includes('blog')) return <BlogPage />;
+
+  // Support if a tool was created as a static page
+  const matchedTool = tools.find(t => {
+    const tSlug = t.slug.toLowerCase();
+    return (
+      tSlug === raw ||
+      raw.startsWith(tSlug) ||
+      tSlug.replace(/[^a-z0-9]/g, '') === raw.replace(/[^a-z0-9]/g, '')
+    );
+  });
+
+  if (matchedTool) {
+    return <ToolPage forcedSlug={matchedTool.slug} />;
+  }
+
+  return <UniversalCatchAll />;
+}
+
+/**
  * Universal Catch-All Route Handler:
- * Intelligently captures native Blogger permalinks (e.g. /2026/10/post-name.html),
- * Blogger static pages (/p/about.html), tool slugs, and standard fallback routes.
+ * Intelligently captures native Blogger permalinks, deep links, and fallback routes.
  */
 function UniversalCatchAll() {
   const location = useLocation();
   const pathname = location.pathname;
 
-  // 1. Native Blogger Post or Page Permalinks: /2026/10/post-title.html or /p/slug.html
-  const bloggerSlug = extractSlugFromBloggerPath(pathname);
-  if (bloggerSlug) {
-    // Check if this slug matches a tool first!
-    const matchedTool = tools.find(t => t.slug === bloggerSlug);
-    if (matchedTool) {
-      return <ToolPage forcedSlug={matchedTool.slug} />;
-    }
-    // Otherwise render blog post
-    return <BlogPostPage forcedSlug={bloggerSlug} />;
-  }
-
-  // 2. Native Blogger Page URLs: /p/about.html, /p/privacy-policy.html
+  // 1. Native Blogger Static Page URLs: /p/about.html, /p/privacy-policy.html
   if (pathname.includes('/p/about')) return <About />;
   if (pathname.includes('/p/privacy')) return <PrivacyPolicy />;
   if (pathname.includes('/p/terms')) return <TermsOfService />;
   if (pathname.includes('/p/disclaimer')) return <Disclaimer />;
   if (pathname.includes('/p/contact')) return <Contact />;
   if (pathname.includes('/p/blog')) return <BlogPage />;
+
+  // 2. Native Blogger Post or Page Permalinks: /2026/10/post-title.html
+  const bloggerSlug = extractSlugFromBloggerPath(pathname);
+  if (bloggerSlug) {
+    const norm = bloggerSlug.toLowerCase();
+    const matchedTool = tools.find(t => 
+      t.slug.toLowerCase() === norm ||
+      norm.startsWith(t.slug.toLowerCase()) ||
+      t.slug.toLowerCase().replace(/[^a-z0-9]/g, '') === norm.replace(/[^a-z0-9]/g, '')
+    );
+    if (matchedTool) {
+      return <ToolPage forcedSlug={matchedTool.slug} />;
+    }
+    return <BlogPostPage forcedSlug={bloggerSlug} />;
+  }
 
   // 3. Deep path support when accessed directly
   const toolMatch = pathname.match(/\/tools\/([^/]+)/);
@@ -228,8 +299,12 @@ function UniversalCatchAll() {
   if (pathname.endsWith('/contact')) return <Contact />;
 
   // 4. Direct slug match (e.g. /image-resizer)
-  const cleanSlug = pathname.replace(/^\/+|\/+$/g, '');
-  const directTool = tools.find(t => t.slug === cleanSlug);
+  const cleanSlug = pathname.replace(/^\/+|\/+$/g, '').toLowerCase();
+  const directTool = tools.find(t => 
+    t.slug.toLowerCase() === cleanSlug ||
+    cleanSlug.startsWith(t.slug.toLowerCase()) ||
+    t.slug.toLowerCase().replace(/[^a-z0-9]/g, '') === cleanSlug.replace(/[^a-z0-9]/g, '')
+  );
   if (directTool) {
     return <ToolPage forcedSlug={directTool.slug} />;
   }
@@ -254,6 +329,12 @@ export default function App() {
                   {/* Smart Root Dispatcher: handles Home, ?tool=, ?category=, ?page=, ?blog= */}
                   <Route index element={<UniversalIndexDispatcher />} />
                   
+                  {/* Official Blogger Post Permalinks: /:year/:month/:postSlug (with or without .html) */}
+                  <Route path=":year/:month/:postSlug" element={<ToolOrPostViewer />} />
+
+                  {/* Official Blogger Static Pages: /p/:pageSlug (with or without .html) */}
+                  <Route path="p/:pageSlug" element={<StaticPageView />} />
+
                   {/* Standard clean paths */}
                   <Route path="tools/:slug" element={<ToolPage />} />
                   <Route path="category/:slug" element={<CategoryPage />} />
@@ -265,7 +346,7 @@ export default function App() {
                   <Route path="disclaimer" element={<Disclaimer />} />
                   <Route path="contact" element={<Contact />} />
                   
-                  {/* Smart Catch-All: captures Blogger /2026/10/...html and /p/...html */}
+                  {/* Smart Catch-All: captures any additional paths */}
                   <Route path="*" element={<UniversalCatchAll />} />
                 </Route>
               </Routes>

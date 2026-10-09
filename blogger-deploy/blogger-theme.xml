@@ -119,7 +119,7 @@
   ]]></b:template-skin>
 
   <!-- Toolzaro Primary Stylesheet from jsDelivr CDN -->
-  <link crossorigin='anonymous' href='https://cdn.jsdelivr.net/gh/ToolNest/ToolNest@gh-pages/assets/index-CJM-HBi8.css?v=mv0e2mci' rel='stylesheet'/>
+  <link crossorigin='anonymous' href='https://cdn.jsdelivr.net/gh/ToolNest/ToolNest@gh-pages/assets/index-CJM-HBi8.css?v=mv0hw7oo' rel='stylesheet'/>
 
   <link expr:href='data:blog.canonicalUrl' rel='canonical'/>
 
@@ -327,6 +327,6 @@
   </div>
 
   <!-- Toolzaro Primary JavaScript Bundle from jsDelivr CDN -->
-  <script crossorigin='anonymous' src='https://cdn.jsdelivr.net/gh/ToolNest/ToolNest@gh-pages/assets/index-BxgWe8HJ.js?v=mv0e2mci' type='module'></script>
+  <script crossorigin='anonymous' src='https://cdn.jsdelivr.net/gh/ToolNest/ToolNest@gh-pages/assets/index-B-TuWZsM.js?v=mv0hw7oo' type='module'></script>
 </body>
 </html>

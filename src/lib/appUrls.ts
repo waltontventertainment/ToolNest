@@ -17,6 +17,9 @@ export function isBloggerHost(): boolean {
  * Works in React SPA on Blogger and across all platforms without reload.
  */
 export function getToolUrl(slug: string): string {
+  if (isBloggerHost()) {
+    return `/2026/10/${encodeURIComponent(slug)}.html`;
+  }
   return `/tools/${encodeURIComponent(slug)}`;
 }
 
