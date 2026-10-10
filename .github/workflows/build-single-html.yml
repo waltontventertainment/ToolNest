@@ -21,7 +21,7 @@ permissions:
 
 jobs:
   build-and-verify:
-    name: "Build Static Website for Cloudflare Pages"
+    name: "Build & Deploy Built Files to Toolzaro Repo"
     runs-on: ubuntu-latest
 
     steps:
@@ -146,7 +146,51 @@ jobs:
           path: dist/
           retention-days: 30
 
+      - name: "Wipe & Replace Target Repo (waltontventertainment/Toolzaro) with Built Files"
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        env:
+          MY_SECRET_TOOLZARO: ${{ secrets.MY_SECRET_TOOLZARO }}
+        run: |
+          if [ -z "$MY_SECRET_TOOLZARO" ]; then
+            echo "⚠️ MY_SECRET_TOOLZARO secret is not set in Repository Secrets. Skipping external repo push."
+            exit 0
+          fi
+
+          echo "Preparing clean deployment directory for waltontventertainment/Toolzaro.git..."
+          DEPLOY_DIR=$(mktemp -d)
+
+          # Copy all built files (including dotfiles like .well-known) from dist/ to DEPLOY_DIR
+          cp -r dist/. "$DEPLOY_DIR/"
+
+          # Add root-level wrangler.jsonc for the pre-built Toolzaro repository
+          cat << 'EOF' > "$DEPLOY_DIR/wrangler.jsonc"
+          {
+            "name": "toolzaro",
+            "compatibility_date": "2025-04-01",
+            "assets": {
+              "directory": "./",
+              "not_found_handling": "single-page-application"
+            }
+          }
+          EOF
+
+          cd "$DEPLOY_DIR"
+          git init
+          git config user.name "Toolzaro CI Bot"
+          git config user.email "actions@github.com"
+          git checkout -B main
+
+          # Stage all new built files
+          git add -A
+          git commit -m "chore(deploy): clean replace with fresh production build (${GITHUB_SHA::7})"
+
+          # Force push to waltontventertainment/Toolzaro.git (replaces all previous files cleanly)
+          REMOTE_URL="https://x-access-token:${MY_SECRET_TOOLZARO}@github.com/waltontventertainment/Toolzaro.git"
+          echo "Force-pushing fresh build to waltontventertainment/Toolzaro.git (main)..."
+          git push --force "$REMOTE_URL" main:main
+          echo "✅ Successfully wiped old files and uploaded fresh production build to waltontventertainment/Toolzaro.git!"
+
       - name: "Workflow Summary"
         run: |
-          echo "## ☁️ Cloudflare Pages Build Successful!" >> $GITHUB_STEP_SUMMARY
-          echo "All domain favicons (\`favicon.ico\`, \`favicon.svg\`, \`apple-touch-icon.png\`, \`android-chrome-192x192.png\`, \`android-chrome-512x512.png\`, \`site.webmanifest\`), dynamic XML sitemaps (\`sitemap-index.xml\`, \`sitemap.xml\`, \`sitemap-tools.xml\`, \`sitemap-categories.xml\`, \`sitemap-pages.xml\`, \`sitemap-blog.xml\`, \`rss.xml\`), AdSense files (\`ads.txt\`, \`app-ads.txt\`), and static assets have been verified in \`dist/\`." >> $GITHUB_STEP_SUMMARY
+          echo "## ☁️ Cloudflare Pages Build & Toolzaro Repo Sync Successful!" >> $GITHUB_STEP_SUMMARY
+          echo "All domain favicons, dynamic XML sitemaps, AdSense files, and static assets have been verified in \`dist/\` and force-synced to \`waltontventertainment/Toolzaro\`." >> $GITHUB_STEP_SUMMARY
