@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Search, Sparkles, Star, ShieldCheck, Zap, Layers, X, ArrowRight, BookOpen, Clock, Calendar, Home, ChevronRight, Trash2 } from 'lucide-react';
-import { useSearchParams, Link } from 'react-router-dom';
+import { useSearchParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import { tools, categories } from '../lib/registry';
 import { getEffectiveTools } from '../lib/toolOverrides';
 import { ToolCard } from '../components/ToolCard';
@@ -14,18 +14,26 @@ import { useSiteSettings } from '../context/SiteSettingsContext';
 import { DailyTechDigest } from '../components/DailyTechDigest';
 import { TypewriterHeading } from '../components/TypewriterHeading';
 import { HeroShowcase } from '../components/HeroShowcase';
-import { getBlogUrl, getBlogPostUrl } from '../lib/appUrls';
+import { getBlogUrl, getBlogPostUrl, getBookmarksUrl } from '../lib/appUrls';
 import { getHomeSeoData } from '../lib/seoHelper';
 
 import heroImg from '../assets/images/hero_visual_premium_1791369917245.jpg';
 import emptyImg from '../assets/images/empty_state_1785690459297.jpg';
 
-export const Index: React.FC = () => {
+export const Index: React.FC<{ forcedBookmarks?: boolean }> = ({ forcedBookmarks = false }) => {
   const { settings } = useSiteSettings();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const [search, setSearch] = useState(searchParams.get('q') || '');
   const [activeCategory, setActiveCategory] = useState<string>('All');
-  const [showFavoritesOnly, setShowFavoritesOnly] = useState(searchParams.get('favorites') === 'true');
+  const isBookmarksRoute =
+    forcedBookmarks ||
+    location.pathname === '/bookmarks' ||
+    location.pathname === '/saved' ||
+    location.pathname === '/favorites' ||
+    searchParams.get('favorites') === 'true';
+  const [showFavoritesOnly, setShowFavoritesOnly] = useState(isBookmarksRoute);
   const { favorites, clearFavorites } = useFavorites();
 
   // Show 24 tools initially on the homepage grid (22-25 range requested)
@@ -47,7 +55,12 @@ export const Index: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    const isFav = searchParams.get('favorites') === 'true';
+    const isFav =
+      forcedBookmarks ||
+      location.pathname === '/bookmarks' ||
+      location.pathname === '/saved' ||
+      location.pathname === '/favorites' ||
+      searchParams.get('favorites') === 'true';
     setShowFavoritesOnly(isFav);
     const q = searchParams.get('q');
     if (q !== null && q !== search) {
@@ -56,7 +69,7 @@ export const Index: React.FC = () => {
     if (isFav) {
       setActiveCategory('All');
     }
-  }, [searchParams]);
+  }, [forcedBookmarks, location.pathname, searchParams]);
 
   useEffect(() => {
     const getCounts = () => {
@@ -74,20 +87,14 @@ export const Index: React.FC = () => {
     setActiveCategory('All');
     setSearch('');
     setShowFavoritesOnly(false);
-    const newParams = new URLSearchParams(searchParams);
-    newParams.delete('favorites');
-    newParams.delete('q');
-    setSearchParams(newParams, { replace: true });
+    navigate('/');
   };
 
   const handleEnterFavorites = () => {
     setActiveCategory('All');
     setSearch('');
     setShowFavoritesOnly(true);
-    const newParams = new URLSearchParams(searchParams);
-    newParams.set('favorites', 'true');
-    newParams.delete('q');
-    setSearchParams(newParams, { replace: true });
+    navigate(getBookmarksUrl());
   };
 
   // Only categories represented in user's saved bookmarks
@@ -145,8 +152,7 @@ export const Index: React.FC = () => {
         title={showFavoritesOnly ? `Saved Bookmarked Tools (${favorites.length}) – Personal Workspace | Toolzaro` : homeSeo.title} 
         description={showFavoritesOnly ? "Access your personal collection of bookmarked developer, PDF, image, and utility tools on Toolzaro — stored 100% privately in your browser." : homeSeo.description}
         keywords={homeSeo.keywords}
-        url={showFavoritesOnly ? `${baseUrl}/?favorites=true` : `${baseUrl}/`}
-        noindex={showFavoritesOnly}
+        url={showFavoritesOnly ? `${baseUrl}/bookmarks` : `${baseUrl}/`}
         jsonLd={homeSeo.jsonLd}
       />
       
@@ -578,7 +584,7 @@ export const Index: React.FC = () => {
             {allBlogPosts.slice(0, visibleBlogCount).map((post) => (
               <Link
                 key={post.id}
-                to={`/blog/${post.slug}`}
+                to={getBlogPostUrl(post.slug)}
                 className="group flex flex-col justify-between rounded-3xl bg-card border border-border/80 hover:border-primary/50 transition-all duration-300 p-5 shadow-xs hover:shadow-xl hover:-translate-y-1.5 cursor-pointer no-underline select-none"
               >
                 <div className="space-y-3">

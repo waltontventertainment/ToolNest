@@ -112,7 +112,7 @@ export const ToolPage: React.FC<{ forcedSlug?: string }> = ({ forcedSlug }) => {
         "@type": "ListItem",
         "position": 2,
         "name": `${tool.category} Tools`,
-        "item": `${baseUrl}/category/${catSlug}`
+        "item": `${baseUrl}/${catSlug}`
       },
       {
         "@type": "ListItem",

@@ -147,7 +147,12 @@ function UrlNormalizationEffect() {
 function UniversalIndexDispatcher() {
   const [searchParams] = useSearchParams();
 
-  // 1. Tool query: ?tool=image-resizer
+  // 1. Legacy ?favorites=true query -> redirect cleanly to /bookmarks
+  if (searchParams.get('favorites') === 'true') {
+    return <Navigate to="/bookmarks" replace />;
+  }
+
+  // 2. Tool query: ?tool=image-resizer
   const toolSlug = searchParams.get('tool');
   if (toolSlug) {
     return <ToolPage forcedSlug={toolSlug} />;
@@ -186,6 +191,11 @@ function UniversalIndexDispatcher() {
         return <TermsOfService />;
       case 'disclaimer':
         return <Disclaimer />;
+      case 'bookmarks':
+      case 'saved':
+      case 'favorites':
+      case 'favourites':
+        return <Index forcedBookmarks={true} />;
       case 'contact':
         return <Contact />;
       case 'sitemap':
@@ -275,18 +285,34 @@ function LegacyToolRedirect() {
   return <ToolPage forcedSlug={matchedTool ? matchedTool.slug : slug} />;
 }
 
+function LegacyCategoryRedirect() {
+  const { slug } = useParams<{ slug?: string }>();
+  if (!slug) return <ToolsHubPage />;
+  return <Navigate to={`/${slug.replace(/^\/+|\/+$/g, '')}`} replace />;
+}
+
+function LegacyBlogRedirect() {
+  const { slug } = useParams<{ slug?: string }>();
+  if (!slug) return <BlogPage />;
+  return <Navigate to={`/${slug.replace(/^\/+|\/+$/g, '')}`} replace />;
+}
+
 /**
  * Root-Level Flat URL Dispatcher (`domain.com/:slug`):
- * Resolves flat root-level tool URLs (e.g. `/open-meteo-live-weather`, `/pdf-merge`),
- * directory hub aliases (`/tools`, `/directory`, `/all-tools`), category slugs (`/pdf`),
- * static page aliases, and blog posts.
+ * Resolves flat root-level tool URLs (e.g. `/open-meteo-live-weather`),
+ * bookmarks (`/bookmarks`), directory hub (`/tools`), category slugs (`/pdf`),
+ * static pages (`/about`, `/privacy-policy`), and blog articles (`/post-slug`).
  */
 function RootSlugDispatcher() {
   const { slug } = useParams<{ slug?: string }>();
   const rawSlug = (slug || '').replace(/\.html$/i, '').trim();
   const lower = rawSlug.toLowerCase();
 
-  // 1. Directory / Hub aliases
+  // 1. Directory / Hub & Bookmarks aliases
+  if (lower === 'bookmarks' || lower === 'saved' || lower === 'favorites' || lower === 'favourites') {
+    return <Index forcedBookmarks={true} />;
+  }
+
   if (
     lower === 'tools' ||
     lower === 'all-tools' ||
@@ -316,14 +342,15 @@ function RootSlugDispatcher() {
     return <ToolPage forcedSlug={matchedTool.slug} />;
   }
 
-  // 4. Direct root-level Category match (e.g. /pdf, /developer, /color-image)
+  // 4. Direct root-level Category match (e.g. /pdf, /developer, /color-image, /universal-data-suite)
   const matchedCatSlug = findMatchingCategorySlug(rawSlug);
   if (matchedCatSlug) {
     return <CategoryPage forcedSlug={matchedCatSlug} />;
   }
 
-  // 5. Fallback to UniversalCatchAll
-  return <UniversalCatchAll />;
+  // 5. Direct root-level Blog Post match (e.g. /definitive-guide-client-side-privacy-web-utilities)
+  // BlogPostPage checks built-in & Firestore blog posts, and renders <NotFound /> if none match
+  return <BlogPostPage forcedSlug={rawSlug} />;
 }
 
 /**
@@ -468,6 +495,11 @@ export default function App() {
                     {/* Smart Root Dispatcher: handles Home, ?tool=, ?category=, ?page=, ?blog= */}
                     <Route index element={<UniversalIndexDispatcher />} />
 
+                    {/* Bookmarks / Saved Tools Flat Routes */}
+                    <Route path="bookmarks" element={<Index forcedBookmarks={true} />} />
+                    <Route path="saved" element={<Index forcedBookmarks={true} />} />
+                    <Route path="favorites" element={<Index forcedBookmarks={true} />} />
+
                     {/* All Tools Hub & Directory Routes (Never 404 on directory/root visits) */}
                     <Route path="tools" element={<ToolsHubPage />} />
                     <Route path="all-tools" element={<ToolsHubPage />} />
@@ -476,13 +508,11 @@ export default function App() {
                     <Route path="categories" element={<ToolsHubPage />} />
                     <Route path="category" element={<ToolsHubPage />} />
 
-                    {/* Legacy /tools/:slug redirect to flat /:slug */}
+                    {/* Legacy /tools/:slug, /category/:slug, and /blog/:slug redirect to flat /:slug */}
                     <Route path="tools/:slug" element={<LegacyToolRedirect />} />
-
-                    {/* Category & Blog Routes */}
-                    <Route path="category/:slug" element={<CategoryPage />} />
+                    <Route path="category/:slug" element={<LegacyCategoryRedirect />} />
                     <Route path="blog" element={<BlogPage />} />
-                    <Route path="blog/:slug" element={<BlogPostPage />} />
+                    <Route path="blog/:slug" element={<LegacyBlogRedirect />} />
 
                     {/* Static Pages */}
                     <Route path="about" element={<About />} />

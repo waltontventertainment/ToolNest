@@ -11,7 +11,7 @@ import {
 import { toast } from 'sonner';
 import { tools, categories } from '../lib/registry';
 import { BUILTIN_BLOG_POSTS } from '../lib/blogData';
-import { getToolUrl, getCategoryUrl, getBlogUrl } from '../lib/appUrls';
+import { getToolUrl, getCategoryUrl, getBlogUrl, getBlogPostUrl } from '../lib/appUrls';
 
 const PageHeader = ({ title, subtitle, date }: { title: string; subtitle?: string; date?: string }) => (
   <div className="mb-6 sm:mb-8 md:mb-10 text-center md:text-left border-b border-border/60 pb-4 sm:pb-6">
@@ -533,6 +533,7 @@ export const HtmlSitemap: React.FC = () => (
         </h2>
         <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs font-semibold">
           <li><Link to="/" className="text-primary hover:underline flex items-center gap-1.5"><ArrowRight className="w-3.5 h-3.5" /> Home Page</Link></li>
+          <li><Link to="/bookmarks" className="text-primary hover:underline flex items-center gap-1.5"><ArrowRight className="w-3.5 h-3.5" /> Saved Bookmarks (/bookmarks)</Link></li>
           <li><Link to="/tools" className="text-primary hover:underline flex items-center gap-1.5"><ArrowRight className="w-3.5 h-3.5" /> All Tools Directory Hub</Link></li>
           <li><Link to="/blog" className="text-primary hover:underline flex items-center gap-1.5"><ArrowRight className="w-3.5 h-3.5" /> Engineering Blog &amp; Guides</Link></li>
           <li><Link to="/about" className="text-primary hover:underline flex items-center gap-1.5"><ArrowRight className="w-3.5 h-3.5" /> About Toolzaro</Link></li>
@@ -610,7 +611,7 @@ export const HtmlSitemap: React.FC = () => (
       <ul className="space-y-2 text-xs">
         {BUILTIN_BLOG_POSTS.map(post => (
           <li key={post.slug}>
-            <Link to={`/blog/${post.slug}`} className="font-semibold text-foreground hover:text-primary transition-colors flex items-center gap-2">
+            <Link to={getBlogPostUrl(post.slug)} className="font-semibold text-foreground hover:text-primary transition-colors flex items-center gap-2">
               <ArrowRight className="w-3.5 h-3.5 text-primary shrink-0" />
               <span>{post.title}</span>
             </Link>

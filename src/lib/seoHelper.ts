@@ -249,7 +249,7 @@ export function getHomeSeoData(baseUrl = 'https://toolzaro.cyou', toolCount = to
           '@type': 'ListItem',
           position: idx + 1,
           name: `${cat} Tools`,
-          url: `${baseUrl}/category/${catSlug}`,
+          url: `${baseUrl}/${catSlug}`,
         };
       }),
     },

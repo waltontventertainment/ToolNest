@@ -1,6 +1,6 @@
-// Universal URL & Route Bridge for Toolzaro (Blogger Hybrid Architecture - Option A)
-// Ensures 100% clean URLs without '#' (hash) on Blogger and across all platforms
-// Fully compatible with Googlebot indexing, Blogger native permalinks, and React SPA instant navigation.
+// Universal Flat Root-Level URL & Route Bridge for Toolzaro
+// Ensures every tool, category, blog article, bookmark page, and static page
+// uses clean root-level URLs (domain.com/name) without sub-folders or query strings.
 
 export function isBloggerHost(): boolean {
   if (typeof window === 'undefined') return false;
@@ -12,9 +12,7 @@ export function isBloggerHost(): boolean {
 }
 
 /**
- * Generates an SEO-clean flat root-level tool URL without '#' or '/tools/' prefix
- * Clean flat path: /open-meteo-live-weather (like iLovePDF)
- * Works in React SPA on Cloudflare Pages, Blogger, and across all platforms without reload.
+ * Generates an SEO-clean flat root-level tool URL: /tool-name
  */
 export function getToolUrl(slug: string): string {
   const cleanSlug = slug.replace(/^\/+|\/+$/g, '').replace(/^tools\//i, '');
@@ -25,39 +23,41 @@ export function getToolUrl(slug: string): string {
 }
 
 /**
- * Generates All Tools Directory / Hub URL
- * /tools
+ * Generates All Tools Directory / Hub URL: /tools
  */
 export function getToolsHubUrl(): string {
   return `/tools`;
 }
 
 /**
- * Generates an SEO-clean category URL
- * /category/image-tools
+ * Generates Saved Bookmarks URL: /bookmarks
  */
-export function getCategoryUrl(categorySlug: string): string {
-  return `/category/${encodeURIComponent(categorySlug)}`;
+export function getBookmarksUrl(): string {
+  return `/bookmarks`;
 }
 
 /**
- * Generates blog hub link
- * /blog
+ * Generates an SEO-clean flat root-level category URL: /category-name
+ * e.g. /universal-data-suite, /pdf, /developer, /color-image
+ */
+export function getCategoryUrl(categorySlug: string): string {
+  const cleanSlug = categorySlug.replace(/^\/+|\/+$/g, '').replace(/^category\//i, '');
+  return `/${encodeURIComponent(cleanSlug)}`;
+}
+
+/**
+ * Generates blog hub link: /blog
  */
 export function getBlogUrl(): string {
   return `/blog`;
 }
 
 /**
- * Generates blog post link
- * Prioritizes native Blogger .html permalink (e.g. /2026/10/post-name.html)
- * When published on Blogger, uses the exact official Blogger permalink so Googlebot
- * indexes it as a first-class citizen with maximum search authority.
+ * Generates flat root-level blog post link: /post-slug
  */
 export function getBlogPostUrl(slug: string, nativeBloggerUrl?: string): string {
-  if (nativeBloggerUrl) {
+  if (isBloggerHost() && nativeBloggerUrl) {
     try {
-      // If full URL provided, extract pathname if on same domain or relative
       if (nativeBloggerUrl.startsWith('http://') || nativeBloggerUrl.startsWith('https://')) {
         const parsed = new URL(nativeBloggerUrl);
         if (parsed.pathname && parsed.pathname.endsWith('.html')) {
@@ -66,51 +66,46 @@ export function getBlogPostUrl(slug: string, nativeBloggerUrl?: string): string 
       } else if (nativeBloggerUrl.startsWith('/') && nativeBloggerUrl.endsWith('.html')) {
         return nativeBloggerUrl;
       }
-    } catch (e) {
+    } catch {
       if (nativeBloggerUrl.startsWith('/') && nativeBloggerUrl.endsWith('.html')) {
         return nativeBloggerUrl;
       }
     }
   }
 
-  // Known fallback for built-in introductory post if native URL not yet attached
-  if (slug === 'introducing-toolzaro-your-ultimate-free-online-web-tools-platform') {
-    return '/2026/10/introducing-toolzaro-your-ultimate-free-online-web-tools-platform.html';
-  }
-
-  return `/blog/${encodeURIComponent(slug)}`;
+  const cleanSlug = slug
+    .replace(/^\/+|\/+$/g, '')
+    .replace(/^blog\//i, '')
+    .replace(/\.html$/i, '');
+  return `/${encodeURIComponent(cleanSlug)}`;
 }
 
 /**
- * Generates static page link (about, privacy-policy, terms, disclaimer, contact)
+ * Generates flat root-level static page link (/about, /privacy-policy, /terms, /disclaimer, /contact, /bookmarks)
  */
-export function getStaticPageUrl(page: 'about' | 'privacy-policy' | 'terms' | 'disclaimer' | 'contact' | string): string {
-  return `/${encodeURIComponent(page)}`;
+export function getStaticPageUrl(
+  page: 'about' | 'privacy-policy' | 'terms' | 'disclaimer' | 'contact' | 'bookmarks' | string
+): string {
+  const cleanPage = page.replace(/^\/+|\/+$/g, '');
+  return `/${encodeURIComponent(cleanPage)}`;
 }
 
 /**
  * Extracts the slug from any native Blogger permalink or page pathname
- * e.g. "/2026/10/introducing-toolzaro-your-ultimate-free-online-web-tools-platform.html"
- * -> "introducing-toolzaro-your-ultimate-free-online-web-tools-platform"
- * e.g. "/p/privacy-policy.html" -> "privacy-policy"
- * e.g. "/2026/10/image-resizer.html" -> "image-resizer"
  */
 export function extractSlugFromBloggerPath(pathname: string): string | null {
   if (!pathname || !pathname.endsWith('.html')) return null;
 
-  // Match /YYYY/MM/slug.html
   const postMatch = pathname.match(/\/\d{4}\/\d{2}\/([^/]+)\.html$/i);
   if (postMatch && postMatch[1]) {
     return postMatch[1];
   }
 
-  // Match /p/slug.html
   const pageMatch = pathname.match(/\/p\/([^/]+)\.html$/i);
   if (pageMatch && pageMatch[1]) {
     return pageMatch[1];
   }
 
-  // Match /slug.html
   const generalMatch = pathname.match(/\/([^/]+)\.html$/i);
   if (generalMatch && generalMatch[1]) {
     return generalMatch[1];

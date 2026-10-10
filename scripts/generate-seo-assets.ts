@@ -139,12 +139,11 @@ function ensureFaviconsInPublic() {
 function generateAllSitemapsAndSeoFiles() {
   ensureFaviconsInPublic();
 
-  // 1. Core & Static Pages
+  // 1. Core & Static Pages (Flat Root-Level)
   const pageEntries: SitemapEntry[] = [
     { loc: `${BASE_URL}/`, changefreq: 'daily', priority: '1.0' },
     { loc: `${BASE_URL}/tools`, changefreq: 'daily', priority: '0.95' },
-    { loc: `${BASE_URL}/all-tools`, changefreq: 'weekly', priority: '0.9' },
-    { loc: `${BASE_URL}/directory`, changefreq: 'weekly', priority: '0.85' },
+    { loc: `${BASE_URL}/bookmarks`, changefreq: 'weekly', priority: '0.85' },
     { loc: `${BASE_URL}/blog`, changefreq: 'daily', priority: '0.9' },
     { loc: `${BASE_URL}/sitemap`, changefreq: 'weekly', priority: '0.85' },
     { loc: `${BASE_URL}/about`, changefreq: 'monthly', priority: '0.7' },
@@ -154,11 +153,11 @@ function generateAllSitemapsAndSeoFiles() {
     { loc: `${BASE_URL}/disclaimer`, changefreq: 'monthly', priority: '0.6' },
   ];
 
-  // 2. Category Pages (both /category/:slug and root-level category discovery)
+  // 2. Category Pages (Flat Root-Level: https://toolzaro.cyou/category-slug)
   const categoryEntries: SitemapEntry[] = categories.map(cat => {
     const catSlug = cat.toLowerCase().replace(/ & /g, '-').replace(/ /g, '-');
     return {
-      loc: `${BASE_URL}/category/${catSlug}`,
+      loc: `${BASE_URL}/${catSlug}`,
       changefreq: 'weekly',
       priority: '0.85',
     };
@@ -177,9 +176,9 @@ function generateAllSitemapsAndSeoFiles() {
     });
   }
 
-  // 4. Blog Post Pages
+  // 4. Blog Post Pages (Flat Root-Level: https://toolzaro.cyou/post-slug)
   const blogEntries: SitemapEntry[] = BUILTIN_BLOG_POSTS.map(post => ({
-    loc: `${BASE_URL}/blog/${post.slug}`,
+    loc: `${BASE_URL}/${post.slug}`,
     lastmod: post.publishedAt || TODAY,
     changefreq: 'monthly',
     priority: '0.8',
@@ -236,8 +235,8 @@ function generateAllSitemapsAndSeoFiles() {
     ...BUILTIN_BLOG_POSTS.map(
       post => `    <item>
       <title>${escapeXml(post.title)}</title>
-      <link>${escapeXml(`${BASE_URL}/blog/${post.slug}`)}</link>
-      <guid isPermaLink="true">${escapeXml(`${BASE_URL}/blog/${post.slug}`)}</guid>
+      <link>${escapeXml(`${BASE_URL}/${post.slug}`)}</link>
+      <guid isPermaLink="true">${escapeXml(`${BASE_URL}/${post.slug}`)}</guid>
       <description>${escapeXml(post.excerpt)}</description>
       <category>${escapeXml(post.category)}</category>
       <pubDate>${new Date(post.publishedAt || TODAY).toUTCString()}</pubDate>
@@ -291,14 +290,14 @@ ${rssItemsXml}
     ...categories.map(cat => {
       const catSlug = cat.toLowerCase().replace(/ & /g, '-').replace(/ /g, '-');
       const count = tools.filter(t => t.category === cat).length;
-      return `- [${cat} Tools (${count})](${BASE_URL}/category/${catSlug})`;
+      return `- [${cat} Tools (${count})](${BASE_URL}/${catSlug})`;
     }),
     ``,
     `## Complete Directory of ${tools.length} Tools (Flat Root-Level URLs)`,
     ...tools.map(t => `- [${t.name}](${BASE_URL}/${t.slug}): ${t.metaDescription} (Category: ${t.category})`),
     ``,
     `## Technical Guides & Articles (${BUILTIN_BLOG_POSTS.length})`,
-    ...BUILTIN_BLOG_POSTS.map(p => `- [${p.title}](${BASE_URL}/blog/${p.slug}): ${p.excerpt}`),
+    ...BUILTIN_BLOG_POSTS.map(p => `- [${p.title}](${BASE_URL}/${p.slug}): ${p.excerpt}`),
     ``,
   ];
   fs.writeFileSync(path.join(PUBLIC_DIR, 'llms.txt'), llmsLines.join('\n'), 'utf8');

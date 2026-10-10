@@ -22,6 +22,8 @@ import { AdSlot } from '../components/AdSlot';
 import { MarkdownRenderer } from '../components/MarkdownRenderer';
 import { CustomCodeRenderer } from '../components/CustomCodeRenderer';
 import { useSiteSettings } from '../context/SiteSettingsContext';
+import { getBlogPostUrl } from '../lib/appUrls';
+import { NotFound } from './NotFound';
 import { toast } from 'sonner';
 
 export const BlogPostPage: React.FC<{ forcedSlug?: string }> = ({ forcedSlug }) => {
@@ -80,24 +82,11 @@ export const BlogPostPage: React.FC<{ forcedSlug?: string }> = ({ forcedSlug }) 
   }
 
   if (!post) {
-    return (
-      <div className="max-w-4xl mx-auto px-4 py-20 text-center space-y-4">
-        <BookOpen className="w-12 h-12 text-muted-foreground/60 mx-auto" />
-        <h1 className="text-2xl font-bold text-foreground">Article Not Found</h1>
-        <p className="text-sm text-muted-foreground">
-          The requested article could not be found or has not been published in the database.
-        </p>
-        <Link
-          to="/blog"
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-white text-xs font-bold shadow-xs hover:bg-primary/90"
-        >
-          <ArrowLeft className="w-4 h-4" /> Back to Blog
-        </Link>
-      </div>
-    );
+    return <NotFound />;
   }
 
-  const postUrl = `${settings.seo.canonicalBaseUrl}/blog/${post.slug}`;
+  const baseUrl = (settings.seo?.canonicalBaseUrl || 'https://toolzaro.cyou').replace(/\/+$/, '');
+  const postUrl = `${baseUrl}/${post.slug}`;
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
@@ -238,7 +227,7 @@ export const BlogPostPage: React.FC<{ forcedSlug?: string }> = ({ forcedSlug }) 
             {relatedPosts.map(rel => (
               <Link
                 key={rel.id}
-                to={`/blog/${rel.slug}`}
+                to={getBlogPostUrl(rel.slug)}
                 className="group p-4 rounded-xl border border-border bg-card hover:border-primary/50 transition-all hover:shadow-md flex flex-col justify-between space-y-3"
               >
                 <div className="space-y-2">

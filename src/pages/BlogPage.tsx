@@ -21,6 +21,7 @@ import { Seo } from '../components/Seo';
 import { AdSlot } from '../components/AdSlot';
 import { BreadcrumbNavigation } from '../components/BreadcrumbNavigation';
 import { useSiteSettings } from '../context/SiteSettingsContext';
+import { getBlogPostUrl } from '../lib/appUrls';
 
 export const BlogPage: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -196,7 +197,7 @@ export const BlogPage: React.FC = () => {
               className="group flex flex-col bg-card border border-border rounded-2xl overflow-hidden hover:border-primary/50 transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
             >
               {/* Cover Image */}
-              <Link to={`/blog/${post.slug}`} className="relative aspect-video overflow-hidden bg-muted block">
+              <Link to={getBlogPostUrl(post.slug)} className="relative aspect-video overflow-hidden bg-muted block">
                 <img
                   src={post.coverImage}
                   alt={post.title}
@@ -226,7 +227,7 @@ export const BlogPage: React.FC = () => {
                     </span>
                   </div>
 
-                  <Link to={`/blog/${post.slug}`} className="block group-hover:text-primary transition-colors">
+                  <Link to={getBlogPostUrl(post.slug)} className="block group-hover:text-primary transition-colors">
                     <h2 className="text-base sm:text-lg font-bold text-foreground line-clamp-2 leading-snug">
                       {post.title}
                     </h2>
@@ -251,7 +252,7 @@ export const BlogPage: React.FC = () => {
                   </div>
 
                   <Link
-                    to={`/blog/${post.slug}`}
+                    to={getBlogPostUrl(post.slug)}
                     className="inline-flex items-center gap-1 text-xs font-bold text-primary group-hover:translate-x-1 transition-all"
                   >
                     <span>Read</span>

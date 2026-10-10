@@ -10,7 +10,7 @@ import { useGoogleDrive } from '../context/GoogleDriveContext';
 import { GoogleDriveModal } from './GoogleDriveModal';
 import { FeedbackModal } from './FeedbackModal';
 import { getBloggerAnnouncement } from '../lib/bloggerLayoutAdmin';
-import { getBlogUrl, getCategoryUrl, getStaticPageUrl, getToolsHubUrl } from '../lib/appUrls';
+import { getBlogUrl, getCategoryUrl, getStaticPageUrl, getToolsHubUrl, getBookmarksUrl } from '../lib/appUrls';
 import { useSiteSettings } from '../context/SiteSettingsContext';
 
 export const SiteLayout: React.FC = () => {
@@ -138,15 +138,15 @@ export const SiteLayout: React.FC = () => {
             {/* 1. Search Trigger Button */}
             <HeaderSearch />
 
-            {/* 2. Favorites / Saved Button */}
+            {/* 2. Favorites / Saved Button -> /bookmarks */}
             <Link
-              to={pathname === '/' && location.search.includes('favorites=true') ? '/' : '/?favorites=true'}
+              to={pathname === '/bookmarks' || pathname === '/saved' || pathname === '/favorites' ? '/' : getBookmarksUrl()}
               className={`btn-signature-header px-2.5 sm:px-3.5 gap-1.5 sm:gap-2 text-xs font-bold ${
-                location.search.includes('favorites=true')
+                pathname === '/bookmarks' || pathname === '/saved' || pathname === '/favorites' || location.search.includes('favorites=true')
                   ? 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-400 dark:border-amber-600 shadow-amber-500/20'
                   : 'text-muted-foreground hover:text-foreground'
               }`}
-              title="View Bookmarked Tools"
+              title="View Bookmarked Tools (/bookmarks)"
             >
               <Star 
                 className={`w-4 h-4 transition-transform group-hover:scale-115 shrink-0 ${

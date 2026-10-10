@@ -61,7 +61,7 @@ export const CategoryPage: React.FC<{ forcedSlug?: string }> = ({ forcedSlug }) 
     editorialSummary: `Every tool in our ${categoryName} collection runs 100% locally inside your browser for instant execution and complete data privacy.`
   };
 
-  const categoryCanonicalUrl = `${baseUrl}/category/${catSlug}`;
+  const categoryCanonicalUrl = `${baseUrl}/${catSlug}`;
 
   const categoryJsonLd = [
     {
