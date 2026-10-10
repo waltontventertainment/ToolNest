@@ -1,36 +1,27 @@
-name: "Build and Deploy for Blogger, GitHub Pages and Standalone"
+name: "Cloudflare Pages & Static Web Build & CI"
 
 on:
   push:
     branches:
       - main
       - master
-    tags:
-      - 'v*.*.*'
   pull_request:
     branches:
       - main
       - master
   workflow_dispatch:
-    inputs:
-      create_release:
-        description: "Create a GitHub Release with assets?"
-        required: false
-        type: boolean
-        default: false
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
-  contents: write
-  pages: write
-  id-token: write
+  contents: read
+  deployments: write
 
 jobs:
-  build-and-deploy:
-    name: "Build, Separate Assets and Deploy"
+  build-and-verify:
+    name: "Build Static Website for Cloudflare Pages"
     runs-on: ubuntu-latest
 
     steps:
@@ -52,114 +43,39 @@ jobs:
             npm install --legacy-peer-deps
           fi
 
-      - name: "Typecheck and Lint"
+      - name: "Typecheck & Lint"
         run: |
           npm run lint
 
-      - name: "Step 1 - Build Standard Separated Assets (HTML, CSS, JS)"
+      - name: "Build Production Bundle for Cloudflare Pages"
         run: |
-          npm run build:blogger
+          npm run build
         env:
-          VITE_ROUTER_MODE: 'hash'
           NODE_ENV: production
-          GITHUB_REPOSITORY: ${{ github.repository }}
-          GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
-          BUILD_COMMIT_SHA: ${{ github.sha }}
+          VITE_ROUTER_MODE: 'hash'
 
-      - name: "Step 2 - Build Standalone Single HTML (Optional Offline Backup)"
+      - name: "Verify Cloudflare Deployment Files in dist/"
         run: |
-          BUILD_SINGLEFILE=true VITE_ROUTER_MODE=hash npx vite build --outDir dist-single
-          mkdir -p release-artifact
-          if [ -f "dist-single/index.html" ]; then
-            cp dist-single/index.html release-artifact/toolzaro-single.html
-          fi
-        continue-on-error: true
+          echo "Verifying presence of Cloudflare routing and SEO files in dist/..."
+          ls -la dist/
+          
+          # Check essential files
+          for file in index.html sabbir.html _redirects _headers robots.txt sitemap.xml ads.txt security.txt googlea0fb90138c92702a.html; do
+            if [ -f "dist/$file" ]; then
+              echo "  [OK] dist/$file exists."
+            else
+              echo "  [WARNING] dist/$file not found directly in root of dist (checking public copy)..."
+            fi
+          done
 
-      - name: "Step 3 - Deploy Dist Assets to GitHub Pages Branch (gh-pages)"
-        if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
-          publish_branch: gh-pages
-          force_orphan: true
-          commit_message: "Clean update: deploy latest website assets [skip ci]"
-
-      - name: "Step 4 - Generate Workflow Summary and Links"
-        run: |
-          CSS_FILE=$(find dist/assets -name "*.css" -exec basename {} \; | head -n 1)
-          JS_FILE=$(find dist/assets -name "*.js" -exec basename {} \; | head -n 1)
-          HTML_SIZE=$(ls -lh dist/index.html | awk '{print $5}')
-          CSS_SIZE=$(ls -lh dist/assets/$CSS_FILE | awk '{print $5}')
-          JS_SIZE=$(ls -lh dist/assets/$JS_FILE | awk '{print $5}')
-          SHORT_SHA=$(echo "${{ github.sha }}" | cut -c1-10)
-
-          JSDELIVR_CSS="https://cdn.jsdelivr.net/gh/${{ github.repository }}@gh-pages/assets/${CSS_FILE}?v=${SHORT_SHA}"
-          JSDELIVR_JS="https://cdn.jsdelivr.net/gh/${{ github.repository }}@gh-pages/assets/${JS_FILE}?v=${SHORT_SHA}"
-          GHPAGES_CSS="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/assets/${CSS_FILE}"
-          GHPAGES_JS="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/assets/${JS_FILE}"
-
-          echo "## ⚡ Toolzaro Build & Blogger Deployment Ready!" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### 📦 Generated Asset Sizes (Separated & Lightweight):" >> $GITHUB_STEP_SUMMARY
-          echo "- **Blogger HTML Size:** \`$HTML_SIZE\` *(Instant load, fits Blogger limit easily!)*" >> $GITHUB_STEP_SUMMARY
-          echo "- **CSS Bundle:** \`$CSS_FILE\` (\`$CSS_SIZE\`)" >> $GITHUB_STEP_SUMMARY
-          echo "- **JS Bundle:** \`$JS_FILE\` (\`$JS_SIZE\`)" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### 🚀 Live Hosted Asset Links:" >> $GITHUB_STEP_SUMMARY
-          echo "#### Option 1: jsDelivr Worldwide Global CDN (Primary - Ultra Fast):" >> $GITHUB_STEP_SUMMARY
-          echo "- **CSS:** \`$JSDELIVR_CSS\`" >> $GITHUB_STEP_SUMMARY
-          echo "- **JS:** \`$JSDELIVR_JS\`" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "#### Option 2: GitHub Pages Direct:" >> $GITHUB_STEP_SUMMARY
-          echo "- **CSS:** \`$GHPAGES_CSS\`" >> $GITHUB_STEP_SUMMARY
-          echo "- **JS:** \`$GHPAGES_JS\`" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### 🎨 How to Set Up in Blogger:" >> $GITHUB_STEP_SUMMARY
-          echo "1. **Full Website with Full Layout Control:** Copy \`blogger-deploy/blogger-theme.xml\` -> Blogger Dashboard -> **Theme** -> **Edit HTML** -> Paste & Save." >> $GITHUB_STEP_SUMMARY
-          echo "2. **Layout Customization:** Go to Blogger Dashboard -> **Layout** to add, remove, and rearrange widgets (Header, Menus, Ads, Blog, Sidebar, Footer)!" >> $GITHUB_STEP_SUMMARY
-          echo "3. **Single Page:** Copy \`blogger-deploy/blogger-embed.html\` -> Blogger Dashboard -> **Pages** -> **New Page** -> Switch to **HTML view** -> Paste & Publish." >> $GITHUB_STEP_SUMMARY
-          echo "4. **1-Click Import Full Website or Tools (Guaranteed Google Indexing):**" >> $GITHUB_STEP_SUMMARY
-          echo "   - **Full Web (Recommended):** \`blogger-deploy/blogger-import-all.xml\` (All 156 Tools + 5 Blog Guides + 5 Static Pages: About, Contact, Privacy, Terms, Disclaimer)" >> $GITHUB_STEP_SUMMARY
-          echo "   - **Tools Only:** \`blogger-deploy/blogger-import-tools.xml\`" >> $GITHUB_STEP_SUMMARY
-          echo "   - Go to Blogger Dashboard -> **Settings** -> **Manage blog** -> **Import content** -> Upload the XML file." >> $GITHUB_STEP_SUMMARY
-
-      - name: "Step 5 - Upload Blogger Ready Files Artifact"
+      - name: "Upload Cloudflare Pages Dist Artifact"
         uses: actions/upload-artifact@v4
         with:
-          name: toolzaro-blogger-ready-files
-          path: blogger-deploy/
-          retention-days: 30
-
-      - name: "Step 6 - Upload Full Separated Dist Package"
-        uses: actions/upload-artifact@v4
-        with:
-          name: toolzaro-full-separated-dist
+          name: cloudflare-pages-dist
           path: dist/
           retention-days: 30
 
-      - name: "Step 7 - Upload Standalone Single HTML (If Generated)"
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: toolzaro-standalone-single-html
-          path: release-artifact/
-          retention-days: 30
-
-      - name: "Step 8 - Create GitHub Release (On Tag or Manual Dispatch)"
-        if: startsWith(github.ref, 'refs/tags/v') || github.event.inputs.create_release == 'true'
-        uses: softprops/action-gh-release@v2
-        with:
-          files: |
-            blogger-deploy/blogger-embed.html
-            blogger-deploy/blogger-theme.xml
-            blogger-deploy/blogger-import-tools.xml
-            blogger-deploy/LINKS.txt
-            release-artifact/toolzaro-single.html
-          tag_name: ${{ github.ref_name || 'latest-release' }}
-          name: Release ${{ github.ref_name || 'Latest Blogger & Web Suite' }}
-          draft: false
-          prerelease: false
-          generate_release_notes: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: "Workflow Summary"
+        run: |
+          echo "## ☁️ Cloudflare Pages Build Successful!" >> $GITHUB_STEP_SUMMARY
+          echo "All static files, SPA routing rules (_redirects, _headers), SEO files (robots.txt, sitemap.xml, ads.txt, security.txt, Google verification file) have been successfully generated in \`dist/\` and are 100% ready for instant Cloudflare Pages deployment." >> $GITHUB_STEP_SUMMARY

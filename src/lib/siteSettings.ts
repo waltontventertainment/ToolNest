@@ -89,7 +89,7 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
     defaultDescription: '156 browser-based tools for developers, designers and creators. Fast, private, and 100% client-side.',
     canonicalBaseUrl: 'https://toolzaro.cyou',
     defaultOgImage: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1200&auto=format&fit=crop&q=80',
-    googleVerificationCode: '',
+    googleVerificationCode: 'googlea0fb90138c92702a.html',
     bingVerificationCode: ''
   },
   toolOverrides: {},
