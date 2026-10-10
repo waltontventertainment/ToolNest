@@ -10,7 +10,7 @@ import { useGoogleDrive } from '../context/GoogleDriveContext';
 import { GoogleDriveModal } from './GoogleDriveModal';
 import { FeedbackModal } from './FeedbackModal';
 import { getBloggerAnnouncement } from '../lib/bloggerLayoutAdmin';
-import { getBlogUrl, getCategoryUrl, getStaticPageUrl } from '../lib/appUrls';
+import { getBlogUrl, getCategoryUrl, getStaticPageUrl, getToolsHubUrl } from '../lib/appUrls';
 import { useSiteSettings } from '../context/SiteSettingsContext';
 
 export const SiteLayout: React.FC = () => {
@@ -119,7 +119,7 @@ export const SiteLayout: React.FC = () => {
             </div>
           </Link>
 
-          {/* Right-side toolbar: Blog, Search, Saved, Dark Mode */}
+          {/* Right-side toolbar: Blog, Search, Saved, Drive Sync, Report Bug, Dark Mode */}
           <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
             {/* Blog Hub Link */}
             <Link
@@ -279,6 +279,7 @@ export const SiteLayout: React.FC = () => {
           <div>
             <h4 className="font-bold text-xs uppercase tracking-wider text-muted-foreground mb-3">Resources & Guides</h4>
             <ul className="space-y-2 text-xs font-medium text-muted-foreground">
+              <li><Link to={getToolsHubUrl()} className="hover:text-primary transition-colors flex items-center gap-1.5"><Wrench className="w-3.5 h-3.5 text-primary" /> All Tools Directory</Link></li>
               <li><Link to={getBlogUrl()} className="hover:text-primary transition-colors flex items-center gap-1.5"><BookOpen className="w-3.5 h-3.5 text-primary" /> Blog & Insights</Link></li>
               <li><Link to={getStaticPageUrl('about')} className="hover:text-primary transition-colors">About Toolzaro</Link></li>
               <li><Link to={getStaticPageUrl('contact')} className="hover:text-primary transition-colors">Contact Support</Link></li>

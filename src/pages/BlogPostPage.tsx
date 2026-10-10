@@ -100,7 +100,7 @@ export const BlogPostPage: React.FC<{ forcedSlug?: string }> = ({ forcedSlug }) 
   const postUrl = `${settings.seo.canonicalBaseUrl}/blog/${post.slug}`;
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <div className="max-w-4xl mx-auto space-y-8">
       <Seo
         title={`${post.title} - ${settings.branding.siteName}`}
         description={post.excerpt}
@@ -109,13 +109,14 @@ export const BlogPostPage: React.FC<{ forcedSlug?: string }> = ({ forcedSlug }) 
         type="article"
       />
 
-      <BreadcrumbNavigation
-        items={[
-          { label: 'Home', href: '/' },
-          { label: 'Blog', href: '/blog' },
-          { label: post.title }
-        ]}
-      />
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-4 sm:mb-6 pb-3 sm:pb-4 border-b border-border/60">
+        <BreadcrumbNavigation
+          items={[
+            { label: 'Blog', href: '/blog' },
+            { label: post.title }
+          ]}
+        />
+      </div>
 
       {/* Article Header */}
       <div className="space-y-4">

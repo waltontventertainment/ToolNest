@@ -85,10 +85,10 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
     bottomSlotId: ''
   },
   seo: {
-    defaultTitle: 'Toolzaro - Premium Online Utility Suite',
-    defaultDescription: '156 browser-based tools for developers, designers and creators. Fast, private, and 100% client-side.',
+    defaultTitle: 'Toolzaro – 156+ Free Online Developer, PDF, Image & Utility Tools',
+    defaultDescription: 'Access 156+ free, fast, and 100% private browser tools on Toolzaro. Merge PDFs, compress & resize images, format JSON, generate QR codes, and convert files with zero uploads.',
     canonicalBaseUrl: 'https://toolzaro.cyou',
-    defaultOgImage: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1200&auto=format&fit=crop&q=80',
+    defaultOgImage: 'https://toolzaro.cyou/og-banner.jpg',
     googleVerificationCode: 'googlea0fb90138c92702a.html',
     bingVerificationCode: ''
   },

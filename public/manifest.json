@@ -1,0 +1,25 @@
+{
+  "id": "/",
+  "name": "Toolzaro - Free Online Developer, PDF & Utility Tools",
+  "short_name": "Toolzaro",
+  "description": "156+ free, fast, privacy-first browser utilities for developers, designers, and creators. Process PDFs, images, JSON, QR codes, and text 100% locally.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#090d16",
+  "theme_color": "#4f46e5",
+  "icons": [
+    {
+      "src": "/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

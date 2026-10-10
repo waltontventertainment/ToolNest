@@ -2,21 +2,58 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Toolzaro - Premium Online Utility Suite</title>
-    <meta name="description" content="Premium Online Utility Suite - 156 browser-based tools for developers, designers and creators. Fast, private, and 100% client-side." />
+    <title>Toolzaro – 156+ Free Online Developer, PDF, Image &amp; Utility Tools</title>
+    <meta name="description" content="Access 156+ free, fast, and 100% private browser tools on Toolzaro. Merge PDFs, compress &amp; resize images, format JSON, generate QR codes, and convert files with zero uploads." />
+    <meta name="keywords" content="Toolzaro, free online tools, developer tools, online pdf tools, image compressor, image resizer, json formatter, qr code generator, password generator, word counter, unit converter, seo tools, client-side web utilities" />
+    <meta name="author" content="Toolzaro" />
+    <meta name="theme-color" content="#4f46e5" />
+    <meta name="msapplication-TileColor" content="#4f46e5" />
+    <meta name="msapplication-config" content="/browserconfig.xml" />
+    <meta name="application-name" content="Toolzaro" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Toolzaro" />
+
+    <!-- Canonical & Indexing -->
     <link rel="canonical" href="https://toolzaro.cyou/" />
-    <meta name="robots" content="index, follow" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+
+    <!-- Complete Domain Favicon & App Icon Suite (Google Search, Desktop, iOS, Android, PWA) -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <!-- RSS & Sitemap Discovery Links for Search Engines -->
+    <link rel="alternate" type="application/rss+xml" title="Toolzaro Official RSS Feed" href="https://toolzaro.cyou/rss.xml" />
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="https://toolzaro.cyou/sitemap-index.xml" />
+
+    <!-- OpenGraph / Facebook / LinkedIn / Discord -->
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Toolzaro" />
+    <meta property="og:locale" content="en_US" />
     <meta property="og:url" content="https://toolzaro.cyou/" />
-    <meta property="og:title" content="Toolzaro - Premium Online Utility Suite" />
-    <meta property="og:description" content="156 browser-based tools for developers, designers and creators. Fast, private, and 100% client-side." />
-    <meta property="og:image" content="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1200&auto=format&fit=crop&q=80" />
+    <meta property="og:title" content="Toolzaro – 156+ Free Online Developer, PDF, Image &amp; Utility Tools" />
+    <meta property="og:description" content="Access 156+ free, fast, and 100% private browser tools on Toolzaro. Merge PDFs, compress &amp; resize images, format JSON, generate QR codes, and convert files with zero uploads." />
+    <meta property="og:image" content="https://toolzaro.cyou/og-banner.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Toolzaro - 156+ Free Online Developer, PDF &amp; Utility Tools" />
+
+    <!-- Twitter / X Cards -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Toolzaro - Premium Online Utility Suite" />
-    <meta name="twitter:description" content="156 browser-based tools for developers, designers and creators. Fast, private, and 100% client-side." />
-    <meta name="twitter:image" content="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1200&auto=format&fit=crop&q=80" />
-    
+    <meta name="twitter:title" content="Toolzaro – 156+ Free Online Developer, PDF, Image &amp; Utility Tools" />
+    <meta name="twitter:description" content="Access 156+ free, fast, and 100% private browser tools on Toolzaro. Merge PDFs, compress &amp; resize images, format JSON, generate QR codes, and convert files with zero uploads." />
+    <meta name="twitter:image" content="https://toolzaro.cyou/og-banner.jpg" />
+
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Hind+Siliguri:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -32,6 +69,11 @@
     <script>
       (function() {
         try {
+          var path = window.location.pathname || '';
+          if (path === '/sabbir' || path === '/sabbir.html' || path.indexOf('/sabbir') === 0) {
+            document.documentElement.classList.add('dark');
+            return;
+          }
           var saved = localStorage.getItem('toolnest-theme');
           var isDark = saved === '"dark"' || saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches);
           if (isDark) {
@@ -48,4 +90,3 @@
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
-

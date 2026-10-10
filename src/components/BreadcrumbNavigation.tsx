@@ -10,33 +10,45 @@ export interface BreadcrumbItem {
 interface BreadcrumbNavigationProps {
   items: BreadcrumbItem[];
   className?: string;
+  onHomeClick?: () => void;
 }
 
-export const BreadcrumbNavigation: React.FC<BreadcrumbNavigationProps> = ({ items, className = '' }) => {
-  if (!items || items.length === 0) return null;
+export const BreadcrumbNavigation: React.FC<BreadcrumbNavigationProps> = ({
+  items,
+  className = '',
+  onHomeClick,
+}) => {
+  // Automatically filter out any duplicate "Home" item passed by callers
+  const cleanItems = React.useMemo(
+    () => (items || []).filter(item => item && item.label.trim().toLowerCase() !== 'home'),
+    [items]
+  );
 
-  const origin = (typeof window !== 'undefined' && window.location.origin && window.location.origin !== 'null')
-    ? window.location.origin 
-    : 'https://toolzaro.com';
+  if (cleanItems.length === 0) return null;
+
+  const origin =
+    typeof window !== 'undefined' && window.location.origin && window.location.origin !== 'null'
+      ? window.location.origin
+      : 'https://toolzaro.cyou';
 
   // Generate Schema.org JSON-LD BreadcrumbList
   const breadcrumbJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
-    'itemListElement': [
+    itemListElement: [
       {
         '@type': 'ListItem',
-        'position': 1,
-        'name': 'Home',
-        'item': `${origin}/`,
+        position: 1,
+        name: 'Home',
+        item: `${origin}/`,
       },
-      ...items.map((item, index) => ({
+      ...cleanItems.map((item, index) => ({
         '@type': 'ListItem',
-        'position': index + 2,
-        'name': item.label,
-        'item': item.href ? `${origin}${item.href}` : undefined,
+        position: index + 2,
+        name: item.label,
+        item: item.href ? `${origin}${item.href}` : undefined,
       })),
-    ].filter((item) => item.item !== undefined || item.position === items.length + 1),
+    ].filter(item => item.item !== undefined || item.position === cleanItems.length + 1),
   };
 
   return (
@@ -53,19 +65,31 @@ export const BreadcrumbNavigation: React.FC<BreadcrumbNavigationProps> = ({ item
         <ol className="flex items-center flex-wrap gap-1.5 list-none p-0 m-0">
           {/* Home Link */}
           <li className="inline-flex items-center">
-            <Link
-              to="/"
-              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-secondary/60 hover:bg-secondary text-muted-foreground hover:text-foreground font-medium transition-colors border border-border/50"
-              title="Return to Toolzaro Home"
-            >
-              <Home className="w-3.5 h-3.5 text-primary shrink-0" />
-              <span>Home</span>
-            </Link>
+            {onHomeClick ? (
+              <button
+                type="button"
+                onClick={onHomeClick}
+                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-secondary/60 hover:bg-secondary text-muted-foreground hover:text-foreground font-medium transition-colors border border-border/50 cursor-pointer"
+                title="Return to Toolzaro Home"
+              >
+                <Home className="w-3.5 h-3.5 text-primary shrink-0" />
+                <span>Home</span>
+              </button>
+            ) : (
+              <Link
+                to="/"
+                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-secondary/60 hover:bg-secondary text-muted-foreground hover:text-foreground font-medium transition-colors border border-border/50"
+                title="Return to Toolzaro Home"
+              >
+                <Home className="w-3.5 h-3.5 text-primary shrink-0" />
+                <span>Home</span>
+              </Link>
+            )}
           </li>
 
           {/* Breadcrumb Segments */}
-          {items.map((item, idx) => {
-            const isLast = idx === items.length - 1;
+          {cleanItems.map((item, idx) => {
+            const isLast = idx === cleanItems.length - 1;
 
             return (
               <li key={idx} className="inline-flex items-center gap-1.5">

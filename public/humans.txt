@@ -1,0 +1,12 @@
+/* TEAM */
+Platform: Toolzaro - Online Developer, PDF & Utility Suite
+Website: https://toolzaro.cyou
+Contact: support@toolzaro.cyou
+Support: sabbirhasansh321@gmail.com
+Location: Global
+
+/* SITE */
+Last update: 2026-10-10
+Language: English / Bengali
+Standards: HTML5, CSS3, ES2024, WebAssembly, Web Crypto API, Schema.org JSON-LD, WCAG 2.1 AA
+Architecture: 100% Client-Side Zero-Knowledge Browser Utilities

@@ -12,15 +12,24 @@ export function isBloggerHost(): boolean {
 }
 
 /**
- * Generates an SEO-clean tool URL without '#'
- * Clean standard path: /tools/image-resizer
- * Works in React SPA on Blogger and across all platforms without reload.
+ * Generates an SEO-clean flat root-level tool URL without '#' or '/tools/' prefix
+ * Clean flat path: /open-meteo-live-weather (like iLovePDF)
+ * Works in React SPA on Cloudflare Pages, Blogger, and across all platforms without reload.
  */
 export function getToolUrl(slug: string): string {
+  const cleanSlug = slug.replace(/^\/+|\/+$/g, '').replace(/^tools\//i, '');
   if (isBloggerHost()) {
-    return `/2026/10/${encodeURIComponent(slug)}.html`;
+    return `/2026/10/${encodeURIComponent(cleanSlug)}.html`;
   }
-  return `/tools/${encodeURIComponent(slug)}`;
+  return `/${encodeURIComponent(cleanSlug)}`;
+}
+
+/**
+ * Generates All Tools Directory / Hub URL
+ * /tools
+ */
+export function getToolsHubUrl(): string {
+  return `/tools`;
 }
 
 /**

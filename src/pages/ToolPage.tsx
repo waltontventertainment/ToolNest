@@ -25,20 +25,28 @@ import { useFavorites } from '../context/FavoritesContext';
 import { useSiteSettings } from '../context/SiteSettingsContext';
 import { toast } from 'sonner';
 import { getEffectiveTool } from '../lib/toolOverrides';
+import { getToolUrl, getCategoryUrl } from '../lib/appUrls';
+import { buildToolSeoTitle, buildToolSeoDescription, buildToolSeoKeywords } from '../lib/seoHelper';
+import { NotFound } from './NotFound';
 
 export const ToolPage: React.FC<{ forcedSlug?: string }> = ({ forcedSlug }) => {
   const { slug: routeSlug } = useParams();
   const [searchParams] = useSearchParams();
-  const slug = forcedSlug || routeSlug || searchParams.get('tool') || '';
+  const rawSlug = forcedSlug || routeSlug || searchParams.get('tool') || '';
+  const cleanSlug = rawSlug.replace(/\.html$/i, '').replace(/^\/+|\/+$/g, '').trim().toLowerCase();
   const { settings } = useSiteSettings();
-  const baseTool = tools.find(t => t.slug === slug);
+  const baseTool = tools.find(
+    t =>
+      t.slug.toLowerCase() === cleanSlug ||
+      t.slug.toLowerCase().replace(/[^a-z0-9]/g, '') === cleanSlug.replace(/[^a-z0-9]/g, '')
+  );
   const tool = baseTool ? getEffectiveTool(baseTool, settings.toolOverrides) : undefined;
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [copiedLink, setCopiedLink] = useState(false);
   const { isFavorite: checkFavorite, toggleFavorite: authToggleFavorite } = useFavorites();
 
   if (!tool) {
-    return <Navigate to="/404" replace />;
+    return <NotFound />;
   }
 
   const isFavorite = checkFavorite(tool.slug);
@@ -56,15 +64,33 @@ export const ToolPage: React.FC<{ forcedSlug?: string }> = ({ forcedSlug }) => {
   };
 
   const { Component } = tool;
+  const baseUrl = (settings.seo?.canonicalBaseUrl || 'https://toolzaro.cyou').replace(/\/+$/, '');
+  const siteName = settings.branding?.siteName || 'Toolzaro';
+  const catSlug = tool.category.toLowerCase().replace(/ & /g, '-').replace(/ /g, '-');
+  const toolCanonicalUrl = `${baseUrl}/${tool.slug}`;
+  const seoTitle = buildToolSeoTitle(tool, siteName);
+  const seoDescription = buildToolSeoDescription(tool, siteName);
+  const seoKeywords = buildToolSeoKeywords(tool, siteName);
 
-  // Rich Schema.org structured data (WebApplication, FAQPage, HowTo)
+  // Rich Schema.org structured data (WebApplication, BreadcrumbList, FAQPage, HowTo)
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "WebApplication",
     "name": tool.name,
-    "description": tool.metaDescription,
+    "headline": seoTitle,
+    "description": seoDescription,
+    "url": toolCanonicalUrl,
     "applicationCategory": "BrowserApplication",
+    "applicationSubCategory": tool.category,
     "operatingSystem": "All",
+    "isAccessibleForFree": true,
+    "browserRequirements": "Requires JavaScript and modern HTML5 browser",
+    "featureList": knowledge.features.map(f => f.title),
+    "author": {
+      "@type": "Organization",
+      "name": siteName,
+      "url": `${baseUrl}/`
+    },
     "offers": {
       "@type": "Offer",
       "price": "0",
@@ -72,10 +98,35 @@ export const ToolPage: React.FC<{ forcedSlug?: string }> = ({ forcedSlug }) => {
     }
   };
 
+  const breadcrumbLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": `${baseUrl}/`
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": `${tool.category} Tools`,
+        "item": `${baseUrl}/category/${catSlug}`
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": tool.name,
+        "item": toolCanonicalUrl
+      }
+    ]
+  };
+
   const faqLd = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    "mainEntity": knowledge.extendedFaqs.map(f => ({
+    "mainEntity": [...(tool.faq || []), ...knowledge.extendedFaqs].map(f => ({
       "@type": "Question",
       "name": f.q,
       "acceptedAnswer": {
@@ -88,7 +139,8 @@ export const ToolPage: React.FC<{ forcedSlug?: string }> = ({ forcedSlug }) => {
   const howToLd = {
     "@context": "https://schema.org",
     "@type": "HowTo",
-    "name": `How to use ${tool.name}`,
+    "name": `How to use ${tool.name} online`,
+    "description": seoDescription,
     "step": tool.howTo.map((step, idx) => ({
       "@type": "HowToStep",
       "position": idx + 1,
@@ -99,9 +151,11 @@ export const ToolPage: React.FC<{ forcedSlug?: string }> = ({ forcedSlug }) => {
   return (
     <>
       <Seo 
-        title={tool.metaTitle} 
-        description={tool.metaDescription} 
-        jsonLd={[jsonLd, faqLd, howToLd]}
+        title={seoTitle} 
+        description={seoDescription} 
+        keywords={seoKeywords}
+        url={toolCanonicalUrl}
+        jsonLd={[jsonLd, breadcrumbLd, faqLd, howToLd]}
       />
       
       {/* Breadcrumbs & Navigation Header */}
@@ -110,7 +164,7 @@ export const ToolPage: React.FC<{ forcedSlug?: string }> = ({ forcedSlug }) => {
           items={[
             {
               label: tool.category,
-              href: `/category/${tool.category.toLowerCase().replace(/ & /g, '-').replace(/ /g, '-')}`,
+              href: getCategoryUrl(tool.category.toLowerCase().replace(/ & /g, '-').replace(/ /g, '-')),
             },
             {
               label: tool.name,
@@ -367,7 +421,7 @@ export const ToolPage: React.FC<{ forcedSlug?: string }> = ({ forcedSlug }) => {
               {tools.filter(t => t.category === tool.category && t.slug !== tool.slug).slice(0, 8).map(t => (
                 <li key={t.slug}>
                   <Link 
-                    to={`/tools/${t.slug}`} 
+                    to={getToolUrl(t.slug)} 
                     className="flex items-center gap-2.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-all p-2 rounded-xl hover:bg-secondary/60 border border-transparent hover:border-border/60"
                   >
                     <div className="w-6 h-6 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">

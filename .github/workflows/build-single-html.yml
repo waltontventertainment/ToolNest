@@ -43,6 +43,10 @@ jobs:
             npm install --legacy-peer-deps
           fi
 
+      - name: "Generate Dynamic Sitemaps, RSS Feed, Robots & Verify Domain Favicons"
+        run: |
+          npm run generate:seo
+
       - name: "Typecheck & Lint"
         run: |
           npm run lint
@@ -52,21 +56,88 @@ jobs:
           npm run build
         env:
           NODE_ENV: production
-          VITE_ROUTER_MODE: 'hash'
+          BUILD_SINGLEFILE: 'false'
 
-      - name: "Verify Cloudflare Deployment Files in dist/"
+      - name: "Verify Cloudflare Deployment Files, Favicons, Sitemaps & Asset Paths in dist/"
         run: |
-          echo "Verifying presence of Cloudflare routing and SEO files in dist/..."
+          echo "Verifying presence of Cloudflare routing, favicons, sitemaps, static assets, and SEO files in dist/..."
           ls -la dist/
-          
-          # Check essential files
-          for file in index.html sabbir.html _redirects _headers robots.txt sitemap.xml ads.txt security.txt googlea0fb90138c92702a.html; do
+
+          # Ensure legacy _redirects is not present to avoid conflicting with Cloudflare wrangler.jsonc SPA routing
+          if [ -f "dist/_redirects" ]; then
+            echo "Removing legacy dist/_redirects to prevent conflict with Cloudflare SPA routing..."
+            rm -f dist/_redirects
+          fi
+
+          # Check essential root HTML, Worker, Favicon, Manifest, Sitemap & AdSense files
+          for file in \
+            index.html \
+            sabbir.html \
+            pdf.worker.mjs \
+            _headers \
+            favicon.ico \
+            favicon.svg \
+            favicon.png \
+            favicon-16x16.png \
+            favicon-32x32.png \
+            favicon-48x48.png \
+            favicon-96x96.png \
+            apple-touch-icon.png \
+            android-chrome-192x192.png \
+            android-chrome-512x512.png \
+            logo.png \
+            og-banner.jpg \
+            site.webmanifest \
+            manifest.json \
+            browserconfig.xml \
+            robots.txt \
+            sitemap-index.xml \
+            sitemap.xml \
+            sitemap-tools.xml \
+            sitemap-categories.xml \
+            sitemap-pages.xml \
+            sitemap-blog.xml \
+            rss.xml \
+            feed.xml \
+            llms.txt \
+            humans.txt \
+            ads.txt \
+            app-ads.txt \
+            security.txt \
+            googlea0fb90138c92702a.html; do
             if [ -f "dist/$file" ]; then
               echo "  [OK] dist/$file exists."
             else
-              echo "  [WARNING] dist/$file not found directly in root of dist (checking public copy)..."
+              echo "  [ERROR] dist/$file is missing!"
+              exit 1
             fi
           done
+
+          # Check essential static directories (assets, cmaps, data)
+          for dir in assets cmaps data; do
+            if [ -d "dist/$dir" ]; then
+              echo "  [OK] dist/$dir/ directory exists."
+            else
+              echo "  [ERROR] dist/$dir/ directory is missing!"
+              exit 1
+            fi
+          done
+
+          # Check countries dataset
+          if [ -f "dist/data/countries.json" ]; then
+            echo "  [OK] dist/data/countries.json exists."
+          else
+            echo "  [ERROR] dist/data/countries.json is missing!"
+            exit 1
+          fi
+
+          # Verify that dist/index.html uses root-relative (/assets/) paths and includes /favicon.ico
+          if grep -q '"/assets/' dist/index.html && grep -q '"/favicon.ico"' dist/index.html; then
+            echo "  [OK] dist/index.html uses root-relative '/assets/' and '/favicon.ico' paths."
+          else
+            echo "  [ERROR] dist/index.html is missing root-relative '/assets/' or '/favicon.ico' paths!"
+            exit 1
+          fi
 
       - name: "Upload Cloudflare Pages Dist Artifact"
         uses: actions/upload-artifact@v4
@@ -78,4 +149,4 @@ jobs:
       - name: "Workflow Summary"
         run: |
           echo "## ☁️ Cloudflare Pages Build Successful!" >> $GITHUB_STEP_SUMMARY
-          echo "All static files, SPA routing rules (_redirects, _headers), SEO files (robots.txt, sitemap.xml, ads.txt, security.txt, Google verification file) have been successfully generated in \`dist/\` and are 100% ready for instant Cloudflare Pages deployment." >> $GITHUB_STEP_SUMMARY
+          echo "All domain favicons (\`favicon.ico\`, \`favicon.svg\`, \`apple-touch-icon.png\`, \`android-chrome-192x192.png\`, \`android-chrome-512x512.png\`, \`site.webmanifest\`), dynamic XML sitemaps (\`sitemap-index.xml\`, \`sitemap.xml\`, \`sitemap-tools.xml\`, \`sitemap-categories.xml\`, \`sitemap-pages.xml\`, \`sitemap-blog.xml\`, \`rss.xml\`), AdSense files (\`ads.txt\`, \`app-ads.txt\`), and static assets have been verified in \`dist/\`." >> $GITHUB_STEP_SUMMARY

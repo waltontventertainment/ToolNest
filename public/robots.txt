@@ -1,6 +1,29 @@
+# Toolzaro Official Robots.txt (https://toolzaro.cyou)
+# 100% Google AdSense, Googlebot, Bingbot & AI Search Friendly
+
+User-agent: Mediapartners-Google
+Allow: /
+
+User-agent: Googlebot
+Allow: /
+Disallow: /sabbir
+Disallow: /sabbir.html
+
+User-agent: Bingbot
+Allow: /
+Disallow: /sabbir
+Disallow: /sabbir.html
+
 User-agent: *
 Allow: /
 Disallow: /sabbir
 Disallow: /sabbir.html
 
+# Sitemaps for Google Search Console & Bing Webmaster Tools
+Sitemap: https://toolzaro.cyou/sitemap-index.xml
 Sitemap: https://toolzaro.cyou/sitemap.xml
+Sitemap: https://toolzaro.cyou/sitemap-tools.xml
+Sitemap: https://toolzaro.cyou/sitemap-categories.xml
+Sitemap: https://toolzaro.cyou/sitemap-pages.xml
+Sitemap: https://toolzaro.cyou/sitemap-blog.xml
+Sitemap: https://toolzaro.cyou/rss.xml

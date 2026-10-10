@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Search, X, ArrowRight, CornerDownLeft, Sparkles, Command } from 'lucide-react';
 import { tools } from '../lib/registry';
 import { ToolDefinition } from '../lib/types';
+import { getToolUrl } from '../lib/appUrls';
 
 export const HeaderSearch: React.FC = () => {
   const [query, setQuery] = useState('');
@@ -98,7 +99,7 @@ export const HeaderSearch: React.FC = () => {
 
   const handleSelectTool = (tool: ToolDefinition) => {
     setIsOpen(false);
-    navigate(`/tools/${tool.slug}`);
+    navigate(getToolUrl(tool.slug));
   };
 
   const handleSearchSubmit = (e?: React.FormEvent) => {

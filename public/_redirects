@@ -1,4 +1,0 @@
-# Cloudflare Pages SPA Routing Rules
-# Directly rewrites /sabbir and /sabbir.html to the dedicated sabbir.html entry point with HTTP 200 (no 301/302 redirects)
-/sabbir        /sabbir.html   200
-/sabbir.html   /sabbir.html   200

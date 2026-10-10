@@ -1,0 +1,1299 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Toolzaro - 156+ Free Online Developer, PDF &amp; Utility Tools</title>
+    <link>https://toolzaro.cyou/</link>
+    <description>Complete suite of 156+ fast, privacy-first browser utilities for developers, designers, and creators. 100% client-side execution.</description>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 10 Oct 2026 09:53:58 GMT</lastBuildDate>
+    <atom:link href="https://toolzaro.cyou/rss.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>The Definitive Guide to Client-Side Web Privacy: How WebAssembly &amp; Web Crypto Eliminate Cloud Leaks</title>
+      <link>https://toolzaro.cyou/blog/definitive-guide-client-side-privacy-web-utilities</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/blog/definitive-guide-client-side-privacy-web-utilities</guid>
+      <description>An architectural deep-dive into zero-knowledge browser utilities. Learn how Web Cryptography, Canvas APIs, and WebAssembly enable military-grade encryption, PDF manipulation, and image processing without transmitting a single byte to remote servers.</description>
+      <category>Security &amp; Privacy</category>
+      <pubDate>Sun, 04 Oct 2026 00:00:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>Technical SEO in 2026: The Complete Blueprint for Schema Markup, OpenGraph, and Rich Snippets</title>
+      <link>https://toolzaro.cyou/blog/technical-seo-blueprint-2026-schema-meta-opengraph</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/blog/technical-seo-blueprint-2026-schema-meta-opengraph</guid>
+      <description>A comprehensive, step-by-step masterclass on technical search optimization. Learn how to construct multi-type Schema.org JSON-LD trees, prevent canonical cannibalization, optimize social cards, and satisfy Google Search Essentials.</description>
+      <category>SEO &amp; Growth</category>
+      <pubDate>Sat, 03 Oct 2026 00:00:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>The Modern Web Asset Optimization Blueprint: Lossless Image Compression, Next-Gen Formats, and Core Web Vitals</title>
+      <link>https://toolzaro.cyou/blog/modern-web-asset-optimization-webp-avif-performance</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/blog/modern-web-asset-optimization-webp-avif-performance</guid>
+      <description>A practical, engineering-focused manual on image and asset optimization. Master the trade-offs between WebP, AVIF, and SVG, eliminate Largest Contentful Paint (LCP) bottlenecks, and optimize digital assets for peak web performance.</description>
+      <category>Design &amp; UX</category>
+      <pubDate>Fri, 02 Oct 2026 00:00:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>YouTube Transcript Intelligence: How to Transform Video Dialogue into High-Ranking SEO Content</title>
+      <link>https://toolzaro.cyou/blog/youtube-transcript-intelligence-content-repurposing</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/blog/youtube-transcript-intelligence-content-repurposing</guid>
+      <description>The ultimate content strategy playbook for creators, educators, and marketers. Learn how to extract clean video transcripts, clean automated speech recognition (ASR) errors, format timestamped guides, and repurpose video content.</description>
+      <category>SEO &amp; Growth</category>
+      <pubDate>Thu, 01 Oct 2026 00:00:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>The Production Web Security &amp; Cryptography Cheatsheet: Hashes, JSON Web Tokens (JWT), and Base64 Encoding</title>
+      <link>https://toolzaro.cyou/blog/developer-cryptography-cheatsheet-hashes-jwt-base64</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/blog/developer-cryptography-cheatsheet-hashes-jwt-base64</guid>
+      <description>An authoritative reference guide for software engineers and security practitioners. Clarify the critical differences between encoding, hashing, and encryption, avoid JWT validation pitfalls, and implement secure data workflows.</description>
+      <category>Developer Workflows</category>
+      <pubDate>Wed, 30 Sep 2026 00:00:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>Global Country Directory - Global Country Directory | Toolzaro</title>
+      <link>https://toolzaro.cyou/rest-countries-explorer</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/rest-countries-explorer</guid>
+      <description>Instantly lookup details, flags, capitals, and currencies of 200+ countries. Free online universal data suite utility on Toolzaro.</description>
+      <category>Universal Data Suite</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Lexicon Word Definitions - English Dictionary &amp; Audio Pronunciation | Toolzaro</title>
+      <link>https://toolzaro.cyou/free-dictionary-lookup</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/free-dictionary-lookup</guid>
+      <description>Lookup English word definitions, phonetic spellings, synonyms, and audio pronunciation. Free online universal data suite utility on Toolzaro.</description>
+      <category>Universal Data Suite</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Universal Library Explorer - Book &amp; Author Search Engine | Toolzaro</title>
+      <link>https://toolzaro.cyou/open-library-book-search</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/open-library-book-search</guid>
+      <description>Search millions of books, authors, and cover art seamlessly. Free online universal data suite utility on Toolzaro.</description>
+      <category>Universal Data Suite</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Real-Time Weather Station - Global Live Weather Station | Toolzaro</title>
+      <link>https://toolzaro.cyou/open-meteo-live-weather</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/open-meteo-live-weather</guid>
+      <description>Get real-time weather and temperature for any city. Free online universal data suite utility on Toolzaro.</description>
+      <category>Universal Data Suite</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Digital Persona Architect - Avatar &amp; Profile Picture Generator | Toolzaro</title>
+      <link>https://toolzaro.cyou/dicebear-robohash-avatar</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/dicebear-robohash-avatar</guid>
+      <description>Generate unique cartoon and robot avatars from text instantly. Free online universal data suite utility on Toolzaro.</description>
+      <category>Universal Data Suite</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Advanced QR Suite - QR Code Generator | Toolzaro</title>
+      <link>https://toolzaro.cyou/qr-server-code-maker</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/qr-server-code-maker</guid>
+      <description>Generate high-resolution QR codes from URLs or text instantly. Free online universal data suite utility on Toolzaro.</description>
+      <category>Universal Data Suite</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Dynamic Visual Placeholders - Placeholder Image Generator | Toolzaro</title>
+      <link>https://toolzaro.cyou/lorem-picsum-placeholder-images</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/lorem-picsum-placeholder-images</guid>
+      <description>Generate unlimited dummy placeholder photos with custom dimensions and filters. Free online universal data suite utility on Toolzaro.</description>
+      <category>Universal Data Suite</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Network IP Identifier - Public IP Address Inspector | Toolzaro</title>
+      <link>https://toolzaro.cyou/ipify-public-ip-inspector</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/ipify-public-ip-inspector</guid>
+      <description>Instantly inspect your public IP address. Free online universal data suite utility on Toolzaro.</description>
+      <category>Universal Data Suite</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Inspiration &amp; Humor Stream - Motivation &amp; Fun Hub | Toolzaro</title>
+      <link>https://toolzaro.cyou/joke-motivation-hub</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/joke-motivation-hub</guid>
+      <description>Enjoy random tech jokes and inspirational quotes. Free online universal data suite utility on Toolzaro.</description>
+      <category>Universal Data Suite</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>World Academic Directory - Global University Directory | Toolzaro</title>
+      <link>https://toolzaro.cyou/hipolabs-universities-list</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/hipolabs-universities-list</guid>
+      <description>Directory of universities and colleges across 200+ countries. Free online universal data suite utility on Toolzaro.</description>
+      <category>Universal Data Suite</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Instant Web Snapshot - Website Screenshot Generator | Toolzaro</title>
+      <link>https://toolzaro.cyou/website-screenshot-capture</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/website-screenshot-capture</guid>
+      <description>Generate high-quality full-page screenshots of any website from a URL instantly. Free online universal data suite utility on Toolzaro.</description>
+      <category>Universal Data Suite</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Wikipedia Article &amp; Summary Explorer - Wikipedia Article &amp; Summary Explorer | Toolzaro</title>
+      <link>https://toolzaro.cyou/wikipedia-summarizer</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/wikipedia-summarizer</guid>
+      <description>Search any Wikipedia article globally, extract high-precision summaries, and read full articles in English or Bengali. Free online wikipedia utility on Toolzaro.</description>
+      <category>Wikipedia</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>&quot;On This Day&quot; History Timeline - &quot;On This Day&quot; History Timeline Explorer - Wikipedia | Toolzaro</title>
+      <link>https://toolzaro.cyou/wikipedia-on-this-day-history</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/wikipedia-on-this-day-history</guid>
+      <description>Explore historically logged events, notable births, and deaths for any date of the year. Completely free timeline search. Free online wikipedia utility on Toolzaro.</description>
+      <category>Wikipedia</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Wikipedia Landmark Geo-Search - Wikipedia Landmark Geo-Search - Locate Landmarks Near Me | Toolzaro</title>
+      <link>https://toolzaro.cyou/wikipedia-landmark-geosearch</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/wikipedia-landmark-geosearch</guid>
+      <description>Locate historical buildings, landmark coordinates, and registered monuments near your GPS coordinates or preset global cities. Free online wikipedia utility on Toolzaro.</description>
+      <category>Wikipedia</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>YouTube Transcript Extractor - YouTube Transcript Extractor - Video Subtitles Downloader | Toolzaro</title>
+      <link>https://toolzaro.cyou/youtube-transcript-extractor</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/youtube-transcript-extractor</guid>
+      <description>Extract, download, and copy subtitles or transcripts from any YouTube video in milliseconds. Powered by high-speed scraping with direct caption fetching. Free online universal data suite utility on Toolzaro.</description>
+      <category>Universal Data Suite</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>PDF Merger - PDF Merger - Combine Multiple PDF Files Online | Toolzaro</title>
+      <link>https://toolzaro.cyou/pdf-merge</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/pdf-merge</guid>
+      <description>Combine multiple PDF files into a single organized PDF document quickly and securely in your browser. Free online pdf utility on Toolzaro.</description>
+      <category>PDF</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>PDF Splitter &amp; Page Extractor - PDF Splitter &amp; Page Extractor | Toolzaro</title>
+      <link>https://toolzaro.cyou/pdf-split</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/pdf-split</guid>
+      <description>Split a PDF document into separate page files or extract specific page ranges quickly and securely. Free online pdf utility on Toolzaro.</description>
+      <category>PDF</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>PDF to Text Extractor - PDF to Text Extractor | Toolzaro</title>
+      <link>https://toolzaro.cyou/pdf-to-text</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/pdf-to-text</guid>
+      <description>Extract raw text and string contents from any PDF file quickly and convert it to readable text or .txt file. Free online pdf utility on Toolzaro.</description>
+      <category>PDF</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Text to PDF Generator - Text to PDF Generator | Toolzaro</title>
+      <link>https://toolzaro.cyou/text-to-pdf</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/text-to-pdf</guid>
+      <description>Convert plain text, notes, or articles into styled A4 PDF documents with custom font sizes. Free online pdf utility on Toolzaro.</description>
+      <category>PDF</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>PDF to Image Converter - PDF to Image Converter | Toolzaro</title>
+      <link>https://toolzaro.cyou/pdf-to-images</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/pdf-to-images</guid>
+      <description>Render PDF pages into high-resolution PNG images for easy viewing, sharing, or embedding. Free online pdf utility on Toolzaro.</description>
+      <category>PDF</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>PDF Page Rotator &amp; Organizer - PDF Page Rotator - Rotate &amp; Turn PDF Pages Online | Toolzaro</title>
+      <link>https://toolzaro.cyou/pdf-rotate</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/pdf-rotate</guid>
+      <description>Rotate specific PDF pages or all pages by 90, 180, or 270 degrees and download the updated PDF. Free online pdf utility on Toolzaro.</description>
+      <category>PDF</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>PDF Watermark &amp; Stamp Utility - PDF Watermark &amp; Stamp Utility - Add Text Watermarks to PDF | Toolzaro</title>
+      <link>https://toolzaro.cyou/pdf-watermark</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/pdf-watermark</guid>
+      <description>Add custom text watermarks, stamps, or security notices across all pages of your PDF document. Free online pdf utility on Toolzaro.</description>
+      <category>PDF</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>QR Code Scanner &amp; Reader - QR Code Scanner &amp; Reader - Camera &amp; Image Upload | Toolzaro</title>
+      <link>https://toolzaro.cyou/qr-code-scanner</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/qr-code-scanner</guid>
+      <description>Scan and decode QR codes instantly from uploaded document images, camera photo captures, or live webcam video feed with contrast auto-enhancement. Free online qr &amp; barcode utility on Toolzaro.</description>
+      <category>QR &amp; Barcode</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Barcode Scanner &amp; Reader - Barcode Scanner &amp; Reader - EAN, UPC, Code 128 Scanner | Toolzaro</title>
+      <link>https://toolzaro.cyou/barcode-scanner</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/barcode-scanner</guid>
+      <description>Scan and decode 1D and 2D product barcodes (EAN-13, UPC-A, Code 128, Code 39, ITF, DataMatrix) from camera or uploaded photos. Free online qr &amp; barcode utility on Toolzaro.</description>
+      <category>QR &amp; Barcode</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Color Picker &amp; Palette Generator - Color Picker &amp; Palette Generator - Color Harmonies &amp; CSS Vars | Toolzaro</title>
+      <link>https://toolzaro.cyou/color-picker-palette</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/color-picker-palette</guid>
+      <description>Extract color harmonies, complementary colors, RGB/HSL values, and generated CSS custom properties. Free online color &amp; image utility on Toolzaro.</description>
+      <category>Color &amp; Image</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>CSS Box Shadow Generator - CSS Box Shadow Generator - Custom Shadows &amp; Live Preview | Toolzaro</title>
+      <link>https://toolzaro.cyou/css-box-shadow-generator</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/css-box-shadow-generator</guid>
+      <description>Design custom CSS box shadows with live visual preview, offsets, blur, spread, opacity, and inset controls. Free online color &amp; image utility on Toolzaro.</description>
+      <category>Color &amp; Image</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Image Resizer &amp; Format Converter - Image Resizer &amp; Format Converter - Resize JPG, PNG, WebP | Toolzaro</title>
+      <link>https://toolzaro.cyou/image-resizer-converter</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/image-resizer-converter</guid>
+      <description>Resize image dimensions in pixels, scale aspect ratios, and convert between JPEG, PNG, and WebP formats. Free online color &amp; image utility on Toolzaro.</description>
+      <category>Color &amp; Image</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Image Cropper &amp; Aspect Ratio Frame - Image Cropper &amp; Aspect Ratio Frame - Crop 1:1, 16:9, 9:16 | Toolzaro</title>
+      <link>https://toolzaro.cyou/image-cropper-ratio</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/image-cropper-ratio</guid>
+      <description>Crop images with preset aspect ratios (1:1, 16:9, 4:5, 9:16, 3:2), rotate 90 degrees, and flip horizontally or vertically. Free online color &amp; image utility on Toolzaro.</description>
+      <category>Color &amp; Image</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Image Color Palette &amp; Eyedropper - Image Color Palette &amp; Eyedropper - Extract Dominant Colors | Toolzaro</title>
+      <link>https://toolzaro.cyou/image-palette-extractor</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/image-palette-extractor</guid>
+      <description>Extract prominent dominant colors and hex codes from any image or click pixels directly with the eyedropper. Free online color &amp; image utility on Toolzaro.</description>
+      <category>Color &amp; Image</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Image Filters &amp; Photo Studio - Image Filters &amp; Photo Studio - Vintage, Cyberpunk, Film Noir | Toolzaro</title>
+      <link>https://toolzaro.cyou/image-filters-adjuster</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/image-filters-adjuster</guid>
+      <description>Adjust photo brightness, contrast, saturation, blur, sepia, grayscale, and apply cinematic style presets. Free online color &amp; image utility on Toolzaro.</description>
+      <category>Color &amp; Image</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Image Watermark &amp; Stamp Adder - Image Watermark &amp; Stamp Adder - Protect Photos with Text | Toolzaro</title>
+      <link>https://toolzaro.cyou/image-watermark-adder</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/image-watermark-adder</guid>
+      <description>Add customizable text watermarks, copyright stamps, opacity, rotation, and tiled patterns to protect images. Free online color &amp; image utility on Toolzaro.</description>
+      <category>Color &amp; Image</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Color Contrast &amp; WCAG Checker - Color Contrast &amp; WCAG Checker - Test AA &amp; AAA Compliance | Toolzaro</title>
+      <link>https://toolzaro.cyou/color-contrast-wcag-checker</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/color-contrast-wcag-checker</guid>
+      <description>Calculate precise WCAG 2.1 color contrast ratios (e.g. 4.5:1, 7:1) for accessible text and UI components. Free online color &amp; image utility on Toolzaro.</description>
+      <category>Color &amp; Image</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>SVG to Data URI &amp; CSS Converter - SVG to Data URI &amp; CSS Converter - Clean Data URLs | Toolzaro</title>
+      <link>https://toolzaro.cyou/svg-to-css-data-uri</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/svg-to-css-data-uri</guid>
+      <description>Convert inline SVG markup into clean, URL-encoded Data URIs and CSS background-image rules. Free online color &amp; image utility on Toolzaro.</description>
+      <category>Color &amp; Image</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Color Gradient Mesh &amp; CSS Generator - Color Gradient Mesh &amp; CSS Generator - Linear, Radial &amp; Conic | Toolzaro</title>
+      <link>https://toolzaro.cyou/color-gradient-mesh-generator</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/color-gradient-mesh-generator</guid>
+      <description>Design linear, radial, and conic CSS background gradients with customizable color stops and angle controls. Free online color &amp; image utility on Toolzaro.</description>
+      <category>Color &amp; Image</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Color Blindness &amp; Vision Simulator - Color Blindness Simulator - Protanopia, Deuteranopia &amp; Tritanopia | Toolzaro</title>
+      <link>https://toolzaro.cyou/color-blindness-simulator</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/color-blindness-simulator</guid>
+      <description>Simulate how graphics and photos appear to individuals with Protanopia, Deuteranopia, Tritanopia, and Achromatopsia. Free online color &amp; image utility on Toolzaro.</description>
+      <category>Color &amp; Image</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Image Blur &amp; Pixelate Anonymizer - Image Blur &amp; Pixelate Anonymizer - Protect Private Info | Toolzaro</title>
+      <link>https://toolzaro.cyou/image-anonymizer-blur</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/image-anonymizer-blur</guid>
+      <description>Blur or pixelate photos and screenshots to anonymize sensitive text, faces, credentials, or personal info. Free online color &amp; image utility on Toolzaro.</description>
+      <category>Color &amp; Image</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>JSON to TypeScript Interface Generator - JSON to TypeScript Interface Generator - Strongly Typed TS | Toolzaro</title>
+      <link>https://toolzaro.cyou/json-to-typescript</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/json-to-typescript</guid>
+      <description>Convert raw JSON objects into clean, strongly typed TypeScript interfaces with optional nested types. Free online developer utility on Toolzaro.</description>
+      <category>Developer</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Cron Schedule Humanizer - Cron Schedule Humanizer - Plain English Schedule Translator | Toolzaro</title>
+      <link>https://toolzaro.cyou/cron-schedule-humanizer</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/cron-schedule-humanizer</guid>
+      <description>Translate cryptic 5-field cron schedule expressions into natural, easy-to-understand English sentences. Free online developer utility on Toolzaro.</description>
+      <category>Developer</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>SVG Code Optimizer &amp; Cleaner - SVG Code Optimizer - Clean &amp; Minify Vector Markup | Toolzaro</title>
+      <link>https://toolzaro.cyou/svg-optimizer</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/svg-optimizer</guid>
+      <description>Remove comments, editor tags, and extra whitespace from inline SVG code to reduce payload size. Free online developer utility on Toolzaro.</description>
+      <category>Developer</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>JWT Token Generator &amp; Tester - JWT Token Generator &amp; Tester - Test JSON Web Tokens | Toolzaro</title>
+      <link>https://toolzaro.cyou/jwt-generator</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/jwt-generator</guid>
+      <description>Create custom JWT tokens with custom header, claims payload, and secret key for development testing. Free online developer utility on Toolzaro.</description>
+      <category>Developer</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Discount &amp; Sales Tax Calculator - Discount &amp; Sales Tax Calculator - Final Sale Price | Toolzaro</title>
+      <link>https://toolzaro.cyou/discount-tax-calculator</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/discount-tax-calculator</guid>
+      <description>Calculate final prices after applying percentage discounts and sales tax / VAT additions. Free online calculators utility on Toolzaro.</description>
+      <category>Calculators</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>BMI &amp; Metabolic Health Calculator - BMI &amp; Health Metrics Calculator - BMI &amp; Maintenance Calories | Toolzaro</title>
+      <link>https://toolzaro.cyou/bmi-calculator</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/bmi-calculator</guid>
+      <description>Calculate Body Mass Index (BMI), weight categories, Basal Metabolic Rate (BMR), and daily calorie needs. Free online calculators utility on Toolzaro.</description>
+      <category>Calculators</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Text Case Converter Pro &amp; Cleaner - Text Case Converter Pro &amp; Cleaner - Advanced Text Formatting | Toolzaro</title>
+      <link>https://toolzaro.cyou/text-case-cleaner-pro</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/text-case-cleaner-pro</guid>
+      <description>Transform text to camelCase, snake_case, kebab-case, strip emojis, and remove accent marks. Free online text utility on Toolzaro.</description>
+      <category>Text</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>IP &amp; Client Network Inspector - IP &amp; Client Network Inspector - Network Diagnostics | Toolzaro</title>
+      <link>https://toolzaro.cyou/domain-ip-lookup</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/domain-ip-lookup</guid>
+      <description>Validate IPv4 addresses, inspect user agent strings, and review client screen &amp; network details. Free online developer utility on Toolzaro.</description>
+      <category>Developer</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Cron Expression Generator - Cron Expression Generator - Visual Schedule Builder | Toolzaro</title>
+      <link>https://toolzaro.cyou/cron-generator</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/cron-generator</guid>
+      <description>Generate and translate cron schedule expressions with human-readable descriptions. Free online generators utility on Toolzaro.</description>
+      <category>Generators</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>CSS Gradient Generator - CSS Gradient Generator - Interactive Color Blends | Toolzaro</title>
+      <link>https://toolzaro.cyou/css-gradient-generator</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/css-gradient-generator</guid>
+      <description>Create custom linear, radial, and conic CSS gradients with live preview and instant CSS code output. Free online generators utility on Toolzaro.</description>
+      <category>Generators</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Placeholder Image Generator - Placeholder Image Generator - Custom Dummy Images | Toolzaro</title>
+      <link>https://toolzaro.cyou/placeholder-image-generator</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/placeholder-image-generator</guid>
+      <description>Create custom dimensions SVG and PNG placeholder images with text labels and custom background colors. Free online generators utility on Toolzaro.</description>
+      <category>Generators</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Mock Data Generator - Mock Data Generator - Fake JSON &amp; CSV Datasets | Toolzaro</title>
+      <link>https://toolzaro.cyou/mock-data-generator</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/mock-data-generator</guid>
+      <description>Generate realistic mock datasets (names, emails, dates, cities, salaries) in JSON or CSV format. Free online generators utility on Toolzaro.</description>
+      <category>Generators</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>SQL Seed Data Generator - SQL Seed Data Generator - Generate INSERT Queries | Toolzaro</title>
+      <link>https://toolzaro.cyou/sql-insert-generator</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/sql-insert-generator</guid>
+      <description>Create formatted SQL INSERT INTO statements for database testing and initial database seeding. Free online generators utility on Toolzaro.</description>
+      <category>Generators</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>UUID &amp; Unique ID Suite - UUID &amp; Unique ID Suite - Multi-Standard ID Generator | Toolzaro</title>
+      <link>https://toolzaro.cyou/id-generator-suite</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/id-generator-suite</guid>
+      <description>Generate batch unique identifiers including UUID v4, ULID, NanoID, and CUID style keys. Free online generators utility on Toolzaro.</description>
+      <category>Generators</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>API Key &amp; Secret Generator - API Key &amp; Secret Generator - Secure Tokens | Toolzaro</title>
+      <link>https://toolzaro.cyou/secret-key-generator</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/secret-key-generator</guid>
+      <description>Generate high-entropy cryptographically secure API keys, secret tokens, and hex strings. Free online generators utility on Toolzaro.</description>
+      <category>Generators</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Advanced URL Slug Generator - Advanced URL Slug Generator - Clean Permalinks | Toolzaro</title>
+      <link>https://toolzaro.cyou/advanced-slug-generator</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/advanced-slug-generator</guid>
+      <description>Convert any article title or text into clean, SEO-friendly URL slugs with custom separators and stop-word filters. Free online generators utility on Toolzaro.</description>
+      <category>Generators</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Web App Manifest &amp; Favicon Generator - Web App Manifest &amp; Favicon Generator - PWA Config | Toolzaro</title>
+      <link>https://toolzaro.cyou/favicon-manifest-generator</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/favicon-manifest-generator</guid>
+      <description>Generate site.webmanifest JSON files and HTML favicon meta tags for web apps and PWAs. Free online generators utility on Toolzaro.</description>
+      <category>Generators</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Bcrypt &amp; Secure Hash Generator - Bcrypt &amp; Secure Hash Generator - Password Hashes | Toolzaro</title>
+      <link>https://toolzaro.cyou/bcrypt-hash-generator</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/bcrypt-hash-generator</guid>
+      <description>Generate secure salted password hashes with customizable cost rounds directly in your browser. Free online generators utility on Toolzaro.</description>
+      <category>Generators</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Temperature Converter - Temperature Converter | Toolzaro</title>
+      <link>https://toolzaro.cyou/temperature-converter</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/temperature-converter</guid>
+      <description>Convert between Celsius, Fahrenheit, and Kelvin. Free online converters utility on Toolzaro.</description>
+      <category>Converters</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Length Converter - Length Converter | Toolzaro</title>
+      <link>https://toolzaro.cyou/length-converter</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/length-converter</guid>
+      <description>Convert length between various units. Free online converters utility on Toolzaro.</description>
+      <category>Converters</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Weight Converter - Weight Converter | Toolzaro</title>
+      <link>https://toolzaro.cyou/weight-converter</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/weight-converter</guid>
+      <description>Convert weight between various units. Free online converters utility on Toolzaro.</description>
+      <category>Converters</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Volume Converter - Volume Converter | Toolzaro</title>
+      <link>https://toolzaro.cyou/volume-converter</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/volume-converter</guid>
+      <description>Convert volume between various units. Free online converters utility on Toolzaro.</description>
+      <category>Converters</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Data Storage Converter - Data Storage Converter | Toolzaro</title>
+      <link>https://toolzaro.cyou/data-storage-converter</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/data-storage-converter</guid>
+      <description>Convert digital data storage sizes. Free online converters utility on Toolzaro.</description>
+      <category>Converters</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Angle Converter - Angle Converter | Toolzaro</title>
+      <link>https://toolzaro.cyou/angle-converter</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/angle-converter</guid>
+      <description>Convert between degrees, radians, and gradians. Free online converters utility on Toolzaro.</description>
+      <category>Converters</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>ROT13 Converter - ROT13 Converter | Toolzaro</title>
+      <link>https://toolzaro.cyou/rot13-converter</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/rot13-converter</guid>
+      <description>Encode and decode text using ROT13 cipher. Free online converters utility on Toolzaro.</description>
+      <category>Converters</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Text to Octal - Text to Octal Converter | Toolzaro</title>
+      <link>https://toolzaro.cyou/text-to-octal</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/text-to-octal</guid>
+      <description>Convert text to octal values. Free online converters utility on Toolzaro.</description>
+      <category>Converters</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Octal to Text - Octal to Text Converter | Toolzaro</title>
+      <link>https://toolzaro.cyou/octal-to-text</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/octal-to-text</guid>
+      <description>Convert octal values back to text. Free online converters utility on Toolzaro.</description>
+      <category>Converters</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Roman Numeral Converter - Roman Numeral Converter | Toolzaro</title>
+      <link>https://toolzaro.cyou/roman-numeral-converter</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/roman-numeral-converter</guid>
+      <description>Convert between standard numbers and Roman numerals. Free online converters utility on Toolzaro.</description>
+      <category>Converters</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Case Converter - Case Converter - Upper, Lower, Camel Case | Toolzaro</title>
+      <link>https://toolzaro.cyou/case-converter</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/case-converter</guid>
+      <description>Quickly convert text between uppercase, lowercase, title case, camel case, snake case, and kebab case online. Free online text utility on Toolzaro.</description>
+      <category>Text</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Word Counter - Word &amp; Character Counter - Online Text Tool | Toolzaro</title>
+      <link>https://toolzaro.cyou/word-counter</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/word-counter</guid>
+      <description>Instantly count words, characters, lines, and paragraphs in your text. 100% free and processes locally in your browser. Free online text utility on Toolzaro.</description>
+      <category>Text</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>HTML Viewer &amp; Editor - Live HTML Editor &amp; Viewer | Toolzaro</title>
+      <link>https://toolzaro.cyou/html-viewer-editor</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/html-viewer-editor</guid>
+      <description>Write HTML code and see the live preview instantly. A fast, browser-based HTML viewer. Free online developer utility on Toolzaro.</description>
+      <category>Developer</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Base64 Encode/Decode - Base64 Encoder &amp; Decoder - Online Developer Tool | Toolzaro</title>
+      <link>https://toolzaro.cyou/base64-converter</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/base64-converter</guid>
+      <description>Instantly encode or decode text using Base64. A secure, browser-based developer utility that keeps your data private. Free online developer utility on Toolzaro.</description>
+      <category>Developer</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Number Base Converter - Number Base Converter - Hex, Binary, Decimal, Octal | Toolzaro</title>
+      <link>https://toolzaro.cyou/number-base-converter</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/number-base-converter</guid>
+      <description>Convert numbers instantly between Decimal, Hexadecimal, Binary, and Octal bases. online utility. Free online converters utility on Toolzaro.</description>
+      <category>Converters</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Remove Duplicate Lines - Remove Duplicate Lines - Online Tool | Toolzaro</title>
+      <link>https://toolzaro.cyou/remove-duplicate-lines</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/remove-duplicate-lines</guid>
+      <description>Easily remove duplicate lines from your text. Fast, free, and secure deduplication in your browser. Free online text utility on Toolzaro.</description>
+      <category>Text</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Sort Lines - Sort Lines Alphabetically - Online Tool | Toolzaro</title>
+      <link>https://toolzaro.cyou/sort-lines</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/sort-lines</guid>
+      <description>Sort text lines in alphabetical order instantly. browser-based utility. Free online text utility on Toolzaro.</description>
+      <category>Text</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Remove Extra Spaces - Remove Extra Spaces - Text Cleaner | Toolzaro</title>
+      <link>https://toolzaro.cyou/remove-extra-spaces</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/remove-extra-spaces</guid>
+      <description>Remove double spaces, tabs, and trailing whitespaces from your text. Free online text utility on Toolzaro.</description>
+      <category>Text</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Remove Empty Lines - Remove Empty Lines - Online Text Tool | Toolzaro</title>
+      <link>https://toolzaro.cyou/remove-empty-lines</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/remove-empty-lines</guid>
+      <description>Delete all blank and empty lines from your text files instantly. Free online text utility on Toolzaro.</description>
+      <category>Text</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Reverse Text - Reverse Text Generator - Flip Text Backwards | Toolzaro</title>
+      <link>https://toolzaro.cyou/reverse-text</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/reverse-text</guid>
+      <description>Reverse any text string backwards instantly with this free online tool. Free online text utility on Toolzaro.</description>
+      <category>Text</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Reverse Lines - Reverse Line Order - Online Tool | Toolzaro</title>
+      <link>https://toolzaro.cyou/reverse-lines</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/reverse-lines</guid>
+      <description>Reverse the order of lines in a list or text document. Free online text utility on Toolzaro.</description>
+      <category>Text</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Strip HTML Tags - Strip HTML Tags - Convert HTML to Plain Text | Toolzaro</title>
+      <link>https://toolzaro.cyou/html-stripper</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/html-stripper</guid>
+      <description>Remove all HTML tags from a text block, leaving only the plain text content. Free online text utility on Toolzaro.</description>
+      <category>Text</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Extract Emails - Extract Emails from Text - Online Tool | Toolzaro</title>
+      <link>https://toolzaro.cyou/extract-emails</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/extract-emails</guid>
+      <description>Find and extract all email addresses from a block of text. Free online text utility on Toolzaro.</description>
+      <category>Text</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Extract URLs - Extract URLs from Text - Online Tool | Toolzaro</title>
+      <link>https://toolzaro.cyou/extract-urls</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/extract-urls</guid>
+      <description>Find and extract all HTTP and HTTPS links from text. Free online text utility on Toolzaro.</description>
+      <category>Text</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Text to Binary - Text to Binary Converter - Tool | Toolzaro</title>
+      <link>https://toolzaro.cyou/text-to-binary</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/text-to-binary</guid>
+      <description>Convert plain text into binary code instantly. Free online text utility on Toolzaro.</description>
+      <category>Text</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Binary to Text - Binary to Text Converter - Tool | Toolzaro</title>
+      <link>https://toolzaro.cyou/binary-to-text</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/binary-to-text</guid>
+      <description>Convert binary code back into human-readable plain text. Free online text utility on Toolzaro.</description>
+      <category>Text</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Text to Hex - Text to Hex Converter - Tool | Toolzaro</title>
+      <link>https://toolzaro.cyou/text-to-hex</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/text-to-hex</guid>
+      <description>Convert plain text into hexadecimal format. Free online text utility on Toolzaro.</description>
+      <category>Text</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Hex to Text - Hex to Text Converter - Tool | Toolzaro</title>
+      <link>https://toolzaro.cyou/hex-to-text</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/hex-to-text</guid>
+      <description>Convert hexadecimal strings back into plain text. Free online text utility on Toolzaro.</description>
+      <category>Text</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Text to ASCII - Text to ASCII Converter | Toolzaro</title>
+      <link>https://toolzaro.cyou/text-to-ascii</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/text-to-ascii</guid>
+      <description>Convert plain text into ASCII character codes. Free online text utility on Toolzaro.</description>
+      <category>Text</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>ASCII to Text - ASCII to Text Converter | Toolzaro</title>
+      <link>https://toolzaro.cyou/ascii-to-text</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/ascii-to-text</guid>
+      <description>Convert ASCII numeric codes back into text. Free online text utility on Toolzaro.</description>
+      <category>Text</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Shuffle Lines - Shuffle Lines - Randomize List Order | Toolzaro</title>
+      <link>https://toolzaro.cyou/shuffle-lines</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/shuffle-lines</guid>
+      <description>Randomize the order of lines in a list or text document. Free online text utility on Toolzaro.</description>
+      <category>Text</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Add Line Numbers - Add Line Numbers to Text - Tool | Toolzaro</title>
+      <link>https://toolzaro.cyou/add-line-numbers</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/add-line-numbers</guid>
+      <description>Automatically add sequential line numbers to the beginning of every line. Free online text utility on Toolzaro.</description>
+      <category>Text</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Add Prefix &amp; Suffix - Add Prefix &amp; Suffix to Lines - Tool | Toolzaro</title>
+      <link>https://toolzaro.cyou/prefix-suffix-lines</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/prefix-suffix-lines</guid>
+      <description>Add text to the beginning (prefix) and end (suffix) of every line instantly. Free online text utility on Toolzaro.</description>
+      <category>Text</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Text Difference Compare - Text Difference Checker - Compare Texts | Toolzaro</title>
+      <link>https://toolzaro.cyou/text-diff</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/text-diff</guid>
+      <description>Compare two text blocks and highlight the differences, additions, and deletions. Free online text utility on Toolzaro.</description>
+      <category>Text</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Find &amp; Replace - Find and Replace Text Online - Regex Support | Toolzaro</title>
+      <link>https://toolzaro.cyou/find-and-replace</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/find-and-replace</guid>
+      <description>Find and replace text with optional Regular Expression (Regex) support. Free online text utility on Toolzaro.</description>
+      <category>Text</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>QR Code Generator - QR Code Generator - High Quality PNG/SVG | Toolzaro</title>
+      <link>https://toolzaro.cyou/qr-code-generator</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/qr-code-generator</guid>
+      <description>Generate custom QR codes instantly for URLs, text, Wi-Fi, and more. Customize colors and download high-quality PNGs. Free online qr &amp; barcode utility on Toolzaro.</description>
+      <category>QR &amp; Barcode</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Barcode Generator - Barcode Generator - CODE128, EAN, UPC | Toolzaro</title>
+      <link>https://toolzaro.cyou/barcode-generator</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/barcode-generator</guid>
+      <description>Generate standard barcodes online instantly. Supports CODE128, EAN-13, UPC, and more. Download high-quality PNGs for free. Free online qr &amp; barcode utility on Toolzaro.</description>
+      <category>QR &amp; Barcode</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Image Compressor - Online Image Compressor - Reduce File Size | Toolzaro</title>
+      <link>https://toolzaro.cyou/image-compressor</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/image-compressor</guid>
+      <description>Compress and optimize images directly in your browser. Reduce file sizes of JPEGs and PNGs without losing quality. Free online color &amp; image utility on Toolzaro.</description>
+      <category>Color &amp; Image</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Meta Tag Generator - Meta Tag Generator - SEO &amp; Open Graph | Toolzaro</title>
+      <link>https://toolzaro.cyou/meta-tag-generator</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/meta-tag-generator</guid>
+      <description>Create optimized HTML meta tags, Open Graph tags, and Twitter cards for your website to boost SEO and social sharing. Free online seo utility on Toolzaro.</description>
+      <category>SEO</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Robots.txt Generator &amp; Validator - Robots.txt Generator &amp; Validator - Online SEO Tool | Toolzaro</title>
+      <link>https://toolzaro.cyou/robots-txt-generator</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/robots-txt-generator</guid>
+      <description>Create and validate custom robots.txt files. Set disallow/allow crawl rules for Googlebot, GPTBot, and other crawlers with real-time URL testing. Free online seo utility on Toolzaro.</description>
+      <category>SEO</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>XML Sitemap Generator &amp; Visualizer - XML Sitemap Generator &amp; Visualizer - Online Tool | Toolzaro</title>
+      <link>https://toolzaro.cyou/sitemap-xml-generator</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/sitemap-xml-generator</guid>
+      <description>Create valid XML sitemaps for Google and Bing. Bulk import URLs, set priority, change frequency, and download sitemap.xml instantly. Free online seo utility on Toolzaro.</description>
+      <category>SEO</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Open Graph &amp; Social Card Previewer - Open Graph &amp; Social Media Card Previewer - SEO Tool | Toolzaro</title>
+      <link>https://toolzaro.cyou/open-graph-previewer</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/open-graph-previewer</guid>
+      <description>Preview how your web page looks when shared on Facebook, Twitter/X, LinkedIn, Discord, and Google. Generate verified OG meta tags. Free online seo utility on Toolzaro.</description>
+      <category>SEO</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Schema.org Structured Data Generator - Schema.org Structured Data &amp; JSON-LD Generator | Toolzaro</title>
+      <link>https://toolzaro.cyou/schema-markup-generator</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/schema-markup-generator</guid>
+      <description>Generate valid JSON-LD structured data schema markup for Articles, Products, FAQ Pages, and Local Businesses for Google Rich Snippets. Free online seo utility on Toolzaro.</description>
+      <category>SEO</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Keyword Density &amp; N-Gram Analyzer - Keyword Density &amp; N-Gram Phrase Analyzer - SEO Tool | Toolzaro</title>
+      <link>https://toolzaro.cyou/keyword-density-analyzer</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/keyword-density-analyzer</guid>
+      <description>Analyze word frequency and keyword density percentages for 1-gram and 2-gram phrases in your text to prevent keyword stuffing. Free online seo utility on Toolzaro.</description>
+      <category>SEO</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>SERP Snippet Optimizer &amp; CTR Checker - Google SERP Snippet Simulator &amp; Pixel Width Optimizer | Toolzaro</title>
+      <link>https://toolzaro.cyou/serp-snippet-optimizer</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/serp-snippet-optimizer</guid>
+      <description>Preview Google desktop and mobile search snippets. Check pixel widths and optimize titles and meta descriptions for maximum CTR. Free online seo utility on Toolzaro.</description>
+      <category>SEO</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Hreflang Tags &amp; 301 Redirect Generator - Hreflang Tag &amp; 301 Redirect Rules Generator | Toolzaro</title>
+      <link>https://toolzaro.cyou/hreflang-redirect-generator</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/hreflang-redirect-generator</guid>
+      <description>Generate HTML hreflang tags for multi-language websites and Apache .htaccess 301 redirect rules. Free online seo utility on Toolzaro.</description>
+      <category>SEO</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Heading Tag &amp; Content Hierarchy Analyzer - Heading Tag (H1-H6) Structure &amp; Hierarchy Analyzer | Toolzaro</title>
+      <link>https://toolzaro.cyou/heading-structure-analyzer</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/heading-structure-analyzer</guid>
+      <description>Audit HTML heading tags (H1-H6) for correct content hierarchy. Detect missing H1 tags, skipped heading levels, and SEO structure issues. Free online seo utility on Toolzaro.</description>
+      <category>SEO</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>SEO Slug &amp; URL Health Generator - SEO Slug &amp; Clean URL Health Generator - Tool | Toolzaro</title>
+      <link>https://toolzaro.cyou/seo-slug-health-checker</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/seo-slug-health-checker</guid>
+      <description>Convert article titles into clean, search-friendly SEO URL slugs. Strip special characters, spaces, and non-SEO parameters. Free online seo utility on Toolzaro.</description>
+      <category>SEO</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>SEO Content Readability &amp; Text Audit - SEO Content Readability &amp; Flesch Score Audit Tool | Toolzaro</title>
+      <link>https://toolzaro.cyou/seo-content-readability-audit</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/seo-content-readability-audit</guid>
+      <description>Calculate Flesch Reading Ease score, average sentence length, and readability grade level for web content to lower bounce rates. Free online seo utility on Toolzaro.</description>
+      <category>SEO</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Stopwatch &amp; Timer - Online Stopwatch &amp; Lap Timer | Toolzaro</title>
+      <link>https://toolzaro.cyou/stopwatch-timer</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/stopwatch-timer</guid>
+      <description>A precise online stopwatch with lap tracking capabilities. Perfect for timing exercises, presentations, or sprints. Free online utility utility on Toolzaro.</description>
+      <category>Utility</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Countdown Timer &amp; Alarm - Online Countdown Timer &amp; Audio Alarm Clock | Toolzaro</title>
+      <link>https://toolzaro.cyou/countdown-timer-alarm</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/countdown-timer-alarm</guid>
+      <description>Customizable online countdown timer with Web Audio synthesized alarms and Pomodoro presets for focus and workouts. Free online utility utility on Toolzaro.</description>
+      <category>Utility</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>World Clock &amp; Timezone Hub - World Clock &amp; Multi-Timezone Scheduler | Toolzaro</title>
+      <link>https://toolzaro.cyou/world-clock-scheduler</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/world-clock-scheduler</guid>
+      <description>Track live local times across major global cities and timezones. Add cities, compare current times, and coordinate remote meetings. Free online utility utility on Toolzaro.</description>
+      <category>Utility</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Random Choice Picker - Random Choice Picker &amp; Item Selector | Toolzaro</title>
+      <link>https://toolzaro.cyou/random-choice-picker</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/random-choice-picker</guid>
+      <description>Make unbiased decisions instantly. Input a list of items or names to pick a random winner or shuffle choices. Free online utility utility on Toolzaro.</description>
+      <category>Utility</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Unit Price Cost Comparator - Unit Price Cost Comparator - Compare Best Value | Toolzaro</title>
+      <link>https://toolzaro.cyou/unit-price-comparator</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/unit-price-comparator</guid>
+      <description>Find the true best value product when shopping. Compare price per unit, gram, ounce, or pound between two different package sizes. Free online utility utility on Toolzaro.</description>
+      <category>Utility</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Screen &amp; Display Diagnostics - Screen &amp; Display Diagnostic Tester - Dead Pixel Check | Toolzaro</title>
+      <link>https://toolzaro.cyou/screen-webcam-tester</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/screen-webcam-tester</guid>
+      <description>Test your computer monitor for dead pixels, check screen resolution, monitor color depth, and measure live render FPS. Free online utility utility on Toolzaro.</description>
+      <category>Utility</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Audio Frequency Tone Synthesizer - Online Audio Frequency &amp; Tone Generator | Toolzaro</title>
+      <link>https://toolzaro.cyou/audio-tone-generator</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/audio-tone-generator</guid>
+      <description>Generate custom audio frequencies and sound waves from 20Hz to 5,000Hz using sine, square, sawtooth, and triangle waveforms. Free online utility utility on Toolzaro.</description>
+      <category>Utility</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>File Hash Checksum Calculator - File Hash Checksum Calculator - SHA-256 &amp; SHA-1 | Toolzaro</title>
+      <link>https://toolzaro.cyou/file-hash-calculator</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/file-hash-calculator</guid>
+      <description>Calculate SHA-256, SHA-1, and SHA-512 cryptographic hash checksums for any local file directly in your browser. Free online utility utility on Toolzaro.</description>
+      <category>Utility</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Keyboard Key Code &amp; Press Tester - Keyboard Key Code &amp; Press Event Tester | Toolzaro</title>
+      <link>https://toolzaro.cyou/keyboard-key-tester</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/keyboard-key-tester</guid>
+      <description>Test physical keyboard keys and inspect JavaScript event key, event code, keyCode, and modifier key states in real-time. Free online utility utility on Toolzaro.</description>
+      <category>Utility</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Image to Base64 Data URI - Image to Base64 Data URI Converter | Toolzaro</title>
+      <link>https://toolzaro.cyou/image-to-base64-converter</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/image-to-base64-converter</guid>
+      <description>Convert PNG, JPG, WebP, SVG, or GIF images into inline Base64 Data URIs for CSS and HTML embedding. Free online utility utility on Toolzaro.</description>
+      <category>Utility</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Quick Scratchpad &amp; Notes - Quick Browser Scratchpad &amp; Notepad - Auto-Save | Toolzaro</title>
+      <link>https://toolzaro.cyou/quick-scratchpad-notes</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/quick-scratchpad-notes</guid>
+      <description>Distraction-free online browser notepad with instant automatic saving to local storage and live word counter. Free online utility utility on Toolzaro.</description>
+      <category>Utility</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Password Generator - Secure Password Generator - Create Strong Passwords | Toolzaro</title>
+      <link>https://toolzaro.cyou/password-generator</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/password-generator</guid>
+      <description>Generate strong, secure, and random passwords instantly. Customize length and character types right in your browser. Free online generators utility on Toolzaro.</description>
+      <category>Generators</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Scientific Pro Calculator - Advanced Scientific Calculator - Pro Level Math Solver | Toolzaro</title>
+      <link>https://toolzaro.cyou/advanced-calculator</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/advanced-calculator</guid>
+      <description>Solve complex math problems, equations, matrices, complex numbers, and unit conversions with this advanced scientific calculator. Free online calculators utility on Toolzaro.</description>
+      <category>Calculators</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Simple Calculator - Simple Calculator - Easy &amp; Accurate | Toolzaro</title>
+      <link>https://toolzaro.cyou/simple-calculator</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/simple-calculator</guid>
+      <description>A clean, simple, and highly accurate basic calculator for everyday use. Designed with a familiar interface. Free online calculators utility on Toolzaro.</description>
+      <category>Calculators</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>JSON Formatter - JSON Formatter &amp; Beautifier | Toolzaro</title>
+      <link>https://toolzaro.cyou/json-formatter</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/json-formatter</guid>
+      <description>Format and beautify your JSON data online. Easily make unreadable JSON readable. Free online developer utility on Toolzaro.</description>
+      <category>Developer</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>URL Encoder/Decoder - URL Encoder and Decoder Tool | Toolzaro</title>
+      <link>https://toolzaro.cyou/url-encoder-decoder</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/url-encoder-decoder</guid>
+      <description>Quickly encode or decode URLs and URI components online. Free online developer utility on Toolzaro.</description>
+      <category>Developer</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>HTML Entity Encoder - HTML Entity Encoder &amp; Decoder | Toolzaro</title>
+      <link>https://toolzaro.cyou/html-entity-encoder</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/html-entity-encoder</guid>
+      <description>Escape HTML tags or decode HTML entities back to text. Free online developer utility on Toolzaro.</description>
+      <category>Developer</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>MD5 Hash Generator - MD5 Hash Generator - Online Tool | Toolzaro</title>
+      <link>https://toolzaro.cyou/md5-generator</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/md5-generator</guid>
+      <description>Generate an MD5 hash from any text instantly. Free online developer utility on Toolzaro.</description>
+      <category>Developer</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>JWT Decoder - JWT Decoder - Decode JSON Web Tokens | Toolzaro</title>
+      <link>https://toolzaro.cyou/jwt-decoder</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/jwt-decoder</guid>
+      <description>Decode JSON Web Tokens (JWT) payload and header instantly without sending data to a server. Free online developer utility on Toolzaro.</description>
+      <category>Developer</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>UUID Generator - UUID v4 Generator - Create Random GUIDs | Toolzaro</title>
+      <link>https://toolzaro.cyou/uuid-generator</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/uuid-generator</guid>
+      <description>Generate random UUIDs (Universally Unique Identifiers) instantly. Free online developer utility on Toolzaro.</description>
+      <category>Developer</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Lorem Ipsum Generator - Lorem Ipsum Dummy Text Generator | Toolzaro</title>
+      <link>https://toolzaro.cyou/lorem-ipsum-generator</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/lorem-ipsum-generator</guid>
+      <description>Generate Lorem Ipsum dummy text for your web and design projects. Free online developer utility on Toolzaro.</description>
+      <category>Developer</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Unix Timestamp Converter - Unix Timestamp to Date Converter | Toolzaro</title>
+      <link>https://toolzaro.cyou/unix-timestamp-converter</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/unix-timestamp-converter</guid>
+      <description>Convert Unix timestamps (epoch) to human-readable dates and times. Free online developer utility on Toolzaro.</description>
+      <category>Developer</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>CSS Minifier - CSS Minifier - Compress CSS Code | Toolzaro</title>
+      <link>https://toolzaro.cyou/css-minifier</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/css-minifier</guid>
+      <description>Minify your CSS code to reduce file size and improve website load times. Free online developer utility on Toolzaro.</description>
+      <category>Developer</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>HEX &amp; RGB Color Converter - HEX to RGB Color Converter | Toolzaro</title>
+      <link>https://toolzaro.cyou/color-converter</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/color-converter</guid>
+      <description>Convert HEX color codes to RGB and use a visual color picker. Free online developer utility on Toolzaro.</description>
+      <category>Developer</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Regex Tester - Regular Expression Tester | Toolzaro</title>
+      <link>https://toolzaro.cyou/regex-tester</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/regex-tester</guid>
+      <description>Test your regular expressions in the browser instantly. Free online developer utility on Toolzaro.</description>
+      <category>Developer</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>URL Parser - URL Parser &amp; Analyzer | Toolzaro</title>
+      <link>https://toolzaro.cyou/url-parser</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/url-parser</guid>
+      <description>Break down a URL into its components: protocol, host, path, parameters. Free online developer utility on Toolzaro.</description>
+      <category>Developer</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>SHA Hash Generator - Secure SHA Hash Generator | Toolzaro</title>
+      <link>https://toolzaro.cyou/sha-generator</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/sha-generator</guid>
+      <description>Generate SHA-1, SHA-256, SHA-384, and SHA-512 hashes online. Free online developer utility on Toolzaro.</description>
+      <category>Developer</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>JSON Minifier - JSON Minifier &amp; Compressor | Toolzaro</title>
+      <link>https://toolzaro.cyou/json-minifier</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/json-minifier</guid>
+      <description>Minify and compress your JSON data by removing whitespace. Free online developer utility on Toolzaro.</description>
+      <category>Developer</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>XML Formatter - XML Formatter &amp; Beautifier | Toolzaro</title>
+      <link>https://toolzaro.cyou/xml-formatter</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/xml-formatter</guid>
+      <description>Format and beautify your XML data online. Free online developer utility on Toolzaro.</description>
+      <category>Developer</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>SQL Minifier - SQL Minifier | Toolzaro</title>
+      <link>https://toolzaro.cyou/sql-minifier</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/sql-minifier</guid>
+      <description>Minify your SQL queries by removing comments and extra spaces. Free online developer utility on Toolzaro.</description>
+      <category>Developer</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>HTML Minifier - HTML Minifier | Toolzaro</title>
+      <link>https://toolzaro.cyou/html-minifier</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/html-minifier</guid>
+      <description>Compress your HTML files by removing whitespace and comments. Free online developer utility on Toolzaro.</description>
+      <category>Developer</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Chmod Calculator - Linux Chmod Permissions Calculator | Toolzaro</title>
+      <link>https://toolzaro.cyou/chmod-calculator</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/chmod-calculator</guid>
+      <description>Easily calculate Linux file permissions in octal and symbolic notation. Free online developer utility on Toolzaro.</description>
+      <category>Developer</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Text to URL Slug - Text to URL Slug Converter | Toolzaro</title>
+      <link>https://toolzaro.cyou/text-to-slug</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/text-to-slug</guid>
+      <description>Convert any text string into a clean, SEO-friendly URL slug. Free online developer utility on Toolzaro.</description>
+      <category>Developer</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>CSV to JSON Converter - CSV to JSON Converter | Toolzaro</title>
+      <link>https://toolzaro.cyou/csv-to-json</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/csv-to-json</guid>
+      <description>Quickly convert CSV text data into a JSON array. Free online developer utility on Toolzaro.</description>
+      <category>Developer</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>JSON to CSV Converter - JSON to CSV Converter | Toolzaro</title>
+      <link>https://toolzaro.cyou/json-to-csv</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/json-to-csv</guid>
+      <description>Quickly convert an array of JSON objects into a CSV string. Free online developer utility on Toolzaro.</description>
+      <category>Developer</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>String Escape / Unescape - String Escaper &amp; Unescaper | Toolzaro</title>
+      <link>https://toolzaro.cyou/string-escape</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/string-escape</guid>
+      <description>Escape strings for use in JSON or unescape them back to plain text. Free online developer utility on Toolzaro.</description>
+      <category>Developer</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>HMAC Generator - HMAC Generator - Secure Hash | Toolzaro</title>
+      <link>https://toolzaro.cyou/hmac-generator</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/hmac-generator</guid>
+      <description>Generate HMAC hashes securely using your secret key and text. Free online developer utility on Toolzaro.</description>
+      <category>Developer</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>IPv4 Subnet Calculator - IPv4 CIDR Subnet Calculator | Toolzaro</title>
+      <link>https://toolzaro.cyou/ipv4-subnet-calc</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/ipv4-subnet-calc</guid>
+      <description>Calculate network ranges, broadcast addresses, and usable hosts from a CIDR notation. Free online developer utility on Toolzaro.</description>
+      <category>Developer</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>MIME Type Lookup - MIME Type &amp; Content-Type Lookup | Toolzaro</title>
+      <link>https://toolzaro.cyou/mime-type-lookup</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/mime-type-lookup</guid>
+      <description>Find the standard MIME type for any common file extension. Free online developer utility on Toolzaro.</description>
+      <category>Developer</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>JS Keycode Info - JavaScript Keycode &amp; Event Info | Toolzaro</title>
+      <link>https://toolzaro.cyou/js-keycode-info</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/js-keycode-info</guid>
+      <description>Press any key to get its JavaScript event.keyCode, event.code, and event.key. Free online developer utility on Toolzaro.</description>
+      <category>Developer</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Query String Parser - URL Query String Parser | Toolzaro</title>
+      <link>https://toolzaro.cyou/query-string-parser</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/query-string-parser</guid>
+      <description>Parse URL query string parameters into a formatted JSON object. Free online developer utility on Toolzaro.</description>
+      <category>Developer</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>MAC Address Generator - Random MAC Address Generator | Toolzaro</title>
+      <link>https://toolzaro.cyou/mac-address-generator</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/mac-address-generator</guid>
+      <description>Generate random, valid MAC addresses for testing and networking. Free online developer utility on Toolzaro.</description>
+      <category>Developer</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>IPv4 Generator - Random IPv4 Address Generator | Toolzaro</title>
+      <link>https://toolzaro.cyou/ipv4-generator</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/ipv4-generator</guid>
+      <description>Generate random IPv4 addresses instantly. Free online developer utility on Toolzaro.</description>
+      <category>Developer</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>IPv6 Generator - Random IPv6 Address Generator | Toolzaro</title>
+      <link>https://toolzaro.cyou/ipv6-generator</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/ipv6-generator</guid>
+      <description>Generate random IPv6 addresses instantly. Free online developer utility on Toolzaro.</description>
+      <category>Developer</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>HTTP Status Codes - HTTP Status Codes Reference | Toolzaro</title>
+      <link>https://toolzaro.cyou/http-status-codes</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/http-status-codes</guid>
+      <description>A searchable reference for HTTP response status codes. Free online developer utility on Toolzaro.</description>
+      <category>Developer</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Text to Morse Code - Text to Morse Code Translator | Toolzaro</title>
+      <link>https://toolzaro.cyou/text-to-morse</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/text-to-morse</guid>
+      <description>Translate standard text strings into Morse code dots and dashes. Free online developer utility on Toolzaro.</description>
+      <category>Developer</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Morse Code to Text - Morse Code to Text Translator | Toolzaro</title>
+      <link>https://toolzaro.cyou/morse-to-text</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/morse-to-text</guid>
+      <description>Decode Morse code dots and dashes back into English text. Free online developer utility on Toolzaro.</description>
+      <category>Developer</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Random String Generator - Random String &amp; Password Generator | Toolzaro</title>
+      <link>https://toolzaro.cyou/random-string-generator</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/random-string-generator</guid>
+      <description>Generate completely random strings of any length and character set. Free online developer utility on Toolzaro.</description>
+      <category>Developer</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Device Resolution Lookup - Device Screen Resolutions &amp; Sizes | Toolzaro</title>
+      <link>https://toolzaro.cyou/device-resolution-lookup</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/device-resolution-lookup</guid>
+      <description>Search standard screen resolutions and aspect ratios for popular devices. Free online developer utility on Toolzaro.</description>
+      <category>Developer</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Password Strength Checker - Password Strength Checker | Toolzaro</title>
+      <link>https://toolzaro.cyou/password-strength-checker</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/password-strength-checker</guid>
+      <description>Test the strength and complexity of your passwords locally. Free online developer utility on Toolzaro.</description>
+      <category>Developer</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Text to Decimal - Text to Decimal Converter | Toolzaro</title>
+      <link>https://toolzaro.cyou/text-to-decimal</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/text-to-decimal</guid>
+      <description>Convert plain text into its numeric decimal byte values. Free online developer utility on Toolzaro.</description>
+      <category>Developer</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Decimal to Text - Decimal to Text Converter | Toolzaro</title>
+      <link>https://toolzaro.cyou/decimal-to-text</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/decimal-to-text</guid>
+      <description>Decode numeric decimal byte values back into plain text. Free online developer utility on Toolzaro.</description>
+      <category>Developer</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+    <item>
+      <title>Basic JS Minifier - Basic JavaScript Minifier | Toolzaro</title>
+      <link>https://toolzaro.cyou/basic-js-minifier</link>
+      <guid isPermaLink="true">https://toolzaro.cyou/basic-js-minifier</guid>
+      <description>Compress your JavaScript code by removing comments and whitespace. Free online developer utility on Toolzaro.</description>
+      <category>Developer</category>
+      <pubDate>Sat, 10 Oct 2026 09:53:58 GMT</pubDate>
+    </item>
+  </channel>
+</rss>

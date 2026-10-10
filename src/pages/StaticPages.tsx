@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Seo } from '../components/Seo';
 import { AdSlot } from '../components/AdSlot';
 import { BreadcrumbNavigation } from '../components/BreadcrumbNavigation';
 import { 
   Mail, MessageSquare, ShieldCheck, FileText, Info, Sparkles, 
   Lock, Scale, AlertTriangle, CheckCircle2, Globe, Wrench, Send, Copy, Check,
-  Zap, Cpu, UserCheck, HelpCircle, BookOpen, Shield, Award, Terminal
+  Zap, Cpu, UserCheck, HelpCircle, BookOpen, Shield, Award, Terminal, Layers, ArrowRight
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { tools, categories } from '../lib/registry';
+import { BUILTIN_BLOG_POSTS } from '../lib/blogData';
+import { getToolUrl, getCategoryUrl, getBlogUrl } from '../lib/appUrls';
 
 const PageHeader = ({ title, subtitle, date }: { title: string; subtitle?: string; date?: string }) => (
   <div className="mb-6 sm:mb-8 md:mb-10 text-center md:text-left border-b border-border/60 pb-4 sm:pb-6">
@@ -23,7 +26,19 @@ const PageHeader = ({ title, subtitle, date }: { title: string; subtitle?: strin
 
 export const About: React.FC = () => (
   <div className="max-w-4xl mx-auto space-y-8 sm:space-y-10 md:space-y-12">
-    <Seo title="About Us | Toolzaro" description={`Learn more about Toolzaro - a free, privacy-first suite of ${tools.length} client-side web tools.`} />
+    <Seo 
+      title={`About Toolzaro – ${tools.length}+ Privacy-First Online Developer & Utility Tools`} 
+      description={`Learn about Toolzaro’s client-first engineering architecture. Discover how our ${tools.length}+ free browser utilities process PDFs, images, and code 100% locally with zero uploads.`}
+      keywords={['about Toolzaro', 'client-side web tools', 'privacy-first online utilities', 'zero-knowledge browser tools']}
+      url="https://toolzaro.cyou/about"
+      jsonLd={{
+        '@context': 'https://schema.org',
+        '@type': 'AboutPage',
+        name: 'About Toolzaro',
+        url: 'https://toolzaro.cyou/about',
+        description: `Toolzaro is a free, privacy-first suite of ${tools.length}+ client-side web utilities for developers, designers, and creators.`
+      }}
+    />
     
     <PageHeader 
       title="About Toolzaro" 
@@ -150,7 +165,19 @@ export const Contact: React.FC = () => {
 
   return (
     <div className="max-w-4xl mx-auto space-y-10">
-      <Seo title="Contact Us | Toolzaro" description="Get in touch with the Toolzaro team via Gmail or WhatsApp for support, feedback, and custom tool requests." />
+      <Seo 
+        title="Contact Us – Support, Bug Reports & Custom Tool Requests | Toolzaro" 
+        description="Get in touch with the Toolzaro engineering desk via Gmail or WhatsApp for technical support, bug reports, partnership inquiries, and custom online tool requests."
+        keywords={['contact Toolzaro', 'Toolzaro support', 'request custom online tool', 'report bug Toolzaro']}
+        url="https://toolzaro.cyou/contact"
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'ContactPage',
+          name: 'Contact Toolzaro Support',
+          url: 'https://toolzaro.cyou/contact',
+          description: 'Direct email and WhatsApp support desk for Toolzaro users and developers.'
+        }}
+      />
       
       <PageHeader 
         title="Contact Us" 
@@ -269,7 +296,18 @@ export const Contact: React.FC = () => {
 
 export const PrivacyPolicy: React.FC = () => (
   <div className="max-w-4xl mx-auto space-y-8">
-    <Seo title="Privacy Policy | Toolzaro" description="Detailed privacy policy for Toolzaro regarding browser storage, analytics, cookies, and Google AdSense." />
+    <Seo 
+      title="Privacy Policy – 100% Local Processing, GDPR & AdSense Disclosures | Toolzaro" 
+      description="Read Toolzaro’s transparent Privacy Policy covering 100% client-side browser data processing, zero cloud file retention, cookies, Google AdSense, GDPR, and CCPA compliance."
+      keywords={['Toolzaro privacy policy', 'client-side privacy', 'GDPR compliance', 'Google AdSense cookie policy']}
+      url="https://toolzaro.cyou/privacy-policy"
+      jsonLd={{
+        '@context': 'https://schema.org',
+        '@type': 'WebPage',
+        name: 'Privacy Policy | Toolzaro',
+        url: 'https://toolzaro.cyou/privacy-policy'
+      }}
+    />
     
     <PageHeader 
       title="Privacy Policy" 
@@ -344,7 +382,18 @@ export const PrivacyPolicy: React.FC = () => (
 
 export const TermsOfService: React.FC = () => (
   <div className="max-w-4xl mx-auto space-y-8">
-    <Seo title="Terms of Service | Toolzaro" description="Terms and conditions for accessing and using Toolzaro tools." />
+    <Seo 
+      title="Terms of Service – Fair Use & Licensing | Toolzaro" 
+      description="Review the official Terms of Service and fair use guidelines for accessing Toolzaro’s free online developer, PDF, image, and converter utilities."
+      keywords={['Toolzaro terms of service', 'terms and conditions', 'online tools license']}
+      url="https://toolzaro.cyou/terms"
+      jsonLd={{
+        '@context': 'https://schema.org',
+        '@type': 'WebPage',
+        name: 'Terms of Service | Toolzaro',
+        url: 'https://toolzaro.cyou/terms'
+      }}
+    />
     
     <PageHeader 
       title="Terms of Service" 
@@ -402,7 +451,18 @@ export const TermsOfService: React.FC = () => (
 
 export const Disclaimer: React.FC = () => (
   <div className="max-w-4xl mx-auto space-y-8">
-    <Seo title="Disclaimer | Toolzaro" description="Official disclaimer regarding accuracy and utility output on Toolzaro." />
+    <Seo 
+      title="Disclaimer – Calculation Accuracy & Verification Notice | Toolzaro" 
+      description="Official legal and technical disclaimer regarding mathematical accuracy, cryptographic outputs, and third-party links on Toolzaro."
+      keywords={['Toolzaro disclaimer', 'accuracy notice', 'legal disclaimer']}
+      url="https://toolzaro.cyou/disclaimer"
+      jsonLd={{
+        '@context': 'https://schema.org',
+        '@type': 'WebPage',
+        name: 'Disclaimer | Toolzaro',
+        url: 'https://toolzaro.cyou/disclaimer'
+      }}
+    />
     
     <PageHeader 
       title="Disclaimer" 
@@ -440,5 +500,123 @@ export const Disclaimer: React.FC = () => (
     </div>
 
     <AdSlot slot="static-disclaimer-bottom" format="auto" />
+  </div>
+);
+
+export const HtmlSitemap: React.FC = () => (
+  <div className="max-w-6xl mx-auto space-y-10">
+    <Seo
+      title={`Complete HTML Sitemap – All ${tools.length}+ Tools, Categories & Guides | Toolzaro`}
+      description={`Browse the complete HTML Sitemap of Toolzaro featuring direct root-level links to all ${tools.length}+ online tools, ${categories.length} categories, technical guides, and core pages.`}
+      keywords={['Toolzaro sitemap', 'all online tools list', 'html sitemap', 'developer tools directory']}
+      url="https://toolzaro.cyou/sitemap"
+      jsonLd={{
+        '@context': 'https://schema.org',
+        '@type': 'CollectionPage',
+        name: 'Toolzaro Complete HTML Sitemap',
+        url: 'https://toolzaro.cyou/sitemap',
+        description: `Complete index of ${tools.length}+ browser utilities, categories, and guides on Toolzaro.`
+      }}
+    />
+
+    <PageHeader
+      title="Complete Site Directory & HTML Sitemap"
+      subtitle={`Direct index of all ${tools.length} browser utilities, ${categories.length} categories, engineering articles, and XML sitemaps for fast navigation and search engine discovery.`}
+      date="October 2026"
+    />
+
+    {/* Core Pages & XML Sitemap Feeds */}
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <section className="bg-card border border-border/80 rounded-3xl p-6 space-y-4 shadow-2xs">
+        <h2 className="text-lg font-display font-bold text-foreground flex items-center gap-2">
+          <Globe className="w-5 h-5 text-primary" /> Core Platform Pages
+        </h2>
+        <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs font-semibold">
+          <li><Link to="/" className="text-primary hover:underline flex items-center gap-1.5"><ArrowRight className="w-3.5 h-3.5" /> Home Page</Link></li>
+          <li><Link to="/tools" className="text-primary hover:underline flex items-center gap-1.5"><ArrowRight className="w-3.5 h-3.5" /> All Tools Directory Hub</Link></li>
+          <li><Link to="/blog" className="text-primary hover:underline flex items-center gap-1.5"><ArrowRight className="w-3.5 h-3.5" /> Engineering Blog &amp; Guides</Link></li>
+          <li><Link to="/about" className="text-primary hover:underline flex items-center gap-1.5"><ArrowRight className="w-3.5 h-3.5" /> About Toolzaro</Link></li>
+          <li><Link to="/contact" className="text-primary hover:underline flex items-center gap-1.5"><ArrowRight className="w-3.5 h-3.5" /> Contact Support</Link></li>
+          <li><Link to="/privacy-policy" className="text-primary hover:underline flex items-center gap-1.5"><ArrowRight className="w-3.5 h-3.5" /> Privacy Policy</Link></li>
+          <li><Link to="/terms" className="text-primary hover:underline flex items-center gap-1.5"><ArrowRight className="w-3.5 h-3.5" /> Terms of Service</Link></li>
+          <li><Link to="/disclaimer" className="text-primary hover:underline flex items-center gap-1.5"><ArrowRight className="w-3.5 h-3.5" /> Disclaimer</Link></li>
+        </ul>
+      </section>
+
+      <section className="bg-card border border-border/80 rounded-3xl p-6 space-y-4 shadow-2xs">
+        <h2 className="text-lg font-display font-bold text-foreground flex items-center gap-2">
+          <FileText className="w-5 h-5 text-emerald-500" /> Official Search Console XML Sitemaps &amp; Feeds
+        </h2>
+        <p className="text-xs text-muted-foreground leading-relaxed">
+          Machine-readable XML sitemaps and feeds automatically generated for Google Search Console, Bing Webmaster Tools, and AI crawlers:
+        </p>
+        <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs font-mono font-bold">
+          <li><a href="/sitemap-index.xml" target="_blank" rel="noopener noreferrer" className="text-emerald-600 dark:text-emerald-400 hover:underline">/sitemap-index.xml (Master Index)</a></li>
+          <li><a href="/sitemap.xml" target="_blank" rel="noopener noreferrer" className="text-emerald-600 dark:text-emerald-400 hover:underline">/sitemap.xml (All 184+ URLs)</a></li>
+          <li><a href="/sitemap-tools.xml" target="_blank" rel="noopener noreferrer" className="text-emerald-600 dark:text-emerald-400 hover:underline">/sitemap-tools.xml ({tools.length} Tools)</a></li>
+          <li><a href="/sitemap-categories.xml" target="_blank" rel="noopener noreferrer" className="text-emerald-600 dark:text-emerald-400 hover:underline">/sitemap-categories.xml ({categories.length} Cats)</a></li>
+          <li><a href="/sitemap-pages.xml" target="_blank" rel="noopener noreferrer" className="text-emerald-600 dark:text-emerald-400 hover:underline">/sitemap-pages.xml (Core Pages)</a></li>
+          <li><a href="/sitemap-blog.xml" target="_blank" rel="noopener noreferrer" className="text-emerald-600 dark:text-emerald-400 hover:underline">/sitemap-blog.xml (Blog Guides)</a></li>
+          <li><a href="/rss.xml" target="_blank" rel="noopener noreferrer" className="text-amber-600 dark:text-amber-400 hover:underline">/rss.xml (RSS 2.0 Feed)</a></li>
+          <li><a href="/llms.txt" target="_blank" rel="noopener noreferrer" className="text-indigo-600 dark:text-indigo-400 hover:underline">/llms.txt (AI Search Index)</a></li>
+        </ul>
+      </section>
+    </div>
+
+    {/* All Tools Grouped by Category */}
+    <div className="space-y-8">
+      <h2 className="text-2xl font-display font-extrabold text-foreground flex items-center gap-2.5">
+        <Layers className="w-6 h-6 text-primary" /> All {tools.length} Online Tools by Category (Flat Root-Level URLs)
+      </h2>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {categories.map(categoryName => {
+          const catTools = tools.filter(t => t.category === categoryName);
+          const catSlug = categoryName.toLowerCase().replace(/ & /g, '-').replace(/ /g, '-');
+          return (
+            <div key={categoryName} className="bg-card border border-border/80 rounded-3xl p-5 space-y-3 shadow-2xs">
+              <div className="flex items-center justify-between border-b border-border/60 pb-2.5">
+                <Link to={getCategoryUrl(catSlug)} className="font-display font-bold text-base text-foreground hover:text-primary transition-colors">
+                  {categoryName} Tools
+                </Link>
+                <span className="text-[11px] font-mono font-bold px-2 py-0.5 rounded-full bg-primary/10 text-primary">
+                  {catTools.length}
+                </span>
+              </div>
+              <ul className="space-y-1.5 text-xs">
+                {catTools.map(tool => (
+                  <li key={tool.slug}>
+                    <Link
+                      to={getToolUrl(tool.slug)}
+                      className="text-muted-foreground hover:text-primary transition-colors flex items-center justify-between gap-2 py-0.5"
+                    >
+                      <span className="font-medium text-foreground/90 hover:text-primary truncate">{tool.name}</span>
+                      <span className="text-[10px] font-mono text-muted-foreground/70 shrink-0">/{tool.slug}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+
+    {/* Published Technical Blog Guides */}
+    <section className="bg-card border border-border/80 rounded-3xl p-6 space-y-4 shadow-2xs">
+      <h2 className="text-xl font-display font-bold text-foreground flex items-center gap-2">
+        <BookOpen className="w-5 h-5 text-primary" /> Engineering Guides &amp; Articles
+      </h2>
+      <ul className="space-y-2 text-xs">
+        {BUILTIN_BLOG_POSTS.map(post => (
+          <li key={post.slug}>
+            <Link to={`/blog/${post.slug}`} className="font-semibold text-foreground hover:text-primary transition-colors flex items-center gap-2">
+              <ArrowRight className="w-3.5 h-3.5 text-primary shrink-0" />
+              <span>{post.title}</span>
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </section>
   </div>
 );

@@ -4,7 +4,7 @@ import { getAuth, signInAnonymously } from 'firebase/auth';
 
 // Toolzaro Official Firebase Configuration
 export const firebaseConfig = {
-  apiKey: "AIzaSyA8iqjs77GSmMjWwPKmYYB7nqaiUSqOVNA",
+  apiKey: (import.meta as any).env?.VITE_FIREBASE_API_KEY || "AIzaSyA8iqjs77GSmMjWwPKmYYB7nqaiUSqOVNA",
   authDomain: "toolzaro-56fe1.firebaseapp.com",
   projectId: "toolzaro-56fe1",
   storageBucket: "toolzaro-56fe1.firebasestorage.app",

@@ -5,9 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "tsx server.ts",
-    "build": "vite build",
+    "generate:seo": "tsx scripts/generate-seo-assets.ts",
+    "build": "tsx scripts/generate-seo-assets.ts && vite build",
     "build:single": "BUILD_SINGLEFILE=true VITE_ROUTER_MODE=hash vite build",
-    "build:blogger": "vite build && node scripts/generate-blogger-bundle.mjs",
+    "build:blogger": "tsx scripts/generate-seo-assets.ts && vite build && node scripts/generate-blogger-bundle.mjs",
     "start": "node server.ts",
     "preview": "vite preview",
     "clean": "rm -rf dist server.js blogger-deploy",

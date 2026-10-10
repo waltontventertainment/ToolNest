@@ -107,7 +107,7 @@ export const ToolEditorModal: React.FC<ToolEditorModalProps> = ({
                 )}
               </div>
               <p className="text-xs text-muted-foreground font-mono">
-                Slug: /tools/{tool.slug}
+                Slug: /{tool.slug}
               </p>
             </div>
           </div>

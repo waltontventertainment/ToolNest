@@ -6,6 +6,7 @@ import { getEffectiveTools } from '../lib/toolOverrides';
 import { ToolCard } from '../components/ToolCard';
 import { Seo } from '../components/Seo';
 import { AdSlot } from '../components/AdSlot';
+import { BreadcrumbNavigation } from '../components/BreadcrumbNavigation';
 import { useLocalStorage } from '../lib/toolkit';
 import { useFavorites } from '../context/FavoritesContext';
 import { FirestoreBlog, getPublishedBlogs, seedStarterPostIfEmpty } from '../lib/firestoreBlogService';
@@ -14,6 +15,7 @@ import { DailyTechDigest } from '../components/DailyTechDigest';
 import { TypewriterHeading } from '../components/TypewriterHeading';
 import { HeroShowcase } from '../components/HeroShowcase';
 import { getBlogUrl, getBlogPostUrl } from '../lib/appUrls';
+import { getHomeSeoData } from '../lib/seoHelper';
 
 import heroImg from '../assets/images/hero_visual_premium_1791369917245.jpg';
 import emptyImg from '../assets/images/empty_state_1785690459297.jpg';
@@ -134,23 +136,18 @@ export const Index: React.FC = () => {
   }, [search, activeCategory, showFavoritesOnly, incrementCount]);
 
   const displayedTools = filteredTools.slice(0, displayCount);
+  const baseUrl = (settings.seo?.canonicalBaseUrl || 'https://toolzaro.cyou').replace(/\/+$/, '');
+  const homeSeo = useMemo(() => getHomeSeoData(baseUrl, activeToolsList.length), [baseUrl, activeToolsList.length]);
 
   return (
     <>
       <Seo 
-        title={showFavoritesOnly ? "Saved Bookmarked Tools - Toolzaro" : "Toolzaro - Professional Online Developer & Utility Tools"} 
-        description={showFavoritesOnly ? "Your personal collection of bookmarked developer and utility tools on Toolzaro." : `A complete suite of ${tools.length} fast, browser-based tools including color tools, image resizers, QR generators, image compressors, and developer utilities.`}
-        jsonLd={{
-          "@context": "https://schema.org",
-          "@type": "WebSite",
-          "name": "Toolzaro",
-          "url": "https://toolnest.com",
-          "potentialAction": {
-            "@type": "SearchAction",
-            "target": "https://toolnest.com/?q={search_term_string}",
-            "query-input": "required name=search_term_string"
-          }
-        }}
+        title={showFavoritesOnly ? `Saved Bookmarked Tools (${favorites.length}) – Personal Workspace | Toolzaro` : homeSeo.title} 
+        description={showFavoritesOnly ? "Access your personal collection of bookmarked developer, PDF, image, and utility tools on Toolzaro — stored 100% privately in your browser." : homeSeo.description}
+        keywords={homeSeo.keywords}
+        url={showFavoritesOnly ? `${baseUrl}/?favorites=true` : `${baseUrl}/`}
+        noindex={showFavoritesOnly}
+        jsonLd={homeSeo.jsonLd}
       />
       
       {showFavoritesOnly ? (
@@ -159,26 +156,18 @@ export const Index: React.FC = () => {
         /* (Clutter-free: Homepage Hero, Tech Digest, & full categories */
         /* are cleanly hidden to give immediate focus to saved tools)    */
         /* ============================================================ */
-        <div className="pt-1 sm:pt-3 pb-8 space-y-6">
-          {/* Breadcrumb Navigation & Back Action */}
-          <div className="flex items-center justify-between gap-3">
-            <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs text-muted-foreground">
-              <button
-                type="button"
-                onClick={handleExitFavorites}
-                className="hover:text-primary transition-colors flex items-center gap-1 font-semibold cursor-pointer"
-              >
-                <Home className="w-3.5 h-3.5" />
-                <span>Home</span>
-              </button>
-              <ChevronRight className="w-3 h-3 text-muted-foreground/60" />
-              <span className="font-bold text-foreground">Saved Bookmarks</span>
-            </nav>
+        <div className="space-y-6">
+          {/* Breadcrumb Navigation & Back Action (Exact same layout as ToolPage) */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-4 sm:mb-6 pb-3 sm:pb-4 border-b border-border/60">
+            <BreadcrumbNavigation
+              items={[{ label: 'Saved Bookmarks' }]}
+              onHomeClick={handleExitFavorites}
+            />
 
             <button
               type="button"
               onClick={handleExitFavorites}
-              className="btn-signature-header px-3.5 py-1.5 text-xs font-bold text-foreground hover:text-primary transition-colors flex items-center gap-1.5 cursor-pointer shadow-2xs"
+              className="btn-signature-header h-9 px-3.5 gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground transition-all flex items-center cursor-pointer self-start sm:self-auto"
             >
               <ArrowRight className="w-3.5 h-3.5 rotate-180 text-primary" />
               <span>Back to All Tools</span>

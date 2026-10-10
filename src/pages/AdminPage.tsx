@@ -1003,7 +1003,7 @@ export const AdminPage: React.FC = () => {
                                     )}
                                   </div>
                                   <span className="text-[11px] font-mono text-slate-400">
-                                    /tools/{tool.slug}
+                                    /{tool.slug}
                                   </span>
                                 </div>
                               </div>
@@ -1058,7 +1058,7 @@ export const AdminPage: React.FC = () => {
                             <td className="py-3 px-4 text-right">
                               <div className="flex items-center justify-end gap-1.5">
                                 <Link
-                                  to={`/tools/${tool.slug}`}
+                                  to={`/${tool.slug}`}
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   title="View on site"
@@ -1843,8 +1843,8 @@ export const AdminPage: React.FC = () => {
 
                     <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between">
                       <div>
-                        <span className="font-bold text-white block">_headers & _redirects</span>
-                        <span className="text-[11px] text-slate-400">Cloudflare Pages SPA caching & zero-redirect /sabbir</span>
+                        <span className="font-bold text-white block">wrangler.jsonc & _headers</span>
+                        <span className="text-[11px] text-slate-400">Cloudflare SPA routing & root-level tool URLs</span>
                       </div>
                       <span className="px-2 py-1 rounded-lg bg-emerald-500/10 text-emerald-400 font-bold text-[11px]">
                         ✓ Configured

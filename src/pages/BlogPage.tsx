@@ -96,14 +96,16 @@ export const BlogPage: React.FC = () => {
   const hasMore = visiblePostsCount < filteredPosts.length;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
+    <div className="space-y-8 sm:space-y-10">
       <Seo 
         title={`${settings.branding.siteName} Blog - Insights, Tutorials & Tech Articles`}
         description="Comprehensive technical guides, tutorials, and insights for developers, creators, and web practitioners."
         url={`${settings.seo.canonicalBaseUrl}/blog`}
       />
 
-      <BreadcrumbNavigation items={[{ label: 'Home', href: '/' }, { label: 'Blog' }]} />
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-4 sm:mb-6 pb-3 sm:pb-4 border-b border-border/60">
+        <BreadcrumbNavigation items={[{ label: 'Blog' }]} />
+      </div>
 
       {/* Header Banner */}
       <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-950 via-slate-900 to-purple-950 border border-primary/20 p-8 sm:p-12 text-white shadow-xl">
