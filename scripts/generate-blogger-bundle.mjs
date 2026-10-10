@@ -272,7 +272,11 @@ const bloggerThemeXml = `<?xml version="1.0" encoding="UTF-8" ?>
   <!-- Toolzaro Primary Stylesheet from jsDelivr CDN -->
   <link crossorigin='anonymous' href='${cdnCssUrl}' rel='stylesheet'/>
 
-  <link expr:href='data:blog.canonicalUrl' rel='canonical'/>
+  <b:if cond='data:blog.isHomepage'>
+    <link expr:href='data:blog.canonicalUrl' rel='canonical'/>
+  <b:else/>
+    <link expr:href='data:blog.url' rel='canonical'/>
+  </b:if>
 
   <!-- Instant Theme Bootstrap & Blogger Clean Router Setup -->
   <script>

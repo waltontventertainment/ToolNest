@@ -1,6 +1,8 @@
 import React from 'react';
 import { useParams, useSearchParams, Navigate, Link } from 'react-router-dom';
 import { tools, categories } from '../lib/registry';
+import { getEffectiveTools } from '../lib/toolOverrides';
+import { useSiteSettings } from '../context/SiteSettingsContext';
 import { ToolCard } from '../components/ToolCard';
 import { Seo } from '../components/Seo';
 import { AdSlot } from '../components/AdSlot';
@@ -38,7 +40,9 @@ export const CategoryPage: React.FC<{ forcedSlug?: string }> = ({ forcedSlug }) 
     return <Navigate to="/404" replace />;
   }
 
-  const categoryTools = tools.filter(t => t.category === categoryName);
+  const { settings } = useSiteSettings();
+  const categoryTools = getEffectiveTools(tools, settings.toolOverrides, false)
+    .filter(t => t.category === categoryName);
   const displayedTools = categoryTools.slice(0, displayCount);
 
   return (

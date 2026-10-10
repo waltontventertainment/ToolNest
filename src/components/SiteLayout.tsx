@@ -11,8 +11,10 @@ import { GoogleDriveModal } from './GoogleDriveModal';
 import { FeedbackModal } from './FeedbackModal';
 import { getBloggerAnnouncement } from '../lib/bloggerLayoutAdmin';
 import { getBlogUrl, getCategoryUrl, getStaticPageUrl } from '../lib/appUrls';
+import { useSiteSettings } from '../context/SiteSettingsContext';
 
 export const SiteLayout: React.FC = () => {
+  const { settings } = useSiteSettings();
   const [theme, setTheme] = useLocalStorage<'light' | 'dark'>('toolnest-theme', 'light');
   const { favorites } = useFavorites();
   const { user, accessToken } = useGoogleDrive();
@@ -35,16 +37,25 @@ export const SiteLayout: React.FC = () => {
     window.scrollTo(0, 0);
   }, [pathname]);
 
-  const bloggerAnnouncement = React.useMemo(() => getBloggerAnnouncement(), []);
-  const bannerBadge = bloggerAnnouncement?.badge || 'Toolzaro 2.0';
-  const bannerText = bloggerAnnouncement?.text || '161+ Professional Browser Utilities • 100% Client-Side Privacy • Live Tech Digest & Drive Sync';
-  const bannerLinkText = bloggerAnnouncement?.linkText || 'Explore All Tools';
-  const bannerLinkUrl = bloggerAnnouncement?.linkUrl || '/';
+  const liveCount = tools.length;
+  const isAnnouncementActive = settings.announcement.enabled && !isBannerDismissed;
+  const bannerBadge = settings.announcement.badge || 'Toolzaro 2.0';
+
+  const bannerText = React.useMemo(() => {
+    const raw = settings.announcement.text || '{count} Professional Browser Utilities • 100% Client-Side Privacy';
+    return raw
+      .replace(/\{count\}|\{total\}|\{tools\}/gi, `${liveCount}`)
+      .replace(/\b16[0-9]\s*(?:\+|plus)\s*(?:tools?|utilities?)/gi, `${liveCount} Utilities`)
+      .replace(/\b16[0-9]\s*(?:\+|plus|\b)/gi, `${liveCount}`);
+  }, [settings.announcement.text, liveCount]);
+
+  const bannerLinkText = settings.announcement.linkText || 'Explore All Tools';
+  const bannerLinkUrl = settings.announcement.linkUrl || '/';
 
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground">
       {/* Premium Top Announcement Banner for Desktop / PC View */}
-      {!isBannerDismissed && (
+      {isAnnouncementActive && (
         <div className="hidden md:block w-full bg-gradient-to-r from-indigo-950 via-purple-950 to-slate-950 border-b border-primary/30 text-white text-xs relative overflow-hidden transition-all duration-300 shadow-sm">
           {/* Ambient Specular Glass Reflection Shimmer */}
           <div className="absolute inset-0 bg-[linear-gradient(110deg,transparent_25%,rgba(255,255,255,0.08)_50%,transparent_75%)] bg-[length:250%_100%] animate-[shimmer_8s_infinite] pointer-events-none" />

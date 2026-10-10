@@ -119,9 +119,13 @@
   ]]></b:template-skin>
 
   <!-- Toolzaro Primary Stylesheet from jsDelivr CDN -->
-  <link crossorigin='anonymous' href='https://cdn.jsdelivr.net/gh/ToolNest/ToolNest@gh-pages/assets/index-CJM-HBi8.css?v=mv0hw7oo' rel='stylesheet'/>
+  <link crossorigin='anonymous' href='https://cdn.jsdelivr.net/gh/ToolNest/ToolNest@gh-pages/assets/index-CJM-HBi8.css?v=mv0jm1td' rel='stylesheet'/>
 
-  <link expr:href='data:blog.canonicalUrl' rel='canonical'/>
+  <b:if cond='data:blog.isHomepage'>
+    <link expr:href='data:blog.canonicalUrl' rel='canonical'/>
+  <b:else/>
+    <link expr:href='data:blog.url' rel='canonical'/>
+  </b:if>
 
   <!-- Instant Theme Bootstrap & Blogger Clean Router Setup -->
   <script>
@@ -327,6 +331,6 @@
   </div>
 
   <!-- Toolzaro Primary JavaScript Bundle from jsDelivr CDN -->
-  <script crossorigin='anonymous' src='https://cdn.jsdelivr.net/gh/ToolNest/ToolNest@gh-pages/assets/index-B-TuWZsM.js?v=mv0hw7oo' type='module'></script>
+  <script crossorigin='anonymous' src='https://cdn.jsdelivr.net/gh/ToolNest/ToolNest@gh-pages/assets/index-I5qSMwVh.js?v=mv0jm1td' type='module'></script>
 </body>
 </html>

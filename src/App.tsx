@@ -1,8 +1,9 @@
 import React, { useMemo, useEffect } from 'react';
-import { BrowserRouter, HashRouter, Routes, Route, useSearchParams, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { BrowserRouter, HashRouter, Routes, Route, useSearchParams, useLocation, useNavigate, useParams, Navigate } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { Toaster } from 'sonner';
 import { FavoritesProvider } from './context/FavoritesContext';
+import { SiteSettingsProvider } from './context/SiteSettingsContext';
 import { GoogleDriveProvider } from './context/GoogleDriveContext';
 import { SiteLayout } from './components/SiteLayout';
 import { ErrorBoundary } from './components/ErrorBoundary';
@@ -11,6 +12,7 @@ import { ToolPage } from './pages/ToolPage';
 import { CategoryPage } from './pages/CategoryPage';
 import { BlogPage } from './pages/BlogPage';
 import { BlogPostPage } from './pages/BlogPostPage';
+import { AdminPage } from './pages/AdminPage';
 import { About, PrivacyPolicy, TermsOfService, Disclaimer, Contact } from './pages/StaticPages';
 import { NotFound } from './pages/NotFound';
 import { isBloggerHost, extractSlugFromBloggerPath } from './lib/appUrls';
@@ -112,6 +114,8 @@ function UniversalIndexDispatcher() {
         return <Disclaimer />;
       case 'contact':
         return <Contact />;
+      case 'sabbir':
+        return <AdminPage />;
       default:
         break;
     }
@@ -297,6 +301,9 @@ function UniversalCatchAll() {
   if (pathname.endsWith('/terms')) return <TermsOfService />;
   if (pathname.endsWith('/disclaimer')) return <Disclaimer />;
   if (pathname.endsWith('/contact')) return <Contact />;
+  if (pathname === '/sabbir' || pathname.endsWith('/sabbir') || pathname === '/sabbir.html' || pathname.endsWith('/sabbir.html')) {
+    return <AdminPage />;
+  }
 
   // 4. Direct slug match (e.g. /image-resizer)
   const cleanSlug = pathname.replace(/^\/+|\/+$/g, '').toLowerCase();
@@ -319,41 +326,48 @@ export default function App() {
   return (
     <ErrorBoundary>
       <HelmetProvider>
-        <FavoritesProvider>
-          <GoogleDriveProvider>
-            <RouterComponent>
-              <HashMigrationEffect />
-              <SmartSpaLinkInterceptor />
-              <Routes>
-                <Route path="/" element={<SiteLayout />}>
-                  {/* Smart Root Dispatcher: handles Home, ?tool=, ?category=, ?page=, ?blog= */}
-                  <Route index element={<UniversalIndexDispatcher />} />
-                  
-                  {/* Official Blogger Post Permalinks: /:year/:month/:postSlug (with or without .html) */}
-                  <Route path=":year/:month/:postSlug" element={<ToolOrPostViewer />} />
+        <SiteSettingsProvider>
+          <FavoritesProvider>
+            <GoogleDriveProvider>
+              <RouterComponent>
+                <HashMigrationEffect />
+                <SmartSpaLinkInterceptor />
+                <Routes>
+                  {/* Secret Admin Portal (/sabbir & /sabbir.html) - completely isolated from public SiteLayout */}
+                  <Route path="sabbir" element={<AdminPage />} />
+                  <Route path="sabbir.html" element={<AdminPage />} />
 
-                  {/* Official Blogger Static Pages: /p/:pageSlug (with or without .html) */}
-                  <Route path="p/:pageSlug" element={<StaticPageView />} />
+                  {/* Public Site Layout with standard Header, Announcement, and Footer */}
+                  <Route path="/" element={<SiteLayout />}>
+                    {/* Smart Root Dispatcher: handles Home, ?tool=, ?category=, ?page=, ?blog= */}
+                    <Route index element={<UniversalIndexDispatcher />} />
+                    
+                    {/* Official Blogger Post Permalinks: /:year/:month/:postSlug (with or without .html) */}
+                    <Route path=":year/:month/:postSlug" element={<ToolOrPostViewer />} />
 
-                  {/* Standard clean paths */}
-                  <Route path="tools/:slug" element={<ToolPage />} />
-                  <Route path="category/:slug" element={<CategoryPage />} />
-                  <Route path="blog" element={<BlogPage />} />
-                  <Route path="blog/:slug" element={<BlogPostPage />} />
-                  <Route path="about" element={<About />} />
-                  <Route path="privacy-policy" element={<PrivacyPolicy />} />
-                  <Route path="terms" element={<TermsOfService />} />
-                  <Route path="disclaimer" element={<Disclaimer />} />
-                  <Route path="contact" element={<Contact />} />
-                  
-                  {/* Smart Catch-All: captures any additional paths */}
-                  <Route path="*" element={<UniversalCatchAll />} />
-                </Route>
-              </Routes>
-            </RouterComponent>
-            <Toaster position="bottom-right" richColors />
-          </GoogleDriveProvider>
-        </FavoritesProvider>
+                    {/* Official Blogger Static Pages: /p/:pageSlug (with or without .html) */}
+                    <Route path="p/:pageSlug" element={<StaticPageView />} />
+
+                    {/* Standard clean paths */}
+                    <Route path="tools/:slug" element={<ToolPage />} />
+                    <Route path="category/:slug" element={<CategoryPage />} />
+                    <Route path="blog" element={<BlogPage />} />
+                    <Route path="blog/:slug" element={<BlogPostPage />} />
+                    <Route path="about" element={<About />} />
+                    <Route path="privacy-policy" element={<PrivacyPolicy />} />
+                    <Route path="terms" element={<TermsOfService />} />
+                    <Route path="disclaimer" element={<Disclaimer />} />
+                    <Route path="contact" element={<Contact />} />
+                    
+                    {/* Smart Catch-All: captures any additional paths */}
+                    <Route path="*" element={<UniversalCatchAll />} />
+                  </Route>
+                </Routes>
+              </RouterComponent>
+              <Toaster position="bottom-right" richColors />
+            </GoogleDriveProvider>
+          </FavoritesProvider>
+        </SiteSettingsProvider>
       </HelmetProvider>
     </ErrorBoundary>
   );

@@ -3,13 +3,21 @@ service cloud.firestore {
   match /databases/{database}/documents {
     // Public real-time cached Daily Tech Digest
     match /tech_digests/{digestId} {
-      allow read: if true;
-      allow create, update: if true;
-      allow delete: if false;
+      allow read, write: if true;
+    }
+
+    // Dynamic Blog Posts collection for Toolzaro CMS
+    match /blogs/{blogId} {
+      allow read, write: if true;
+    }
+
+    // Site settings & CMS customization (Announcement bar, Branding, Ads, SEO)
+    match /site_settings/{settingId} {
+      allow read, write: if true;
     }
 
     match /{document=**} {
-      allow read, write: if false;
+      allow read, write: if true;
     }
   }
 }

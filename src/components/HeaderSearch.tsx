@@ -169,7 +169,7 @@ export const HeaderSearch: React.FC = () => {
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  placeholder={`Search ${tools.length}+ tools (e.g. PDF, Image, QR)...`}
+                  placeholder={`Search ${tools.length} tools (e.g. PDF, Image, QR)...`}
                   className="w-full h-11 pl-11 pr-32 sm:pr-36 bg-secondary/50 focus:bg-background border border-border/80 focus:border-primary/60 rounded-xl text-sm font-medium text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-3 focus:ring-primary/15 transition-all"
                 />
 

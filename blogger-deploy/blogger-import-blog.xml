@@ -22,7 +22,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1001</id>
     <published>2026-09-30T07:20:00.000Z</published>
     <updated>2026-09-30T07:20:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Security &amp; Privacy'/>
     <title type='text'>The Definitive Guide to Client-Side Web Privacy: How WebAssembly &amp; Web Crypto Eliminate Cloud Leaks</title>
     <content type='html'>&lt;article class=&quot;toolzaro-blog-article&quot; style=&quot;font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px;&quot;&gt;
@@ -129,7 +129,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1002</id>
     <published>2026-09-30T07:21:00.000Z</published>
     <updated>2026-09-30T07:21:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='SEO &amp; Growth'/>
     <title type='text'>Technical SEO in 2026: The Complete Blueprint for Schema Markup, OpenGraph, and Rich Snippets</title>
     <content type='html'>&lt;article class=&quot;toolzaro-blog-article&quot; style=&quot;font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px;&quot;&gt;
@@ -303,7 +303,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1003</id>
     <published>2026-09-30T07:22:00.000Z</published>
     <updated>2026-09-30T07:22:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Design &amp; UX'/>
     <title type='text'>The Modern Web Asset Optimization Blueprint: Lossless Image Compression, Next-Gen Formats, and Core Web Vitals</title>
     <content type='html'>&lt;article class=&quot;toolzaro-blog-article&quot; style=&quot;font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px;&quot;&gt;
@@ -442,7 +442,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1004</id>
     <published>2026-09-30T07:23:00.000Z</published>
     <updated>2026-09-30T07:23:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='SEO &amp; Growth'/>
     <title type='text'>YouTube Transcript Intelligence: How to Transform Video Dialogue into High-Ranking SEO Content</title>
     <content type='html'>&lt;article class=&quot;toolzaro-blog-article&quot; style=&quot;font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px;&quot;&gt;
@@ -583,7 +583,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1005</id>
     <published>2026-09-30T07:24:00.000Z</published>
     <updated>2026-09-30T07:24:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Developer Workflows'/>
     <title type='text'>The Production Web Security &amp; Cryptography Cheatsheet: Hashes, JSON Web Tokens (JWT), and Base64 Encoding</title>
     <content type='html'>&lt;article class=&quot;toolzaro-blog-article&quot; style=&quot;font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px;&quot;&gt;

@@ -1,4 +1,6 @@
 User-agent: *
 Allow: /
+Disallow: /sabbir
+Disallow: /sabbir.html
 
-Sitemap: https://toolnest.com/sitemap.xml
+Sitemap: https://toolzaro.cyou/sitemap.xml

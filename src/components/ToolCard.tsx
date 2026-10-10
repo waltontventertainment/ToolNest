@@ -63,9 +63,16 @@ export const ToolCard: React.FC<{ tool: ToolDefinition }> = React.memo(({ tool }
       </div>
       
       <div className="flex items-center justify-between gap-1 mb-1.5 sm:mb-2">
-        <h3 className="font-display font-bold text-sm sm:text-base text-foreground group-hover:text-primary transition-colors tracking-tight line-clamp-1">
-          {tool.name}
-        </h3>
+        <div className="flex items-center gap-1.5 min-w-0">
+          <h3 className="font-display font-bold text-sm sm:text-base text-foreground group-hover:text-primary transition-colors tracking-tight line-clamp-1">
+            {tool.name}
+          </h3>
+          {(tool as any).customBadge && (
+            <span className="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-primary/15 text-primary border border-primary/25 shrink-0">
+              {(tool as any).customBadge}
+            </span>
+          )}
+        </div>
         <ArrowUpRight className="w-3.5 h-3.5 text-muted-foreground/30 group-hover:text-primary group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all shrink-0" />
       </div>
       

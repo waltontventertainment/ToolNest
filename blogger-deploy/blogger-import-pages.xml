@@ -22,7 +22,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.page-1001</id>
     <published>2026-09-29T14:40:00.000Z</published>
     <updated>2026-09-29T14:40:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#page'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#page'/>
     <title type='text'>About Toolzaro</title>
     <content type='html'>&lt;div class=&quot;toolzaro-static-page about-page&quot; style=&quot;font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.7; color: #1e293b; max-width: 800px; margin: 0 auto; padding: 20px;&quot;&gt;
   &lt;div style=&quot;padding: 28px; background: linear-gradient(135deg, rgba(139,92,246,0.1), rgba(59,130,246,0.06)); border: 1px solid rgba(139,92,246,0.25); border-radius: 16px; margin-bottom: 30px;&quot;&gt;
@@ -58,7 +58,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.page-1002</id>
     <published>2026-09-29T14:41:00.000Z</published>
     <updated>2026-09-29T14:41:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#page'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#page'/>
     <title type='text'>Contact Us</title>
     <content type='html'>&lt;div class=&quot;toolzaro-static-page contact-page&quot; style=&quot;font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.7; color: #1e293b; max-width: 800px; margin: 0 auto; padding: 20px;&quot;&gt;
   &lt;div style=&quot;padding: 28px; background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(59,130,246,0.06)); border: 1px solid rgba(16,185,129,0.25); border-radius: 16px; margin-bottom: 30px;&quot;&gt;
@@ -98,7 +98,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.page-1003</id>
     <published>2026-09-29T14:42:00.000Z</published>
     <updated>2026-09-29T14:42:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#page'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#page'/>
     <title type='text'>Privacy Policy</title>
     <content type='html'>&lt;div class=&quot;toolzaro-static-page privacy-page&quot; style=&quot;font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.7; color: #1e293b; max-width: 800px; margin: 0 auto; padding: 20px;&quot;&gt;
   &lt;div style=&quot;padding: 28px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; margin-bottom: 30px;&quot;&gt;
@@ -139,7 +139,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.page-1004</id>
     <published>2026-09-29T14:43:00.000Z</published>
     <updated>2026-09-29T14:43:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#page'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#page'/>
     <title type='text'>Terms of Service</title>
     <content type='html'>&lt;div class=&quot;toolzaro-static-page terms-page&quot; style=&quot;font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.7; color: #1e293b; max-width: 800px; margin: 0 auto; padding: 20px;&quot;&gt;
   &lt;div style=&quot;padding: 28px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; margin-bottom: 30px;&quot;&gt;
@@ -174,7 +174,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.page-1005</id>
     <published>2026-09-29T14:44:00.000Z</published>
     <updated>2026-09-29T14:44:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#page'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#page'/>
     <title type='text'>Disclaimer</title>
     <content type='html'>&lt;div class=&quot;toolzaro-static-page disclaimer-page&quot; style=&quot;font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.7; color: #1e293b; max-width: 800px; margin: 0 auto; padding: 20px;&quot;&gt;
   &lt;div style=&quot;padding: 28px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; margin-bottom: 30px;&quot;&gt;

@@ -2,12 +2,14 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { Search, Sparkles, Star, ShieldCheck, Zap, Layers, X, ArrowRight, BookOpen, Clock, Calendar, Home, ChevronRight, Trash2 } from 'lucide-react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { tools, categories } from '../lib/registry';
+import { getEffectiveTools } from '../lib/toolOverrides';
 import { ToolCard } from '../components/ToolCard';
 import { Seo } from '../components/Seo';
 import { AdSlot } from '../components/AdSlot';
 import { useLocalStorage } from '../lib/toolkit';
 import { useFavorites } from '../context/FavoritesContext';
-import { BlogPost, BUILTIN_BLOG_POSTS, getMergedBlogPosts } from '../lib/blogData';
+import { FirestoreBlog, getPublishedBlogs, seedStarterPostIfEmpty } from '../lib/firestoreBlogService';
+import { useSiteSettings } from '../context/SiteSettingsContext';
 import { DailyTechDigest } from '../components/DailyTechDigest';
 import { TypewriterHeading } from '../components/TypewriterHeading';
 import { HeroShowcase } from '../components/HeroShowcase';
@@ -17,6 +19,7 @@ import heroImg from '../assets/images/hero_visual_premium_1791369917245.jpg';
 import emptyImg from '../assets/images/empty_state_1785690459297.jpg';
 
 export const Index: React.FC = () => {
+  const { settings } = useSiteSettings();
   const [searchParams, setSearchParams] = useSearchParams();
   const [search, setSearch] = useState(searchParams.get('q') || '');
   const [activeCategory, setActiveCategory] = useState<string>('All');
@@ -27,15 +30,17 @@ export const Index: React.FC = () => {
   const [displayCount, setDisplayCount] = useState(24);
   const [incrementCount, setIncrementCount] = useState(24);
   
-  // Blog state with automatic Blogger synchronization
-  const [allBlogPosts, setAllBlogPosts] = useState<BlogPost[]>(BUILTIN_BLOG_POSTS);
+  // Blog state with Firebase Firestore
+  const [allBlogPosts, setAllBlogPosts] = useState<FirestoreBlog[]>([]);
   const [visibleBlogCount, setVisibleBlogCount] = useState(3);
-  const [hasBloggerPosts, setHasBloggerPosts] = useState(false);
 
   useEffect(() => {
-    getMergedBlogPosts().then(posts => {
-      setAllBlogPosts(posts);
-      setHasBloggerPosts(posts.some(p => p.source === 'blogger'));
+    getPublishedBlogs().then(posts => {
+      if (posts.length > 0) {
+        setAllBlogPosts(posts);
+      } else {
+        seedStarterPostIfEmpty().then(seeded => setAllBlogPosts(seeded));
+      }
     });
   }, []);
 
@@ -104,8 +109,12 @@ export const Index: React.FC = () => {
     return [...present, ...remainder];
   }, []);
 
+  const activeToolsList = useMemo(() => {
+    return getEffectiveTools(tools, settings.toolOverrides, false);
+  }, [settings.toolOverrides]);
+
   const filteredTools = useMemo(() => {
-    return tools.filter(tool => {
+    return activeToolsList.filter(tool => {
       if (showFavoritesOnly && !favorites.includes(tool.slug)) {
         return false;
       }
@@ -118,7 +127,7 @@ export const Index: React.FC = () => {
       
       return matchesSearch && matchesCategory;
     });
-  }, [search, activeCategory, showFavoritesOnly, favorites]);
+  }, [activeToolsList, search, activeCategory, showFavoritesOnly, favorites]);
 
   useEffect(() => {
     setDisplayCount(incrementCount);
@@ -349,7 +358,7 @@ export const Index: React.FC = () => {
             <div className="flex-1 w-full max-w-2xl flex flex-col items-center md:items-start text-center md:text-left">
               <div className="inline-flex items-center gap-2 px-3 sm:px-3.5 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-bold mb-3 sm:mb-4 border border-primary/20 shadow-2xs">
                 <Sparkles className="w-3.5 h-3.5 animate-pulse" />
-                <span className="tracking-tight">{tools.length}+ Professional Browser Utilities • Client-Side Privacy</span>
+                <span className="tracking-tight">{tools.length} Professional Browser Utilities • Client-Side Privacy</span>
               </div>
               
               {/* Real Keyboard Typewriter Animation Heading (centered on phone, left on md+) */}
@@ -551,12 +560,10 @@ export const Index: React.FC = () => {
                   <BookOpen className="w-3.5 h-3.5" />
                   <span>Toolzaro Pulse &amp; Insights</span>
                 </div>
-                {hasBloggerPosts && (
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/25 text-[10px] font-bold text-amber-600 dark:text-amber-400">
-                    <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
-                    <span>Live Blogger Sync Active</span>
-                  </span>
-                )}
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  <span>Firebase Firestore</span>
+                </span>
               </div>
               <h2 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight font-display">
                 Latest Guides &amp; Developer Dispatches
@@ -582,7 +589,7 @@ export const Index: React.FC = () => {
             {allBlogPosts.slice(0, visibleBlogCount).map((post) => (
               <Link
                 key={post.id}
-                to={getBlogPostUrl(post.slug, post.url)}
+                to={`/blog/${post.slug}`}
                 className="group flex flex-col justify-between rounded-3xl bg-card border border-border/80 hover:border-primary/50 transition-all duration-300 p-5 shadow-xs hover:shadow-xl hover:-translate-y-1.5 cursor-pointer no-underline select-none"
               >
                 <div className="space-y-3">
@@ -596,12 +603,6 @@ export const Index: React.FC = () => {
                       <span className="px-2.5 py-1 rounded-lg bg-card/90 backdrop-blur-md text-[10px] font-bold text-foreground border border-border">
                         {post.category}
                       </span>
-                      {post.source === 'blogger' && (
-                        <span className="px-2 py-0.5 rounded-lg bg-linear-to-r from-amber-500 to-orange-500 text-white text-[9px] font-black uppercase tracking-wider flex items-center gap-1 shadow-xs">
-                          <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-                          <span>New</span>
-                        </span>
-                      )}
                     </div>
                   </div>
 

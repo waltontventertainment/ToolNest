@@ -302,7 +302,7 @@ export function generateBloggerImportFeed(options: {
     <id>tag:blogger.com,1999:blog-toolzaro.post-${postId}</id>
     <published>${dateIso}</published>
     <updated>${dateIso}</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='${escapeXml(tool.category)}'/>
     <title type='text'>${escapeXml(tool.name)}</title>
     <content type='html'>${escapeHtmlForXml(innerHtml)}</content>
@@ -357,7 +357,7 @@ export function generateBloggerImportFeed(options: {
     <id>tag:blogger.com,1999:blog-toolzaro.post-${postId}</id>
     <published>${dateIso}</published>
     <updated>${dateIso}</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='${escapeXml(blogPost.category)}'/>
     <title type='text'>${escapeXml(blogPost.title)}</title>
     <content type='html'>${escapeHtmlForXml(innerHtml)}</content>
@@ -390,7 +390,7 @@ export function generateBloggerImportFeed(options: {
     <id>tag:blogger.com,1999:blog-toolzaro.page-${pageId}</id>
     <published>${dateIso}</published>
     <updated>${dateIso}</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#page'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#page'/>
     <title type='text'>${escapeXml(page.title)}</title>
     <content type='html'>${escapeHtmlForXml(page.contentHtml.trim())}</content>
     <link rel='edit' type='application/atom+xml' href='https://www.blogger.com/feeds/default/pages/default/page-${pageId}'/>

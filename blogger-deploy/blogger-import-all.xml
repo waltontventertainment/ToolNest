@@ -22,7 +22,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1001</id>
     <published>2026-09-30T21:24:00.000Z</published>
     <updated>2026-09-30T21:24:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Universal Data Suite'/>
     <title type='text'>Global Country Directory</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;rest-countries-explorer&quot;&gt;
@@ -77,7 +77,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1002</id>
     <published>2026-09-30T21:25:00.000Z</published>
     <updated>2026-09-30T21:25:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Universal Data Suite'/>
     <title type='text'>Lexicon Word Definitions</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;free-dictionary-lookup&quot;&gt;
@@ -132,7 +132,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1003</id>
     <published>2026-09-30T21:26:00.000Z</published>
     <updated>2026-09-30T21:26:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Universal Data Suite'/>
     <title type='text'>Universal Library Explorer</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;open-library-book-search&quot;&gt;
@@ -187,7 +187,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1004</id>
     <published>2026-09-30T21:27:00.000Z</published>
     <updated>2026-09-30T21:27:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Universal Data Suite'/>
     <title type='text'>Real-Time Weather Station</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;open-meteo-live-weather&quot;&gt;
@@ -242,7 +242,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1005</id>
     <published>2026-09-30T21:28:00.000Z</published>
     <updated>2026-09-30T21:28:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Universal Data Suite'/>
     <title type='text'>Digital Persona Architect</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;dicebear-robohash-avatar&quot;&gt;
@@ -297,7 +297,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1006</id>
     <published>2026-09-30T21:29:00.000Z</published>
     <updated>2026-09-30T21:29:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Universal Data Suite'/>
     <title type='text'>Advanced QR Suite</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;qr-server-code-maker&quot;&gt;
@@ -352,7 +352,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1007</id>
     <published>2026-09-30T21:30:00.000Z</published>
     <updated>2026-09-30T21:30:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Universal Data Suite'/>
     <title type='text'>Dynamic Visual Placeholders</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;lorem-picsum-placeholder-images&quot;&gt;
@@ -407,7 +407,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1008</id>
     <published>2026-09-30T21:31:00.000Z</published>
     <updated>2026-09-30T21:31:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Universal Data Suite'/>
     <title type='text'>Network IP Identifier</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;ipify-public-ip-inspector&quot;&gt;
@@ -462,7 +462,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1009</id>
     <published>2026-09-30T21:32:00.000Z</published>
     <updated>2026-09-30T21:32:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Universal Data Suite'/>
     <title type='text'>Inspiration &amp; Humor Stream</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;joke-motivation-hub&quot;&gt;
@@ -517,7 +517,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1010</id>
     <published>2026-09-30T21:33:00.000Z</published>
     <updated>2026-09-30T21:33:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Universal Data Suite'/>
     <title type='text'>World Academic Directory</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;hipolabs-universities-list&quot;&gt;
@@ -572,7 +572,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1011</id>
     <published>2026-09-30T21:34:00.000Z</published>
     <updated>2026-09-30T21:34:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Universal Data Suite'/>
     <title type='text'>Instant Web Snapshot</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;website-screenshot-capture&quot;&gt;
@@ -627,7 +627,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1012</id>
     <published>2026-09-30T21:35:00.000Z</published>
     <updated>2026-09-30T21:35:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Wikipedia'/>
     <title type='text'>Wikipedia Article &amp; Summary Explorer</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;wikipedia-summarizer&quot;&gt;
@@ -687,7 +687,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1013</id>
     <published>2026-09-30T21:36:00.000Z</published>
     <updated>2026-09-30T21:36:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Wikipedia'/>
     <title type='text'>&quot;On This Day&quot; History Timeline</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;wikipedia-on-this-day-history&quot;&gt;
@@ -747,7 +747,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1014</id>
     <published>2026-09-30T21:37:00.000Z</published>
     <updated>2026-09-30T21:37:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Wikipedia'/>
     <title type='text'>Wikipedia Landmark Geo-Search</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;wikipedia-landmark-geosearch&quot;&gt;
@@ -807,7 +807,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1015</id>
     <published>2026-09-30T21:38:00.000Z</published>
     <updated>2026-09-30T21:38:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Universal Data Suite'/>
     <title type='text'>YouTube Transcript Extractor</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;youtube-transcript-extractor&quot;&gt;
@@ -867,7 +867,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1016</id>
     <published>2026-09-30T21:39:00.000Z</published>
     <updated>2026-09-30T21:39:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='PDF'/>
     <title type='text'>PDF Merger</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;pdf-merge&quot;&gt;
@@ -927,7 +927,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1017</id>
     <published>2026-09-30T21:40:00.000Z</published>
     <updated>2026-09-30T21:40:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='PDF'/>
     <title type='text'>PDF Splitter &amp; Page Extractor</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;pdf-split&quot;&gt;
@@ -982,7 +982,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1018</id>
     <published>2026-09-30T21:41:00.000Z</published>
     <updated>2026-09-30T21:41:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='PDF'/>
     <title type='text'>PDF to Text Extractor</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;pdf-to-text&quot;&gt;
@@ -1037,7 +1037,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1019</id>
     <published>2026-09-30T21:42:00.000Z</published>
     <updated>2026-09-30T21:42:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='PDF'/>
     <title type='text'>Text to PDF Generator</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;text-to-pdf&quot;&gt;
@@ -1092,7 +1092,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1020</id>
     <published>2026-09-30T21:43:00.000Z</published>
     <updated>2026-09-30T21:43:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='PDF'/>
     <title type='text'>PDF to Image Converter</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;pdf-to-images&quot;&gt;
@@ -1147,7 +1147,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1021</id>
     <published>2026-09-30T21:44:00.000Z</published>
     <updated>2026-09-30T21:44:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='PDF'/>
     <title type='text'>PDF Page Rotator &amp; Organizer</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;pdf-rotate&quot;&gt;
@@ -1202,7 +1202,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1022</id>
     <published>2026-09-30T21:45:00.000Z</published>
     <updated>2026-09-30T21:45:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='PDF'/>
     <title type='text'>PDF Watermark &amp; Stamp Utility</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;pdf-watermark&quot;&gt;
@@ -1257,7 +1257,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1023</id>
     <published>2026-09-30T21:46:00.000Z</published>
     <updated>2026-09-30T21:46:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='QR &amp; Barcode'/>
     <title type='text'>QR Code Scanner &amp; Reader</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;qr-code-scanner&quot;&gt;
@@ -1317,7 +1317,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1024</id>
     <published>2026-09-30T21:47:00.000Z</published>
     <updated>2026-09-30T21:47:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='QR &amp; Barcode'/>
     <title type='text'>Barcode Scanner &amp; Reader</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;barcode-scanner&quot;&gt;
@@ -1372,7 +1372,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1025</id>
     <published>2026-09-30T21:48:00.000Z</published>
     <updated>2026-09-30T21:48:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Color &amp; Image'/>
     <title type='text'>Color Picker &amp; Palette Generator</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;color-picker-palette&quot;&gt;
@@ -1427,7 +1427,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1026</id>
     <published>2026-09-30T21:49:00.000Z</published>
     <updated>2026-09-30T21:49:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Color &amp; Image'/>
     <title type='text'>CSS Box Shadow Generator</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;css-box-shadow-generator&quot;&gt;
@@ -1482,7 +1482,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1027</id>
     <published>2026-09-30T21:50:00.000Z</published>
     <updated>2026-09-30T21:50:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Color &amp; Image'/>
     <title type='text'>Image Resizer &amp; Format Converter</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;image-resizer-converter&quot;&gt;
@@ -1542,7 +1542,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1028</id>
     <published>2026-09-30T21:51:00.000Z</published>
     <updated>2026-09-30T21:51:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Color &amp; Image'/>
     <title type='text'>Image Cropper &amp; Aspect Ratio Frame</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;image-cropper-ratio&quot;&gt;
@@ -1597,7 +1597,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1029</id>
     <published>2026-09-30T21:52:00.000Z</published>
     <updated>2026-09-30T21:52:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Color &amp; Image'/>
     <title type='text'>Image Color Palette &amp; Eyedropper</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;image-palette-extractor&quot;&gt;
@@ -1652,7 +1652,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1030</id>
     <published>2026-09-30T21:53:00.000Z</published>
     <updated>2026-09-30T21:53:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Color &amp; Image'/>
     <title type='text'>Image Filters &amp; Photo Studio</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;image-filters-adjuster&quot;&gt;
@@ -1707,7 +1707,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1031</id>
     <published>2026-09-30T21:54:00.000Z</published>
     <updated>2026-09-30T21:54:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Color &amp; Image'/>
     <title type='text'>Image Watermark &amp; Stamp Adder</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;image-watermark-adder&quot;&gt;
@@ -1762,7 +1762,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1032</id>
     <published>2026-09-30T21:55:00.000Z</published>
     <updated>2026-09-30T21:55:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Color &amp; Image'/>
     <title type='text'>Color Contrast &amp; WCAG Checker</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;color-contrast-wcag-checker&quot;&gt;
@@ -1817,7 +1817,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1033</id>
     <published>2026-09-30T21:56:00.000Z</published>
     <updated>2026-09-30T21:56:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Color &amp; Image'/>
     <title type='text'>SVG to Data URI &amp; CSS Converter</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;svg-to-css-data-uri&quot;&gt;
@@ -1872,7 +1872,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1034</id>
     <published>2026-09-30T21:57:00.000Z</published>
     <updated>2026-09-30T21:57:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Color &amp; Image'/>
     <title type='text'>Color Gradient Mesh &amp; CSS Generator</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;color-gradient-mesh-generator&quot;&gt;
@@ -1927,7 +1927,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1035</id>
     <published>2026-09-30T21:58:00.000Z</published>
     <updated>2026-09-30T21:58:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Color &amp; Image'/>
     <title type='text'>Color Blindness &amp; Vision Simulator</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;color-blindness-simulator&quot;&gt;
@@ -1982,7 +1982,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1036</id>
     <published>2026-09-30T21:59:00.000Z</published>
     <updated>2026-09-30T21:59:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Color &amp; Image'/>
     <title type='text'>Image Blur &amp; Pixelate Anonymizer</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;image-anonymizer-blur&quot;&gt;
@@ -2037,7 +2037,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1037</id>
     <published>2026-09-30T22:00:00.000Z</published>
     <updated>2026-09-30T22:00:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Developer'/>
     <title type='text'>JSON to TypeScript Interface Generator</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;json-to-typescript&quot;&gt;
@@ -2092,7 +2092,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1038</id>
     <published>2026-09-30T22:01:00.000Z</published>
     <updated>2026-09-30T22:01:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Developer'/>
     <title type='text'>Cron Schedule Humanizer</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;cron-schedule-humanizer&quot;&gt;
@@ -2147,7 +2147,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1039</id>
     <published>2026-09-30T22:02:00.000Z</published>
     <updated>2026-09-30T22:02:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Developer'/>
     <title type='text'>SVG Code Optimizer &amp; Cleaner</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;svg-optimizer&quot;&gt;
@@ -2202,7 +2202,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1040</id>
     <published>2026-09-30T22:03:00.000Z</published>
     <updated>2026-09-30T22:03:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Developer'/>
     <title type='text'>JWT Token Generator &amp; Tester</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;jwt-generator&quot;&gt;
@@ -2257,7 +2257,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1041</id>
     <published>2026-09-30T22:04:00.000Z</published>
     <updated>2026-09-30T22:04:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Calculators'/>
     <title type='text'>Discount &amp; Sales Tax Calculator</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;discount-tax-calculator&quot;&gt;
@@ -2312,7 +2312,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1042</id>
     <published>2026-09-30T22:05:00.000Z</published>
     <updated>2026-09-30T22:05:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Calculators'/>
     <title type='text'>BMI &amp; Metabolic Health Calculator</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;bmi-calculator&quot;&gt;
@@ -2367,7 +2367,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1043</id>
     <published>2026-09-30T22:06:00.000Z</published>
     <updated>2026-09-30T22:06:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Text'/>
     <title type='text'>Text Case Converter Pro &amp; Cleaner</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;text-case-cleaner-pro&quot;&gt;
@@ -2422,7 +2422,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1044</id>
     <published>2026-09-30T22:07:00.000Z</published>
     <updated>2026-09-30T22:07:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Developer'/>
     <title type='text'>IP &amp; Client Network Inspector</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;domain-ip-lookup&quot;&gt;
@@ -2477,7 +2477,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1045</id>
     <published>2026-09-30T22:08:00.000Z</published>
     <updated>2026-09-30T22:08:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Generators'/>
     <title type='text'>Cron Expression Generator</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;cron-generator&quot;&gt;
@@ -2537,7 +2537,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1046</id>
     <published>2026-09-30T22:09:00.000Z</published>
     <updated>2026-09-30T22:09:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Generators'/>
     <title type='text'>CSS Gradient Generator</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;css-gradient-generator&quot;&gt;
@@ -2592,7 +2592,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1047</id>
     <published>2026-09-30T22:10:00.000Z</published>
     <updated>2026-09-30T22:10:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Generators'/>
     <title type='text'>Placeholder Image Generator</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;placeholder-image-generator&quot;&gt;
@@ -2647,7 +2647,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1048</id>
     <published>2026-09-30T22:11:00.000Z</published>
     <updated>2026-09-30T22:11:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Generators'/>
     <title type='text'>Mock Data Generator</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;mock-data-generator&quot;&gt;
@@ -2702,7 +2702,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1049</id>
     <published>2026-09-30T22:12:00.000Z</published>
     <updated>2026-09-30T22:12:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Generators'/>
     <title type='text'>SQL Seed Data Generator</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;sql-insert-generator&quot;&gt;
@@ -2757,7 +2757,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1050</id>
     <published>2026-09-30T22:13:00.000Z</published>
     <updated>2026-09-30T22:13:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Generators'/>
     <title type='text'>UUID &amp; Unique ID Suite</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;id-generator-suite&quot;&gt;
@@ -2812,7 +2812,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1051</id>
     <published>2026-09-30T22:14:00.000Z</published>
     <updated>2026-09-30T22:14:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Generators'/>
     <title type='text'>API Key &amp; Secret Generator</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;secret-key-generator&quot;&gt;
@@ -2867,7 +2867,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1052</id>
     <published>2026-09-30T22:15:00.000Z</published>
     <updated>2026-09-30T22:15:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Generators'/>
     <title type='text'>Advanced URL Slug Generator</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;advanced-slug-generator&quot;&gt;
@@ -2922,7 +2922,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1053</id>
     <published>2026-09-30T22:16:00.000Z</published>
     <updated>2026-09-30T22:16:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Generators'/>
     <title type='text'>Web App Manifest &amp; Favicon Generator</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;favicon-manifest-generator&quot;&gt;
@@ -2977,7 +2977,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1054</id>
     <published>2026-09-30T22:17:00.000Z</published>
     <updated>2026-09-30T22:17:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Generators'/>
     <title type='text'>Bcrypt &amp; Secure Hash Generator</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;bcrypt-hash-generator&quot;&gt;
@@ -3032,7 +3032,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1055</id>
     <published>2026-09-30T22:18:00.000Z</published>
     <updated>2026-09-30T22:18:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Converters'/>
     <title type='text'>Temperature Converter</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;temperature-converter&quot;&gt;
@@ -3092,7 +3092,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1056</id>
     <published>2026-09-30T22:19:00.000Z</published>
     <updated>2026-09-30T22:19:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Converters'/>
     <title type='text'>Length Converter</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;length-converter&quot;&gt;
@@ -3152,7 +3152,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1057</id>
     <published>2026-09-30T22:20:00.000Z</published>
     <updated>2026-09-30T22:20:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Converters'/>
     <title type='text'>Weight Converter</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;weight-converter&quot;&gt;
@@ -3212,7 +3212,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1058</id>
     <published>2026-09-30T22:21:00.000Z</published>
     <updated>2026-09-30T22:21:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Converters'/>
     <title type='text'>Volume Converter</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;volume-converter&quot;&gt;
@@ -3272,7 +3272,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1059</id>
     <published>2026-09-30T22:22:00.000Z</published>
     <updated>2026-09-30T22:22:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Converters'/>
     <title type='text'>Data Storage Converter</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;data-storage-converter&quot;&gt;
@@ -3332,7 +3332,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1060</id>
     <published>2026-09-30T22:23:00.000Z</published>
     <updated>2026-09-30T22:23:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Converters'/>
     <title type='text'>Angle Converter</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;angle-converter&quot;&gt;
@@ -3392,7 +3392,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1061</id>
     <published>2026-09-30T22:24:00.000Z</published>
     <updated>2026-09-30T22:24:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Converters'/>
     <title type='text'>ROT13 Converter</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;rot13-converter&quot;&gt;
@@ -3452,7 +3452,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1062</id>
     <published>2026-09-30T22:25:00.000Z</published>
     <updated>2026-09-30T22:25:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Converters'/>
     <title type='text'>Text to Octal</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;text-to-octal&quot;&gt;
@@ -3512,7 +3512,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1063</id>
     <published>2026-09-30T22:26:00.000Z</published>
     <updated>2026-09-30T22:26:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Converters'/>
     <title type='text'>Octal to Text</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;octal-to-text&quot;&gt;
@@ -3572,7 +3572,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1064</id>
     <published>2026-09-30T22:27:00.000Z</published>
     <updated>2026-09-30T22:27:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Converters'/>
     <title type='text'>Roman Numeral Converter</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;roman-numeral-converter&quot;&gt;
@@ -3632,7 +3632,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1065</id>
     <published>2026-09-30T22:28:00.000Z</published>
     <updated>2026-09-30T22:28:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Text'/>
     <title type='text'>Case Converter</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;case-converter&quot;&gt;
@@ -3692,7 +3692,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1066</id>
     <published>2026-09-30T22:29:00.000Z</published>
     <updated>2026-09-30T22:29:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Text'/>
     <title type='text'>Word Counter</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;word-counter&quot;&gt;
@@ -3752,7 +3752,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1067</id>
     <published>2026-09-30T22:30:00.000Z</published>
     <updated>2026-09-30T22:30:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Developer'/>
     <title type='text'>HTML Viewer &amp; Editor</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;html-viewer-editor&quot;&gt;
@@ -3812,7 +3812,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1068</id>
     <published>2026-09-30T22:31:00.000Z</published>
     <updated>2026-09-30T22:31:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Developer'/>
     <title type='text'>Base64 Encode/Decode</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;base64-converter&quot;&gt;
@@ -3872,7 +3872,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1069</id>
     <published>2026-09-30T22:32:00.000Z</published>
     <updated>2026-09-30T22:32:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Converters'/>
     <title type='text'>Number Base Converter</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;number-base-converter&quot;&gt;
@@ -3932,7 +3932,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1070</id>
     <published>2026-09-30T22:33:00.000Z</published>
     <updated>2026-09-30T22:33:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Text'/>
     <title type='text'>Remove Duplicate Lines</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;remove-duplicate-lines&quot;&gt;
@@ -3987,7 +3987,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1071</id>
     <published>2026-09-30T22:34:00.000Z</published>
     <updated>2026-09-30T22:34:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Text'/>
     <title type='text'>Sort Lines</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;sort-lines&quot;&gt;
@@ -4042,7 +4042,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1072</id>
     <published>2026-09-30T22:35:00.000Z</published>
     <updated>2026-09-30T22:35:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Text'/>
     <title type='text'>Remove Extra Spaces</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;remove-extra-spaces&quot;&gt;
@@ -4097,7 +4097,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1073</id>
     <published>2026-09-30T22:36:00.000Z</published>
     <updated>2026-09-30T22:36:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Text'/>
     <title type='text'>Remove Empty Lines</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;remove-empty-lines&quot;&gt;
@@ -4152,7 +4152,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1074</id>
     <published>2026-09-30T22:37:00.000Z</published>
     <updated>2026-09-30T22:37:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Text'/>
     <title type='text'>Reverse Text</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;reverse-text&quot;&gt;
@@ -4207,7 +4207,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1075</id>
     <published>2026-09-30T22:38:00.000Z</published>
     <updated>2026-09-30T22:38:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Text'/>
     <title type='text'>Reverse Lines</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;reverse-lines&quot;&gt;
@@ -4262,7 +4262,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1076</id>
     <published>2026-09-30T22:39:00.000Z</published>
     <updated>2026-09-30T22:39:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Text'/>
     <title type='text'>Strip HTML Tags</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;html-stripper&quot;&gt;
@@ -4317,7 +4317,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1077</id>
     <published>2026-09-30T22:40:00.000Z</published>
     <updated>2026-09-30T22:40:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Text'/>
     <title type='text'>Extract Emails</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;extract-emails&quot;&gt;
@@ -4372,7 +4372,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1078</id>
     <published>2026-09-30T22:41:00.000Z</published>
     <updated>2026-09-30T22:41:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Text'/>
     <title type='text'>Extract URLs</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;extract-urls&quot;&gt;
@@ -4427,7 +4427,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1079</id>
     <published>2026-09-30T22:42:00.000Z</published>
     <updated>2026-09-30T22:42:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Text'/>
     <title type='text'>Text to Binary</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;text-to-binary&quot;&gt;
@@ -4482,7 +4482,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1080</id>
     <published>2026-09-30T22:43:00.000Z</published>
     <updated>2026-09-30T22:43:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Text'/>
     <title type='text'>Binary to Text</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;binary-to-text&quot;&gt;
@@ -4537,7 +4537,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1081</id>
     <published>2026-09-30T22:44:00.000Z</published>
     <updated>2026-09-30T22:44:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Text'/>
     <title type='text'>Text to Hex</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;text-to-hex&quot;&gt;
@@ -4592,7 +4592,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1082</id>
     <published>2026-09-30T22:45:00.000Z</published>
     <updated>2026-09-30T22:45:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Text'/>
     <title type='text'>Hex to Text</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;hex-to-text&quot;&gt;
@@ -4647,7 +4647,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1083</id>
     <published>2026-09-30T22:46:00.000Z</published>
     <updated>2026-09-30T22:46:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Text'/>
     <title type='text'>Text to ASCII</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;text-to-ascii&quot;&gt;
@@ -4702,7 +4702,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1084</id>
     <published>2026-09-30T22:47:00.000Z</published>
     <updated>2026-09-30T22:47:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Text'/>
     <title type='text'>ASCII to Text</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;ascii-to-text&quot;&gt;
@@ -4757,7 +4757,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1085</id>
     <published>2026-09-30T22:48:00.000Z</published>
     <updated>2026-09-30T22:48:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Text'/>
     <title type='text'>Shuffle Lines</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;shuffle-lines&quot;&gt;
@@ -4812,7 +4812,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1086</id>
     <published>2026-09-30T22:49:00.000Z</published>
     <updated>2026-09-30T22:49:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Text'/>
     <title type='text'>Add Line Numbers</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;add-line-numbers&quot;&gt;
@@ -4867,7 +4867,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1087</id>
     <published>2026-09-30T22:50:00.000Z</published>
     <updated>2026-09-30T22:50:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Text'/>
     <title type='text'>Add Prefix &amp; Suffix</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;prefix-suffix-lines&quot;&gt;
@@ -4922,7 +4922,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1088</id>
     <published>2026-09-30T22:51:00.000Z</published>
     <updated>2026-09-30T22:51:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Text'/>
     <title type='text'>Text Difference Compare</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;text-diff&quot;&gt;
@@ -4977,7 +4977,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1089</id>
     <published>2026-09-30T22:52:00.000Z</published>
     <updated>2026-09-30T22:52:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Text'/>
     <title type='text'>Find &amp; Replace</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;find-and-replace&quot;&gt;
@@ -5032,7 +5032,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1090</id>
     <published>2026-09-30T22:53:00.000Z</published>
     <updated>2026-09-30T22:53:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='QR &amp; Barcode'/>
     <title type='text'>QR Code Generator</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;qr-code-generator&quot;&gt;
@@ -5092,7 +5092,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1091</id>
     <published>2026-09-30T22:54:00.000Z</published>
     <updated>2026-09-30T22:54:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='QR &amp; Barcode'/>
     <title type='text'>Barcode Generator</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;barcode-generator&quot;&gt;
@@ -5152,7 +5152,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1092</id>
     <published>2026-09-30T22:55:00.000Z</published>
     <updated>2026-09-30T22:55:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Color &amp; Image'/>
     <title type='text'>Image Compressor</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;image-compressor&quot;&gt;
@@ -5212,7 +5212,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1093</id>
     <published>2026-09-30T22:56:00.000Z</published>
     <updated>2026-09-30T22:56:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='SEO'/>
     <title type='text'>Meta Tag Generator</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;meta-tag-generator&quot;&gt;
@@ -5272,7 +5272,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1094</id>
     <published>2026-09-30T22:57:00.000Z</published>
     <updated>2026-09-30T22:57:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='SEO'/>
     <title type='text'>Robots.txt Generator &amp; Validator</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;robots-txt-generator&quot;&gt;
@@ -5332,7 +5332,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1095</id>
     <published>2026-09-30T22:58:00.000Z</published>
     <updated>2026-09-30T22:58:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='SEO'/>
     <title type='text'>XML Sitemap Generator &amp; Visualizer</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;sitemap-xml-generator&quot;&gt;
@@ -5387,7 +5387,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1096</id>
     <published>2026-09-30T22:59:00.000Z</published>
     <updated>2026-09-30T22:59:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='SEO'/>
     <title type='text'>Open Graph &amp; Social Card Previewer</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;open-graph-previewer&quot;&gt;
@@ -5442,7 +5442,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1097</id>
     <published>2026-09-30T23:00:00.000Z</published>
     <updated>2026-09-30T23:00:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='SEO'/>
     <title type='text'>Schema.org Structured Data Generator</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;schema-markup-generator&quot;&gt;
@@ -5497,7 +5497,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1098</id>
     <published>2026-09-30T23:01:00.000Z</published>
     <updated>2026-09-30T23:01:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='SEO'/>
     <title type='text'>Keyword Density &amp; N-Gram Analyzer</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;keyword-density-analyzer&quot;&gt;
@@ -5552,7 +5552,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1099</id>
     <published>2026-09-30T23:02:00.000Z</published>
     <updated>2026-09-30T23:02:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='SEO'/>
     <title type='text'>SERP Snippet Optimizer &amp; CTR Checker</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;serp-snippet-optimizer&quot;&gt;
@@ -5607,7 +5607,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1100</id>
     <published>2026-09-30T23:03:00.000Z</published>
     <updated>2026-09-30T23:03:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='SEO'/>
     <title type='text'>Hreflang Tags &amp; 301 Redirect Generator</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;hreflang-redirect-generator&quot;&gt;
@@ -5662,7 +5662,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1101</id>
     <published>2026-09-30T23:04:00.000Z</published>
     <updated>2026-09-30T23:04:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='SEO'/>
     <title type='text'>Heading Tag &amp; Content Hierarchy Analyzer</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;heading-structure-analyzer&quot;&gt;
@@ -5717,7 +5717,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1102</id>
     <published>2026-09-30T23:05:00.000Z</published>
     <updated>2026-09-30T23:05:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='SEO'/>
     <title type='text'>SEO Slug &amp; URL Health Generator</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;seo-slug-health-checker&quot;&gt;
@@ -5772,7 +5772,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1103</id>
     <published>2026-09-30T23:06:00.000Z</published>
     <updated>2026-09-30T23:06:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='SEO'/>
     <title type='text'>SEO Content Readability &amp; Text Audit</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;seo-content-readability-audit&quot;&gt;
@@ -5827,7 +5827,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1104</id>
     <published>2026-09-30T23:07:00.000Z</published>
     <updated>2026-09-30T23:07:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Utility'/>
     <title type='text'>Stopwatch &amp; Timer</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;stopwatch-timer&quot;&gt;
@@ -5887,7 +5887,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1105</id>
     <published>2026-09-30T23:08:00.000Z</published>
     <updated>2026-09-30T23:08:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Utility'/>
     <title type='text'>Countdown Timer &amp; Alarm</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;countdown-timer-alarm&quot;&gt;
@@ -5947,7 +5947,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1106</id>
     <published>2026-09-30T23:09:00.000Z</published>
     <updated>2026-09-30T23:09:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Utility'/>
     <title type='text'>World Clock &amp; Timezone Hub</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;world-clock-scheduler&quot;&gt;
@@ -6007,7 +6007,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1107</id>
     <published>2026-09-30T23:10:00.000Z</published>
     <updated>2026-09-30T23:10:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Utility'/>
     <title type='text'>Random Choice Picker</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;random-choice-picker&quot;&gt;
@@ -6067,7 +6067,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1108</id>
     <published>2026-09-30T23:11:00.000Z</published>
     <updated>2026-09-30T23:11:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Utility'/>
     <title type='text'>Unit Price Cost Comparator</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;unit-price-comparator&quot;&gt;
@@ -6127,7 +6127,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1109</id>
     <published>2026-09-30T23:12:00.000Z</published>
     <updated>2026-09-30T23:12:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Utility'/>
     <title type='text'>Screen &amp; Display Diagnostics</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;screen-webcam-tester&quot;&gt;
@@ -6187,7 +6187,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1110</id>
     <published>2026-09-30T23:13:00.000Z</published>
     <updated>2026-09-30T23:13:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Utility'/>
     <title type='text'>Audio Frequency Tone Synthesizer</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;audio-tone-generator&quot;&gt;
@@ -6247,7 +6247,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1111</id>
     <published>2026-09-30T23:14:00.000Z</published>
     <updated>2026-09-30T23:14:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Utility'/>
     <title type='text'>File Hash Checksum Calculator</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;file-hash-calculator&quot;&gt;
@@ -6307,7 +6307,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1112</id>
     <published>2026-09-30T23:15:00.000Z</published>
     <updated>2026-09-30T23:15:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Utility'/>
     <title type='text'>Keyboard Key Code &amp; Press Tester</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;keyboard-key-tester&quot;&gt;
@@ -6367,7 +6367,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1113</id>
     <published>2026-09-30T23:16:00.000Z</published>
     <updated>2026-09-30T23:16:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Utility'/>
     <title type='text'>Image to Base64 Data URI</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;image-to-base64-converter&quot;&gt;
@@ -6427,7 +6427,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1114</id>
     <published>2026-09-30T23:17:00.000Z</published>
     <updated>2026-09-30T23:17:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Utility'/>
     <title type='text'>Quick Scratchpad &amp; Notes</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;quick-scratchpad-notes&quot;&gt;
@@ -6487,7 +6487,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1115</id>
     <published>2026-09-30T23:18:00.000Z</published>
     <updated>2026-09-30T23:18:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Generators'/>
     <title type='text'>Password Generator</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;password-generator&quot;&gt;
@@ -6547,7 +6547,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1116</id>
     <published>2026-09-30T23:19:00.000Z</published>
     <updated>2026-09-30T23:19:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Calculators'/>
     <title type='text'>Scientific Pro Calculator</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;advanced-calculator&quot;&gt;
@@ -6607,7 +6607,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1117</id>
     <published>2026-09-30T23:20:00.000Z</published>
     <updated>2026-09-30T23:20:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Calculators'/>
     <title type='text'>Simple Calculator</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;simple-calculator&quot;&gt;
@@ -6662,7 +6662,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1118</id>
     <published>2026-09-30T23:21:00.000Z</published>
     <updated>2026-09-30T23:21:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Developer'/>
     <title type='text'>JSON Formatter</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;json-formatter&quot;&gt;
@@ -6717,7 +6717,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1119</id>
     <published>2026-09-30T23:22:00.000Z</published>
     <updated>2026-09-30T23:22:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Developer'/>
     <title type='text'>URL Encoder/Decoder</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;url-encoder-decoder&quot;&gt;
@@ -6777,7 +6777,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1120</id>
     <published>2026-09-30T23:23:00.000Z</published>
     <updated>2026-09-30T23:23:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Developer'/>
     <title type='text'>HTML Entity Encoder</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;html-entity-encoder&quot;&gt;
@@ -6837,7 +6837,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1121</id>
     <published>2026-09-30T23:24:00.000Z</published>
     <updated>2026-09-30T23:24:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Developer'/>
     <title type='text'>MD5 Hash Generator</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;md5-generator&quot;&gt;
@@ -6892,7 +6892,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1122</id>
     <published>2026-09-30T23:25:00.000Z</published>
     <updated>2026-09-30T23:25:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Developer'/>
     <title type='text'>JWT Decoder</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;jwt-decoder&quot;&gt;
@@ -6947,7 +6947,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1123</id>
     <published>2026-09-30T23:26:00.000Z</published>
     <updated>2026-09-30T23:26:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Developer'/>
     <title type='text'>UUID Generator</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;uuid-generator&quot;&gt;
@@ -7007,7 +7007,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1124</id>
     <published>2026-09-30T23:27:00.000Z</published>
     <updated>2026-09-30T23:27:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Developer'/>
     <title type='text'>Lorem Ipsum Generator</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;lorem-ipsum-generator&quot;&gt;
@@ -7067,7 +7067,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1125</id>
     <published>2026-09-30T23:28:00.000Z</published>
     <updated>2026-09-30T23:28:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Developer'/>
     <title type='text'>Unix Timestamp Converter</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;unix-timestamp-converter&quot;&gt;
@@ -7127,7 +7127,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1126</id>
     <published>2026-09-30T23:29:00.000Z</published>
     <updated>2026-09-30T23:29:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Developer'/>
     <title type='text'>CSS Minifier</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;css-minifier&quot;&gt;
@@ -7187,7 +7187,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1127</id>
     <published>2026-09-30T23:30:00.000Z</published>
     <updated>2026-09-30T23:30:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Developer'/>
     <title type='text'>HEX &amp; RGB Color Converter</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;color-converter&quot;&gt;
@@ -7247,7 +7247,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1128</id>
     <published>2026-09-30T23:31:00.000Z</published>
     <updated>2026-09-30T23:31:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Developer'/>
     <title type='text'>Regex Tester</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;regex-tester&quot;&gt;
@@ -7307,7 +7307,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1129</id>
     <published>2026-09-30T23:32:00.000Z</published>
     <updated>2026-09-30T23:32:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Developer'/>
     <title type='text'>URL Parser</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;url-parser&quot;&gt;
@@ -7367,7 +7367,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1130</id>
     <published>2026-09-30T23:33:00.000Z</published>
     <updated>2026-09-30T23:33:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Developer'/>
     <title type='text'>SHA Hash Generator</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;sha-generator&quot;&gt;
@@ -7427,7 +7427,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1131</id>
     <published>2026-09-30T23:34:00.000Z</published>
     <updated>2026-09-30T23:34:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Developer'/>
     <title type='text'>JSON Minifier</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;json-minifier&quot;&gt;
@@ -7487,7 +7487,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1132</id>
     <published>2026-09-30T23:35:00.000Z</published>
     <updated>2026-09-30T23:35:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Developer'/>
     <title type='text'>XML Formatter</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;xml-formatter&quot;&gt;
@@ -7547,7 +7547,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1133</id>
     <published>2026-09-30T23:36:00.000Z</published>
     <updated>2026-09-30T23:36:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Developer'/>
     <title type='text'>SQL Minifier</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;sql-minifier&quot;&gt;
@@ -7607,7 +7607,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1134</id>
     <published>2026-09-30T23:37:00.000Z</published>
     <updated>2026-09-30T23:37:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Developer'/>
     <title type='text'>HTML Minifier</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;html-minifier&quot;&gt;
@@ -7667,7 +7667,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1135</id>
     <published>2026-09-30T23:38:00.000Z</published>
     <updated>2026-09-30T23:38:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Developer'/>
     <title type='text'>Chmod Calculator</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;chmod-calculator&quot;&gt;
@@ -7727,7 +7727,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1136</id>
     <published>2026-09-30T23:39:00.000Z</published>
     <updated>2026-09-30T23:39:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Developer'/>
     <title type='text'>Text to URL Slug</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;text-to-slug&quot;&gt;
@@ -7787,7 +7787,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1137</id>
     <published>2026-09-30T23:40:00.000Z</published>
     <updated>2026-09-30T23:40:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Developer'/>
     <title type='text'>CSV to JSON Converter</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;csv-to-json&quot;&gt;
@@ -7847,7 +7847,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1138</id>
     <published>2026-09-30T23:41:00.000Z</published>
     <updated>2026-09-30T23:41:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Developer'/>
     <title type='text'>JSON to CSV Converter</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;json-to-csv&quot;&gt;
@@ -7907,7 +7907,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1139</id>
     <published>2026-09-30T23:42:00.000Z</published>
     <updated>2026-09-30T23:42:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Developer'/>
     <title type='text'>String Escape / Unescape</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;string-escape&quot;&gt;
@@ -7967,7 +7967,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1140</id>
     <published>2026-09-30T23:43:00.000Z</published>
     <updated>2026-09-30T23:43:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Developer'/>
     <title type='text'>HMAC Generator</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;hmac-generator&quot;&gt;
@@ -8027,7 +8027,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1141</id>
     <published>2026-09-30T23:44:00.000Z</published>
     <updated>2026-09-30T23:44:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Developer'/>
     <title type='text'>IPv4 Subnet Calculator</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;ipv4-subnet-calc&quot;&gt;
@@ -8087,7 +8087,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1142</id>
     <published>2026-09-30T23:45:00.000Z</published>
     <updated>2026-09-30T23:45:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Developer'/>
     <title type='text'>MIME Type Lookup</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;mime-type-lookup&quot;&gt;
@@ -8147,7 +8147,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1143</id>
     <published>2026-09-30T23:46:00.000Z</published>
     <updated>2026-09-30T23:46:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Developer'/>
     <title type='text'>JS Keycode Info</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;js-keycode-info&quot;&gt;
@@ -8207,7 +8207,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1144</id>
     <published>2026-09-30T23:47:00.000Z</published>
     <updated>2026-09-30T23:47:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Developer'/>
     <title type='text'>Query String Parser</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;query-string-parser&quot;&gt;
@@ -8267,7 +8267,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1145</id>
     <published>2026-09-30T23:48:00.000Z</published>
     <updated>2026-09-30T23:48:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Developer'/>
     <title type='text'>MAC Address Generator</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;mac-address-generator&quot;&gt;
@@ -8327,7 +8327,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1146</id>
     <published>2026-09-30T23:49:00.000Z</published>
     <updated>2026-09-30T23:49:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Developer'/>
     <title type='text'>IPv4 Generator</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;ipv4-generator&quot;&gt;
@@ -8387,7 +8387,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1147</id>
     <published>2026-09-30T23:50:00.000Z</published>
     <updated>2026-09-30T23:50:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Developer'/>
     <title type='text'>IPv6 Generator</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;ipv6-generator&quot;&gt;
@@ -8447,7 +8447,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1148</id>
     <published>2026-09-30T23:51:00.000Z</published>
     <updated>2026-09-30T23:51:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Developer'/>
     <title type='text'>HTTP Status Codes</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;http-status-codes&quot;&gt;
@@ -8507,7 +8507,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1149</id>
     <published>2026-09-30T23:52:00.000Z</published>
     <updated>2026-09-30T23:52:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Developer'/>
     <title type='text'>Text to Morse Code</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;text-to-morse&quot;&gt;
@@ -8567,7 +8567,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1150</id>
     <published>2026-09-30T23:53:00.000Z</published>
     <updated>2026-09-30T23:53:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Developer'/>
     <title type='text'>Morse Code to Text</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;morse-to-text&quot;&gt;
@@ -8627,7 +8627,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1151</id>
     <published>2026-09-30T23:54:00.000Z</published>
     <updated>2026-09-30T23:54:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Developer'/>
     <title type='text'>Random String Generator</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;random-string-generator&quot;&gt;
@@ -8687,7 +8687,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1152</id>
     <published>2026-09-30T23:55:00.000Z</published>
     <updated>2026-09-30T23:55:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Developer'/>
     <title type='text'>Device Resolution Lookup</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;device-resolution-lookup&quot;&gt;
@@ -8747,7 +8747,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1153</id>
     <published>2026-09-30T23:56:00.000Z</published>
     <updated>2026-09-30T23:56:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Developer'/>
     <title type='text'>Password Strength Checker</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;password-strength-checker&quot;&gt;
@@ -8807,7 +8807,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1154</id>
     <published>2026-09-30T23:57:00.000Z</published>
     <updated>2026-09-30T23:57:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Developer'/>
     <title type='text'>Text to Decimal</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;text-to-decimal&quot;&gt;
@@ -8867,7 +8867,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1155</id>
     <published>2026-09-30T23:58:00.000Z</published>
     <updated>2026-09-30T23:58:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Developer'/>
     <title type='text'>Decimal to Text</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;decimal-to-text&quot;&gt;
@@ -8927,7 +8927,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1156</id>
     <published>2026-09-30T23:59:00.000Z</published>
     <updated>2026-09-30T23:59:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Developer'/>
     <title type='text'>Basic JS Minifier</title>
     <content type='html'>&lt;div class=&quot;toolzaro-tool-post&quot; data-tool-slug=&quot;basic-js-minifier&quot;&gt;
@@ -8982,7 +8982,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1157</id>
     <published>2026-09-30T07:20:00.000Z</published>
     <updated>2026-09-30T07:20:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Security &amp; Privacy'/>
     <title type='text'>The Definitive Guide to Client-Side Web Privacy: How WebAssembly &amp; Web Crypto Eliminate Cloud Leaks</title>
     <content type='html'>&lt;article class=&quot;toolzaro-blog-article&quot; style=&quot;font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px;&quot;&gt;
@@ -9089,7 +9089,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1158</id>
     <published>2026-09-30T07:21:00.000Z</published>
     <updated>2026-09-30T07:21:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='SEO &amp; Growth'/>
     <title type='text'>Technical SEO in 2026: The Complete Blueprint for Schema Markup, OpenGraph, and Rich Snippets</title>
     <content type='html'>&lt;article class=&quot;toolzaro-blog-article&quot; style=&quot;font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px;&quot;&gt;
@@ -9263,7 +9263,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1159</id>
     <published>2026-09-30T07:22:00.000Z</published>
     <updated>2026-09-30T07:22:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Design &amp; UX'/>
     <title type='text'>The Modern Web Asset Optimization Blueprint: Lossless Image Compression, Next-Gen Formats, and Core Web Vitals</title>
     <content type='html'>&lt;article class=&quot;toolzaro-blog-article&quot; style=&quot;font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px;&quot;&gt;
@@ -9402,7 +9402,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1160</id>
     <published>2026-09-30T07:23:00.000Z</published>
     <updated>2026-09-30T07:23:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='SEO &amp; Growth'/>
     <title type='text'>YouTube Transcript Intelligence: How to Transform Video Dialogue into High-Ranking SEO Content</title>
     <content type='html'>&lt;article class=&quot;toolzaro-blog-article&quot; style=&quot;font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px;&quot;&gt;
@@ -9543,7 +9543,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.post-1161</id>
     <published>2026-09-30T07:24:00.000Z</published>
     <updated>2026-09-30T07:24:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#post'/>
     <category scheme='http://www.blogger.com/atom/ns#' term='Developer Workflows'/>
     <title type='text'>The Production Web Security &amp; Cryptography Cheatsheet: Hashes, JSON Web Tokens (JWT), and Base64 Encoding</title>
     <content type='html'>&lt;article class=&quot;toolzaro-blog-article&quot; style=&quot;font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px;&quot;&gt;
@@ -9654,7 +9654,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.page-1162</id>
     <published>2026-09-29T14:40:00.000Z</published>
     <updated>2026-09-29T14:40:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#page'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#page'/>
     <title type='text'>About Toolzaro</title>
     <content type='html'>&lt;div class=&quot;toolzaro-static-page about-page&quot; style=&quot;font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.7; color: #1e293b; max-width: 800px; margin: 0 auto; padding: 20px;&quot;&gt;
   &lt;div style=&quot;padding: 28px; background: linear-gradient(135deg, rgba(139,92,246,0.1), rgba(59,130,246,0.06)); border: 1px solid rgba(139,92,246,0.25); border-radius: 16px; margin-bottom: 30px;&quot;&gt;
@@ -9690,7 +9690,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.page-1163</id>
     <published>2026-09-29T14:41:00.000Z</published>
     <updated>2026-09-29T14:41:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#page'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#page'/>
     <title type='text'>Contact Us</title>
     <content type='html'>&lt;div class=&quot;toolzaro-static-page contact-page&quot; style=&quot;font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.7; color: #1e293b; max-width: 800px; margin: 0 auto; padding: 20px;&quot;&gt;
   &lt;div style=&quot;padding: 28px; background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(59,130,246,0.06)); border: 1px solid rgba(16,185,129,0.25); border-radius: 16px; margin-bottom: 30px;&quot;&gt;
@@ -9730,7 +9730,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.page-1164</id>
     <published>2026-09-29T14:42:00.000Z</published>
     <updated>2026-09-29T14:42:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#page'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#page'/>
     <title type='text'>Privacy Policy</title>
     <content type='html'>&lt;div class=&quot;toolzaro-static-page privacy-page&quot; style=&quot;font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.7; color: #1e293b; max-width: 800px; margin: 0 auto; padding: 20px;&quot;&gt;
   &lt;div style=&quot;padding: 28px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; margin-bottom: 30px;&quot;&gt;
@@ -9771,7 +9771,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.page-1165</id>
     <published>2026-09-29T14:43:00.000Z</published>
     <updated>2026-09-29T14:43:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#page'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#page'/>
     <title type='text'>Terms of Service</title>
     <content type='html'>&lt;div class=&quot;toolzaro-static-page terms-page&quot; style=&quot;font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.7; color: #1e293b; max-width: 800px; margin: 0 auto; padding: 20px;&quot;&gt;
   &lt;div style=&quot;padding: 28px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; margin-bottom: 30px;&quot;&gt;
@@ -9806,7 +9806,7 @@
     <id>tag:blogger.com,1999:blog-toolzaro.page-1166</id>
     <published>2026-09-29T14:44:00.000Z</published>
     <updated>2026-09-29T14:44:00.000Z</updated>
-    <category scheme='http://schemas.google.com/g/data#kind' term='http://schemas.google.com/blogger/2008/kind#page'/>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/blogger/2008/kind#page'/>
     <title type='text'>Disclaimer</title>
     <content type='html'>&lt;div class=&quot;toolzaro-static-page disclaimer-page&quot; style=&quot;font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.7; color: #1e293b; max-width: 800px; margin: 0 auto; padding: 20px;&quot;&gt;
   &lt;div style=&quot;padding: 28px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; margin-bottom: 30px;&quot;&gt;

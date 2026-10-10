@@ -22,13 +22,17 @@ import { Seo } from '../components/Seo';
 import { AdSlot } from '../components/AdSlot';
 import { BreadcrumbNavigation } from '../components/BreadcrumbNavigation';
 import { useFavorites } from '../context/FavoritesContext';
+import { useSiteSettings } from '../context/SiteSettingsContext';
 import { toast } from 'sonner';
+import { getEffectiveTool } from '../lib/toolOverrides';
 
 export const ToolPage: React.FC<{ forcedSlug?: string }> = ({ forcedSlug }) => {
   const { slug: routeSlug } = useParams();
   const [searchParams] = useSearchParams();
   const slug = forcedSlug || routeSlug || searchParams.get('tool') || '';
-  const tool = tools.find(t => t.slug === slug);
+  const { settings } = useSiteSettings();
+  const baseTool = tools.find(t => t.slug === slug);
+  const tool = baseTool ? getEffectiveTool(baseTool, settings.toolOverrides) : undefined;
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [copiedLink, setCopiedLink] = useState(false);
   const { isFavorite: checkFavorite, toggleFavorite: authToggleFavorite } = useFavorites();
@@ -143,9 +147,16 @@ export const ToolPage: React.FC<{ forcedSlug?: string }> = ({ forcedSlug }) => {
             <tool.icon className="w-6 h-6 sm:w-7 sm:h-7" />
           </div>
           <div>
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-display font-extrabold tracking-tight text-foreground mt-0.5">
-              {tool.name}
-            </h1>
+            <div className="flex items-center gap-2 flex-wrap">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-display font-extrabold tracking-tight text-foreground mt-0.5">
+                {tool.name}
+              </h1>
+              {tool.customBadge && (
+                <span className="px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-primary/10 text-primary border border-primary/20 shadow-xs">
+                  ★ {tool.customBadge}
+                </span>
+              )}
+            </div>
           </div>
         </div>
         <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed mt-2 sm:mt-3">
@@ -153,10 +164,35 @@ export const ToolPage: React.FC<{ forcedSlug?: string }> = ({ forcedSlug }) => {
         </p>
       </div>
 
-      {/* Main Interactive Tool Component */}
-      <section className="mb-8 sm:mb-10 md:mb-12">
-        <Component />
-      </section>
+      {/* Admin Custom Injected Code (if any) */}
+      {tool.customCode && (
+        <div className="mb-6 tool-custom-injected-snippet">
+          <div dangerouslySetInnerHTML={{ __html: tool.customCode }} />
+        </div>
+      )}
+
+      {/* Main Interactive Tool Component or Disabled Notice */}
+      {tool.disabled ? (
+        <div className="p-8 rounded-2xl border border-amber-500/30 bg-amber-500/5 text-center space-y-3 mb-10">
+          <div className="w-12 h-12 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 mx-auto flex items-center justify-center">
+            <ShieldCheck className="w-6 h-6" />
+          </div>
+          <h2 className="text-lg font-bold text-foreground">Tool Temporarily Offline for Upgrades</h2>
+          <p className="text-sm text-muted-foreground max-w-md mx-auto">
+            The administrator has temporarily paused this tool for scheduled maintenance. Please check back shortly or explore our other available utilities.
+          </p>
+          <Link
+            to="/"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary text-white text-xs font-bold hover:bg-primary/90 transition-all"
+          >
+            Browse Other Tools →
+          </Link>
+        </div>
+      ) : (
+        <section className="mb-8 sm:mb-10 md:mb-12">
+          <Component />
+        </section>
+      )}
 
       {/* Mid-Page Ad Slot (Compliant content-to-ad ratio) */}
       <div className="my-6 sm:my-8">
