@@ -1,0 +1,54 @@
+# Cloudflare Pages HTTP Response Headers Configuration
+# Global security headers for all routes
+/*
+  X-Frame-Options: SAMEORIGIN
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(self), microphone=(), geolocation=()
+  X-XSS-Protection: 1; mode=block
+
+# Aggressive immutable caching for Vite hashed production assets
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Cache fonts and static web data
+/*.woff2
+  Cache-Control: public, max-age=31536000, immutable
+/*.woff
+  Cache-Control: public, max-age=31536000, immutable
+/*.svg
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+/*.png
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+/*.jpg
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+/*.webp
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+/*.ico
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+
+# Crawling and monetization verification files
+/robots.txt
+  Cache-Control: public, max-age=86400
+  Content-Type: text/plain; charset=UTF-8
+
+/sitemap.xml
+  Cache-Control: public, max-age=86400
+  Content-Type: application/xml; charset=UTF-8
+
+/ads.txt
+  Cache-Control: public, max-age=86400
+  Content-Type: text/plain; charset=UTF-8
+
+# Fast revalidation for SPA entry point
+/index.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+# Fast revalidation and strict noindex security for Admin portal
+/sabbir.html
+  Cache-Control: private, no-cache, no-store, must-revalidate
+  X-Robots-Tag: noindex, nofollow, noarchive
+
+/sabbir
+  Cache-Control: private, no-cache, no-store, must-revalidate
+  X-Robots-Tag: noindex, nofollow, noarchive

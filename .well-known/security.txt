@@ -1,0 +1,8 @@
+# Toolzaro Security Policy (RFC 9116)
+Contact: mailto:security@toolzaro.cyou
+Contact: mailto:support@toolzaro.cyou
+Expires: 2027-12-31T23:59:59.000Z
+Preferred-Languages: en, bn
+Canonical: https://toolzaro.cyou/.well-known/security.txt
+Policy: https://toolzaro.cyou/privacy-policy
+Acknowledgments: https://toolzaro.cyou/about
