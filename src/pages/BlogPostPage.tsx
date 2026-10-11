@@ -24,6 +24,7 @@ import {
   getRelatedBlogs,
   isSameBlogPost,
 } from '../lib/firestoreBlogService';
+import { BUILTIN_BLOG_CONTENT_BY_ID } from '../lib/blogContentData';
 import { Seo } from '../components/Seo';
 import { BreadcrumbNavigation } from '../components/BreadcrumbNavigation';
 import { AdSlot } from '../components/AdSlot';
@@ -56,14 +57,17 @@ export const BlogPostPage: React.FC<{ forcedSlug?: string }> = ({ forcedSlug }) 
 
   // Synchronously resolve active post on the very first render pass (0.0ms, zero stale state flash)
   const post = React.useMemo(() => {
-    if (
+    const raw =
       remotePost &&
       (remotePost.slug.toLowerCase() === slug.toLowerCase() ||
         remotePost.id.toLowerCase() === slug.toLowerCase())
-    ) {
-      return remotePost;
+        ? remotePost
+        : instantPost;
+    if (!raw) return null;
+    if (!raw.content && BUILTIN_BLOG_CONTENT_BY_ID[raw.id]) {
+      return { ...raw, content: BUILTIN_BLOG_CONTENT_BY_ID[raw.id] };
     }
-    return instantPost;
+    return raw;
   }, [remotePost, instantPost, slug]);
 
   const relatedPosts = React.useMemo(

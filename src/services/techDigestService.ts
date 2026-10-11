@@ -1,25 +1,3 @@
-let firestoreDepsPromise: Promise<{
-  doc: typeof import('firebase/firestore').doc;
-  getDoc: typeof import('firebase/firestore').getDoc;
-  setDoc: typeof import('firebase/firestore').setDoc;
-  db: typeof import('../lib/firebase').db;
-}> | null = null;
-
-function loadFirestoreDeps() {
-  if (!firestoreDepsPromise) {
-    firestoreDepsPromise = Promise.all([
-      import('firebase/firestore'),
-      import('../lib/firebase'),
-    ]).then(([fsMod, fbMod]) => ({
-      doc: fsMod.doc,
-      getDoc: fsMod.getDoc,
-      setDoc: fsMod.setDoc,
-      db: fbMod.db,
-    }));
-  }
-  return firestoreDepsPromise;
-}
-
 export interface TechHighlight {
   category: string;
   title: string;
@@ -407,12 +385,6 @@ export async function generateEndpointTechDigest(): Promise<TechDigest> {
     localStorage.setItem(`toolnest_tech_digest_${todayKey}`, JSON.stringify(digest));
   } catch {}
 
-  // Save to Firestore
-  try {
-    const { doc, setDoc, db } = await loadFirestoreDeps();
-    await setDoc(doc(db, 'tech_digests', todayKey), digest);
-  } catch {}
-
   return digest;
 }
 
@@ -421,38 +393,18 @@ export async function generateAiTechDigest(): Promise<TechDigest> {
 }
 
 /**
- * Fetches today's digest from Firestore or LocalStorage.
- * If not available or forceRefresh is true, fetches live APIs directly.
+ * Fetches today's digest from LocalStorage or live public APIs.
  */
 export async function getOrFetchTodayTechDigest(forceRefresh = false): Promise<TechDigest> {
   const todayKey = getTodayKey();
 
   if (!forceRefresh) {
-    // 1. Check local storage
     try {
       const saved = localStorage.getItem(`toolnest_tech_digest_${todayKey}`);
       if (saved) {
         const parsed = JSON.parse(saved);
         if (parsed && parsed.headline && parsed.summary && Array.isArray(parsed.highlights) && parsed.highlights.length > 0) {
           const normalized = ensureDigestImages(parsed);
-          try {
-            localStorage.setItem(`toolnest_tech_digest_${todayKey}`, JSON.stringify(normalized));
-          } catch {}
-          return normalized;
-        }
-      }
-    } catch {}
-
-    // 2. Check Firestore
-    try {
-      const { doc, getDoc, db } = await loadFirestoreDeps();
-      const docRef = doc(db, 'tech_digests', todayKey);
-      const docSnap = await getDoc(docRef);
-
-      if (docSnap.exists()) {
-        const data = docSnap.data() as TechDigest;
-        if (data && data.headline && data.summary && Array.isArray(data.highlights) && data.highlights.length > 0) {
-          const normalized = ensureDigestImages(data);
           try {
             localStorage.setItem(`toolnest_tech_digest_${todayKey}`, JSON.stringify(normalized));
           } catch {}

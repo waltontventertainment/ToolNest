@@ -1,6 +1,5 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
-import { getAuth, signInAnonymously } from 'firebase/auth';
 
 // Toolzaro Official Firebase Configuration
 export const firebaseConfig = {
@@ -14,19 +13,10 @@ export const firebaseConfig = {
 };
 
 // Initialize Firebase App
-const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
+export const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
 
 // Initialize Cloud Firestore database for Toolzaro
 export const db = getFirestore(app);
-export const auth = getAuth(app);
-
-// Attempt anonymous sign-in to satisfy authenticated Firestore rules if enabled
-if (typeof window !== 'undefined') {
-  try {
-    signInAnonymously(auth).catch(() => {
-      // Non-blocking: will continue with offline cache or open rules
-    });
-  } catch {}
-}
 
 export default app;
+

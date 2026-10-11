@@ -8,12 +8,11 @@ import { GoogleDriveProvider } from './context/GoogleDriveContext';
 import { SiteLayout } from './components/SiteLayout';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { Index } from './pages/Index';
-import { ToolPage } from './pages/ToolPage';
 import { isBloggerHost, extractSlugFromBloggerPath } from './lib/appUrls';
 import { tools, categories } from './lib/registry';
-import { getPublishedBlogs } from './lib/firestoreBlogService';
 
-// Code-split secondary route pages while keeping Index and ToolPage immediate for 0ms LCP
+// Code-split secondary route pages while keeping Index immediate for 0ms LCP
+const ToolPage = React.lazy(() => import('./pages/ToolPage').then(m => ({ default: m.ToolPage })));
 const CategoryPage = React.lazy(() => import('./pages/CategoryPage').then(m => ({ default: m.CategoryPage })));
 const ToolsHubPage = React.lazy(() => import('./pages/ToolsHubPage').then(m => ({ default: m.ToolsHubPage })));
 const BlogPage = React.lazy(() => import('./pages/BlogPage').then(m => ({ default: m.BlogPage })));
@@ -240,13 +239,24 @@ function SmartSpaLinkInterceptor() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Silently warm Firestore blog cache & primary route chunks after initial LCP completes
-    const warmTimer = setTimeout(() => {
-      getPublishedBlogs().catch(() => {});
+    let warmed = false;
+    const warmChunks = () => {
+      if (warmed) return;
+      warmed = true;
+      ['pointerdown', 'keydown', 'touchstart', 'scroll'].forEach(evt =>
+        window.removeEventListener(evt, warmChunks)
+      );
+      import('./lib/firestoreBlogService')
+        .then(m => m.getPublishedBlogs())
+        .catch(() => {});
       import('./pages/ToolPage').catch(() => {});
       import('./pages/BlogPostPage').catch(() => {});
       import('./pages/BlogPage').catch(() => {});
-    }, 3500);
+    };
+
+    ['pointerdown', 'keydown', 'touchstart', 'scroll'].forEach(evt =>
+      window.addEventListener(evt, warmChunks, { once: true, passive: true })
+    );
 
     const handleGlobalClick = (event: MouseEvent) => {
       if (
@@ -294,7 +304,9 @@ function SmartSpaLinkInterceptor() {
 
     document.addEventListener('click', handleGlobalClick);
     return () => {
-      clearTimeout(warmTimer);
+      ['pointerdown', 'keydown', 'touchstart', 'scroll'].forEach(evt =>
+        window.removeEventListener(evt, warmChunks)
+      );
       document.removeEventListener('click', handleGlobalClick);
     };
   }, [navigate]);

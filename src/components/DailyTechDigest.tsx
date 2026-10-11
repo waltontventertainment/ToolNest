@@ -45,66 +45,40 @@ export const DailyTechDigest: React.FC = () => {
 
   const driveContext = useGoogleDrive();
 
-  // 1. Background initial sync after first paint so live topics & round images stay fresh without contending with FCP/LCP
+  // 1. Background initial sync after first user interaction so cold load has 0 network/CPU overhead
   useEffect(() => {
     let isMounted = true;
-    const initTimer = setTimeout(() => {
-      if (!isMounted) return;
+    let triggered = false;
+
+    const triggerSync = () => {
+      if (triggered || !isMounted) return;
+      triggered = true;
+      ['pointerdown', 'keydown', 'touchstart', 'scroll'].forEach(evt =>
+        window.removeEventListener(evt, triggerSync)
+      );
       const shouldForce = digest.isFallback === true;
-      if (shouldForce) {
-        setRefreshing(true);
-      }
       getOrFetchTodayTechDigest(shouldForce)
         .then((data) => {
           if (isMounted && data) {
             setDigest(ensureDigestImages(data));
           }
         })
-        .catch(() => {})
-        .finally(() => {
-          if (isMounted) setRefreshing(false);
-        });
-    }, 2800);
+        .catch(() => {});
+    };
+
+    ['pointerdown', 'keydown', 'touchstart', 'scroll'].forEach(evt =>
+      window.addEventListener(evt, triggerSync, { once: true, passive: true })
+    );
 
     return () => {
       isMounted = false;
-      clearTimeout(initTimer);
+      ['pointerdown', 'keydown', 'touchstart', 'scroll'].forEach(evt =>
+        window.removeEventListener(evt, triggerSync)
+      );
     };
   }, []);
 
-  // 2. Realtime Firebase Firestore listener (lazily loaded after initial paint)
-  useEffect(() => {
-    let cancelled = false;
-    let unsubscribe: (() => void) | null = null;
-    const snapshotTimer = setTimeout(() => {
-      Promise.all([import('firebase/firestore'), import('../lib/firebase')])
-        .then(([{ doc, onSnapshot }, { db }]) => {
-          if (cancelled) return;
-          const todayKey = getTodayKey();
-          unsubscribe = onSnapshot(
-            doc(db, 'tech_digests', todayKey),
-            (docSnap) => {
-              if (docSnap.exists()) {
-                const data = docSnap.data() as TechDigest;
-                if (data && data.headline && data.summary) {
-                  setDigest(ensureDigestImages(data));
-                }
-              }
-            },
-            () => {}
-          );
-        })
-        .catch(() => {});
-    }, 3500);
-
-    return () => {
-      cancelled = true;
-      clearTimeout(snapshotTimer);
-      if (unsubscribe) unsubscribe();
-    };
-  }, []);
-
-  // 3. Automatic 2-minute live news refresh interval
+  // 2. Automatic 2-minute live news refresh interval
   useEffect(() => {
     const timer = setInterval(() => {
       getOrFetchTodayTechDigest(true)
@@ -197,12 +171,12 @@ export const DailyTechDigest: React.FC = () => {
         {/* Left: Badge & Date */}
         <div className="flex items-center justify-between lg:justify-start gap-2 text-xs shrink-0">
           <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[11px] font-black bg-amber-500 text-white">
+            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[11px] font-black bg-amber-700 text-white dark:bg-amber-500 dark:text-slate-950">
               <Flame className="w-3 h-3 fill-current" />
               <span>Daily Tech Digest</span>
             </span>
             <span className="text-[11px] font-semibold text-muted-foreground flex items-center gap-1">
-              <Calendar className="w-3 h-3 text-amber-500" />
+              <Calendar className="w-3 h-3 text-amber-700 dark:text-amber-400" />
               <span>{digest.dateFormatted}</span>
             </span>
           </div>
@@ -215,14 +189,15 @@ export const DailyTechDigest: React.FC = () => {
               disabled={refreshing}
               className="px-2 py-1 rounded-lg bg-secondary hover:bg-secondary/80 text-foreground text-[11px] font-bold transition-colors cursor-pointer border border-border/70 flex items-center gap-1 disabled:opacity-50"
               title="Sync latest live Hacker News & tech news"
+              aria-label="Sync latest live tech news"
             >
-              <RefreshCw className={`w-3 h-3 text-amber-500 ${refreshing ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`w-3 h-3 text-amber-700 dark:text-amber-400 ${refreshing ? 'animate-spin' : ''}`} />
             </button>
 
             <button
               type="button"
               onClick={() => setExpanded(!expanded)}
-              className="px-2.5 py-1 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 text-amber-700 dark:text-amber-300 text-[11px] font-extrabold transition-colors cursor-pointer flex items-center gap-1 border border-amber-500/30"
+              className="px-2.5 py-1 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 text-amber-800 dark:text-amber-300 text-[11px] font-extrabold transition-colors cursor-pointer flex items-center gap-1 border border-amber-500/30"
             >
               <span>{expanded ? 'Hide' : 'Details'}</span>
               {expanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
@@ -360,7 +335,7 @@ export const DailyTechDigest: React.FC = () => {
           <button
             type="button"
             onClick={() => setExpanded(!expanded)}
-            className="px-2.5 py-1 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 text-amber-700 dark:text-amber-300 text-[11px] font-extrabold transition-colors cursor-pointer flex items-center gap-1 border border-amber-500/30"
+            className="px-2.5 py-1 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 text-amber-800 dark:text-amber-300 text-[11px] font-extrabold transition-colors cursor-pointer flex items-center gap-1 border border-amber-500/30"
           >
             <span>{expanded ? 'Collapse' : 'Read Full'}</span>
             {expanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}

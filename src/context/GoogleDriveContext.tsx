@@ -38,7 +38,7 @@ const GoogleDriveContext = createContext<GoogleDriveContextType | undefined>(und
 export const GoogleDriveProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [accessToken, setAccessToken] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
   const [syncing, setSyncing] = useState<boolean>(false);
   const [lastSynced, setLastSynced] = useState<string | null>(() => localStorage.getItem('toolnest_last_drive_sync'));
   const [autoSync, setAutoSync] = useState<boolean>(() => localStorage.getItem('toolnest_auto_drive_sync') === 'true');
@@ -46,18 +46,35 @@ export const GoogleDriveProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
   const { favorites, toggleFavorite } = useFavorites();
 
-  // Handle Firebase Auth Listener (deferred slightly so critical initial mobile FCP/LCP is never blocked by Auth iframe initialization)
+  // Only initialize Firebase Auth listener if user previously connected Drive, and only after first user interaction
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (localStorage.getItem('toolnest_drive_connected') !== 'true') return;
+
     let unsubscribe: () => void = () => {};
-    const timer = setTimeout(() => {
+    let started = false;
+
+    const startAuth = () => {
+      if (started) return;
+      started = true;
+      ['pointerdown', 'keydown', 'touchstart', 'scroll'].forEach(evt =>
+        window.removeEventListener(evt, startAuth)
+      );
       unsubscribe = initAuthListener((currUser, token) => {
         setUser(currUser);
         setAccessToken(token);
         setLoading(false);
       });
-    }, 3500);
+    };
+
+    ['pointerdown', 'keydown', 'touchstart', 'scroll'].forEach(evt =>
+      window.addEventListener(evt, startAuth, { once: true, passive: true })
+    );
+
     return () => {
-      clearTimeout(timer);
+      ['pointerdown', 'keydown', 'touchstart', 'scroll'].forEach(evt =>
+        window.removeEventListener(evt, startAuth)
+      );
       unsubscribe();
     };
   }, []);
@@ -94,6 +111,9 @@ export const GoogleDriveProvider: React.FC<{ children: React.ReactNode }> = ({ c
       if (res) {
         setUser(res.user);
         setAccessToken(res.accessToken);
+        try {
+          localStorage.setItem('toolnest_drive_connected', 'true');
+        } catch {}
         toast.success(`Connected to Google Drive as ${res.user.displayName || res.user.email}`);
       }
     } catch (error: any) {
@@ -109,6 +129,9 @@ export const GoogleDriveProvider: React.FC<{ children: React.ReactNode }> = ({ c
       await googleSignOut();
       setUser(null);
       setAccessToken(null);
+      try {
+        localStorage.removeItem('toolnest_drive_connected');
+      } catch {}
       toast.info('Disconnected from Google Drive');
     } catch (error: any) {
       toast.error('Error signing out');

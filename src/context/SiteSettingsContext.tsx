@@ -32,9 +32,29 @@ export const SiteSettingsProvider: React.FC<{ children: React.ReactNode }> = ({ 
   };
 
   useEffect(() => {
-    const timer = setTimeout(() => {
+    let triggered = false;
+    const triggerRefresh = () => {
+      if (triggered) return;
+      triggered = true;
+      ['pointerdown', 'keydown', 'touchstart', 'scroll'].forEach(evt =>
+        window.removeEventListener(evt, triggerRefresh)
+      );
       refreshSettings();
-    }, 3500);
+    };
+
+    const isAdminRoute =
+      typeof window !== 'undefined' &&
+      (window.location.pathname.startsWith('/sabbir') ||
+        window.location.search.includes('page=sabbir'));
+
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    if (isAdminRoute) {
+      timer = setTimeout(triggerRefresh, 100);
+    } else {
+      ['pointerdown', 'keydown', 'touchstart', 'scroll'].forEach(evt =>
+        window.addEventListener(evt, triggerRefresh, { once: true, passive: true })
+      );
+    }
 
     const handleUpdate = (e: Event) => {
       const customEvent = e as CustomEvent<SiteSettings>;
@@ -45,7 +65,10 @@ export const SiteSettingsProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
     window.addEventListener('toolzaro_settings_updated', handleUpdate);
     return () => {
-      clearTimeout(timer);
+      if (timer) clearTimeout(timer);
+      ['pointerdown', 'keydown', 'touchstart', 'scroll'].forEach(evt =>
+        window.removeEventListener(evt, triggerRefresh)
+      );
       window.removeEventListener('toolzaro_settings_updated', handleUpdate);
     };
   }, []);

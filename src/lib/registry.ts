@@ -1,7 +1,6 @@
 import React from 'react';
 import { Type, QrCode, Image as ImageIcon, KeyRound, Search, FileText, Binary, Code, Barcode, FileSearch, Timer, Scissors, ArrowDownAZ, Space, Filter, ArrowLeftRight, WrapText, SplitSquareHorizontal, Mail, Link, Hash, FileDiff, Replace, ListPlus, ShieldX, Calculator, Superscript, Clock, Palette, Database, Fingerprint, Scan, Crop, Globe, Heart, Activity, FileCode, Box, Share2, BarChart2, Tag, Zap, BookOpen, Layers as Hierarchy, Volume2, Keyboard, Monitor, Shuffle, Maximize2, Sliders, Stamp, Eye, EyeOff, Sparkles, Merge, RotateCw, ShieldAlert, CheckCircle2, Video, Briefcase, ShoppingBag, Users, GraduationCap, Globe2, Utensils, Scale, Calendar, MapPin, CloudSun, Cloud, Smile, Wifi, Download, User, Info, Map, Wind, Thermometer, ShieldCheck, Bookmark, RefreshCw } from 'lucide-react';
 import { ToolDefinition, ToolCategory } from './types';
-import { OpenMeteoWeatherTool } from '../tools/OpenMeteoWeatherTool';
 
 /**
  * Helper for route & tool-level code splitting with 0ms synchronous cache & instant hover/URL preloading.
@@ -37,6 +36,8 @@ function lazyTool<T extends Record<string, any>>(
   InstantOrLazyTool.preload = load;
   return InstantOrLazyTool;
 }
+
+const OpenMeteoWeatherTool = lazyTool(() => import('../tools/OpenMeteoWeatherTool'), 'OpenMeteoWeatherTool');
 
 // 1. ConvertersBatch
 const loadConvertersBatch = () => import('../tools/ConvertersBatch');
@@ -281,9 +282,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['countries explorer', 'country info', 'country flag', 'currency api', 'population lookup'],
     metaTitle: 'Global Country Directory',
     metaDescription: 'Instantly lookup details, flags, capitals, and currencies of 200+ countries.',
-    intro: 'Lookup global country data, capitals, currencies, population, and flag badges instantly.',
-    howTo: ['Enter any country name.', 'Click Search to view comprehensive details.'],
-    faq: [{ q: 'Is it accurate?', a: 'Yes, it uses real-time global datasets.' }],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: RestCountriesTool
   },
   {
@@ -295,9 +296,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['dictionary', 'word definitions', 'synonyms', 'audio pronunciation'],
     metaTitle: 'English Dictionary & Audio Pronunciation',
     metaDescription: 'Lookup English word definitions, phonetic spellings, synonyms, and audio pronunciation.',
-    intro: 'Look up English words to view definitions, parts of speech, and listen to audio pronunciations.',
-    howTo: ['Type any word.', 'Click Define and listen to audio.'],
-    faq: [{ q: 'Does it support synonyms?', a: 'Yes, synonyms are included where available.' }],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: LexiconDictionaryTool
   },
   {
@@ -309,9 +310,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['library', 'book search', 'author lookup', 'book covers'],
     metaTitle: 'Book & Author Search Engine',
     metaDescription: 'Search millions of books, authors, and cover art seamlessly.',
-    intro: 'Search the vast library database for books, authors, publish years, and cover art.',
-    howTo: ['Search book title or author.'],
-    faq: [{ q: 'Can I see cover art?', a: 'Yes, cover images are displayed when available.' }],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: OpenLibraryTool
   },
   {
@@ -323,9 +324,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['weather', 'live weather', 'temperature forecast'],
     metaTitle: 'Global Live Weather Station',
     metaDescription: 'Get real-time weather and temperature for any city.',
-    intro: 'Get real-time weather forecasting for global cities.',
-    howTo: ['Select a city to view current temperature, humidity, and wind speed.'],
-    faq: [{ q: 'Is it real-time?', a: 'Yes, data is updated frequently from weather stations.' }],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: OpenMeteoWeatherTool
   },
   {
@@ -337,9 +338,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['avatar', 'profile picture', 'generator', 'cartoon avatars'],
     metaTitle: 'Avatar & Profile Picture Generator',
     metaDescription: 'Generate unique cartoon and robot avatars from text instantly.',
-    intro: 'Create unique vector avatars and robot profile pictures from any seed text.',
-    howTo: ['Type seed text and select avatar style.'],
-    faq: [{ q: 'Can I download the avatar?', a: 'Yes, you can download the generated image directly.' }],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: AvatarGeneratorTool
   },
   {
@@ -351,9 +352,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['qr', 'qr code', 'code generator'],
     metaTitle: 'QR Code Generator',
     metaDescription: 'Generate high-resolution QR codes from URLs or text instantly.',
-    intro: 'Create and download QR codes for URLs and text in seconds.',
-    howTo: ['Enter URL or text and download PNG.'],
-    faq: [{ q: 'Are the QR codes permanent?', a: 'Yes, the generated QR codes do not expire.' }],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: QrServerGeneratorTool
   },
   {
@@ -365,9 +366,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['placeholder', 'images', 'dummy photos', 'image generator'],
     metaTitle: 'Placeholder Image Generator',
     metaDescription: 'Generate unlimited dummy placeholder photos with custom dimensions and filters.',
-    intro: 'Generate and download high-resolution dummy photos with custom width, height, and grayscale filters.',
-    howTo: ['Set width and height and click download.'],
-    faq: [{ q: 'Are these unique images?', a: 'The service provides a variety of high-quality photos.' }],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: LoremPicsumTool
   },
   {
@@ -379,9 +380,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['ip', 'public ip address', 'my ip', 'ip lookup'],
     metaTitle: 'Public IP Address Inspector',
     metaDescription: 'Instantly inspect your public IP address.',
-    intro: 'View and copy your public IP address instantly.',
-    howTo: ['Open the tool to view your live public IP.'],
-    faq: [{ q: 'Is my IP stored?', a: 'No, we do not store your IP address.' }],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: IpifyInspectorTool
   },
   {
@@ -393,9 +394,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['jokes', 'motivation', 'random jokes', 'quotes'],
     metaTitle: 'Motivation & Fun Hub',
     metaDescription: 'Enjoy random tech jokes and inspirational quotes.',
-    intro: 'Read random developer jokes and motivational quotes on demand.',
-    howTo: ['Click New Mix to fetch fresh jokes and quotes.'],
-    faq: [{ q: 'Is it updated?', a: 'Yes, we fetch new jokes and quotes regularly.' }],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: JokeQuotableTool
   },
   {
@@ -407,9 +408,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['universities', 'college', 'directory', 'world universities'],
     metaTitle: 'Global University Directory',
     metaDescription: 'Directory of universities and colleges across 200+ countries.',
-    intro: 'Search universities and colleges worldwide by country name.',
-    howTo: ['Select a country to view universities and official web links.'],
-    faq: [{ q: 'Are links valid?', a: 'Most entries include direct official website links.' }],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: HipolabsUniversitiesTool
   },
   {
@@ -421,9 +422,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['screenshot', 'website capture', 'web page snapshot', 'url to image'],
     metaTitle: 'Website Screenshot Generator',
     metaDescription: 'Generate high-quality full-page screenshots of any website from a URL instantly.',
-    intro: 'Capture and download high-resolution screenshots of any public website by simply entering its URL.',
-    howTo: ['Enter the website URL.', 'Click Capture to generate the snapshot.', 'Download the image to your device.'],
-    faq: [{ q: 'Is it free?', a: 'Yes, this service is 100% free and unlimited.' }],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: WebsiteScreenshotTool
   },
   {
@@ -434,16 +435,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['wikipedia api', 'wikipedia summarizer', 'summarize article', 'wiki search', 'article reader'],
     metaTitle: 'Wikipedia Article & Summary Explorer',
     metaDescription: 'Search any Wikipedia article globally, extract high-precision summaries, and read full articles in English or Bengali.',
-    intro: 'Search any article globally, extract high-precision summaries, and read full articles with our streamlined Wikipedia explorer.',
-    howTo: [
-      'Enter any search term or topic keyword.',
-      'Select your matching article from the instant search results list.',
-      'Read the summary loaded from Wikipedia API or click "Read Full Article" to open the interactive reader.'
-    ],
-    faq: [
-      { q: 'Is this tool free and compliant?', a: 'Yes! It utilizes official Wikipedia summaries and clearly attributes content under the CC BY-SA 3.0 license.' },
-      { q: 'Does it support Bengali articles?', a: 'Yes! You can toggle between English and Bengali using the language selector.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: WikipediaSummarizer
   },
   {
@@ -454,17 +448,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['on this day', 'wikipedia history', 'today in history', 'timeline finder', 'historical events calculator'],
     metaTitle: '"On This Day" History Timeline Explorer - Wikipedia',
     metaDescription: 'Explore historically logged events, notable births, and deaths for any date of the year. Completely free timeline search.',
-    intro: 'Select any month and day of the year to explore historic events, notable births, and deaths logged on Wikipedia.',
-    howTo: [
-      'Select a calendar month from the dropdown menu.',
-      'Select a calendar day of the month.',
-      'Click search to fetch events registered on that day.',
-      'Toggle between Events, Births, and Deaths sub-sections to explore.'
-    ],
-    faq: [
-      { q: 'Does it support direct links?', a: 'Yes! Relevant events feature direct desktop Wikipedia references to dive deeper.' },
-      { q: 'Are holidays included?', a: 'Yes, historic national and religious holidays are displayed under the timeline.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: WikipediaHistory
   },
   {
@@ -475,17 +461,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['wikipedia geosearch', 'nearby landmarks', 'locate monuments', 'historical spots GPS', 'nearby explorer'],
     metaTitle: 'Wikipedia Landmark Geo-Search - Locate Landmarks Near Me',
     metaDescription: 'Locate historical buildings, landmark coordinates, and registered monuments near your GPS coordinates or preset global cities.',
-    intro: 'Search Wikipedia records near your exact geographic coordinates to discover nearby historical buildings, landmarks, and monuments.',
-    howTo: [
-      'Click "Find Near Me" to request GPS coordinates from your browser.',
-      'Or click one of the preset global cities (Dhaka, London, New York) as coordinates.',
-      'Browse nearby historical places displayed with distance coordinates.',
-      'Click "Read Wiki Page" to learn more about each landmarks history.'
-    ],
-    faq: [
-      { q: 'Is my GPS location data saved?', a: 'No, all geolocation processing happens 100% locally in your browser and is never stored.' },
-      { q: 'What happens if GPS is disabled?', a: 'The tool safely falls back to popular coordinates (Paris) so you can still test it.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: WikipediaNearby
   },
   {
@@ -496,17 +474,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['youtube transcript', 'youtube subtitles downloader', 'extract youtube text', 'youtube video to text'],
     metaTitle: 'YouTube Transcript Extractor - Video Subtitles Downloader',
     metaDescription: 'Extract, download, and copy subtitles or transcripts from any YouTube video in milliseconds. Powered by high-speed scraping with direct caption fetching.',
-    intro: 'Need to quickly read a YouTube video? Our YouTube Transcript Extractor fetches and parses captions or transcripts from any YouTube URL in milliseconds. Download as TXT, copy timelines, or save directly to Google Drive.',
-    howTo: [
-      'Paste any YouTube video URL or ID into the search input.',
-      'Click "Get Transcript" to fetch and format subtitles instantly.',
-      'Use the timestamps list or copy the full paragraph.',
-      'Click "Save to Drive" to directly back up to your Google Drive.'
-    ],
-    faq: [
-      { q: 'Do I need a Google Cloud API Key?', a: 'No! Our tool uses high-speed direct subtitle scraping, so it is 100% free and unlimited without any API keys or quota limits.' },
-      { q: 'Does it support auto-generated captions?', a: 'Yes! It seamlessly extracts both official creator-provided captions and YouTube auto-generated subtitle tracks.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: YoutubeTranscriptTool
   },
   {
@@ -517,16 +487,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['pdf merge', 'combine pdfs', 'join pdf', 'merge pdf files', 'pdf joiner'],
     metaTitle: 'PDF Merger - Combine Multiple PDF Files Online',
     metaDescription: 'Combine multiple PDF files into a single organized PDF document quickly and securely in your browser.',
-    intro: 'Combine multiple PDF documents into a single document in any custom order. 100% private, browser-based PDF merging with zero server uploads.',
-    howTo: [
-      'Click or drag & drop two or more PDF files into the uploader.',
-      'Reorder the files using the move up and move down buttons.',
-      'Click "Merge PDFs into Single Document" and download your combined PDF.'
-    ],
-    faq: [
-      { q: 'Is there a limit on the number of PDF files I can merge?', a: 'No, you can merge as many PDF files as your web browser memory supports.' },
-      { q: 'Are my PDF files kept private?', a: 'Yes! All merging is done locally in your browser memory.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: PdfMergerTool
   },
   {
@@ -537,15 +500,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['pdf split', 'extract pdf pages', 'split pdf', 'separate pdf pages', 'pdf range extractor'],
     metaTitle: 'PDF Splitter & Page Extractor',
     metaDescription: 'Split a PDF document into separate page files or extract specific page ranges quickly and securely.',
-    intro: 'Separate a PDF into individual page files or extract custom page ranges (e.g. 1-3, 5) instantly with local processing.',
-    howTo: [
-      'Upload the PDF file you wish to split.',
-      'Select whether to extract all pages into individual files or specify a page range (e.g. 1-3, 5).',
-      'Click Extract/Split to generate and download the output PDF files.'
-    ],
-    faq: [
-      { q: 'Can I extract non-consecutive pages?', a: 'Yes! Enter comma-separated ranges like "1-3, 5, 8-10" to extract specific pages.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: PdfSplitterTool
   },
   {
@@ -556,15 +513,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['pdf to text', 'extract text from pdf', 'pdf reader text', 'pdf string parser', 'pdf txt converter'],
     metaTitle: 'PDF to Text Extractor',
     metaDescription: 'Extract raw text and string contents from any PDF file quickly and convert it to readable text or .txt file.',
-    intro: 'Extract plain text content from any PDF document without layout image clutter. Download as a text file or copy directly to clipboard.',
-    howTo: [
-      'Upload a PDF document.',
-      'The extractor parses all pages and presents the full plain text.',
-      'Copy the text to clipboard or save as a .txt file.'
-    ],
-    faq: [
-      { q: 'Does this work on scanned image PDFs?', a: 'It extracts selectable embedded text. For scanned images without optical text layers, text might be limited.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: PdfToTextTool
   },
   {
@@ -575,15 +526,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['text to pdf', 'convert txt to pdf', 'create pdf from text', 'notes to pdf', 'generate pdf text'],
     metaTitle: 'Text to PDF Generator',
     metaDescription: 'Convert plain text, notes, or articles into styled A4 PDF documents with custom font sizes.',
-    intro: 'Convert notes, plain text, or formatted articles into a clean A4 PDF file with custom font size controls.',
-    howTo: [
-      'Type or paste your text into the content box.',
-      'Adjust font size and specify the output filename.',
-      'Click "Generate & Download PDF" to get your styled document.'
-    ],
-    faq: [
-      { q: 'What page format is created?', a: 'Standard A4 document with auto-wrapping margins.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: TextToPdfTool
   },
   {
@@ -594,15 +539,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['pdf to image', 'pdf to png', 'pdf to jpg', 'pdf page renderer', 'pdf document images'],
     metaTitle: 'PDF to Image Converter',
     metaDescription: 'Render PDF pages into high-resolution PNG images for easy viewing, sharing, or embedding.',
-    intro: 'Convert PDF document pages into crisp PNG images. Render and download individual page snapshots with a single click.',
-    howTo: [
-      'Upload your PDF file.',
-      'All pages will be rendered into image canvases.',
-      'Click "Save PNG" on any page snapshot to download it.'
-    ],
-    faq: [
-      { q: 'What image format is produced?', a: 'High-resolution PNG images rendered at 1.5x crisp density.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: PdfToImagesTool
   },
   {
@@ -613,15 +552,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['rotate pdf', 'pdf page rotator', 'turn pdf pages', 'rotate pdf 90 degrees', 'fix upside down pdf'],
     metaTitle: 'PDF Page Rotator - Rotate & Turn PDF Pages Online',
     metaDescription: 'Rotate specific PDF pages or all pages by 90, 180, or 270 degrees and download the updated PDF.',
-    intro: 'Fix orientation issues by rotating individual PDF pages or all pages 90°, 180°, or 270° instantly.',
-    howTo: [
-      'Upload your PDF document.',
-      'Click "Rotate 90°" on specific page thumbnails or "Rotate All 90°".',
-      'Download your updated PDF with permanent page rotation applied.'
-    ],
-    faq: [
-      { q: 'Is the quality preserved?', a: 'Yes! Page rotation is applied directly to the vector document structure without quality loss.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: PdfRotateTool
   },
   {
@@ -632,15 +565,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['pdf watermark', 'add watermark to pdf', 'pdf stamp', 'confidential watermark pdf', 'draft stamp pdf'],
     metaTitle: 'PDF Watermark & Stamp Utility - Add Text Watermarks to PDF',
     metaDescription: 'Add custom text watermarks, stamps, or security notices across all pages of your PDF document.',
-    intro: 'Burn custom security watermarks (e.g. CONFIDENTIAL, DRAFT, DO NOT COPY) across every page of your PDF.',
-    howTo: [
-      'Upload your PDF document.',
-      'Enter custom watermark text and customize transparency opacity and angle.',
-      'Click "Apply Watermark to All Pages" and download your protected document.'
-    ],
-    faq: [
-      { q: 'Can I adjust the watermark angle and transparency?', a: 'Yes! Sliders allow precise control over opacity and rotation angle.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: PdfWatermarkTool
   },
   {
@@ -651,17 +578,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['qr code scanner', 'scan qr code', 'read qr code image', 'qr camera reader', 'detect qr code'],
     metaTitle: 'QR Code Scanner & Reader - Camera & Image Upload',
     metaDescription: 'Scan and decode QR codes instantly from uploaded document images, camera photo captures, or live webcam video feed with contrast auto-enhancement.',
-    intro: 'Instantly scan and read QR codes from image files, document screenshots, or direct camera streams. Smart image preprocessing detects QR codes even in text-heavy documents.',
-    howTo: [
-      'Upload an image file containing a QR code OR switch to Camera mode for direct scanning.',
-      'Auto-enhancement contrast filter helps detect QR codes in busy or low quality documents.',
-      'View decoded URL, raw payload string, or structured contact data.',
-      'Copy the decoded result or open links directly.'
-    ],
-    faq: [
-      { q: 'Can this scan QR codes embedded in documents or screenshots?', a: 'Yes, our smart detection engine handles QR codes anywhere within complex images.' },
-      { q: 'Are uploaded images saved on a server?', a: 'No, all image decoding happens 100% locally in your browser.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: QrCodeScanner
   },
   {
@@ -672,16 +591,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['barcode scanner', 'scan barcode image', 'ean13 scanner', 'upc reader', 'code128 scanner'],
     metaTitle: 'Barcode Scanner & Reader - EAN, UPC, Code 128 Scanner',
     metaDescription: 'Scan and decode 1D and 2D product barcodes (EAN-13, UPC-A, Code 128, Code 39, ITF, DataMatrix) from camera or uploaded photos.',
-    intro: 'Decode product barcodes directly from camera photos or uploaded images. Identifies EAN-13, EAN-8, UPC-A, UPC-E, Code 128, Code 39, and Data Matrix standards.',
-    howTo: [
-      'Upload a product image with a barcode OR use your camera.',
-      'The engine automatically detects the barcode boundaries and decodes the number.',
-      'View the detected barcode standard and raw barcode digits.',
-      'Search product info on Google or copy the number with one click.'
-    ],
-    faq: [
-      { q: 'What barcode formats are supported?', a: 'EAN-13, EAN-8, UPC-A, UPC-E, Code 128, Code 39, ITF, Codabar, PDF417, and DataMatrix.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: BarcodeScanner
   },
   {
@@ -692,16 +604,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['color picker', 'color palette', 'color harmony', 'hex rgb hsl', 'css variables'],
     metaTitle: 'Color Picker & Palette Generator - Color Harmonies & CSS Vars',
     metaDescription: 'Extract color harmonies, complementary colors, RGB/HSL values, and generated CSS custom properties.',
-    intro: 'Design harmonious color schemes. Pick primary colors, explore complementary, analog, and triadic harmonies, and export ready-to-use CSS custom properties.',
-    howTo: [
-      'Pick a color using the visual color picker or enter a HEX code.',
-      'Explore automatically calculated complementary and triadic color palettes.',
-      'Click any color swatch to copy its HEX code instantly.',
-      'Copy generated CSS custom properties for your stylesheet.'
-    ],
-    faq: [
-      { q: 'Does it calculate HSL and RGB values?', a: 'Yes, HEX, RGB, and HSL formats are calculated simultaneously.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: ColorPickerPalette
   },
   {
@@ -712,16 +617,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['css box shadow', 'shadow generator', 'box shadow css', 'drop shadow designer'],
     metaTitle: 'CSS Box Shadow Generator - Custom Shadows & Live Preview',
     metaDescription: 'Design custom CSS box shadows with live visual preview, offsets, blur, spread, opacity, and inset controls.',
-    intro: 'Design elegant CSS box shadow effects. Tweak offsets, blur radius, spread, color opacity, and inset modes with live visual preview.',
-    howTo: [
-      'Adjust horizontal and vertical offsets using slider controls.',
-      'Modify blur radius and spread radius for softer or crisp shadow elevation.',
-      'Toggle inset shadow mode for sunken input or button states.',
-      'Copy generated CSS box-shadow code for your stylesheet.'
-    ],
-    faq: [
-      { q: 'Is the generated CSS compatible with modern browsers?', a: 'Yes, standard CSS box-shadow properties are universally supported.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: CssBoxShadowGenerator
   },
   {
@@ -732,17 +630,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['image resizer', 'resize photo', 'convert jpg png webp', 'change image dimensions', 'scale image'],
     metaTitle: 'Image Resizer & Format Converter - Resize JPG, PNG, WebP',
     metaDescription: 'Resize image dimensions in pixels, scale aspect ratios, and convert between JPEG, PNG, and WebP formats.',
-    intro: 'Instantly resize images and convert file formats directly in your browser. Lock aspect ratios, adjust output quality, and reduce image sizes with high quality HTML5 canvas processing.',
-    howTo: [
-      'Upload any PNG, JPG, WebP, or GIF image.',
-      'Enter custom width and height or select a percentage scaling preset.',
-      'Select your desired target format (JPEG, PNG, or WebP) and quality level.',
-      'Download the resized and converted image instantly.'
-    ],
-    faq: [
-      { q: 'Are my images uploaded to any server?', a: 'No, all image resizing and format conversion happens locally in your browser.' },
-      { q: 'What happens to transparent backgrounds when converting PNG to JPEG?', a: 'Transparent backgrounds are automatically filled with clean white color.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: ImageResizerConverter
   },
   {
@@ -753,16 +643,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['image cropper', 'crop photo', 'aspect ratio frame', 'rotate photo', 'flip image'],
     metaTitle: 'Image Cropper & Aspect Ratio Frame - Crop 1:1, 16:9, 9:16',
     metaDescription: 'Crop images with preset aspect ratios (1:1, 16:9, 4:5, 9:16, 3:2), rotate 90 degrees, and flip horizontally or vertically.',
-    intro: 'Crop and frame photos for Instagram, YouTube, TikTok, or web banners. Apply standard aspect ratio presets, rotate, flip, and download cropped PNGs.',
-    howTo: [
-      'Upload your image.',
-      'Choose an aspect ratio preset such as 1:1 Square, 16:9 YouTube, or 9:16 Story.',
-      'Rotate 90° or flip horizontally/vertically if needed.',
-      'Download your cropped image.'
-    ],
-    faq: [
-      { q: 'What presets are available?', a: 'Square 1:1, Widescreen 16:9, Vertical Story 9:16, Instagram Post 4:5, and Photo 3:2.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: ImageCropperRatio
   },
   {
@@ -773,16 +656,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['image color palette', 'extract colors from image', 'dominant color picker', 'image eyedropper', 'hex code extractor'],
     metaTitle: 'Image Color Palette & Eyedropper - Extract Dominant Colors',
     metaDescription: 'Extract prominent dominant colors and hex codes from any image or click pixels directly with the eyedropper.',
-    intro: 'Extract beautiful color schemes from photos and graphics. Automatically detects dominant hex codes, RGB values, percentage distribution, and exports CSS custom properties.',
-    howTo: [
-      'Upload any photo or illustration.',
-      'View automatically extracted dominant color swatches with percentage breakdowns.',
-      'Click anywhere on the uploaded image to pick exact pixel colors with the eyedropper.',
-      'Copy HEX codes or export all colors as CSS variables.'
-    ],
-    faq: [
-      { q: 'Can I click specific pixels to get exact colors?', a: 'Yes, clicking anywhere on the source image retrieves the exact pixel HEX color.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: ImagePaletteExtractor
   },
   {
@@ -793,16 +669,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['photo filters', 'image adjustments', 'brightness contrast', 'vintage photo filter', 'cyberpunk filter'],
     metaTitle: 'Image Filters & Photo Studio - Vintage, Cyberpunk, Film Noir',
     metaDescription: 'Adjust photo brightness, contrast, saturation, blur, sepia, grayscale, and apply cinematic style presets.',
-    intro: 'Transform photos with browser-based photo studio adjustments. Tweak exposure controls, apply vintage, cyberpunk, or film noir presets, and download edited photos.',
-    howTo: [
-      'Upload your photo.',
-      'Select a cinematic preset or manually adjust brightness, contrast, saturation, blur, and sepia.',
-      'Preview real-time canvas edits.',
-      'Download high-resolution edited JPEG.'
-    ],
-    faq: [
-      { q: 'Does this preserve image quality?', a: 'Yes, images are processed at native resolution using canvas filtering.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: ImageFiltersAdjuster
   },
   {
@@ -813,16 +682,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['add watermark', 'watermark image', 'copyright stamp', 'photo protection', 'tiled watermark'],
     metaTitle: 'Image Watermark & Stamp Adder - Protect Photos with Text',
     metaDescription: 'Add customizable text watermarks, copyright stamps, opacity, rotation, and tiled patterns to protect images.',
-    intro: 'Protect your creative work and photos with text watermarks and copyright stamps. Customize font size, color opacity, angle, and tiled repetition layouts.',
-    howTo: [
-      'Upload the target image.',
-      'Enter your copyright or brand name watermark text.',
-      'Adjust text placement (Center, Bottom Right, or Tiled Pattern), rotation angle, and opacity.',
-      'Download watermarked image.'
-    ],
-    faq: [
-      { q: 'Can I create tiled watermarks across the entire photo?', a: 'Yes, select Tiled Pattern layout for repeating background protection.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: ImageWatermarkAdder
   },
   {
@@ -833,16 +695,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['color contrast checker', 'wcag accessibility', 'contrast ratio', 'accessible color pair', 'aa aaa compliance'],
     metaTitle: 'Color Contrast & WCAG Checker - Test AA & AAA Compliance',
     metaDescription: 'Calculate precise WCAG 2.1 color contrast ratios (e.g. 4.5:1, 7:1) for accessible text and UI components.',
-    intro: 'Ensure your design meets WCAG 2.1 accessibility guidelines. Test foreground and background color combinations for AA and AAA compliance with live UI previews.',
-    howTo: [
-      'Select or type foreground (text) and background HEX colors.',
-      'Review calculated contrast ratio (e.g., 4.5:1, 7:1).',
-      'Check pass/fail indicators for AA Normal, AA Large, AAA Normal, and AAA Large text.',
-      'Preview live UI mockup elements.'
-    ],
-    faq: [
-      { q: 'What is the minimum contrast ratio for standard text?', a: 'WCAG AA requires a minimum contrast ratio of 4.5:1 for normal body text.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: ColorContrastWcagChecker
   },
   {
@@ -853,15 +708,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['svg to data uri', 'svg to css background', 'encode svg', 'inline svg to dataurl', 'svg string converter'],
     metaTitle: 'SVG to Data URI & CSS Converter - Clean Data URLs',
     metaDescription: 'Convert inline SVG markup into clean, URL-encoded Data URIs and CSS background-image rules.',
-    intro: 'Encode raw SVG code into compact Data URIs for CSS stylesheets and HTML image tags without base64 overhead.',
-    howTo: [
-      'Paste raw <svg> markup into the input field.',
-      'View real-time rendered SVG preview.',
-      'Copy generated CSS background-image property or raw Data URI.'
-    ],
-    faq: [
-      { q: 'Why use UTF-8 URL encoding instead of Base64 for SVGs?', a: 'URL encoding is smaller, faster to render, and easily editable in CSS files.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: SvgToCssDataUriConverter
   },
   {
@@ -872,16 +721,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['css gradient generator', 'linear radial conic gradient', 'gradient mesh', 'css background generator', 'color blend'],
     metaTitle: 'Color Gradient Mesh & CSS Generator - Linear, Radial & Conic',
     metaDescription: 'Design linear, radial, and conic CSS background gradients with customizable color stops and angle controls.',
-    intro: 'Design rich CSS background gradients visually. Switch between linear, radial, and conic modes, customize color stops, adjust angles, and copy CSS code.',
-    howTo: [
-      'Choose gradient mode (Linear, Radial, or Conic).',
-      'Select 3 custom color nodes using visual color pickers.',
-      'Adjust gradient direction angle slider.',
-      'Copy the generated CSS background snippet.'
-    ],
-    faq: [
-      { q: 'Is the CSS background cross-browser compatible?', a: 'Yes, modern standard CSS gradient syntax is supported across all browsers.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: ColorGradientMeshGenerator
   },
   {
@@ -892,15 +734,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['color blindness simulator', 'protanopia test', 'deuteranopia simulator', 'tritanopia filter', 'accessible graphic design'],
     metaTitle: 'Color Blindness Simulator - Protanopia, Deuteranopia & Tritanopia',
     metaDescription: 'Simulate how graphics and photos appear to individuals with Protanopia, Deuteranopia, Tritanopia, and Achromatopsia.',
-    intro: 'Simulate color vision deficiencies on your uploaded photos and web graphics to ensure accessible visual design for all users.',
-    howTo: [
-      'Upload a design or screenshot.',
-      'Select vision deficiency mode (Protanopia, Deuteranopia, Tritanopia, or Achromatopsia).',
-      'Inspect simulated visual results to verify color distinction.'
-    ],
-    faq: [
-      { q: 'Why is color blindness simulation important in UI design?', a: 'It helps ensure users who cannot distinguish red/green or blue/yellow can still navigate your interface.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: ColorBlindnessSimulator
   },
   {
@@ -911,16 +747,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['blur image', 'pixelate photo', 'anonymize photo', 'obfuscate text image', 'censor screenshot'],
     metaTitle: 'Image Blur & Pixelate Anonymizer - Protect Private Info',
     metaDescription: 'Blur or pixelate photos and screenshots to anonymize sensitive text, faces, credentials, or personal info.',
-    intro: 'Obfuscate sensitive screenshots, personal details, faces, and credentials with pixelation or Gaussian blur effects before sharing online.',
-    howTo: [
-      'Upload screenshot or document photo.',
-      'Select effect style (Pixelate or Gaussian Blur).',
-      'Adjust intensity slider to control obfuscation strength.',
-      'Download anonymized image.'
-    ],
-    faq: [
-      { q: 'Can anonymized images be reversed back?', a: 'No, pixelation and blur irrevocably destroy pixel information in the output file.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: ImageAnonymizerBlur
   },
   {
@@ -931,15 +760,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['json to typescript', 'ts interface generator', 'type generator', 'json to ts'],
     metaTitle: 'JSON to TypeScript Interface Generator - Strongly Typed TS',
     metaDescription: 'Convert raw JSON objects into clean, strongly typed TypeScript interfaces with optional nested types.',
-    intro: 'Instantly generate clean TypeScript interface declarations from raw JSON responses. Handles nested objects, primitive arrays, and custom type naming.',
-    howTo: [
-      'Paste raw JSON object or API response.',
-      'Provide a root interface name.',
-      'Copy the formatted TypeScript interface code for your codebase.'
-    ],
-    faq: [
-      { q: 'Does it support nested objects?', a: 'Yes, nested objects are converted into clean TypeScript interface properties.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: JsonToTypescript
   },
   {
@@ -950,15 +773,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['cron humanizer', 'cron to natural text', 'cron schedule reader', 'crontab explain'],
     metaTitle: 'Cron Schedule Humanizer - Plain English Schedule Translator',
     metaDescription: 'Translate cryptic 5-field cron schedule expressions into natural, easy-to-understand English sentences.',
-    intro: 'Translate raw cron schedule expressions into human-readable plain English descriptions so you can verify schedule timings instantly.',
-    howTo: [
-      'Enter any standard 5-field cron expression.',
-      'View immediate natural language translation.',
-      'Check schedule breakdown across minute, hour, day, and weekday dimensions.'
-    ],
-    faq: [
-      { q: 'Does it support standard 5-field crontabs?', a: 'Yes, minute, hour, day of month, month, and day of week fields are decoded.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: UnixCronHumanizer
   },
   {
@@ -969,15 +786,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['svg optimizer', 'clean svg', 'minify svg', 'compress svg code'],
     metaTitle: 'SVG Code Optimizer - Clean & Minify Vector Markup',
     metaDescription: 'Remove comments, editor tags, and extra whitespace from inline SVG code to reduce payload size.',
-    intro: 'Clean up inline SVG code exported from Illustrator or Figma. Removes comments, redundant attributes, and whitespace to shrink SVG file sizes.',
-    howTo: [
-      'Paste raw SVG code into the input field.',
-      'The tool strips XML comments, unnecessary group IDs, and extra spacing.',
-      'Compare byte savings percentage and copy optimized SVG code.'
-    ],
-    faq: [
-      { q: 'Will optimizing break visual rendering?', a: 'No, visual rendering tags and coordinates remain completely intact.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: SvgOptimizer
   },
   {
@@ -988,15 +799,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['jwt generator', 'jwt token creator', 'jwt secret tester', 'jwt encoder'],
     metaTitle: 'JWT Token Generator & Tester - Test JSON Web Tokens',
     metaDescription: 'Create custom JWT tokens with custom header, claims payload, and secret key for development testing.',
-    intro: 'Generate and sign standard JSON Web Tokens (JWT) for authentication testing. Customize payload claims, subject, and secret keys.',
-    howTo: [
-      'Edit the JSON payload claims (user ID, roles, expiration).',
-      'Enter a secret key for HS256 signature calculation.',
-      'Copy the three-part Base64URL encoded JWT token string.'
-    ],
-    faq: [
-      { q: 'Are these tokens safe for development testing?', a: 'Yes, tokens are generated locally in your browser session.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: JwtGeneratorTester
   },
   {
@@ -1007,15 +812,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['discount calculator', 'sales tax calculator', 'vat calculator', 'final price calculator'],
     metaTitle: 'Discount & Sales Tax Calculator - Final Sale Price',
     metaDescription: 'Calculate final prices after applying percentage discounts and sales tax / VAT additions.',
-    intro: 'Calculate exact savings and final cost for discounted products with applicable sales tax or VAT.',
-    howTo: [
-      'Enter original item price.',
-      'Input discount percentage and sales tax percentage.',
-      'View discount savings amount, tax amount, and final total.'
-    ],
-    faq: [
-      { q: 'Does tax apply before or after discount?', a: 'Tax is accurately calculated on the discounted net subtotal.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: DiscountTaxCalculator
   },
   {
@@ -1026,15 +825,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['bmi calculator', 'bmr calculator', 'ideal body weight', 'calorie intake'],
     metaTitle: 'BMI & Health Metrics Calculator - BMI & Maintenance Calories',
     metaDescription: 'Calculate Body Mass Index (BMI), weight categories, Basal Metabolic Rate (BMR), and daily calorie needs.',
-    intro: 'Check your Body Mass Index (BMI) and Basal Metabolic Rate (BMR). Understand daily calorie requirements based on age, gender, and weight.',
-    howTo: [
-      'Enter weight in kg and height in cm.',
-      'Input age and select gender.',
-      'View BMI classification, resting BMR, and recommended daily maintenance calorie target.'
-    ],
-    faq: [
-      { q: 'What is BMR?', a: 'Basal Metabolic Rate is the number of calories your body burns at complete rest to maintain vital functions.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: BmiCalorieCalculator
   },
   {
@@ -1045,15 +838,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['text cleaner', 'camelcase converter', 'snakecase', 'remove emojis', 'strip accents'],
     metaTitle: 'Text Case Converter Pro & Cleaner - Advanced Text Formatting',
     metaDescription: 'Transform text to camelCase, snake_case, kebab-case, strip emojis, and remove accent marks.',
-    intro: 'Advanced code-friendly text transformations. Switch between camelCase, snake_case, kebab-case, remove special accents, and strip emojis.',
-    howTo: [
-      'Paste your string or paragraph into the editor.',
-      'Click camelCase, snake_case, or kebab-case transform buttons.',
-      'Use Strip Accents or Remove Emojis for quick text normalization.'
-    ],
-    faq: [
-      { q: 'Is it useful for programming variable naming?', a: 'Yes, it rapidly converts natural text into clean variable and database column names.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: TextCleanerPro
   },
   {
@@ -1064,14 +851,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['ip lookup', 'client network info', 'user agent checker', 'ip validator'],
     metaTitle: 'IP & Client Network Inspector - Network Diagnostics',
     metaDescription: 'Validate IPv4 addresses, inspect user agent strings, and review client screen & network details.',
-    intro: 'Inspect client network environment details, validate IPv4 address formats, check user agent string details, and screen metrics.',
-    howTo: [
-      'Enter an IPv4 address to validate format.',
-      'View client user agent, screen resolution, and browser language settings.'
-    ],
-    faq: [
-      { q: 'Is any network data transmitted off-device?', a: 'No, validation and environment checks run entirely inside your browser.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: DomainIpLookup
   },
   {
@@ -1082,17 +864,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['cron generator', 'cron expression', 'crontab', 'cron schedule'],
     metaTitle: 'Cron Expression Generator - Visual Schedule Builder',
     metaDescription: 'Generate and translate cron schedule expressions with human-readable descriptions.',
-    intro: 'Easily build and test cron expressions for crontab, GitHub Actions, AWS EventBridge, and automated job schedulers. Visual selection allows instant conversion to human-readable format.',
-    howTo: [
-      'Select a common preset or customize schedule fields.',
-      'Adjust minute, hour, day, month, and day-of-week inputs.',
-      'View the generated 5-part cron syntax.',
-      'Copy the expression for your server configuration.'
-    ],
-    faq: [
-      { q: 'What is a cron expression?', a: 'A cron expression is a string comprising 5 or 6 fields that represent a set of times to execute a command or job.' },
-      { q: 'Where can I use this expression?', a: 'You can use it in Linux crontab files, Kubernetes CronJobs, AWS EventBridge, and CI/CD pipelines.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: CronGenerator
   },
   {
@@ -1103,16 +877,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['css gradient', 'gradient generator', 'linear gradient', 'radial gradient'],
     metaTitle: 'CSS Gradient Generator - Interactive Color Blends',
     metaDescription: 'Create custom linear, radial, and conic CSS gradients with live preview and instant CSS code output.',
-    intro: 'Design rich CSS gradients visually. Choose linear, radial, or conic gradients, adjust angles, set custom color stops, and preview your designs live.',
-    howTo: [
-      'Select the gradient type (linear, radial, or conic).',
-      'Pick primary and secondary colors using the color pickers.',
-      'Adjust the gradient angle slider.',
-      'Copy the generated CSS background rule.'
-    ],
-    faq: [
-      { q: 'Does this code work across all modern browsers?', a: 'Yes, standard CSS gradient syntax is supported across all modern web browsers.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: CssGradientGenerator
   },
   {
@@ -1123,16 +890,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['placeholder image', 'dummy image', 'svg placeholder', 'image generator'],
     metaTitle: 'Placeholder Image Generator - Custom Dummy Images',
     metaDescription: 'Create custom dimensions SVG and PNG placeholder images with text labels and custom background colors.',
-    intro: 'Generate lightweight SVG and PNG placeholder images for web development and mockups. Customize exact dimensions, background colors, text labels, and download instantly.',
-    howTo: [
-      'Enter the target width and height in pixels.',
-      'Customize background and text colors.',
-      'Add custom overlay text if desired.',
-      'Copy the Data URL, HTML tag, or download as PNG.'
-    ],
-    faq: [
-      { q: 'Can I use these images for commercial projects?', a: 'Yes, generated placeholders are completely free to use anywhere.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: PlaceholderImageGenerator
   },
   {
@@ -1143,16 +903,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['mock data', 'dummy json', 'sample data', 'test data generator'],
     metaTitle: 'Mock Data Generator - Fake JSON & CSV Datasets',
     metaDescription: 'Generate realistic mock datasets (names, emails, dates, cities, salaries) in JSON or CSV format.',
-    intro: 'Generate mock datasets for software testing, database seeding, and frontend prototyping. Supports customizable row counts and instant JSON/CSV exports.',
-    howTo: [
-      'Select the number of rows to generate.',
-      'Choose between JSON Array and CSV output format.',
-      'Click Regenerate to refresh randomized data.',
-      'Copy or download the output for your application.'
-    ],
-    faq: [
-      { q: 'Is the generated data realistic?', a: 'Yes, field values are randomized using realistic name lists, emails, cities, and numbers.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: MockDataGenerator
   },
   {
@@ -1163,16 +916,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['sql generator', 'insert statement', 'sql seed data', 'database dummy data'],
     metaTitle: 'SQL Seed Data Generator - Generate INSERT Queries',
     metaDescription: 'Create formatted SQL INSERT INTO statements for database testing and initial database seeding.',
-    intro: 'Generate structured SQL INSERT INTO statements for relational databases like PostgreSQL, MySQL, and SQLite. Ideal for fast database populating during development.',
-    howTo: [
-      'Specify the target database table name.',
-      'Set the desired number of SQL INSERT records.',
-      'Click Generate SQL to produce formatted queries.',
-      'Copy the generated SQL script into your database client.'
-    ],
-    faq: [
-      { q: 'Which SQL dialects are supported?', a: 'The generated INSERT syntax is standard SQL compatible with MySQL, PostgreSQL, SQLite, and SQL Server.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: SqlInsertGenerator
   },
   {
@@ -1183,16 +929,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['uuid generator', 'ulid generator', 'nanoid', 'cuid', 'unique id'],
     metaTitle: 'UUID & Unique ID Suite - Multi-Standard ID Generator',
     metaDescription: 'Generate batch unique identifiers including UUID v4, ULID, NanoID, and CUID style keys.',
-    intro: 'Generate batches of unique identifiers across multiple modern standards. Supports UUID v4, ULID, NanoID, and CUID keys with one-click bulk copy.',
-    howTo: [
-      'Select the identifier standard (UUID v4, ULID, NanoID, or CUID).',
-      'Choose the batch size.',
-      'Click Generate New IDs.',
-      'Copy the list of unique IDs.'
-    ],
-    faq: [
-      { q: 'Are UUIDs guaranteed to be unique?', a: 'UUID v4 uses cryptographically secure random numbers with a negligible probability of collision.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: IdGeneratorSuite
   },
   {
@@ -1203,16 +942,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['secret key', 'api key generator', 'jwt secret', 'bearer token'],
     metaTitle: 'API Key & Secret Generator - Secure Tokens',
     metaDescription: 'Generate high-entropy cryptographically secure API keys, secret tokens, and hex strings.',
-    intro: 'Create high-entropy secret keys and tokens for API authentication, session signing, and environment variables. Powered by Web Crypto API for maximum security.',
-    howTo: [
-      'Enter an optional key prefix (e.g. sk_live_).',
-      'Select byte length and encoding format (Hex, Base64, Alphanumeric).',
-      'Click Generate Secret Key.',
-      'Copy the generated secret.'
-    ],
-    faq: [
-      { q: 'Is my secret key generated safely?', a: 'Yes, all keys are generated locally in your browser using the Web Crypto API and never sent to any server.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: SecretKeyGenerator
   },
   {
@@ -1223,16 +955,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['slug generator', 'url slug', 'seo slug', 'permalink creator'],
     metaTitle: 'Advanced URL Slug Generator - Clean Permalinks',
     metaDescription: 'Convert any article title or text into clean, SEO-friendly URL slugs with custom separators and stop-word filters.',
-    intro: 'Transform headlines and article titles into clean, search-engine-optimized URL permalinks. Strip accents, special characters, and common stop words.',
-    howTo: [
-      'Type or paste your title or headline.',
-      'Select separator type (hyphen, underscore, dot).',
-      'Toggle lowercase and stop word removal options.',
-      'Copy the clean URL slug.'
-    ],
-    faq: [
-      { q: 'Why should I remove stop words?', a: 'Removing stop words like "a", "the", and "and" creates shorter, more focused URL slugs for SEO.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: AdvancedSlugGenerator
   },
   {
@@ -1243,16 +968,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['webmanifest generator', 'pwa manifest', 'favicon meta tags'],
     metaTitle: 'Web App Manifest & Favicon Generator - PWA Config',
     metaDescription: 'Generate site.webmanifest JSON files and HTML favicon meta tags for web apps and PWAs.',
-    intro: 'Generate complete web app manifests and HTML meta tags required for Progressive Web Apps (PWAs) and modern mobile browser bookmarks.',
-    howTo: [
-      'Fill in application name, short name, and start URL.',
-      'Select theme and background colors.',
-      'Choose the app display mode.',
-      'Copy the generated site.webmanifest JSON and HTML head tags.'
-    ],
-    faq: [
-      { q: 'Where do I put site.webmanifest?', a: 'Place site.webmanifest in your web root directory and reference it in your HTML <head>.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: FaviconManifestGenerator
   },
   {
@@ -1263,16 +981,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['bcrypt generator', 'password hash', 'pbkdf2 hash', 'salt hash'],
     metaTitle: 'Bcrypt & Secure Hash Generator - Password Hashes',
     metaDescription: 'Generate secure salted password hashes with customizable cost rounds directly in your browser.',
-    intro: 'Generate cryptographically secure salted hashes for passwords using PBKDF2 and SHA-256 with customizable cost rounds. Runs 100% locally in browser.',
-    howTo: [
-      'Enter a password or plain text string.',
-      'Select the cost rounds slider.',
-      'Click Compute Secure Hash.',
-      'Copy the generated hash string.'
-    ],
-    faq: [
-      { q: 'Are my passwords sent to a server?', a: 'No, all hashing operations are processed locally in your browser.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: BcryptHashGenerator
   },
 
@@ -1284,8 +995,8 @@ export const tools: ToolDefinition[] = [
     keywords: ['temperature', 'celsius', 'fahrenheit', 'kelvin'],
     metaTitle: 'Temperature Converter',
     metaDescription: 'Convert between Celsius, Fahrenheit, and Kelvin.',
-    intro: 'Instantly convert temperature values between Celsius, Fahrenheit, and Kelvin.',
-    howTo: ['Enter the value.', 'Select the units.', 'See the result.'],
+    intro: '',
+    howTo: [],
     faq: [],
     Component: TemperatureConverter
   },
@@ -1297,8 +1008,8 @@ export const tools: ToolDefinition[] = [
     keywords: ['length', 'meters', 'feet', 'inches'],
     metaTitle: 'Length Converter',
     metaDescription: 'Convert length between various units.',
-    intro: 'Quickly convert between meters, feet, inches, kilometers, miles, and more.',
-    howTo: ['Enter the length.', 'Select source and target units.', 'View the converted length.'],
+    intro: '',
+    howTo: [],
     faq: [],
     Component: LengthConverter
   },
@@ -1310,8 +1021,8 @@ export const tools: ToolDefinition[] = [
     keywords: ['weight', 'kg', 'pounds', 'lbs'],
     metaTitle: 'Weight Converter',
     metaDescription: 'Convert weight between various units.',
-    intro: 'Quickly convert between kilograms, pounds, ounces, grams, and more.',
-    howTo: ['Enter the weight.', 'Select source and target units.', 'View the converted weight.'],
+    intro: '',
+    howTo: [],
     faq: [],
     Component: WeightConverter
   },
@@ -1323,8 +1034,8 @@ export const tools: ToolDefinition[] = [
     keywords: ['volume', 'liters', 'gallons'],
     metaTitle: 'Volume Converter',
     metaDescription: 'Convert volume between various units.',
-    intro: 'Quickly convert between liters, gallons, milliliters, and more.',
-    howTo: ['Enter the volume.', 'Select source and target units.', 'View the converted volume.'],
+    intro: '',
+    howTo: [],
     faq: [],
     Component: VolumeConverter
   },
@@ -1336,8 +1047,8 @@ export const tools: ToolDefinition[] = [
     keywords: ['data storage', 'bytes', 'mb', 'gb', 'tb'],
     metaTitle: 'Data Storage Converter',
     metaDescription: 'Convert digital data storage sizes.',
-    intro: 'Convert between bytes, kilobytes, megabytes, gigabytes, and terabytes.',
-    howTo: ['Enter the value.', 'Select source and target units.', 'View the converted size.'],
+    intro: '',
+    howTo: [],
     faq: [],
     Component: DataStorageConverter
   },
@@ -1349,8 +1060,8 @@ export const tools: ToolDefinition[] = [
     keywords: ['angle', 'degrees', 'radians'],
     metaTitle: 'Angle Converter',
     metaDescription: 'Convert between degrees, radians, and gradians.',
-    intro: 'Quickly convert angle measurements between different units.',
-    howTo: ['Enter the angle.', 'Select source and target units.', 'View the converted angle.'],
+    intro: '',
+    howTo: [],
     faq: [],
     Component: AngleConverter
   },
@@ -1362,8 +1073,8 @@ export const tools: ToolDefinition[] = [
     keywords: ['rot13', 'cipher', 'encode', 'decode'],
     metaTitle: 'ROT13 Converter',
     metaDescription: 'Encode and decode text using ROT13 cipher.',
-    intro: 'Quickly apply the ROT13 substitution cipher to your text.',
-    howTo: ['Paste your text.', 'View the ROT13 output instantly.'],
+    intro: '',
+    howTo: [],
     faq: [],
     Component: Rot13Converter
   },
@@ -1375,8 +1086,8 @@ export const tools: ToolDefinition[] = [
     keywords: ['text to octal', 'octal encoder'],
     metaTitle: 'Text to Octal Converter',
     metaDescription: 'Convert text to octal values.',
-    intro: 'Convert any text string into its octal representation.',
-    howTo: ['Paste your text.', 'Copy the generated octal code.'],
+    intro: '',
+    howTo: [],
     faq: [],
     Component: TextToOctal
   },
@@ -1388,8 +1099,8 @@ export const tools: ToolDefinition[] = [
     keywords: ['octal to text', 'octal decoder'],
     metaTitle: 'Octal to Text Converter',
     metaDescription: 'Convert octal values back to text.',
-    intro: 'Decode octal values back into readable text.',
-    howTo: ['Paste your space-separated octal values.', 'View the decoded text.'],
+    intro: '',
+    howTo: [],
     faq: [],
     Component: OctalToText
   },
@@ -1401,8 +1112,8 @@ export const tools: ToolDefinition[] = [
     keywords: ['roman numerals', 'numbers to roman'],
     metaTitle: 'Roman Numeral Converter',
     metaDescription: 'Convert between standard numbers and Roman numerals.',
-    intro: 'Instantly convert numbers to Roman numerals and vice versa.',
-    howTo: ['Select the conversion mode.', 'Enter the number or Roman numeral.', 'View the result.'],
+    intro: '',
+    howTo: [],
     faq: [],
     Component: RomanNumeralConverter
   }
@@ -1415,17 +1126,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['uppercase', 'lowercase', 'title case', 'camel case', 'text format'],
     metaTitle: 'Case Converter - Upper, Lower, Camel Case',
     metaDescription: 'Quickly convert text between uppercase, lowercase, title case, camel case, snake case, and kebab case online.',
-    intro: 'The Case Converter is a quick and simple online tool that allows you to change the capitalization of your text instantly. Whether you need to convert a block of text to entirely uppercase, lowercase, or format programmer-friendly styles like camelCase, snake_case, and kebab-case, this tool runs entirely in your browser to ensure your data stays private and secure.',
-    howTo: [
-      'Type or paste your text into the input area.',
-      'Select the desired case format from the buttons below the input.',
-      'The converted text will instantly appear in the output box.',
-      'Click the "Copy" button to copy the result to your clipboard.'
-    ],
-    faq: [
-      { q: 'Is my text sent to a server?', a: 'No, all text processing happens locally in your browser. No data is sent to our servers.' },
-      { q: 'What is camelCase?', a: 'camelCase is a naming convention where the first letter is lowercase, and each subsequent word starts with an uppercase letter without spaces (e.g., myVariableName).' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: CaseConverter
   },
   {
@@ -1436,17 +1139,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['word count', 'character count', 'letter counter', 'text statistics'],
     metaTitle: 'Word & Character Counter - Online Text Tool',
     metaDescription: 'Instantly count words, characters, lines, and paragraphs in your text. 100% free and processes locally in your browser.',
-    intro: 'Need to know exactly how long your essay, tweet, or article is? Our Word Counter provides instant, real-time statistics as you type or paste your text. It accurately counts total words, characters (both with and without spaces), lines, and paragraphs. Best of all, your text is never uploaded to any server.',
-    howTo: [
-      'Type or paste your text into the large input box.',
-      'Watch the statistics update automatically in real-time.',
-      'Use the "Clear" button to start over.',
-      'Click "Copy" to quickly copy your entire text back to the clipboard.'
-    ],
-    faq: [
-      { q: 'Does it count spaces as characters?', a: 'We provide two metrics: total characters (including spaces) and characters without spaces, so you have exactly the data you need.' },
-      { q: 'Is there a word limit?', a: 'No! Because the processing happens locally on your device, you can paste thousands of words without worrying about server limits or timeouts.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: WordCounter
   },
   {
@@ -1457,12 +1152,8 @@ export const tools: ToolDefinition[] = [
     keywords: ['html editor', 'html viewer', 'live html', 'code editor'],
     metaTitle: 'Live HTML Editor & Viewer',
     metaDescription: 'Write HTML code and see the live preview instantly. A fast, browser-based HTML viewer.',
-    intro: 'This HTML Viewer & Editor allows you to write HTML, CSS, and basic JavaScript in the browser and instantly see the rendered output. Perfect for quickly testing UI components, debugging layouts, or prototyping designs locally.',
-    howTo: [
-      'Type or paste your HTML code in the left editor pane.',
-      'The live preview on the right will update automatically as you type.',
-      'Use inline CSS or <style> tags to style your HTML.'
-    ],
+    intro: '',
+    howTo: [],
     faq: [],
     Component: HtmlEditor
   },
@@ -1474,17 +1165,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['base64 encoder', 'base64 decoder', 'btoa', 'atob', 'encode string'],
     metaTitle: 'Base64 Encoder & Decoder - Online Developer Tool',
     metaDescription: 'Instantly encode or decode text using Base64. A secure, browser-based developer utility that keeps your data private.',
-    intro: 'Base64 encoding is widely used in web development and data transmission. Our Base64 Converter allows you to instantly encode standard text into Base64 format, or decode a Base64 string back into readable text. Everything runs locally in your browser using native APIs, ensuring sensitive strings remain strictly on your device.',
-    howTo: [
-      'Select whether you want to Encode or Decode using the toggle buttons.',
-      'Paste your text or Base64 string into the input box.',
-      'The converted result will appear instantly in the output box below.',
-      'Click the copy icon to copy the result to your clipboard.'
-    ],
-    faq: [
-      { q: 'Is it safe to decode sensitive tokens here?', a: 'Yes. The conversion uses the browser\'s native `btoa` and `atob` functions. Data is never transmitted over the network.' },
-      { q: 'Why do I get an error when decoding?', a: 'This usually happens if the input string is not valid Base64 or contains characters outside the Base64 alphabet.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: Base64Converter
   },
   {
@@ -1495,17 +1178,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['hex converter', 'binary to decimal', 'octal', 'hexadecimal', 'base converter'],
     metaTitle: 'Number Base Converter - Hex, Binary, Decimal, Octal',
     metaDescription: 'Convert numbers instantly between Decimal, Hexadecimal, Binary, and Octal bases. online utility.',
-    intro: 'Whether you are reverse engineering, programming, or just studying computer science, our Number Base Converter makes it effortless to translate values between numeral systems. Enter a number in Decimal (Base 10), Binary (Base 2), Hexadecimal (Base 16), or Octal (Base 8), and watch all other fields update simultaneously in real-time.',
-    howTo: [
-      'Find the input field corresponding to the base of your starting number.',
-      'Type or paste your number into that specific field.',
-      'All other fields (Binary, Hex, Octal, Decimal) will update automatically.',
-      'Use the copy button next to any field to grab the converted value.'
-    ],
-    faq: [
-      { q: 'What happens if I type an invalid character?', a: 'The tool automatically strips out characters that are invalid for the specific base (e.g., typing a "9" in the octal field will be ignored).' },
-      { q: 'Is there a limit to how large the number can be?', a: 'Yes, because it uses standard JavaScript numbers, extremely large inputs may lose precision. It is best suited for standard integer conversions.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: BaseConverter
   },
   {
@@ -1516,9 +1191,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['remove duplicates', 'unique lines', 'dedupe text'],
     metaTitle: 'Remove Duplicate Lines - Online Tool',
     metaDescription: 'Easily remove duplicate lines from your text. Fast, free, and secure deduplication in your browser.',
-    intro: 'Remove all duplicate lines from a list or text block instantly. Perfect for cleaning up email lists, data dumps, or any repetitive text.',
-    howTo: ['Paste your text into the input.', 'Duplicates are automatically removed.', 'Copy the unique lines from the output.'],
-    faq: [{ q: 'Is it case sensitive?', a: 'Yes, exact string matching is used.' }],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: RemoveDuplicateLines
   },
   {
@@ -1529,9 +1204,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['alphabetize', 'sort text', 'order lines'],
     metaTitle: 'Sort Lines Alphabetically - Online Tool',
     metaDescription: 'Sort text lines in alphabetical order instantly. browser-based utility.',
-    intro: 'Quickly organize your lists by sorting all lines alphabetically.',
-    howTo: ['Paste your list.', 'Lines are sorted instantly.', 'Copy the result.'],
-    faq: [{ q: 'Does it sort numbers?', a: 'Yes, it sorts alphabetically, meaning "10" comes before "2".' }],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: SortLines
   },
   {
@@ -1542,9 +1217,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['clean spaces', 'trim text', 'remove whitespace'],
     metaTitle: 'Remove Extra Spaces - Text Cleaner',
     metaDescription: 'Remove double spaces, tabs, and trailing whitespaces from your text.',
-    intro: 'Clean up messy text formatting by removing double spaces, tabs, and extra whitespaces.',
-    howTo: ['Paste text.', 'Spaces are cleaned automatically.', 'Copy the result.'],
-    faq: [{ q: 'Does it remove line breaks?', a: 'No, it preserves your line breaks but cleans horizontal spacing.' }],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: RemoveExtraSpaces
   },
   {
@@ -1555,9 +1230,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['delete blank lines', 'trim empty lines', 'clean text'],
     metaTitle: 'Remove Empty Lines - Online Text Tool',
     metaDescription: 'Delete all blank and empty lines from your text files instantly.',
-    intro: 'Quickly condense code or text by stripping out all blank lines.',
-    howTo: ['Paste text.', 'Empty lines are removed.', 'Copy the condensed text.'],
-    faq: [{ q: 'Does it remove lines with only spaces?', a: 'Yes, lines containing only whitespace are removed.' }],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: RemoveEmptyLines
   },
   {
@@ -1568,9 +1243,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['backward text', 'reverse string', 'flip text'],
     metaTitle: 'Reverse Text Generator - Flip Text Backwards',
     metaDescription: 'Reverse any text string backwards instantly with this free online tool.',
-    intro: 'Flip your text entirely backwards, reversing the order of every single character.',
-    howTo: ['Paste text.', 'Text is reversed instantly.', 'Copy the output.'],
-    faq: [{ q: 'What is this used for?', a: 'Often used for puzzles, encodings, or just for fun.' }],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: ReverseText
   },
   {
@@ -1581,9 +1256,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['flip list', 'reverse order', 'bottom to top'],
     metaTitle: 'Reverse Line Order - Online Tool',
     metaDescription: 'Reverse the order of lines in a list or text document.',
-    intro: 'Flip your list upside down. The last line becomes the first line.',
-    howTo: ['Paste list.', 'Order is reversed.', 'Copy the result.'],
-    faq: [{ q: 'Does it reverse the text inside the lines?', a: 'No, only the order of the lines themselves.' }],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: ReverseLines
   },
   {
@@ -1594,9 +1269,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['remove html', 'clean html', 'text only'],
     metaTitle: 'Strip HTML Tags - Convert HTML to Plain Text',
     metaDescription: 'Remove all HTML tags from a text block, leaving only the plain text content.',
-    intro: 'Extract readable text from HTML code by stripping out all tags.',
-    howTo: ['Paste HTML.', 'Tags are removed.', 'Copy the plain text.'],
-    faq: [{ q: 'Is it perfect?', a: 'It uses a regex approach, which is good for basic cleanup but might not parse complex nested scripts perfectly.' }],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: HtmlStripper
   },
   {
@@ -1607,9 +1282,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['find emails', 'email extractor', 'scrape emails'],
     metaTitle: 'Extract Emails from Text - Online Tool',
     metaDescription: 'Find and extract all email addresses from a block of text.',
-    intro: 'Instantly pull every email address out of a messy block of text or document.',
-    howTo: ['Paste text.', 'Emails are extracted into a list.', 'Copy the emails.'],
-    faq: [{ q: 'Is my data saved?', a: 'No, all extraction happens locally in your browser.' }],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: ExtractEmails
   },
   {
@@ -1620,9 +1295,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['find links', 'url extractor', 'scrape urls'],
     metaTitle: 'Extract URLs from Text - Online Tool',
     metaDescription: 'Find and extract all HTTP and HTTPS links from text.',
-    intro: 'Instantly pull every website link out of a block of text.',
-    howTo: ['Paste text.', 'URLs are extracted into a list.', 'Copy the links.'],
-    faq: [{ q: 'Does it find links without http?', a: 'It specifically looks for standard http:// and https:// patterns.' }],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: ExtractUrls
   },
   {
@@ -1633,9 +1308,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['text to binary', 'binary encoder', 'convert to binary'],
     metaTitle: 'Text to Binary Converter - Tool',
     metaDescription: 'Convert plain text into binary code instantly.',
-    intro: 'Translate human-readable text into computer binary (1s and 0s).',
-    howTo: ['Paste text.', 'Binary is generated.', 'Copy the code.'],
-    faq: [{ q: 'What encoding is used?', a: 'Standard 8-bit character encoding.' }],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: TextToBinary
   },
   {
@@ -1646,9 +1321,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['binary decoder', 'binary to text', 'read binary'],
     metaTitle: 'Binary to Text Converter - Tool',
     metaDescription: 'Convert binary code back into human-readable plain text.',
-    intro: 'Decode a string of 1s and 0s back into readable characters.',
-    howTo: ['Paste binary (space separated).', 'Text is generated.', 'Copy the text.'],
-    faq: [{ q: 'What if it says invalid?', a: 'Ensure your binary is properly formatted with spaces between 8-bit blocks.' }],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: BinaryToText
   },
   {
@@ -1659,9 +1334,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['text to hex', 'hex encoder', 'hexadecimal'],
     metaTitle: 'Text to Hex Converter - Tool',
     metaDescription: 'Convert plain text into hexadecimal format.',
-    intro: 'Translate human-readable text into hexadecimal string format.',
-    howTo: ['Paste text.', 'Hex is generated.', 'Copy the code.'],
-    faq: [{ q: 'What encoding is used?', a: 'Standard character encoding.' }],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: TextToHex
   },
   {
@@ -1672,9 +1347,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['hex decoder', 'hex to text', 'read hex'],
     metaTitle: 'Hex to Text Converter - Tool',
     metaDescription: 'Convert hexadecimal strings back into plain text.',
-    intro: 'Decode a hex string back into readable characters.',
-    howTo: ['Paste hex (space separated).', 'Text is generated.', 'Copy the text.'],
-    faq: [{ q: 'What if it says invalid?', a: 'Ensure your hex is properly formatted with spaces.' }],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: HexToText
   },
   {
@@ -1685,9 +1360,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['text to ascii', 'ascii encoder'],
     metaTitle: 'Text to ASCII Converter',
     metaDescription: 'Convert plain text into ASCII character codes.',
-    intro: 'Translate text into its corresponding ASCII numeric values.',
-    howTo: ['Paste text.', 'ASCII is generated.', 'Copy the code.'],
-    faq: [{ q: 'Are unicode characters supported?', a: 'It extracts the charCode, so basic Unicode is represented as numbers.' }],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: TextToAscii
   },
   {
@@ -1698,9 +1373,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['ascii decoder', 'ascii to text'],
     metaTitle: 'ASCII to Text Converter',
     metaDescription: 'Convert ASCII numeric codes back into text.',
-    intro: 'Decode a sequence of ASCII numbers back into readable text.',
-    howTo: ['Paste ASCII codes (space separated).', 'Text is generated.', 'Copy the text.'],
-    faq: [{ q: 'Does it support extended ASCII?', a: 'Yes, based on the browser\'s String.fromCharCode.' }],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: AsciiToText
   },
   {
@@ -1711,9 +1386,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['randomize list', 'shuffle text', 'random order'],
     metaTitle: 'Shuffle Lines - Randomize List Order',
     metaDescription: 'Randomize the order of lines in a list or text document.',
-    intro: 'Instantly shuffle your list into a completely random order.',
-    howTo: ['Paste list.', 'List is randomized.', 'Copy the result.'],
-    faq: [{ q: 'Is it truly random?', a: 'It uses standard Math.random() for a basic Fisher-Yates shuffle.' }],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: ShuffleLines
   },
   {
@@ -1724,9 +1399,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['number lines', 'list numbering', 'add numbers to text'],
     metaTitle: 'Add Line Numbers to Text - Tool',
     metaDescription: 'Automatically add sequential line numbers to the beginning of every line.',
-    intro: 'Quickly format a list or code block by prepending line numbers.',
-    howTo: ['Paste text.', 'Numbers are added.', 'Copy the text.'],
-    faq: [{ q: 'Does it number blank lines?', a: 'Yes, every line break creates a new numbered line.' }],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: AddLineNumbers
   },
   {
@@ -1737,9 +1412,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['add prefix', 'add suffix', 'wrap lines', 'prepend append'],
     metaTitle: 'Add Prefix & Suffix to Lines - Tool',
     metaDescription: 'Add text to the beginning (prefix) and end (suffix) of every line instantly.',
-    intro: 'Quickly modify a list by wrapping every line with specific text.',
-    howTo: ['Paste your list.', 'Enter the prefix and suffix.', 'Copy the result.'],
-    faq: [{ q: 'Can I use spaces?', a: 'Yes, any characters including spaces work.' }],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: PrefixSuffixLines
   },
   {
@@ -1750,9 +1425,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['compare text', 'text diff', 'find differences'],
     metaTitle: 'Text Difference Checker - Compare Texts',
     metaDescription: 'Compare two text blocks and highlight the differences, additions, and deletions.',
-    intro: 'Find exactly what changed between two versions of a document or code.',
-    howTo: ['Paste the original text.', 'Paste the new text.', 'View the highlighted differences below.'],
-    faq: [{ q: 'Is it line by line?', a: 'Yes, it compares line by line.' }],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: TextDiff
   },
   {
@@ -1763,9 +1438,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['search replace', 'regex replace', 'find text'],
     metaTitle: 'Find and Replace Text Online - Regex Support',
     metaDescription: 'Find and replace text with optional Regular Expression (Regex) support.',
-    intro: 'Quickly find and replace occurrences of words or patterns in your text.',
-    howTo: ['Paste text.', 'Enter find and replace terms.', 'Check Regex if needed.', 'Copy the result.'],
-    faq: [{ q: 'What regex flavor?', a: 'Standard JavaScript Regular Expressions.' }],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: FindAndReplace
   },
   {
@@ -1776,17 +1451,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['qr code', 'make qr', 'generate qr', 'url to qr'],
     metaTitle: 'QR Code Generator - High Quality PNG/SVG',
     metaDescription: 'Generate custom QR codes instantly for URLs, text, Wi-Fi, and more. Customize colors and download high-quality PNGs.',
-    intro: 'Create high-quality, scannable QR codes instantly for free. Our QR Code Generator allows you to encode URLs, plain text, and other data into a customizable QR code. You can easily adjust the foreground and background colors to match your brand. Everything is generated directly on your device, ensuring maximum privacy and no watermarks.',
-    howTo: [
-      'Enter the URL or text you want to encode in the payload field.',
-      'Optionally, select custom foreground and background colors.',
-      'The QR code preview will update instantly.',
-      'Click "Download PNG" to save the high-resolution image to your device.'
-    ],
-    faq: [
-      { q: 'Do these QR codes expire?', a: 'No. The QR codes generated here are static and encode your raw data directly. They will work forever as long as the destination (like a URL) remains active.' },
-      { q: 'Are there any watermarks?', a: 'No, our generator provides clean, watermark-free images.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: QRGenerator
   },
   {
@@ -1797,17 +1464,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['barcode creator', 'generate barcode', 'code128', 'ean13', 'upc'],
     metaTitle: 'Barcode Generator - CODE128, EAN, UPC',
     metaDescription: 'Generate standard barcodes online instantly. Supports CODE128, EAN-13, UPC, and more. Download high-quality PNGs for free.',
-    intro: 'Generate professional, scannable barcodes in seconds with our free Barcode Generator. Ideal for inventory, retail, and logistical tagging, this tool supports multiple industry-standard formats including CODE128, EAN-13, and UPC. You can customize the colors and instantly download the output as a high-quality PNG—all processed securely within your browser.',
-    howTo: [
-      'Select the desired barcode format from the dropdown menu (CODE128 is a good default).',
-      'Enter the value you want to encode. Make sure it matches the format requirements.',
-      'Customize the line color and background color if desired.',
-      'Click "Download PNG" to save the barcode image.'
-    ],
-    faq: [
-      { q: 'Why is it showing an error?', a: 'Certain barcode formats require specific input lengths or character types. For example, EAN-13 requires exactly 12 or 13 numeric digits.' },
-      { q: 'Can I use these for commercial products?', a: 'Yes, if you own the corresponding UPC or EAN number registered via GS1, you can use these generated graphics on your product packaging.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: BarcodeGenerator
   },
   {
@@ -1818,17 +1477,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['compress image', 'reduce file size', 'optimize image', 'shrink photo'],
     metaTitle: 'Online Image Compressor - Reduce File Size',
     metaDescription: 'Compress and optimize images directly in your browser. Reduce file sizes of JPEGs and PNGs without losing quality.',
-    intro: 'The Image Compressor helps you significantly reduce the file size of your photos and graphics without visible quality loss. This tool is completely client-side, meaning your images are never uploaded to a server—compression happens directly in your browser using standard HTML5 Canvas technologies, ensuring your files remain 100% private.',
-    howTo: [
-      'Click "Choose File" and select an image from your device.',
-      'Use the quality slider to adjust the compression level (lower % means a smaller file but less quality).',
-      'Preview the compressed image instantly on the right.',
-      'Click "Download Compressed" to save the optimized image.'
-    ],
-    faq: [
-      { q: 'Are my images secure?', a: 'Yes. Processing happens entirely within your web browser. We never upload, store, or see your images.' },
-      { q: 'Which formats are supported?', a: 'You can upload most standard web image formats (JPEG, PNG, WebP) and the tool will output a compressed JPEG.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: ImageCompressor
   },
   {
@@ -1839,17 +1490,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['meta tags', 'seo tags', 'open graph', 'twitter cards', 'html head'],
     metaTitle: 'Meta Tag Generator - SEO & Open Graph',
     metaDescription: 'Create optimized HTML meta tags, Open Graph tags, and Twitter cards for your website to boost SEO and social sharing.',
-    intro: 'Proper HTML meta tags are crucial for Search Engine Optimization (SEO) and ensuring your website looks great when shared on social media like Facebook and Twitter. Our Meta Tag Generator takes the guesswork out of formatting by automatically generating standards-compliant `<meta>` tags, Open Graph properties, and Twitter Card data based on your simple inputs.',
-    howTo: [
-      'Fill in the title, description, and keywords for your webpage.',
-      'Add a URL and an image link to enable rich social media previews.',
-      'Select whether you want search engines to index the page.',
-      'Copy the generated HTML code and paste it inside the `<head>` section of your website.'
-    ],
-    faq: [
-      { q: 'Where do I put this code?', a: 'The generated meta tags should be pasted into the HTML of your webpage, specifically inside the `<head> ... </head>` section.' },
-      { q: 'What is Open Graph?', a: 'Open Graph is a protocol originally created by Facebook that standardizes how web pages are represented when shared on social media, allowing for rich previews with images and descriptions.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: MetaTagGenerator
   },
   {
@@ -1860,17 +1503,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['robots.txt generator', 'crawl directives', 'disallow bot', 'googlebot rules', 'sitemap directive'],
     metaTitle: 'Robots.txt Generator & Validator - Online SEO Tool',
     metaDescription: 'Create and validate custom robots.txt files. Set disallow/allow crawl rules for Googlebot, GPTBot, and other crawlers with real-time URL testing.',
-    intro: 'Generate standard-compliant robots.txt files to manage search engine crawler access to your website. Test rule outcomes, block AI bots, and specify sitemap locations with single-click export.',
-    howTo: [
-      'Select a quick template preset or configure custom rules manually.',
-      'Set Disallow or Allow paths for specific web crawlers or all user-agents (*).',
-      'Add your XML sitemap URL and optional crawl delay directives.',
-      'Test URLs with the live rule simulator and download your robots.txt file.'
-    ],
-    faq: [
-      { q: 'Where should I place the robots.txt file?', a: 'Place robots.txt in the root directory of your domain (e.g., example.com/robots.txt).' },
-      { q: 'Can I block AI crawlers like GPTBot?', a: 'Yes! Use the AI block preset to restrict web scraping bots.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: RobotsTxtGenerator
   },
   {
@@ -1881,16 +1516,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['xml sitemap generator', 'sitemap creator', 'google sitemap', 'sitemap.xml builder'],
     metaTitle: 'XML Sitemap Generator & Visualizer - Online Tool',
     metaDescription: 'Create valid XML sitemaps for Google and Bing. Bulk import URLs, set priority, change frequency, and download sitemap.xml instantly.',
-    intro: 'Build XML sitemaps for search engine indexing. Manage URL priorities, change frequency tags, and bulk import pages with instant XML syntax validation and sitemap.xml export.',
-    howTo: [
-      'Enter your website domain URL.',
-      'Add individual pages or paste a list of relative URLs in bulk.',
-      'Configure lastmod dates, change frequency, and priority values.',
-      'Download the generated sitemap.xml file.'
-    ],
-    faq: [
-      { q: 'How many URLs can a single XML sitemap hold?', a: 'Up to 50,000 URLs or 50MB uncompressed file size.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: SitemapXmlGenerator
   },
   {
@@ -1901,16 +1529,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['open graph previewer', 'social card tester', 'twitter card preview', 'og tags generator'],
     metaTitle: 'Open Graph & Social Media Card Previewer - SEO Tool',
     metaDescription: 'Preview how your web page looks when shared on Facebook, Twitter/X, LinkedIn, Discord, and Google. Generate verified OG meta tags.',
-    intro: 'Visualize and test your Open Graph and Twitter card meta tags across major social platforms. Ensure high click-through rates on Facebook, Twitter/X, and LinkedIn.',
-    howTo: [
-      'Enter meta title, description, and share image URL.',
-      'Switch between Facebook, Twitter, LinkedIn, Google, and Discord previews.',
-      'Check character count limits to prevent title truncation.',
-      'Copy the generated Open Graph HTML tags.'
-    ],
-    faq: [
-      { q: 'Why is my social share image not displaying?', a: 'Ensure your image URL is publicly accessible and meets recommended dimensions (1200x630px).' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: OpenGraphPreviewer
   },
   {
@@ -1921,16 +1542,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['schema markup generator', 'json-ld generator', 'structured data', 'google rich snippets'],
     metaTitle: 'Schema.org Structured Data & JSON-LD Generator',
     metaDescription: 'Generate valid JSON-LD structured data schema markup for Articles, Products, FAQ Pages, and Local Businesses for Google Rich Snippets.',
-    intro: 'Create Google-compliant JSON-LD structured data markup to qualify for rich search results. Build schema for articles, products, FAQ accordions, and business listings.',
-    howTo: [
-      'Select your target Schema type (Article, Product, or FAQ Page).',
-      'Fill in required schema properties in the interactive form.',
-      'Verify output JSON-LD code in the live editor.',
-      'Copy and paste the script tag inside your HTML head.'
-    ],
-    faq: [
-      { q: 'What is JSON-LD schema markup?', a: 'JSON-LD is a structured format recommended by Google to describe web page content to search engines.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: SchemaMarkupGenerator
   },
   {
@@ -1941,16 +1555,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['keyword density checker', 'n-gram analyzer', 'seo word frequency', 'text keyword counter'],
     metaTitle: 'Keyword Density & N-Gram Phrase Analyzer - SEO Tool',
     metaDescription: 'Analyze word frequency and keyword density percentages for 1-gram and 2-gram phrases in your text to prevent keyword stuffing.',
-    intro: 'Audit keyword density and phrase frequency in web content. Filter stop words, identify top single and two-word phrases, and maintain ideal 1-3% keyword ratios for optimal rankings.',
-    howTo: [
-      'Paste your article or webpage copy into the text editor.',
-      'Toggle stop word filtering and set minimum word length.',
-      'Review the top single keywords and 2-word phrase density tables.',
-      'Adjust content to maintain optimal keyword distributions.'
-    ],
-    faq: [
-      { q: 'What is ideal keyword density for SEO?', a: 'Most SEO experts recommend maintaining 1% to 3% density for primary target keywords.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: KeywordDensityAnalyzer
   },
   {
@@ -1961,16 +1568,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['serp snippet simulator', 'google title preview', 'meta description pixel counter', 'ctr score'],
     metaTitle: 'Google SERP Snippet Simulator & Pixel Width Optimizer',
     metaDescription: 'Preview Google desktop and mobile search snippets. Check pixel widths and optimize titles and meta descriptions for maximum CTR.',
-    intro: 'Simulate how your webpage appears in Google search results. Measure title and description pixel widths to prevent character truncation and maximize organic click-through rates.',
-    howTo: [
-      'Enter your SEO title, meta description, and target keyword.',
-      'Switch between Google desktop and mobile search previews.',
-      'Monitor pixel width bars and character limits.',
-      'Follow the CTR optimization score checklist to improve rankings.'
-    ],
-    faq: [
-      { q: 'What is Google title pixel truncation?', a: 'Google truncates search titles that exceed ~580 pixels on desktop browsers.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: SerpSnippetOptimizer
   },
   {
@@ -1981,15 +1581,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['hreflang generator', 'multilingual seo', '301 redirect generator', 'htaccess redirect'],
     metaTitle: 'Hreflang Tag & 301 Redirect Rules Generator',
     metaDescription: 'Generate HTML hreflang tags for multi-language websites and Apache .htaccess 301 redirect rules.',
-    intro: 'Build multi-language hreflang link tags and server 301 redirect rules. Ensure correct search localization and preserve page rank during URL migrations.',
-    howTo: [
-      'Choose Hreflang Tags or 301 Redirect Rules mode.',
-      'Specify language/region codes and URL mappings.',
-      'Copy generated HTML link tags or .htaccess rules.'
-    ],
-    faq: [
-      { q: 'Why is x-default hreflang important?', a: 'The x-default tag directs users without a matching language region to your default page.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: HrefLangRedirectGenerator
   },
   {
@@ -2000,16 +1594,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['heading structure checker', 'h1 h2 h3 hierarchy', 'seo header analyzer', 'html outline auditor'],
     metaTitle: 'Heading Tag (H1-H6) Structure & Hierarchy Analyzer',
     metaDescription: 'Audit HTML heading tags (H1-H6) for correct content hierarchy. Detect missing H1 tags, skipped heading levels, and SEO structure issues.',
-    intro: 'Analyze HTML heading tag structures (H1 through H6). Detect duplicate H1 tags, skipped heading levels, and structural flaws to improve document outline clarity.',
-    howTo: [
-      'Paste HTML code or article outline into the editor.',
-      'Inspect the visual heading hierarchy tree.',
-      'Review warning alerts for missing or multiple H1 tags.',
-      'Ensure heading levels step down logically (H1 -> H2 -> H3).'
-    ],
-    faq: [
-      { q: 'Can a page have more than one H1 tag?', a: 'While HTML5 permits multiple H1s, SEO best practices strongly recommend using a single clear H1 per page.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: HeadingStructureAnalyzer
   },
   {
@@ -2020,15 +1607,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['seo slug generator', 'url slug cleaner', 'friendly url maker', 'slug sanitizer'],
     metaTitle: 'SEO Slug & Clean URL Health Generator - Tool',
     metaDescription: 'Convert article titles into clean, search-friendly SEO URL slugs. Strip special characters, spaces, and non-SEO parameters.',
-    intro: 'Transform article headlines and page titles into clean, concise, SEO-optimized URL slugs. Automatically remove special characters, spaces, and punctuation.',
-    howTo: [
-      'Enter your article or page title.',
-      'The tool instantly cleans special characters and converts spaces to hyphens.',
-      'Copy the generated SEO slug for your URL structure.'
-    ],
-    faq: [
-      { q: 'Why should URLs use hyphens instead of underscores?', a: 'Google treats hyphens (-) as word separators, while underscores (_) join words together.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: SeoSlugHealthChecker
   },
   {
@@ -2039,16 +1620,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['flesch reading ease', 'seo readability audit', 'content readability score', 'text statistics'],
     metaTitle: 'SEO Content Readability & Flesch Score Audit Tool',
     metaDescription: 'Calculate Flesch Reading Ease score, average sentence length, and readability grade level for web content to lower bounce rates.',
-    intro: 'Measure the readability of your web copy with the Flesch Reading Ease formula. Improve engagement and dwell time by keeping content accessible to search engine visitors.',
-    howTo: [
-      'Paste your article text into the analyzer.',
-      'Review the Flesch Reading Ease score and readability category.',
-      'Check sentence length and total word counts.',
-      'Refine copy to achieve plain-English readability (60-70 score).'
-    ],
-    faq: [
-      { q: 'How does readability impact SEO?', a: 'Easier-to-read content lowers bounce rates and increases dwell time, signaling value to search engines.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: SeoContentReadabilityAudit
   },
   {
@@ -2059,17 +1633,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['stopwatch', 'online timer', 'lap timer', 'time tracker'],
     metaTitle: 'Online Stopwatch & Lap Timer',
     metaDescription: 'A precise online stopwatch with lap tracking capabilities. Perfect for timing exercises, presentations, or sprints.',
-    intro: 'Keep track of time with precision using our Online Stopwatch. Designed with a clean, distraction-free interface, it allows you to start, pause, and record lap times with millisecond accuracy. Whether you are timing a workout, tracking a presentation, or managing a development sprint, this utility runs entirely in your browser without any network delays.',
-    howTo: [
-      'Click the "Start" button to begin the timer.',
-      'Click "Lap" while the timer is running to record a split time without stopping the clock.',
-      'Click "Pause" to temporarily halt the timer.',
-      'Click "Reset" to clear the timer and all recorded laps.'
-    ],
-    faq: [
-      { q: 'Is it accurate?', a: 'Yes, it uses the device\'s native system clock to calculate the elapsed time (Date.now()), meaning it remains accurate even if the browser tab is momentarily throttled.' },
-      { q: 'Will the timer keep running if I switch tabs?', a: 'Most modern browsers throttle background tabs to save battery. While the displayed UI might pause, the underlying elapsed time will mathematically "catch up" accurately once you return to the tab.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: Stopwatch
   },
   {
@@ -2080,17 +1646,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['countdown timer', 'alarm clock', 'pomodoro timer', 'online alarm'],
     metaTitle: 'Online Countdown Timer & Audio Alarm Clock',
     metaDescription: 'Customizable online countdown timer with Web Audio synthesized alarms and Pomodoro presets for focus and workouts.',
-    intro: 'Stay on track with our versatile Countdown Timer & Alarm. Set custom hours, minutes, and seconds or pick from preset intervals like Pomodoro focus sessions and breaks. Features a visual circular progress ring and synthesized Web Audio alarms that ring clearly when time expires.',
-    howTo: [
-      'Select a preset duration (e.g., 25m Pomodoro) or enter custom hours, minutes, and seconds.',
-      'Click "Start" to begin the countdown timer.',
-      'Watch the circular ring progress as time ticks down.',
-      'Hear the Web Audio alarm beep when the timer hits zero.'
-    ],
-    faq: [
-      { q: 'Does the alarm work without internet?', a: 'Yes, the alarm sound is generated dynamically using your browser\'s native Web Audio API oscillators without loading external audio files.' },
-      { q: 'Can I pause and resume?', a: 'Yes, click the "Pause" button at any time to freeze the timer, and click "Start" to resume.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: CountdownTimerAlarm
   },
   {
@@ -2101,17 +1659,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['world clock', 'timezone converter', 'global time', 'meeting planner'],
     metaTitle: 'World Clock & Multi-Timezone Scheduler',
     metaDescription: 'Track live local times across major global cities and timezones. Add cities, compare current times, and coordinate remote meetings.',
-    intro: 'Effortlessly keep track of current local times across international cities with our World Clock Hub. Add your primary business locations, remote team cities, or travel destinations to view live digital clocks side by side with real-time day and date indicators.',
-    howTo: [
-      'Choose a timezone or city from the dropdown selector.',
-      'Click "Add City" to display its live digital clock card.',
-      'View current hours, minutes, seconds, and dates across all selected cities simultaneously.',
-      'Click the trash icon to remove any city card from your dashboard.'
-    ],
-    faq: [
-      { q: 'Are daylight saving time changes accounted for?', a: 'Yes, all time calculations rely on standard Intl.DateTimeFormat specifications provided by your device OS.' },
-      { q: 'How many cities can I add?', a: 'You can add as many global timezones as you need for your workflow.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: WorldClockScheduler
   },
   {
@@ -2122,17 +1672,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['random picker', 'name picker', 'randomizer', 'decision maker'],
     metaTitle: 'Random Choice Picker & Item Selector',
     metaDescription: 'Make unbiased decisions instantly. Input a list of items or names to pick a random winner or shuffle choices.',
-    intro: 'Can’t decide what to eat, who goes first, or which task to tackle next? Use our Random Choice Picker to select a fair, unbiased option instantly. Enter your options line by line, click "Pick Random Choice", and watch the quick selector reveal your winner.',
-    howTo: [
-      'Enter your list of options or names into the text box, one item per line.',
-      'Click "Pick Random Choice" to trigger the randomized selection process.',
-      'View the highlighted winning choice on screen.',
-      'Use "Shuffle" to reorder your input list randomly.'
-    ],
-    faq: [
-      { q: 'Is the pick genuinely random?', a: 'Yes, selection utilizes JavaScript Math.random() cryptography to guarantee standard uniform probability for all items.' },
-      { q: 'Does it save recent picks?', a: 'Yes, recent winning picks are displayed in the history panel below.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: RandomChoicePicker
   },
   {
@@ -2143,17 +1685,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['unit price calculator', 'cost comparison', 'best value calculator', 'grocery price comparer'],
     metaTitle: 'Unit Price Cost Comparator - Compare Best Value',
     metaDescription: 'Find the true best value product when shopping. Compare price per unit, gram, ounce, or pound between two different package sizes.',
-    intro: 'Determine which product size or deal offers the best monetary value with our Unit Price Comparator. Simply enter the package prices and quantities of two competing products. The utility calculates the exact cost per unit and highlights the most cost-effective deal with exact percentage savings.',
-    howTo: [
-      'Enter the price and quantity for Option A (e.g., $4.99 for 500g).',
-      'Enter the price and quantity for Option B (e.g., $7.49 for 800g).',
-      'Review the calculated unit prices per standard unit.',
-      'Look for the green "BEST VALUE" badge highlighting the cheaper option.'
-    ],
-    faq: [
-      { q: 'Can I compare different measurement units?', a: 'As long as both options use comparable volume/weight quantities (e.g., grams vs grams), unit rates will accurately reflect value.' },
-      { q: 'Does it support decimal prices?', a: 'Yes, prices can be entered down to cents and fractions of a cent.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: UnitPriceComparator
   },
   {
@@ -2164,17 +1698,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['dead pixel test', 'screen diagnostic', 'fps meter', 'display specs'],
     metaTitle: 'Screen & Display Diagnostic Tester - Dead Pixel Check',
     metaDescription: 'Test your computer monitor for dead pixels, check screen resolution, monitor color depth, and measure live render FPS.',
-    intro: 'Inspect your display monitor for dead, stuck, or hot pixels and review hardware display metrics using our Screen Diagnostics tool. Run full-screen primary color tests (Red, Green, Blue, White, Black) and monitor real-time rendering frame rates (FPS).',
-    howTo: [
-      'Click any color button (e.g. Red, Blue, White) to enter full-screen color mode.',
-      'Inspect your screen closely for any unlit or miscolored pixel dots.',
-      'Click anywhere or press ESC to exit full-screen inspection mode.',
-      'Check the top diagnostic cards for resolution, pixel ratio, color depth, and live FPS.'
-    ],
-    faq: [
-      { q: 'How do I detect a dead pixel?', a: 'On a solid color background, a dead pixel will appear as a permanently dark spot or wrong-colored dot.' },
-      { q: 'Is any software download required?', a: 'No, all display diagnostics run directly inside your web browser.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: ScreenWebcamTester
   },
   {
@@ -2185,17 +1711,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['tone generator', 'audio frequency synth', 'sine wave generator', 'sound frequency test'],
     metaTitle: 'Online Audio Frequency & Tone Generator',
     metaDescription: 'Generate custom audio frequencies and sound waves from 20Hz to 5,000Hz using sine, square, sawtooth, and triangle waveforms.',
-    intro: 'Produce precise audio frequencies for speaker testing, sound calibration, or audio experimentation. Our Audio Tone Synthesizer leverages native Web Audio API oscillators to emit clean sound waves across custom frequency ranges and waveforms.',
-    howTo: [
-      'Select a waveform type: Sine, Square, Sawtooth, or Triangle.',
-      'Drag the frequency slider or select a quick preset (e.g., 440Hz A4 concert pitch).',
-      'Click "Play Synthesized Tone" to emit sound.',
-      'Click "Stop Tone" to halt playback.'
-    ],
-    faq: [
-      { q: 'What is 440Hz used for?', a: '440Hz (A4) is the international standard musical tuning pitch for acoustic instruments.' },
-      { q: 'Are lower frequencies safe for speakers?', a: 'Avoid playing extremely low frequencies (below 30Hz) at max volume on small speakers to prevent driver distortion.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: AudioToneGenerator
   },
   {
@@ -2206,17 +1724,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['file hash', 'sha256 calculator', 'sha1 checksum', 'file integrity check'],
     metaTitle: 'File Hash Checksum Calculator - SHA-256 & SHA-1',
     metaDescription: 'Calculate SHA-256, SHA-1, and SHA-512 cryptographic hash checksums for any local file directly in your browser.',
-    intro: 'Verify file integrity and authenticity by computing cryptographic hash checksums. Upload any local file to calculate its SHA-256, SHA-1, and SHA-512 hashes using browser-native Web Crypto algorithms without uploading your file to any server.',
-    howTo: [
-      'Click "Choose File" and select any document, image, zip, or executable from your computer.',
-      'Wait a moment while the browser calculates cryptographic hashes locally.',
-      'View the computed SHA-256, SHA-1, and SHA-512 hash values.',
-      'Click the "Copy" button to save the checksum string to your clipboard.'
-    ],
-    faq: [
-      { q: 'Is my file uploaded to an online server?', a: 'No! The hash calculation runs 100% locally in your browser using the Web Crypto API. Your file never leaves your computer.' },
-      { q: 'Why check file hashes?', a: 'File hashes verify that a downloaded file has not been corrupted or tampered with.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: FileHashCalculator
   },
   {
@@ -2227,17 +1737,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['keyboard tester', 'key code checker', 'event key detector', 'js keycode'],
     metaTitle: 'Keyboard Key Code & Press Event Tester',
     metaDescription: 'Test physical keyboard keys and inspect JavaScript event key, event code, keyCode, and modifier key states in real-time.',
-    intro: 'Debug hardware keyboard keys and inspect JavaScript keyboard event parameters in real-time. Simply press any key on your physical keyboard to reveal its exact event.key, event.code, keyCode value, and active modifier key combinations (Shift, Ctrl, Alt).',
-    howTo: [
-      'Click anywhere on the utility page to ensure input focus.',
-      'Press any key or key combination on your physical keyboard.',
-      'View live property readings for event.key, event.code, and numeric keyCode.',
-      'Verify if modifier keys like Shift, Ctrl, or Alt register correctly.'
-    ],
-    faq: [
-      { q: 'Why are key codes useful for web developers?', a: 'Developers use key codes and event.code to build accessible keyboard shortcuts and web game controls.' },
-      { q: 'Does it work with multimedia keys?', a: 'Yes, media controls, function keys (F1-F12), and arrow keys register their corresponding browser event names.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: KeyboardKeyTester
   },
   {
@@ -2248,17 +1750,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['image to base64', 'data uri converter', 'embed image css', 'base64 image encoder'],
     metaTitle: 'Image to Base64 Data URI Converter',
     metaDescription: 'Convert PNG, JPG, WebP, SVG, or GIF images into inline Base64 Data URIs for CSS and HTML embedding.',
-    intro: 'Embed images directly inside HTML files, CSS stylesheets, or JSON payloads by converting them into Base64 Data URIs. Select any local image file to generate clean Data URI strings instantly with a live visual image preview.',
-    howTo: [
-      'Select or drag-and-drop an image file (PNG, JPG, SVG, WebP, GIF).',
-      'Preview the uploaded image and view file metadata.',
-      'Review the generated `data:image/...` Base64 string in the output code box.',
-      'Click "Copy Data URI" to store the string in your clipboard.'
-    ],
-    faq: [
-      { q: 'Why convert images to Base64?', a: 'Base64 strings let you inline small images directly in CSS background properties or single-file HTML without extra HTTP requests.' },
-      { q: 'Does Base64 increase file size?', a: 'Yes, Base64 encoding typically increases raw binary size by approximately 33%.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: ImageToBase64Converter
   },
   {
@@ -2269,17 +1763,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['scratchpad', 'quick notes', 'browser notepad', 'auto save notepad'],
     metaTitle: 'Quick Browser Scratchpad & Notepad - Auto-Save',
     metaDescription: 'Distraction-free online browser notepad with instant automatic saving to local storage and live word counter.',
-    intro: 'Jot down quick thoughts, code snippets, temporary text, or task reminders with our distraction-free Scratchpad. Every keystroke auto-saves instantly to your browser\'s local storage so your work persists even if you close the browser or refresh.',
-    howTo: [
-      'Click inside the scratchpad text area.',
-      'Type or paste your text, code snippets, or notes.',
-      'Notice the live word count, character count, and "Saved to LocalStorage" indicator.',
-      'Return to this tool anytime to resume editing your saved notes.'
-    ],
-    faq: [
-      { q: 'Where are my notes stored?', a: 'Notes are saved locally inside your browser\'s local storage space. They are never sent to external servers.' },
-      { q: 'Will my notes disappear when I close the tab?', a: 'No, local storage persists across browser sessions until you clear your browser data.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: QuickScratchpadNotes
   },
   {
@@ -2290,17 +1776,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['secure password', 'random password', 'strong password creator'],
     metaTitle: 'Secure Password Generator - Create Strong Passwords',
     metaDescription: 'Generate strong, secure, and random passwords instantly. Customize length and character types right in your browser.',
-    intro: 'Creating strong, unique passwords for every account is the best way to protect your digital identity. Our Secure Password Generator creates highly randomized passwords directly in your browser using cryptographically secure random number generators (Web Crypto API). Because it runs locally, your passwords are never transmitted over the internet.',
-    howTo: [
-      'Adjust the slider to choose your desired password length (12-16 characters is recommended).',
-      'Toggle the checkboxes to include uppercase, lowercase, numbers, or symbols.',
-      'The secure password will be generated automatically.',
-      'Click the copy icon to copy it securely to your clipboard.'
-    ],
-    faq: [
-      { q: 'Is this password generator safe to use?', a: 'Absolutely. It uses the browser\'s native Crypto API to ensure genuine randomness, and because it runs 100% locally, the generated password is known only to you.' },
-      { q: 'What makes a strong password?', a: 'A strong password is long (12+ characters), unique to the account, and uses a mix of uppercase, lowercase, numbers, and symbols to maximize entropy.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: PasswordGenerator
   },
   {
@@ -2311,17 +1789,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['advanced calculator', 'scientific calculator', 'math solver', 'expression evaluator', 'mathjs'],
     metaTitle: 'Advanced Scientific Calculator - Pro Level Math Solver',
     metaDescription: 'Solve complex math problems, equations, matrices, complex numbers, and unit conversions with this advanced scientific calculator.',
-    intro: 'Our Master Pro Level Calculator is powered by a robust math engine capable of solving virtually any mathematical expression. From basic arithmetic to complex numbers, trigonometry, matrix operations, derivatives, and unit conversions, it handles everything seamlessly. Includes a live history log so you never lose your calculations.',
-    howTo: [
-      'Type your mathematical expression into the input field (e.g. "sin(45 deg) * 2").',
-      'Use the quick-insert buttons for advanced operators like matrices or complex numbers.',
-      'Press Enter or the "=" button to evaluate the expression.',
-      'Click on any previous calculation in the History panel to reuse it.'
-    ],
-    faq: [
-      { q: 'Can it convert units?', a: 'Yes! You can type expressions like "5.08 cm to inch" or "2 kg to lb".' },
-      { q: 'Are complex numbers supported?', a: 'Yes, just use "i" for imaginary numbers, for example "2 + 3i".' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: AdvancedCalculator
   },
   {
@@ -2332,15 +1802,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['basic calculator', 'simple math', 'apple calculator', 'standard calculator'],
     metaTitle: 'Simple Calculator - Easy & Accurate',
     metaDescription: 'A clean, simple, and highly accurate basic calculator for everyday use. Designed with a familiar interface.',
-    intro: 'Sometimes you just need a straightforward, highly accurate calculator without the clutter. Designed to resemble familiar mobile calculators (like Apple iOS), this simple calculator is perfect for quick everyday arithmetic.',
-    howTo: [
-      'Click the numbers and operator buttons to build your calculation.',
-      'Click the "=" button to compute the result.',
-      'Use "AC" to clear all current inputs.'
-    ],
-    faq: [
-      { q: 'Is it accurate for decimals?', a: 'Yes, it mitigates common floating-point errors to give you precise standard calculations.' }
-    ],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: SimpleCalculator
   },
   {
@@ -2351,9 +1815,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['json', 'format', 'beautify', 'pretty print'],
     metaTitle: 'JSON Formatter & Beautifier',
     metaDescription: 'Format and beautify your JSON data online. Easily make unreadable JSON readable.',
-    intro: 'The JSON Formatter takes minified or ugly JSON strings and formats them with proper indentation, making them easy to read and debug.',
-    howTo: ['Paste your JSON in the input.', 'The formatted JSON will appear in the output box instantly.'],
-    faq: [{ q: 'Is my data secure?', a: 'Yes, it is processed entirely in your browser.' }],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: JsonFormatter
   },
   {
@@ -2364,8 +1828,8 @@ export const tools: ToolDefinition[] = [
     keywords: ['url encode', 'url decode', 'uri component'],
     metaTitle: 'URL Encoder and Decoder Tool',
     metaDescription: 'Quickly encode or decode URLs and URI components online.',
-    intro: 'Encode URL parameters so they can be safely transmitted over the internet, or decode them back into human-readable text.',
-    howTo: ['Select Encode or Decode.', 'Paste your text or URL.', 'The result is updated automatically.'],
+    intro: '',
+    howTo: [],
     faq: [],
     Component: UrlEncoder
   },
@@ -2377,8 +1841,8 @@ export const tools: ToolDefinition[] = [
     keywords: ['html entities', 'encode', 'escape html'],
     metaTitle: 'HTML Entity Encoder & Decoder',
     metaDescription: 'Escape HTML tags or decode HTML entities back to text.',
-    intro: 'Convert characters like <, >, and & into their corresponding HTML entities to display code on websites without the browser executing it.',
-    howTo: ['Select your mode.', 'Enter text and copy the output.'],
+    intro: '',
+    howTo: [],
     faq: [],
     Component: HtmlEntityEncoder
   },
@@ -2390,9 +1854,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['md5', 'hash generator', 'crypto'],
     metaTitle: 'MD5 Hash Generator - Online Tool',
     metaDescription: 'Generate an MD5 hash from any text instantly.',
-    intro: 'Create a 128-bit MD5 hash for any string of text. MD5 is commonly used to verify data integrity.',
-    howTo: ['Type or paste text into the input.', 'Copy the generated 32-character hex hash.'],
-    faq: [{ q: 'Can MD5 be decrypted?', a: 'No, MD5 is a one-way cryptographic hash function.' }],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: Md5Generator
   },
   {
@@ -2403,9 +1867,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['jwt', 'json web token', 'decode jwt'],
     metaTitle: 'JWT Decoder - Decode JSON Web Tokens',
     metaDescription: 'Decode JSON Web Tokens (JWT) payload and header instantly without sending data to a server.',
-    intro: 'Easily decode your JWTs to inspect the header and payload claims. This tool runs client-side so your sensitive tokens are never transmitted to our servers.',
-    howTo: ['Paste your JWT token (starts with ey...).', 'View the decoded JSON header and payload in the output box.'],
-    faq: [{ q: 'Is the signature verified?', a: 'No, this tool only decodes the Base64 header and payload; it does not verify the signature.' }],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: JwtDecoder
   },
   {
@@ -2416,8 +1880,8 @@ export const tools: ToolDefinition[] = [
     keywords: ['uuid', 'guid', 'uuid v4', 'random id'],
     metaTitle: 'UUID v4 Generator - Create Random GUIDs',
     metaDescription: 'Generate random UUIDs (Universally Unique Identifiers) instantly.',
-    intro: 'Generate one or multiple random UUID v4 strings for use in database keys, testing, or development.',
-    howTo: ['Enter how many UUIDs you need.', 'Click Regenerate for a fresh batch.'],
+    intro: '',
+    howTo: [],
     faq: [],
     Component: UuidGenerator
   },
@@ -2429,8 +1893,8 @@ export const tools: ToolDefinition[] = [
     keywords: ['lorem ipsum', 'dummy text', 'placeholder text'],
     metaTitle: 'Lorem Ipsum Dummy Text Generator',
     metaDescription: 'Generate Lorem Ipsum dummy text for your web and design projects.',
-    intro: 'Quickly generate placeholder text (Lorem Ipsum) to use in your mockups, wireframes, and prototypes.',
-    howTo: ['Select the number of paragraphs.', 'Copy the generated text.'],
+    intro: '',
+    howTo: [],
     faq: [],
     Component: LoremIpsumGenerator
   },
@@ -2442,8 +1906,8 @@ export const tools: ToolDefinition[] = [
     keywords: ['unix time', 'epoch', 'timestamp converter'],
     metaTitle: 'Unix Timestamp to Date Converter',
     metaDescription: 'Convert Unix timestamps (epoch) to human-readable dates and times.',
-    intro: 'Convert a Unix timestamp (seconds since Jan 1, 1970) into your local date and time format.',
-    howTo: ['Enter a timestamp in seconds.', 'The tool will automatically display the local date and time.'],
+    intro: '',
+    howTo: [],
     faq: [],
     Component: UnixTimestampConverter
   },
@@ -2455,8 +1919,8 @@ export const tools: ToolDefinition[] = [
     keywords: ['css minify', 'compress css', 'css optimizer'],
     metaTitle: 'CSS Minifier - Compress CSS Code',
     metaDescription: 'Minify your CSS code to reduce file size and improve website load times.',
-    intro: 'Strip unnecessary whitespace, line breaks, and comments from your CSS to make it load faster in production.',
-    howTo: ['Paste your uncompressed CSS into the input.', 'Copy the minified output.'],
+    intro: '',
+    howTo: [],
     faq: [],
     Component: CssMinifier
   },
@@ -2468,8 +1932,8 @@ export const tools: ToolDefinition[] = [
     keywords: ['color picker', 'hex to rgb', 'rgb converter'],
     metaTitle: 'HEX to RGB Color Converter',
     metaDescription: 'Convert HEX color codes to RGB and use a visual color picker.',
-    intro: 'Easily convert HEX color codes to RGB format. Includes a visual color picker for easy selection.',
-    howTo: ['Click the color swatch to pick a color, or type a HEX code.', 'The RGB value is updated automatically.'],
+    intro: '',
+    howTo: [],
     faq: [],
     Component: ColorConverter
   },
@@ -2481,8 +1945,8 @@ export const tools: ToolDefinition[] = [
     keywords: ['regex', 'regular expression', 'test regex'],
     metaTitle: 'Regular Expression Tester',
     metaDescription: 'Test your regular expressions in the browser instantly.',
-    intro: 'Test and debug your JavaScript regular expressions. Enter your regex pattern, flags, and a test string to see the matches updated in real-time.',
-    howTo: ['Enter your Regex pattern and flags.', 'Type the test string.', 'Matches will appear below.'],
+    intro: '',
+    howTo: [],
     faq: [],
     Component: RegexTester
   },
@@ -2494,8 +1958,8 @@ export const tools: ToolDefinition[] = [
     keywords: ['url parser', 'parse url', 'breakdown url'],
     metaTitle: 'URL Parser & Analyzer',
     metaDescription: 'Break down a URL into its components: protocol, host, path, parameters.',
-    intro: 'Analyze any URL by breaking it down into its individual components. Easily see the hostname, pathname, search parameters, and hash fragments.',
-    howTo: ['Paste a valid URL.', 'View the parsed JSON object with all components.'],
+    intro: '',
+    howTo: [],
     faq: [],
     Component: UrlParser
   },
@@ -2507,8 +1971,8 @@ export const tools: ToolDefinition[] = [
     keywords: ['sha1', 'sha256', 'sha512', 'hash generator'],
     metaTitle: 'Secure SHA Hash Generator',
     metaDescription: 'Generate SHA-1, SHA-256, SHA-384, and SHA-512 hashes online.',
-    intro: 'Generate cryptographic hashes for your text strings securely in your browser using the Web Crypto API. Supports SHA-1, SHA-256, SHA-384, and SHA-512.',
-    howTo: ['Type your string in the input field.', 'The computed hashes will appear instantly.'],
+    intro: '',
+    howTo: [],
     faq: [],
     Component: ShaGenerator
   },
@@ -2520,8 +1984,8 @@ export const tools: ToolDefinition[] = [
     keywords: ['json minify', 'compress json'],
     metaTitle: 'JSON Minifier & Compressor',
     metaDescription: 'Minify and compress your JSON data by removing whitespace.',
-    intro: 'Instantly minify your JSON data by stripping out whitespace, newlines, and indentation to reduce file sizes for production.',
-    howTo: ['Paste valid JSON.', 'Copy the minified output.'],
+    intro: '',
+    howTo: [],
     faq: [],
     Component: JsonMinifier
   },
@@ -2533,8 +1997,8 @@ export const tools: ToolDefinition[] = [
     keywords: ['xml format', 'pretty print xml', 'xml beautifier'],
     metaTitle: 'XML Formatter & Beautifier',
     metaDescription: 'Format and beautify your XML data online.',
-    intro: 'Make unreadable, single-line XML strings easily readable by automatically adding appropriate indentation and newlines.',
-    howTo: ['Paste your XML code.', 'The formatted XML is generated automatically.'],
+    intro: '',
+    howTo: [],
     faq: [],
     Component: XmlFormatter
   },
@@ -2546,8 +2010,8 @@ export const tools: ToolDefinition[] = [
     keywords: ['sql minify', 'compress sql'],
     metaTitle: 'SQL Minifier',
     metaDescription: 'Minify your SQL queries by removing comments and extra spaces.',
-    intro: 'Compress SQL queries into a single line by removing single/multi-line comments, tabs, and excess whitespace.',
-    howTo: ['Paste your SQL code.', 'Copy the resulting single-line query.'],
+    intro: '',
+    howTo: [],
     faq: [],
     Component: SqlMinifier
   },
@@ -2559,8 +2023,8 @@ export const tools: ToolDefinition[] = [
     keywords: ['html minify', 'compress html'],
     metaTitle: 'HTML Minifier',
     metaDescription: 'Compress your HTML files by removing whitespace and comments.',
-    intro: 'Reduce your HTML file size by stripping out comments and unneeded spaces between tags.',
-    howTo: ['Paste HTML code.', 'Copy the compressed output.'],
+    intro: '',
+    howTo: [],
     faq: [],
     Component: HtmlMinifier
   },
@@ -2572,8 +2036,8 @@ export const tools: ToolDefinition[] = [
     keywords: ['chmod', 'permissions', 'linux permissions'],
     metaTitle: 'Linux Chmod Permissions Calculator',
     metaDescription: 'Easily calculate Linux file permissions in octal and symbolic notation.',
-    intro: 'A simple interactive calculator for Linux file permissions. Select the Read, Write, and Execute bits for Owner, Group, and Public to instantly see the octal and symbolic string.',
-    howTo: ['Check or uncheck the permission boxes.', 'The octal (e.g. 755) and symbolic (e.g. rwxr-xr-x) notations update instantly.'],
+    intro: '',
+    howTo: [],
     faq: [],
     Component: ChmodCalculator
   },
@@ -2585,8 +2049,8 @@ export const tools: ToolDefinition[] = [
     keywords: ['slug generator', 'url slug', 'text to slug'],
     metaTitle: 'Text to URL Slug Converter',
     metaDescription: 'Convert any text string into a clean, SEO-friendly URL slug.',
-    intro: 'Quickly transform titles, headlines, or sentences into clean URL slugs. It automatically lowercases text, removes special characters, and replaces spaces with hyphens.',
-    howTo: ['Enter your text.', 'Copy the generated slug.'],
+    intro: '',
+    howTo: [],
     faq: [],
     Component: TextToSlugConverter
   },
@@ -2598,8 +2062,8 @@ export const tools: ToolDefinition[] = [
     keywords: ['csv to json', 'convert csv'],
     metaTitle: 'CSV to JSON Converter',
     metaDescription: 'Quickly convert CSV text data into a JSON array.',
-    intro: 'Instantly transform your comma-separated values (CSV) text into a structured JSON array of objects.',
-    howTo: ['Paste CSV data in the input.', 'Copy the generated JSON array from the output.'],
+    intro: '',
+    howTo: [],
     faq: [],
     Component: CsvToJson
   },
@@ -2611,8 +2075,8 @@ export const tools: ToolDefinition[] = [
     keywords: ['json to csv', 'convert json'],
     metaTitle: 'JSON to CSV Converter',
     metaDescription: 'Quickly convert an array of JSON objects into a CSV string.',
-    intro: 'Easily flatten JSON arrays into comma-separated values (CSV) format for spreadsheet applications.',
-    howTo: ['Paste your JSON array of objects.', 'Copy the generated CSV text.'],
+    intro: '',
+    howTo: [],
     faq: [],
     Component: JsonToCsv
   },
@@ -2624,8 +2088,8 @@ export const tools: ToolDefinition[] = [
     keywords: ['escape string', 'unescape', 'json escape'],
     metaTitle: 'String Escaper & Unescaper',
     metaDescription: 'Escape strings for use in JSON or unescape them back to plain text.',
-    intro: 'Add or remove escape characters (like quotes and newlines) from your strings so they can be safely parsed or displayed.',
-    howTo: ['Select Escape or Unescape.', 'Paste your string and copy the result.'],
+    intro: '',
+    howTo: [],
     faq: [],
     Component: StringEscape
   },
@@ -2637,8 +2101,8 @@ export const tools: ToolDefinition[] = [
     keywords: ['hmac', 'hash based message authentication code'],
     metaTitle: 'HMAC Generator - Secure Hash',
     metaDescription: 'Generate HMAC hashes securely using your secret key and text.',
-    intro: 'Compute HMAC signatures directly in your browser using the Web Crypto API. Support for SHA-1, SHA-256, SHA-384, and SHA-512.',
-    howTo: ['Enter your secret key.', 'Choose an algorithm.', 'Enter your text to generate the HMAC hash.'],
+    intro: '',
+    howTo: [],
     faq: [],
     Component: HmacGenerator
   },
@@ -2650,8 +2114,8 @@ export const tools: ToolDefinition[] = [
     keywords: ['subnet', 'cidr', 'ipv4', 'calculator'],
     metaTitle: 'IPv4 CIDR Subnet Calculator',
     metaDescription: 'Calculate network ranges, broadcast addresses, and usable hosts from a CIDR notation.',
-    intro: 'Quickly determine network address, broadcast address, netmask, and usable IP range for any given IPv4 address and CIDR block.',
-    howTo: ['Enter the base IP address.', 'Enter the CIDR routing prefix (/24).'],
+    intro: '',
+    howTo: [],
     faq: [],
     Component: Ipv4SubnetCalc
   },
@@ -2663,8 +2127,8 @@ export const tools: ToolDefinition[] = [
     keywords: ['mime type', 'content-type', 'extension'],
     metaTitle: 'MIME Type & Content-Type Lookup',
     metaDescription: 'Find the standard MIME type for any common file extension.',
-    intro: 'Quickly look up the correct Content-Type header string (MIME type) for popular web file extensions.',
-    howTo: ['Enter a file extension like "json" or "html".', 'See the associated MIME type instantly.'],
+    intro: '',
+    howTo: [],
     faq: [],
     Component: MimeTypeLookup
   },
@@ -2676,8 +2140,8 @@ export const tools: ToolDefinition[] = [
     keywords: ['keycode', 'event.key', 'javascript key event'],
     metaTitle: 'JavaScript Keycode & Event Info',
     metaDescription: 'Press any key to get its JavaScript event.keyCode, event.code, and event.key.',
-    intro: 'A simple interactive tool for developers to instantly find the key codes and key identifiers for keyboard events.',
-    howTo: ['Click into the box and press any key.', 'Read the corresponding JS event properties.'],
+    intro: '',
+    howTo: [],
     faq: [],
     Component: JsKeycodeInfo
   },
@@ -2689,8 +2153,8 @@ export const tools: ToolDefinition[] = [
     keywords: ['query string', 'url parameters', 'parse query'],
     metaTitle: 'URL Query String Parser',
     metaDescription: 'Parse URL query string parameters into a formatted JSON object.',
-    intro: 'Easily extract and decode URL search parameters into a clean, readable JSON format.',
-    howTo: ['Paste a query string like "?foo=bar".', 'View the extracted key-value pairs.'],
+    intro: '',
+    howTo: [],
     faq: [],
     Component: QueryStringParser
   },
@@ -2702,8 +2166,8 @@ export const tools: ToolDefinition[] = [
     keywords: ['mac address', 'generator', 'random mac'],
     metaTitle: 'Random MAC Address Generator',
     metaDescription: 'Generate random, valid MAC addresses for testing and networking.',
-    intro: 'Instantly generate one or multiple randomized MAC addresses in various formats.',
-    howTo: ['Select the number of addresses.', 'Choose a format (colon, hyphen, or none).'],
+    intro: '',
+    howTo: [],
     faq: [],
     Component: MacAddressGenerator
   },
@@ -2715,8 +2179,8 @@ export const tools: ToolDefinition[] = [
     keywords: ['ipv4', 'random ip', 'generator'],
     metaTitle: 'Random IPv4 Address Generator',
     metaDescription: 'Generate random IPv4 addresses instantly.',
-    intro: 'Generate one or multiple random, syntactically valid IPv4 addresses for use in testing and simulations.',
-    howTo: ['Select the quantity.', 'Click Generate.'],
+    intro: '',
+    howTo: [],
     faq: [],
     Component: Ipv4Generator
   },
@@ -2728,8 +2192,8 @@ export const tools: ToolDefinition[] = [
     keywords: ['ipv6', 'random ip', 'generator'],
     metaTitle: 'Random IPv6 Address Generator',
     metaDescription: 'Generate random IPv6 addresses instantly.',
-    intro: 'Generate one or multiple random, syntactically valid IPv6 addresses.',
-    howTo: ['Select the quantity.', 'Click Generate.'],
+    intro: '',
+    howTo: [],
     faq: [],
     Component: Ipv6Generator
   },
@@ -2741,8 +2205,8 @@ export const tools: ToolDefinition[] = [
     keywords: ['http status', 'status code', '404', '500'],
     metaTitle: 'HTTP Status Codes Reference',
     metaDescription: 'A searchable reference for HTTP response status codes.',
-    intro: 'Quickly find the meaning and category of standard HTTP response status codes used on the web.',
-    howTo: ['Type a code or word into the search bar.', 'View the matching status codes.'],
+    intro: '',
+    howTo: [],
     faq: [],
     Component: HttpStatusCodes
   },
@@ -2754,8 +2218,8 @@ export const tools: ToolDefinition[] = [
     keywords: ['morse code', 'text to morse', 'translator'],
     metaTitle: 'Text to Morse Code Translator',
     metaDescription: 'Translate standard text strings into Morse code dots and dashes.',
-    intro: 'Instantly convert your English text into international standard Morse code.',
-    howTo: ['Type your text in the input box.', 'Copy the generated Morse code.'],
+    intro: '',
+    howTo: [],
     faq: [],
     Component: TextToMorse
   },
@@ -2767,8 +2231,8 @@ export const tools: ToolDefinition[] = [
     keywords: ['morse to text', 'morse decoder', 'translator'],
     metaTitle: 'Morse Code to Text Translator',
     metaDescription: 'Decode Morse code dots and dashes back into English text.',
-    intro: 'Instantly decode international Morse code strings back into readable letters and numbers.',
-    howTo: ['Type or paste Morse code.', 'Use a slash (/) to indicate spaces between words.'],
+    intro: '',
+    howTo: [],
     faq: [],
     Component: MorseToText
   },
@@ -2780,8 +2244,8 @@ export const tools: ToolDefinition[] = [
     keywords: ['random string', 'generator', 'random characters'],
     metaTitle: 'Random String & Password Generator',
     metaDescription: 'Generate completely random strings of any length and character set.',
-    intro: 'Create highly customizable random strings for use as mock data, temporary passwords, or tokens.',
-    howTo: ['Set your desired length.', 'Customize the allowed characters.', 'Click Regenerate.'],
+    intro: '',
+    howTo: [],
     faq: [],
     Component: RandomStringGenerator
   },
@@ -2793,8 +2257,8 @@ export const tools: ToolDefinition[] = [
     keywords: ['screen size', 'resolution', 'aspect ratio'],
     metaTitle: 'Device Screen Resolutions & Sizes',
     metaDescription: 'Search standard screen resolutions and aspect ratios for popular devices.',
-    intro: 'A quick reference cheat sheet for the logical screen resolutions and aspect ratios of popular phones, tablets, and displays.',
-    howTo: ['Search for a device name (e.g. iPhone).', 'View its screen dimensions in points.'],
+    intro: '',
+    howTo: [],
     faq: [],
     Component: DeviceResolutionLookup
   },
@@ -2806,8 +2270,8 @@ export const tools: ToolDefinition[] = [
     keywords: ['password strength', 'password tester', 'security'],
     metaTitle: 'Password Strength Checker',
     metaDescription: 'Test the strength and complexity of your passwords locally.',
-    intro: 'Check the security strength of a password by analyzing its length, character variety, and complexity without ever sending the data over the internet.',
-    howTo: ['Type a password into the input field.', 'Observe the strength score indicator.'],
+    intro: '',
+    howTo: [],
     faq: [],
     Component: PasswordStrengthChecker
   },
@@ -2819,8 +2283,8 @@ export const tools: ToolDefinition[] = [
     keywords: ['text to decimal', 'ascii to decimal'],
     metaTitle: 'Text to Decimal Converter',
     metaDescription: 'Convert plain text into its numeric decimal byte values.',
-    intro: 'Instantly encode ASCII or UTF-8 text strings into an array of space-separated decimal values.',
-    howTo: ['Type your text in the input box.', 'Copy the decimal values.'],
+    intro: '',
+    howTo: [],
     faq: [],
     Component: TextToDecimal
   },
@@ -2832,8 +2296,8 @@ export const tools: ToolDefinition[] = [
     keywords: ['decimal to text', 'decimal to ascii'],
     metaTitle: 'Decimal to Text Converter',
     metaDescription: 'Decode numeric decimal byte values back into plain text.',
-    intro: 'Convert an array of space-separated decimal bytes back into human-readable characters.',
-    howTo: ['Paste your space-separated decimal values.', 'Copy the resulting text.'],
+    intro: '',
+    howTo: [],
     faq: [],
     Component: DecimalToText
   },
@@ -2845,9 +2309,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['js minify', 'javascript compressor'],
     metaTitle: 'Basic JavaScript Minifier',
     metaDescription: 'Compress your JavaScript code by removing comments and whitespace.',
-    intro: 'A basic, regex-based JavaScript minifier designed to quickly strip comments, collapse spaces, and reduce the overall footprint of your scripts.',
-    howTo: ['Paste your uncompressed JS code.', 'Copy the minified output.'],
-    faq: [{ q: 'Is it safe for complex apps?', a: 'This is a basic regex-based tool and does not parse the AST. It is best used on simple scripts.' }],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: BasicJsMinifier
   },
   // ==========================================================================
@@ -2862,9 +2326,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['meme generator', 'make memes online', 'drake meme generator', 'memegen', 'funny meme maker'],
     metaTitle: 'Free Viral Meme Generator Studio Online',
     metaDescription: 'Create custom viral memes instantly using 100+ popular meme templates and download high-res PNGs.',
-    intro: 'Design and download high-resolution memes in seconds using over 100 iconic meme templates powered by the open Memegen API.',
-    howTo: ['Pick a popular meme template or search by name.', 'Type your custom Top and Bottom captions.', 'Download your finished Meme PNG or copy the direct link.'],
-    faq: [{ q: 'Are generated memes watermark-free?', a: 'Yes, all memes are rendered cleanly in high resolution with zero watermarks.' }],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: MemeGeneratorStudioTool
   },
   {
@@ -2876,9 +2340,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['name age predictor', 'name nationality predictor', 'agify', 'nationalize', 'genderize', 'name vibe check'],
     metaTitle: 'Name Age, Nationality & Vibe Predictor',
     metaDescription: 'Enter any first name to predict statistical age, top country origins, demographic match, and personality vibe.',
-    intro: 'Discover the statistical age, top countries of origin, and viral personality archetype behind any first name using global Agify, Nationalize, and Genderize open datasets.',
-    howTo: ['Type any first name into the box.', 'Click Predict Vibe & Origins to query global name statistics.', 'Compare top country probabilities and share your vibe check.'],
-    faq: [{ q: 'How does it predict nationality and age?', a: 'It queries aggregated public demographic datasets from Agify.io, Nationalize.io, and Genderize.io in real time.' }],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: NameAgeNationalityPredictorTool
   },
   {
@@ -2890,9 +2354,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['yes or no oracle', 'magic 8 ball gif', 'yesno wtf', 'random decision maker gif'],
     metaTitle: 'Yes or No Magic GIF Decision Oracle',
     metaDescription: 'Ask any Yes or No question and get an instant verdict paired with a hilarious reaction GIF.',
-    intro: 'Can’t decide? Ask the Magic GIF Oracle any Yes or No question and receive an instant verdict accompanied by a randomized reaction GIF.',
-    howTo: ['Type any Yes/No question into the prompt.', 'Click Ask Magic Oracle to reveal the animated GIF verdict.'],
-    faq: [{ q: 'Where do the GIFs come from?', a: 'They are fetched live from the curated YesNo.wtf open API.' }],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: YesNoMagicGifOracleTool
   },
   {
@@ -2904,9 +2368,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['online trivia quiz', 'brain quiz game', 'open trivia db', 'general knowledge quiz'],
     metaTitle: 'Live Trivia & General Knowledge Quiz Arena',
     metaDescription: 'Test your IQ with live multiple-choice trivia questions, streak counters, and instant scoring.',
-    intro: 'Challenge yourself with thousands of verified multiple-choice trivia questions across science, computers, pop culture, and history powered by Open Trivia DB.',
-    howTo: ['Read the multiple-choice question.', 'Click an answer option to check if you are right and build your streak.', 'Click Next Question or load a fresh 10-question set anytime.'],
-    faq: [{ q: 'Are questions different every time?', a: 'Yes, every quiz round fetches fresh randomized questions from Open Trivia DB.' }],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: LiveTriviaQuizArenaTool
   },
   {
@@ -2918,9 +2382,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['pokemon battle simulator', 'pokedex lookup', 'pokeapi', 'pokemon stats comparator'],
     metaTitle: 'Interactive Pokédex & Pokémon Battle Simulator',
     metaDescription: 'Compare official Pokémon artwork, base HP/Attack/Speed stats, and simulate head-to-head arena battles.',
-    intro: 'Search over 1,000 Pokémon by name or ID, inspect official artwork and base combat stats (HP, Attack, Defense, Speed), and simulate instant arena battles via PokéAPI.',
-    howTo: ['Enter two Pokémon names or click the dice button for random challengers.', 'Compare their HP, Attack, Defense, and Speed stats.', 'Click Simulate Pokémon Battle to see the winner.'],
-    faq: [{ q: 'Does it include all generations?', a: 'Yes, it connects directly to PokéAPI v2 covering over 1,000 Pokémon.' }],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: PokemonPokedexBattleTool
   },
   {
@@ -2932,9 +2396,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['dad joke generator', 'funny jokes online', 'icanhazdadjoke', 'random pun generator'],
     metaTitle: 'Random Dad Joke & Pun Generator with Voice',
     metaDescription: 'Generate hilarious dad jokes and puns with one click, complete with text-to-speech voice playback.',
-    intro: 'Need a quick laugh or icebreaker for your team meeting? Generate endless clean dad jokes and puns with built-in voice synthesis.',
-    howTo: ['Click Generate Another Joke for a fresh punchline.', 'Click Read Aloud to hear it spoken or Copy to share in chat.'],
-    faq: [{ q: 'Are these jokes safe for work and school?', a: 'Yes, all jokes come from curated family-friendly dad joke collections.' }],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: DadJokeComedyMachineTool
   },
   {
@@ -2946,9 +2410,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['weird facts generator', 'useless facts', 'random fun facts', 'true trivia facts'],
     metaTitle: 'Weird & Useless True Facts Explorer',
     metaDescription: 'Discover mind-blowing, weird, and 100% verified useless facts from science, history, and nature.',
-    intro: 'Explore bizarre, fascinating, and 100% true facts that sound too strange to be real—powered by the UselessFacts open API.',
-    howTo: ['Click Next Weird Fact to load a verified strange fact.', 'Copy and share your favorite facts on social media.'],
-    faq: [{ q: 'Are these facts verified?', a: 'Yes, the UselessFacts database curates real, citable trivia from history and science.' }],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: WeirdUselessFactsExplorerTool
   },
   {
@@ -2960,9 +2424,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['random excuse generator', 'funny alibi maker', 'developer excuses', 'office excuse generator'],
     metaTitle: 'Funny Excuse & Developer Alibi Generator',
     metaDescription: 'Generate clever, hilarious excuses for developers, office meetings, college assignments, and parties.',
-    intro: 'Out of excuses for a late commit or missed meeting? Generate hilarious, creative alibis tailored for developers, office work, college, or social events.',
-    howTo: ['Select a category: Developers, Office, College, or Party.', 'Click Generate New Excuse and copy your favorite alibi.'],
-    faq: [{ q: 'Is this meant for humor?', a: 'Yes! It combines the open Excuser API with classic tech & office humor.' }],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: RandomExcuseGeneratorTool
   },
   {
@@ -2974,9 +2438,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['random dog pictures', 'random cat pictures', 'cute pet generator', 'cat facts', 'dog ceo api'],
     metaTitle: 'Random Cute Dog & Cat Photo Mood Booster',
     metaDescription: 'Instant mood booster featuring random adorable dog and cat photos paired with fun pet facts.',
-    intro: 'Take a 10-second stress break with endless high-resolution photos of adorable dogs and cats paired with verified pet trivia.',
-    howTo: ['Click Random Cute Dog or Random Cute Cat.', 'Enjoy instant wholesome pet photos and fun facts.'],
-    faq: [{ q: 'Where are the pet photos sourced?', a: 'Directly from the open Dog CEO API and TheCatAPI.' }],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: CuteDogCatMoodBoosterTool
   },
   {
@@ -2988,9 +2452,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['what should i eat', 'random meal picker', 'food roulette', 'recipe generator', 'themealdb'],
     metaTitle: 'What Should I Eat? Random Meal & Recipe Roulette',
     metaDescription: 'Spin the Food Roulette wheel to discover a random global dish with photo, instructions, and video recipe.',
-    intro: 'Can’t decide what to cook or order tonight? Spin the Food Roulette to discover a delicious dish from global cuisines complete with cooking instructions and YouTube video guide.',
-    howTo: ['Click Spin Food Roulette to pick a random meal.', 'Read the dish overview or click the YouTube recipe link.'],
-    faq: [{ q: 'Does it include international cuisines?', a: 'Yes, TheMealDB includes Indian, Italian, Mexican, Japanese, Thai, American, and Mediterranean dishes.' }],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: FoodRecipeRouletteTool
   },
   {
@@ -3002,9 +2466,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['rick and morty api', 'character explorer', 'multiverse scanner', 'cartoon character lookup'],
     metaTitle: 'Rick & Morty Multiverse Character Scanner',
     metaDescription: 'Search and explore hundreds of multiverse characters, origins, species, and avatars instantly.',
-    intro: 'Scan the Rick & Morty multiverse database to inspect character avatars, survival status, species, and dimension of origin.',
-    howTo: ['Type any character name (e.g., Rick, Morty, Summer, Birdperson).', 'Click Scan Portal to view matching character cards.'],
-    faq: [{ q: 'How many characters are indexed?', a: 'Over 800 characters across all dimensions via the open RickAndMortyAPI.' }],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: RickMortyMultiverseScannerTool
   },
   {
@@ -3016,9 +2480,9 @@ export const tools: ToolDefinition[] = [
     keywords: ['pirate translator', 'shakespeare translator', 'uwu translator', 'leet speak converter'],
     metaTitle: 'Pirate, Shakespeare, UwU & 1337 Dialect Translator',
     metaDescription: 'Convert ordinary English sentences into Pirate talk, Shakespearean English, Cute UwU, or 1337 Hacker speak.',
-    intro: 'Transform boring English text into hilarious Pirate captain slang, dramatic Shakespearean prose, cute UwU speak, or classic 1337 hacker text in real time.',
-    howTo: ['Choose a dialect tab (Pirate, Shakespeare, UwU, or 1337).', 'Type your sentence and copy the translated output.'],
-    faq: [{ q: 'Does it translate in real time?', a: 'Yes, translations happen instantaneously as you type.' }],
+    intro: '',
+    howTo: [],
+    faq: [],
     Component: PirateShakespeareTranslatorTool
   }
 ];
@@ -3038,6 +2502,7 @@ export function preloadToolBySlug(rawSlug: string): void {
   const found = tools.find(t => t.slug.toLowerCase() === clean);
   if (found && typeof (found.Component as any)?.preload === 'function') {
     (found.Component as any).preload();
+    import('../pages/ToolPage').catch(() => {});
   }
 }
 

@@ -17,6 +17,7 @@ import {
   Info
 } from 'lucide-react';
 import { tools, preloadToolBySlug } from '../lib/registry';
+import { TOOL_DOCS_BY_SLUG } from '../lib/registryDocs';
 import { getToolKnowledge } from '../lib/toolKnowledgeBase';
 import { Seo } from '../components/Seo';
 import { AdSlot } from '../components/AdSlot';
@@ -35,11 +36,20 @@ export const ToolPage: React.FC<{ forcedSlug?: string }> = ({ forcedSlug }) => {
   const rawSlug = forcedSlug || routeSlug || searchParams.get('tool') || '';
   const cleanSlug = rawSlug.replace(/\.html$/i, '').replace(/^\/+|\/+$/g, '').trim().toLowerCase();
   const { settings } = useSiteSettings();
-  const baseTool = tools.find(
+  const rawBaseTool = tools.find(
     t =>
       t.slug.toLowerCase() === cleanSlug ||
       t.slug.toLowerCase().replace(/[^a-z0-9]/g, '') === cleanSlug.replace(/[^a-z0-9]/g, '')
   );
+  const rawDocs = rawBaseTool ? TOOL_DOCS_BY_SLUG[rawBaseTool.slug] : undefined;
+  const baseTool = rawBaseTool && rawDocs
+    ? {
+        ...rawBaseTool,
+        intro: rawBaseTool.intro || rawDocs.intro,
+        howTo: rawBaseTool.howTo?.length ? rawBaseTool.howTo : rawDocs.howTo,
+        faq: rawBaseTool.faq?.length ? rawBaseTool.faq : rawDocs.faq,
+      }
+    : rawBaseTool;
   const tool = baseTool ? getEffectiveTool(baseTool, settings.toolOverrides) : undefined;
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [copiedLink, setCopiedLink] = useState(false);

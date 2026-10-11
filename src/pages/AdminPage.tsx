@@ -58,9 +58,12 @@ import { BlogEditorModal } from '../components/admin/BlogEditorModal';
 import { ToolEditorModal } from '../components/admin/ToolEditorModal';
 import { ImgBBUploader } from '../components/admin/ImgBBUploader';
 import { tools, categories } from '../lib/registry';
+import { TOOL_DOCS_BY_SLUG } from '../lib/registryDocs';
+import { BUILTIN_BLOG_CONTENT_BY_ID } from '../lib/blogContentData';
 import { ToolDefinition, ToolCategory } from '../lib/types';
-import { auth, db } from '../lib/firebase';
+import { app, db } from '../lib/firebase';
 import { 
+  getAuth,
   GoogleAuthProvider, 
   signInWithPopup, 
   signInWithEmailAndPassword, 
@@ -72,6 +75,7 @@ import {
 import { toast } from 'sonner';
 import { Link, useNavigate } from 'react-router-dom';
 
+const auth = getAuth(app);
 const ADMIN_SESSION_KEY = 'toolzaro_admin_auth_user';
 
 export const AdminPage: React.FC = () => {
@@ -529,9 +533,18 @@ export const AdminPage: React.FC = () => {
   // FULL-SCREEN PAGE 1: TOOL CUSTOMIZATION STUDIO (No Popup / Modal)
   // =========================================================================
   if (isToolEditorOpen && editingTool) {
+    const docs = TOOL_DOCS_BY_SLUG[editingTool.slug];
+    const hydratedTool = docs
+      ? {
+          ...editingTool,
+          intro: editingTool.intro || docs.intro,
+          howTo: editingTool.howTo?.length ? editingTool.howTo : docs.howTo,
+          faq: editingTool.faq?.length ? editingTool.faq : docs.faq,
+        }
+      : editingTool;
     return (
       <ToolEditorModal
-        tool={editingTool}
+        tool={hydratedTool}
         currentOverride={settings.toolOverrides?.[editingTool.slug]}
         isOpen={isToolEditorOpen}
         onClose={() => {
@@ -547,9 +560,13 @@ export const AdminPage: React.FC = () => {
   // FULL-SCREEN PAGE 2: BLOGGER POST STUDIO (Compose Text & <> HTML/Code View)
   // =========================================================================
   if (isBlogEditorOpen) {
+    const hydratedBlog =
+      editingBlog && !editingBlog.content && BUILTIN_BLOG_CONTENT_BY_ID[editingBlog.id]
+        ? { ...editingBlog, content: BUILTIN_BLOG_CONTENT_BY_ID[editingBlog.id] }
+        : editingBlog;
     return (
       <BlogEditorModal
-        post={editingBlog}
+        post={hydratedBlog}
         isOpen={isBlogEditorOpen}
         onClose={() => {
           setIsBlogEditorOpen(false);

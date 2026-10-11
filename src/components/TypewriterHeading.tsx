@@ -18,7 +18,7 @@ export const TypewriterHeading: React.FC = () => {
 
     // If full phrase is currently displayed and not yet deleting, pause before starting animation
     if (!isDeleting && currentText === fullPhrase) {
-      const pauseTimer = setTimeout(() => setIsDeleting(true), 2800);
+      const pauseTimer = setTimeout(() => setIsDeleting(true), 6500);
       return () => clearTimeout(pauseTimer);
     }
 

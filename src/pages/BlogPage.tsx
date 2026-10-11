@@ -187,6 +187,7 @@ export const BlogPage: React.FC = () => {
             <Link
               key={post.id}
               to={getBlogPostUrl(post.slug)}
+              aria-label={`Read article: ${post.title}`}
               className="group flex flex-col bg-card border border-border rounded-2xl overflow-hidden hover:border-primary/50 transition-colors duration-200 hover:shadow-lg no-underline"
             >
               {/* Cover Image */}
@@ -232,12 +233,12 @@ export const BlogPage: React.FC = () => {
                   </p>
                 </div>
 
-                {/* Author & Read More */}
+                {/* Author & Read Full Article */}
                 <div className="pt-3 border-t border-border flex items-center justify-between gap-3">
                   <BlogAuthorBadge author={post.author} size="sm" />
 
                   <span className="inline-flex items-center gap-1 text-xs font-bold text-primary group-hover:translate-x-1 transition-transform shrink-0">
-                    <span>Read</span>
+                    <span>Read Full Article</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </span>
                 </div>

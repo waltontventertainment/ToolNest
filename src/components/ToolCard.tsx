@@ -9,56 +9,56 @@ import { preloadToolBySlug } from '../lib/registry';
 
 const CATEGORY_VISUAL_THEMES: Record<string, { iconBox: string; categoryText: string }> = {
   'PDF': {
-    iconBox: 'bg-rose-500/12 text-rose-600 dark:text-rose-400 border-rose-500/25',
-    categoryText: 'text-rose-600 dark:text-rose-400',
+    iconBox: 'bg-rose-500/12 text-rose-700 dark:text-rose-300 border-rose-500/25',
+    categoryText: 'text-rose-700 dark:text-rose-300',
   },
   'Color & Image': {
-    iconBox: 'bg-cyan-500/12 text-cyan-600 dark:text-cyan-400 border-cyan-500/25',
-    categoryText: 'text-cyan-600 dark:text-cyan-400',
+    iconBox: 'bg-cyan-500/12 text-cyan-800 dark:text-cyan-300 border-cyan-500/25',
+    categoryText: 'text-cyan-800 dark:text-cyan-300',
   },
   'Developer': {
-    iconBox: 'bg-indigo-500/12 text-indigo-600 dark:text-indigo-400 border-indigo-500/25',
-    categoryText: 'text-indigo-600 dark:text-indigo-400',
+    iconBox: 'bg-indigo-500/12 text-indigo-700 dark:text-indigo-300 border-indigo-500/25',
+    categoryText: 'text-indigo-700 dark:text-indigo-300',
   },
   'QR & Barcode': {
-    iconBox: 'bg-amber-500/12 text-amber-600 dark:text-amber-400 border-amber-500/25',
-    categoryText: 'text-amber-600 dark:text-amber-400',
+    iconBox: 'bg-amber-500/12 text-amber-800 dark:text-amber-300 border-amber-500/25',
+    categoryText: 'text-amber-800 dark:text-amber-300',
   },
   'Text': {
-    iconBox: 'bg-violet-500/12 text-violet-600 dark:text-violet-400 border-violet-500/25',
-    categoryText: 'text-violet-600 dark:text-violet-400',
+    iconBox: 'bg-violet-500/12 text-violet-700 dark:text-violet-300 border-violet-500/25',
+    categoryText: 'text-violet-700 dark:text-violet-300',
   },
   'Generators': {
-    iconBox: 'bg-purple-500/12 text-purple-600 dark:text-purple-400 border-purple-500/25',
-    categoryText: 'text-purple-600 dark:text-purple-400',
+    iconBox: 'bg-purple-500/12 text-purple-700 dark:text-purple-300 border-purple-500/25',
+    categoryText: 'text-purple-700 dark:text-purple-300',
   },
   'Converters': {
-    iconBox: 'bg-emerald-500/12 text-emerald-600 dark:text-emerald-400 border-emerald-500/25',
-    categoryText: 'text-emerald-600 dark:text-emerald-400',
+    iconBox: 'bg-emerald-500/12 text-emerald-800 dark:text-emerald-300 border-emerald-500/25',
+    categoryText: 'text-emerald-800 dark:text-emerald-300',
   },
   'Calculators': {
-    iconBox: 'bg-blue-500/12 text-blue-600 dark:text-blue-400 border-blue-500/25',
-    categoryText: 'text-blue-600 dark:text-blue-400',
+    iconBox: 'bg-blue-500/12 text-blue-700 dark:text-blue-300 border-blue-500/25',
+    categoryText: 'text-blue-700 dark:text-blue-300',
   },
   'SEO': {
-    iconBox: 'bg-teal-500/12 text-teal-600 dark:text-teal-400 border-teal-500/25',
-    categoryText: 'text-teal-600 dark:text-teal-400',
+    iconBox: 'bg-teal-500/12 text-teal-800 dark:text-teal-300 border-teal-500/25',
+    categoryText: 'text-teal-800 dark:text-teal-300',
   },
   'Utility': {
-    iconBox: 'bg-fuchsia-500/12 text-fuchsia-600 dark:text-fuchsia-400 border-fuchsia-500/25',
-    categoryText: 'text-fuchsia-600 dark:text-fuchsia-400',
+    iconBox: 'bg-fuchsia-500/12 text-fuchsia-700 dark:text-fuchsia-300 border-fuchsia-500/25',
+    categoryText: 'text-fuchsia-700 dark:text-fuchsia-300',
   },
   'Universal Data Suite': {
-    iconBox: 'bg-sky-500/12 text-sky-600 dark:text-sky-400 border-sky-500/25',
-    categoryText: 'text-sky-600 dark:text-sky-400',
+    iconBox: 'bg-sky-500/12 text-sky-800 dark:text-sky-300 border-sky-500/25',
+    categoryText: 'text-sky-800 dark:text-sky-300',
   },
   'Wikipedia': {
-    iconBox: 'bg-orange-500/12 text-orange-600 dark:text-orange-400 border-orange-500/25',
-    categoryText: 'text-orange-600 dark:text-orange-400',
+    iconBox: 'bg-orange-500/12 text-orange-800 dark:text-orange-300 border-orange-500/25',
+    categoryText: 'text-orange-800 dark:text-orange-300',
   },
   'Fun & Viral': {
-    iconBox: 'bg-pink-500/12 text-pink-600 dark:text-pink-400 border-pink-500/25',
-    categoryText: 'text-pink-600 dark:text-pink-400',
+    iconBox: 'bg-pink-500/12 text-pink-700 dark:text-pink-300 border-pink-500/25',
+    categoryText: 'text-pink-700 dark:text-pink-300',
   },
 };
 
@@ -75,6 +75,7 @@ export const ToolCard: React.FC<{ tool: ToolDefinition; compact?: boolean }> = R
 
   const handlePreload = () => {
     preloadToolBySlug(tool.slug);
+    import('../pages/ToolPage').catch(() => {});
   };
 
   const Icon = tool.icon;

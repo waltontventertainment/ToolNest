@@ -9,7 +9,7 @@ let authDepsPromise: Promise<{
   GoogleAuthProvider: typeof import('firebase/auth').GoogleAuthProvider;
   onAuthStateChanged: typeof import('firebase/auth').onAuthStateChanged;
   signOut: typeof import('firebase/auth').signOut;
-  auth: typeof import('./firebase').auth;
+  auth: ReturnType<typeof import('firebase/auth').getAuth>;
   provider: InstanceType<typeof import('firebase/auth').GoogleAuthProvider>;
 }> | null = null;
 
@@ -26,7 +26,7 @@ function loadAuthDeps() {
         GoogleAuthProvider: authMod.GoogleAuthProvider,
         onAuthStateChanged: authMod.onAuthStateChanged,
         signOut: authMod.signOut,
-        auth: fbMod.auth,
+        auth: authMod.getAuth(fbMod.app),
         provider,
       };
     });

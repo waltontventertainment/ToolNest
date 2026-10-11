@@ -69,7 +69,14 @@ export const Index: React.FC<{ forcedBookmarks?: boolean }> = ({ forcedBookmarks
 
   useEffect(() => {
     let isMounted = true;
-    const timer = setTimeout(() => {
+    let triggered = false;
+
+    const triggerBlogSync = () => {
+      if (triggered || !isMounted) return;
+      triggered = true;
+      ['pointerdown', 'keydown', 'touchstart', 'scroll'].forEach(evt =>
+        window.removeEventListener(evt, triggerBlogSync)
+      );
       getPublishedBlogs()
         .then(posts => {
           if (isMounted && posts.length > 0) {
@@ -85,10 +92,17 @@ export const Index: React.FC<{ forcedBookmarks?: boolean }> = ({ forcedBookmarks
           }
         })
         .catch(() => {});
-    }, 3200);
+    };
+
+    ['pointerdown', 'keydown', 'touchstart', 'scroll'].forEach(evt =>
+      window.addEventListener(evt, triggerBlogSync, { once: true, passive: true })
+    );
+
     return () => {
       isMounted = false;
-      clearTimeout(timer);
+      ['pointerdown', 'keydown', 'touchstart', 'scroll'].forEach(evt =>
+        window.removeEventListener(evt, triggerBlogSync)
+      );
     };
   }, []);
 
@@ -554,14 +568,14 @@ export const Index: React.FC<{ forcedBookmarks?: boolean }> = ({ forcedBookmarks
                 onClick={() => setActiveCategory('All')}
                 className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-colors border cursor-pointer select-none ${
                   activeCategory === 'All'
-                    ? 'bg-blue-600 text-white border-blue-500 shadow-xs'
-                    : 'bg-card text-muted-foreground border-border hover:border-primary/40 hover:text-foreground'
+                    ? 'bg-blue-700 text-white border-blue-800 shadow-xs'
+                    : 'bg-card text-foreground border-border hover:border-primary/40'
                 }`}
               >
-                <Layers className={`w-3.5 h-3.5 shrink-0 ${activeCategory === 'All' ? 'text-white' : 'text-primary/70'}`} />
+                <Layers className={`w-3.5 h-3.5 shrink-0 ${activeCategory === 'All' ? 'text-white' : 'text-primary'}`} />
                 <span>All Tools</span>
-                <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-semibold ${
-                  activeCategory === 'All' ? 'bg-white/20 text-white' : 'bg-muted text-muted-foreground'
+                <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold ${
+                  activeCategory === 'All' ? 'bg-blue-950/60 text-white' : 'bg-muted text-foreground'
                 }`}>
                   {activeToolsList.length}
                 </span>
@@ -579,14 +593,14 @@ export const Index: React.FC<{ forcedBookmarks?: boolean }> = ({ forcedBookmarks
                     onClick={() => setActiveCategory(cat)}
                     className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-colors border cursor-pointer select-none ${
                       isActive
-                        ? 'bg-blue-600 text-white border-blue-500 shadow-xs'
-                        : 'bg-card text-muted-foreground border-border hover:border-primary/40 hover:text-foreground'
+                        ? 'bg-blue-700 text-white border-blue-800 shadow-xs'
+                        : 'bg-card text-foreground border-border hover:border-primary/40'
                     }`}
                   >
-                    <SampleIcon className={`w-3.5 h-3.5 shrink-0 ${isActive ? 'text-white' : 'text-primary/70'}`} />
+                    <SampleIcon className={`w-3.5 h-3.5 shrink-0 ${isActive ? 'text-white' : 'text-primary'}`} />
                     <span>{cat}</span>
-                    <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-semibold ${
-                      isActive ? 'bg-white/20 text-white' : 'bg-muted text-muted-foreground'
+                    <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold ${
+                      isActive ? 'bg-blue-950/60 text-white' : 'bg-muted text-foreground'
                     }`}>
                       {count}
                     </span>
@@ -619,8 +633,8 @@ export const Index: React.FC<{ forcedBookmarks?: boolean }> = ({ forcedBookmarks
                     onClick={() => setActiveCategory('All')}
                     className={`w-full flex items-center justify-between gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-colors cursor-pointer text-left ${
                       activeCategory === 'All' && !showFavoritesOnly
-                        ? 'bg-primary text-primary-foreground shadow-xs'
-                        : 'text-foreground/80 hover:text-foreground hover:bg-secondary/70'
+                        ? 'bg-blue-700 text-white shadow-xs'
+                        : 'text-foreground hover:bg-secondary/70'
                     }`}
                   >
                     <span className="flex items-center gap-2.5 truncate">
@@ -628,10 +642,10 @@ export const Index: React.FC<{ forcedBookmarks?: boolean }> = ({ forcedBookmarks
                       <span className="truncate">All Utilities</span>
                     </span>
                     <span
-                      className={`text-[11px] font-mono px-1.5 py-0.2 rounded-md shrink-0 ${
+                      className={`text-[11px] font-mono font-bold px-1.5 py-0.2 rounded-md shrink-0 ${
                         activeCategory === 'All'
-                          ? 'bg-white/20 text-white'
-                          : 'bg-muted text-muted-foreground'
+                          ? 'bg-blue-950/60 text-white'
+                          : 'bg-muted text-foreground'
                       }`}
                     >
                       {activeToolsList.length}
@@ -642,13 +656,13 @@ export const Index: React.FC<{ forcedBookmarks?: boolean }> = ({ forcedBookmarks
                   <button
                     type="button"
                     onClick={handleEnterFavorites}
-                    className="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-xl text-xs font-bold text-foreground/80 hover:text-foreground hover:bg-amber-500/10 transition-colors cursor-pointer text-left"
+                    className="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-xl text-xs font-bold text-foreground hover:bg-amber-500/10 transition-colors cursor-pointer text-left"
                   >
                     <span className="flex items-center gap-2.5 truncate">
-                      <Star className="w-4 h-4 shrink-0 text-amber-500 fill-amber-500/30" />
+                      <Star className="w-4 h-4 shrink-0 text-amber-600 dark:text-amber-400 fill-amber-500/30" />
                       <span className="truncate">Saved Bookmarks</span>
                     </span>
-                    <span className="text-[11px] font-mono px-1.5 py-0.2 rounded-md bg-amber-500/15 text-amber-700 dark:text-amber-300 shrink-0">
+                    <span className="text-[11px] font-mono font-bold px-1.5 py-0.2 rounded-md bg-amber-500/15 text-amber-900 dark:text-amber-200 shrink-0">
                       {favorites.length}
                     </span>
                   </button>
@@ -668,19 +682,19 @@ export const Index: React.FC<{ forcedBookmarks?: boolean }> = ({ forcedBookmarks
                         onClick={() => setActiveCategory(cat)}
                         className={`w-full flex items-center justify-between gap-2 px-3 py-2 rounded-xl text-xs font-semibold transition-colors cursor-pointer text-left ${
                           isActive
-                            ? 'bg-primary text-primary-foreground font-bold shadow-xs'
-                            : 'text-muted-foreground hover:text-foreground hover:bg-secondary/70'
+                            ? 'bg-blue-700 text-white font-bold shadow-xs'
+                            : 'text-foreground hover:bg-secondary/70'
                         }`}
                       >
                         <span className="flex items-center gap-2.5 truncate">
-                          <SampleIcon className={`w-4 h-4 shrink-0 ${isActive ? 'text-white' : 'text-primary/80'}`} />
+                          <SampleIcon className={`w-4 h-4 shrink-0 ${isActive ? 'text-white' : 'text-primary'}`} />
                           <span className="truncate">{cat}</span>
                         </span>
                         <span
-                          className={`text-[11px] font-mono px-1.5 py-0.2 rounded-md shrink-0 ${
+                          className={`text-[11px] font-mono font-bold px-1.5 py-0.2 rounded-md shrink-0 ${
                             isActive
-                              ? 'bg-white/20 text-white'
-                              : 'bg-muted/80 text-muted-foreground'
+                              ? 'bg-blue-950/60 text-white'
+                              : 'bg-muted text-foreground'
                           }`}
                         >
                           {count}
@@ -897,6 +911,7 @@ export const Index: React.FC<{ forcedBookmarks?: boolean }> = ({ forcedBookmarks
               <Link
                 key={post.id}
                 to={getBlogPostUrl(post.slug)}
+                aria-label={`Read article: ${post.title}`}
                 className="group flex flex-col justify-between rounded-2xl bg-card border border-border/80 hover:border-primary/50 transition-[transform,border-color,box-shadow] duration-150 p-5 shadow-xs hover:shadow-lg hover:-translate-y-0.5 cursor-pointer no-underline select-none"
               >
                 <div className="space-y-3">
@@ -945,7 +960,7 @@ export const Index: React.FC<{ forcedBookmarks?: boolean }> = ({ forcedBookmarks
                 <div className="pt-4 mt-4 border-t border-border flex items-center justify-between gap-2">
                   <BlogAuthorBadge author={post.author} size="sm" />
                   <div className="text-xs font-bold text-primary flex items-center gap-1 group-hover:translate-x-1 transition-transform shrink-0">
-                    <span>Read Guide</span>
+                    <span>Read Full Article</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </div>
                 </div>
@@ -977,7 +992,7 @@ export const Index: React.FC<{ forcedBookmarks?: boolean }> = ({ forcedBookmarks
                 to={getBlogUrl()}
                 className="btn-signature-header px-4 py-2 text-xs font-bold gap-1.5 text-foreground cursor-pointer shrink-0"
               >
-                <span>Blog Hub</span>
+                <span>View Blog Hub</span>
                 <ChevronRight className="w-3.5 h-3.5" />
               </Link>
             </div>
@@ -992,9 +1007,10 @@ export const Index: React.FC<{ forcedBookmarks?: boolean }> = ({ forcedBookmarks
       
       {/* Platform Features Section */}
       <section className="mt-12 sm:mt-16 py-8 sm:py-12 border-t border-border/60">
+        <h2 className="sr-only">Platform Security and Performance Features</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6 md:gap-8 text-center md:text-left">
           <div className="bg-card border border-border/80 p-5 sm:p-6 rounded-2xl">
-            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center mx-auto md:mx-0 mb-3 font-bold">
+            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 flex items-center justify-center mx-auto md:mx-0 mb-3 font-bold">
               <ShieldCheck className="w-5 h-5" />
             </div>
             <h3 className="text-base font-bold mb-1">100% Private &amp; Local</h3>
@@ -1004,7 +1020,7 @@ export const Index: React.FC<{ forcedBookmarks?: boolean }> = ({ forcedBookmarks
           </div>
 
           <div className="bg-card border border-border/80 p-5 sm:p-6 rounded-2xl">
-            <div className="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-600 flex items-center justify-center mx-auto md:mx-0 mb-3 font-bold">
+            <div className="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 flex items-center justify-center mx-auto md:mx-0 mb-3 font-bold">
               <Zap className="w-5 h-5" />
             </div>
             <h3 className="text-base font-bold mb-1">Instant Execution</h3>
@@ -1014,7 +1030,7 @@ export const Index: React.FC<{ forcedBookmarks?: boolean }> = ({ forcedBookmarks
           </div>
 
           <div className="bg-card border border-border/80 p-5 sm:p-6 rounded-2xl">
-            <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center mx-auto md:mx-0 mb-3 font-bold">
+            <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-700 dark:text-amber-300 flex items-center justify-center mx-auto md:mx-0 mb-3 font-bold">
               <Sparkles className="w-5 h-5" />
             </div>
             <h3 className="text-base font-bold mb-1">No Account Needed</h3>

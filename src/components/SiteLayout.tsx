@@ -206,19 +206,19 @@ export const SiteLayout: React.FC = () => {
               to={pathname === '/bookmarks' || pathname === '/saved' || pathname === '/favorites' ? '/' : getBookmarksUrl()}
               className={`btn-signature-header px-2.5 sm:px-3.5 gap-1.5 sm:gap-2 text-xs font-bold ${
                 pathname === '/bookmarks' || pathname === '/saved' || pathname === '/favorites' || location.search.includes('favorites=true')
-                  ? 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-400 dark:border-amber-600 shadow-amber-500/20'
+                  ? 'bg-amber-500/15 text-amber-800 dark:text-amber-300 border-amber-400 dark:border-amber-600 shadow-amber-500/20'
                   : 'text-muted-foreground hover:text-foreground'
               }`}
               title="View Bookmarked Tools (/bookmarks)"
             >
               <Star 
                 className={`w-4 h-4 transition-transform group-hover:scale-115 shrink-0 ${
-                  favorites.length > 0 ? 'text-amber-500 fill-amber-500 filter drop-shadow-[0_0_6px_rgba(245,158,11,0.5)]' : 'text-amber-500/80'
+                  favorites.length > 0 ? 'text-amber-500 fill-amber-500 filter drop-shadow-[0_0_6px_rgba(245,158,11,0.5)]' : 'text-amber-600 dark:text-amber-400'
                 }`} 
               />
               <span className="hidden sm:inline">Saved</span>
               {favorites.length > 0 && (
-                <span className="text-[10px] font-bold text-amber-900 dark:text-amber-200 bg-amber-200/90 dark:bg-amber-950/90 px-1.5 py-0.2 rounded-md border border-amber-300/80 dark:border-amber-700/80 tabular-nums shadow-2xs">
+                <span className="text-[10px] font-bold text-amber-950 dark:text-amber-200 bg-amber-200/90 dark:bg-amber-950/90 px-1.5 py-0.2 rounded-md border border-amber-300/80 dark:border-amber-700/80 tabular-nums shadow-2xs">
                   {favorites.length}
                 </span>
               )}
@@ -230,12 +230,12 @@ export const SiteLayout: React.FC = () => {
               onClick={() => setIsDriveModalOpen(true)}
               className={`btn-signature-header px-2.5 sm:px-3.5 gap-1.5 sm:gap-2 text-xs font-bold cursor-pointer relative ${
                 accessToken
-                  ? 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-400/50 shadow-blue-500/10'
+                  ? 'bg-blue-500/10 text-blue-700 dark:text-blue-300 border-blue-400/50 shadow-blue-500/10'
                   : 'text-muted-foreground hover:text-foreground'
               }`}
               title={accessToken ? `Connected as ${user?.displayName || user?.email}` : 'Connect Google Drive Cloud Sync'}
             >
-              <Cloud className="w-4 h-4 text-blue-500 shrink-0" />
+              <Cloud className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" />
               <span className="hidden sm:inline">Drive Sync</span>
               {accessToken && (
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
@@ -246,10 +246,10 @@ export const SiteLayout: React.FC = () => {
             <button
               type="button"
               onClick={() => setIsFeedbackModalOpen(true)}
-              className="btn-signature-header px-2 sm:px-2.5 gap-1.5 text-xs font-bold text-rose-600 dark:text-rose-400 bg-rose-500/10 hover:bg-rose-500/20 border-rose-500/30 cursor-pointer"
+              className="btn-signature-header px-2 sm:px-2.5 gap-1.5 text-xs font-bold text-rose-700 dark:text-rose-300 bg-rose-500/10 hover:bg-rose-500/20 border-rose-500/30 cursor-pointer"
               title="Report a Bug or Send Feedback"
             >
-              <Bug className="w-3.5 h-3.5 text-rose-500 shrink-0" />
+              <Bug className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400 shrink-0" />
               <span className="hidden lg:inline">Report Bug</span>
             </button>
 
@@ -371,9 +371,9 @@ export const SiteLayout: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setIsFeedbackModalOpen(true)}
-                  className="hover:text-primary transition-colors flex items-center gap-1.5 cursor-pointer text-left font-semibold text-rose-500"
+                  className="hover:text-primary transition-colors flex items-center gap-1.5 cursor-pointer text-left font-semibold text-rose-700 dark:text-rose-300"
                 >
-                  <Bug className="w-3.5 h-3.5 text-rose-500 shrink-0" />
+                  <Bug className="w-3.5 h-3.5 text-rose-700 dark:text-rose-300 shrink-0" />
                   <span>Report Bug / Feedback</span>
                 </button>
               </li>
