@@ -89,10 +89,10 @@ function ensureFaviconsInPublic() {
   const heroBannerSrc = path.join(ASSETS_IMG_DIR, 'premium_hero_banner_1791390453868.jpg');
 
   // Always ensure high-resolution 32-bit RGBA 3D Toolzaro Wrench Logo favicons exist & mirror to dist/
-  const markerFile = path.join(PUBLIC_DIR, '.favicon-3d-v2');
+  const markerFile = path.join(PUBLIC_DIR, '.favicon-3d-v3');
   if (!fs.existsSync(markerFile)) {
     generateAll3DFavicons(PUBLIC_DIR, DIST_DIR);
-    fs.writeFileSync(markerFile, '3d-v2', 'utf8');
+    fs.writeFileSync(markerFile, '3d-v3', 'utf8');
   } else if (fs.existsSync(DIST_DIR)) {
     const requiredFiles = [
       'favicon.svg',

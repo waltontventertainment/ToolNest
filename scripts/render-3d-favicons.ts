@@ -271,7 +271,9 @@ export function renderToolzaro3DLogoPng(
   const wrenchPoly = buildWrenchPolygon();
   const rgba = new Uint8Array(size * size * 4);
   const scaleTo512 = 512 / size;
-  const aa = 1.35 * scaleTo512;
+  // Use 8x8 (64x) supersampling on 16x16 & 32x32, 4x4 (16x) on 48x48 & 96x96, and 2x2 (4x) on 180/192/512
+  const subSamples = size <= 32 ? 8 : size <= 96 ? 4 : 2;
+  const aa = (size <= 32 ? 0.42 : 0.75) * scaleTo512;
 
   // Color palette matching .logo-3d in src/index.css
   const cTopPurple: [number, number, number] = [139, 92, 246]; // #8b5cf6
@@ -281,131 +283,161 @@ export function renderToolzaro3DLogoPng(
   const cExtrusionTop: [number, number, number] = [55, 48, 163]; // #3730a3
   const cExtrusionBot: [number, number, number] = [30, 27, 75]; // #1e1b4b
 
-  for (let py = 0; py < size; py++) {
-    const y = (py + 0.5) * scaleTo512;
-    for (let px = 0; px < size; px++) {
-      const x = (px + 0.5) * scaleTo512;
+  // Optical sizing for small icons (16x16, 32x32) so the badge & wrench fill the pixel grid crisply on legacy & low-DPI screens
+  const isTiny = size <= 16;
+  const isSmall = size <= 32;
+  const badgeW = isTiny ? 500 : isSmall ? 492 : 476;
+  const badgeH = isTiny ? 476 : isSmall ? 468 : 450;
+  const badgeR = isTiny ? 156 : isSmall ? 164 : 172;
+  const wrenchScale = mode === 'maskable' ? 10.5 : isTiny ? 13.6 : isSmall ? 13.0 : 12.0;
+  const wrenchStroke = isTiny ? 1.28 : isSmall ? 1.18 : 1.08;
 
-      let r = 0;
-      let g = 0;
-      let b = 0;
-      let a = 0;
+  const evalSample = (x: number, y: number): [number, number, number, number] => {
+    let r = 0;
+    let g = 0;
+    let b = 0;
+    let a = 0;
 
-      // 1. Optional Full-Bleed Backdrop for Apple Touch / Maskable
-      if (mode === 'apple') {
-        const bgT = clamp((x + y) / 1024, 0, 1);
-        const bgCol = lerpColor([18, 16, 40], [10, 9, 24], bgT);
-        r = bgCol[0];
-        g = bgCol[1];
-        b = bgCol[2];
-        a = 1;
-      } else if (mode === 'maskable') {
-        const diagT = clamp((x * 0.65 + y * 0.75) / 720, 0, 1);
-        const surfCol =
+    // 1. Optional Full-Bleed Backdrop for Apple Touch / Maskable
+    if (mode === 'apple') {
+      const bgT = clamp((x + y) / 1024, 0, 1);
+      const bgCol = lerpColor([18, 16, 40], [10, 9, 24], bgT);
+      r = bgCol[0];
+      g = bgCol[1];
+      b = bgCol[2];
+      a = 1;
+    } else if (mode === 'maskable') {
+      const diagT = clamp((x * 0.65 + y * 0.75) / 720, 0, 1);
+      const surfCol =
+        diagT < 0.5
+          ? lerpColor(cTopPurple, cMidIndigo, diagT * 2)
+          : lerpColor(cMidIndigo, cBotIndigo, (diagT - 0.5) * 2);
+      r = surfCol[0];
+      g = surfCol[1];
+      b = surfCol[2];
+      a = 1;
+    }
+
+    if (mode !== 'maskable') {
+      // 2. Soft Ambient Drop Shadow below the 3D badge
+      const sdShadow = sdRoundedBox(x, y, 256, 274, badgeW - 14, badgeH - 2, badgeR - 4);
+      const shadowAlpha = (1 - smoothstep(-10, 18, sdShadow)) * 0.32;
+      if (shadowAlpha > 0) {
+        [r, g, b, a] = blendOver(r, g, b, a, 15, 23, 42, shadowAlpha);
+      }
+
+      // 3. 3D Physical Extrusion Base (Bottom Ledge)
+      const sdExt = sdRoundedBox(x, y, 256, 265, badgeW, badgeH + 4, badgeR);
+      const extAlpha = 1 - smoothstep(-aa, aa, sdExt);
+      if (extAlpha > 0) {
+        const extT = clamp((x + y) / 1024, 0, 1);
+        const extCol = lerpColor(cExtrusionTop, cExtrusionBot, extT);
+        [r, g, b, a] = blendOver(r, g, b, a, extCol[0], extCol[1], extCol[2], extAlpha);
+      }
+
+      // 4. Main 3D Top Surface
+      const sdMain = sdRoundedBox(x, y, 256, 239, badgeW, badgeH, badgeR);
+      const mainAlpha = 1 - smoothstep(-aa, aa, sdMain);
+      if (mainAlpha > 0) {
+        const diagT = clamp(((x - 18) * 0.65 + (y - 14) * 0.75) / 650, 0, 1);
+        let surfCol =
           diagT < 0.5
             ? lerpColor(cTopPurple, cMidIndigo, diagT * 2)
             : lerpColor(cMidIndigo, cBotIndigo, (diagT - 0.5) * 2);
-        r = surfCol[0];
-        g = surfCol[1];
-        b = surfCol[2];
-        a = 1;
+
+        // Top Glossy Specular Highlight Sheen
+        if (y < 260) {
+          const glossT = clamp(1 - (y - 14) / 235, 0, 1);
+          const glossStrength = glossT * glossT * 0.42;
+          surfCol = lerpColor(surfCol, [255, 255, 255], glossStrength);
+        }
+
+        // Inner 3D Specular Rim Border
+        const rimDist = Math.abs(sdMain + 4.5);
+        const rimMask = 1 - smoothstep(0, 4.2, rimDist);
+        if (rimMask > 0) {
+          const rimTopFactor = clamp(1 - (y - 14) / 440, 0, 1);
+          const rimColor: [number, number, number] =
+            rimTopFactor > 0.35 ? [255, 255, 255] : [30, 27, 75];
+          const rimOpacity =
+            rimTopFactor > 0.35
+              ? lerp(0.28, 0.78, (rimTopFactor - 0.35) / 0.65)
+              : lerp(0.32, 0.15, rimTopFactor / 0.35);
+          surfCol = lerpColor(surfCol, rimColor, rimMask * rimOpacity);
+        }
+
+        [r, g, b, a] = blendOver(r, g, b, a, surfCol[0], surfCol[1], surfCol[2], mainAlpha);
       }
+    }
 
-      if (mode !== 'maskable') {
-        // 2. Soft Ambient Drop Shadow below the 3D badge
-        const sdShadow = sdRoundedBox(x, y, 256, 274, 460, 448, 168);
-        const shadowAlpha = (1 - smoothstep(-10, 18, sdShadow)) * 0.32;
-        if (shadowAlpha > 0) {
-          [r, g, b, a] = blendOver(r, g, b, a, 15, 23, 42, shadowAlpha);
-        }
+    // 5. 3D Wrench Icon + Drop Shadow inside the badge
+    const wrenchOriginX = 256 - 12 * wrenchScale;
+    const wrenchOriginY = (mode === 'maskable' ? 256 : 240) - 12 * wrenchScale;
 
-        // 3. 3D Physical Extrusion Base (Bottom Ledge: y center 265, height 454)
-        const sdExt = sdRoundedBox(x, y, 256, 265, 476, 454, 172);
-        const extAlpha = 1 - smoothstep(-aa, aa, sdExt);
-        if (extAlpha > 0) {
-          const extT = clamp((x + y) / 1024, 0, 1);
-          const extCol = lerpColor(cExtrusionTop, cExtrusionBot, extT);
-          [r, g, b, a] = blendOver(r, g, b, a, extCol[0], extCol[1], extCol[2], extAlpha);
-        }
-
-        // 4. Main 3D Top Surface (y center 239, width 476, height 450, radius 172)
-        const sdMain = sdRoundedBox(x, y, 256, 239, 476, 450, 172);
-        const mainAlpha = 1 - smoothstep(-aa, aa, sdMain);
-        if (mainAlpha > 0) {
-          const diagT = clamp(((x - 18) * 0.65 + (y - 14) * 0.75) / 650, 0, 1);
-          let surfCol =
-            diagT < 0.5
-              ? lerpColor(cTopPurple, cMidIndigo, diagT * 2)
-              : lerpColor(cMidIndigo, cBotIndigo, (diagT - 0.5) * 2);
-
-          // Top Glossy Specular Highlight Sheen (matches header .logo-3d inner sheen)
-          if (y < 260) {
-            const glossT = clamp(1 - (y - 14) / 235, 0, 1);
-            const glossStrength = glossT * glossT * 0.42;
-            surfCol = lerpColor(surfCol, [255, 255, 255], glossStrength);
-          }
-
-          // Inner 3D Specular Rim Border (8px wide inner bevel)
-          const rimDist = Math.abs(sdMain + 4.5);
-          const rimMask = 1 - smoothstep(0, 4.2, rimDist);
-          if (rimMask > 0) {
-            const rimTopFactor = clamp(1 - (y - 14) / 440, 0, 1);
-            const rimColor: [number, number, number] =
-              rimTopFactor > 0.35 ? [255, 255, 255] : [30, 27, 75];
-            const rimOpacity =
-              rimTopFactor > 0.35
-                ? lerp(0.28, 0.78, (rimTopFactor - 0.35) / 0.65)
-                : lerp(0.32, 0.15, rimTopFactor / 0.35);
-            surfCol = lerpColor(surfCol, rimColor, rimMask * rimOpacity);
-          }
-
-          [r, g, b, a] = blendOver(r, g, b, a, surfCol[0], surfCol[1], surfCol[2], mainAlpha);
+    if (x >= 60 && x <= 452 && y >= 50 && y <= 450) {
+      // 5a. Wrench 3D Drop Shadow (shifted down by +14px)
+      const sx = (x - wrenchOriginX) / wrenchScale;
+      const sy = (y - (wrenchOriginY + 14)) / wrenchScale;
+      if (sx >= 0.5 && sx <= 23.5 && sy >= 0.5 && sy <= 23.5) {
+        const dShadow = (sdPolygon(sx, sy, wrenchPoly) - wrenchStroke) * wrenchScale;
+        const wShadowAlpha = (1 - smoothstep(-aa * 1.4, aa * 2.2, dShadow)) * 0.42;
+        if (wShadowAlpha > 0) {
+          [r, g, b, a] = blendOver(r, g, b, a, 20, 18, 56, wShadowAlpha);
         }
       }
 
-      // 5. 3D Wrench Icon + Drop Shadow inside the badge
-      const wrenchScale = mode === 'maskable' ? 10.5 : 12.0;
-      const wrenchOriginX = 256 - 12 * wrenchScale;
-      const wrenchOriginY = (mode === 'maskable' ? 256 : 240) - 12 * wrenchScale;
-
-      // Bounding box fast check
-      if (x >= 80 && x <= 432 && y >= 65 && y <= 435) {
-        // 5a. Wrench 3D Drop Shadow (shifted down by +14px)
-        const sx = (x - wrenchOriginX) / wrenchScale;
-        const sy = (y - (wrenchOriginY + 14)) / wrenchScale;
-        if (sx >= 0.5 && sx <= 23.5 && sy >= 0.5 && sy <= 23.5) {
-          const dShadow = (sdPolygon(sx, sy, wrenchPoly) - 1.08) * wrenchScale;
-          const wShadowAlpha = (1 - smoothstep(-aa * 1.5, aa * 2.5, dShadow)) * 0.42;
-          if (wShadowAlpha > 0) {
-            [r, g, b, a] = blendOver(r, g, b, a, 20, 18, 56, wShadowAlpha);
+      // 5b. Main Crisp White 3D Wrench
+      const wx = (x - wrenchOriginX) / wrenchScale;
+      const wy = (y - wrenchOriginY) / wrenchScale;
+      if (wx >= 0.5 && wx <= 23.5 && wy >= 0.5 && wy <= 23.5) {
+        const dWrench = (sdPolygon(wx, wy, wrenchPoly) - wrenchStroke) * wrenchScale;
+        const wAlpha = 1 - smoothstep(-aa, aa, dWrench);
+        if (wAlpha > 0) {
+          const wGradT = clamp((wx + wy) / 28, 0, 1);
+          let wCol = lerpColor([255, 255, 255], [238, 242, 255], wGradT);
+          if (dWrench > -5.5 && wy > wx) {
+            const bevelT = clamp(1 - Math.abs(dWrench + 2.2) / 3.3, 0, 1);
+            wCol = lerpColor(wCol, [199, 210, 254], bevelT * 0.45);
           }
-        }
-
-        // 5b. Main Crisp White 3D Wrench
-        const wx = (x - wrenchOriginX) / wrenchScale;
-        const wy = (y - wrenchOriginY) / wrenchScale;
-        if (wx >= 0.5 && wx <= 23.5 && wy >= 0.5 && wy <= 23.5) {
-          const dWrench = (sdPolygon(wx, wy, wrenchPoly) - 1.08) * wrenchScale;
-          const wAlpha = 1 - smoothstep(-aa, aa, dWrench);
-          if (wAlpha > 0) {
-            // Subtle 3D white-to-ice bevel across the wrench
-            const wGradT = clamp((wx + wy) / 28, 0, 1);
-            let wCol = lerpColor([255, 255, 255], [235, 240, 255], wGradT);
-            // Inner bottom edge subtle 3D bevel on wrench
-            if (dWrench > -5.5 && wy > wx) {
-              const bevelT = clamp(1 - Math.abs(dWrench + 2.2) / 3.3, 0, 1);
-              wCol = lerpColor(wCol, [199, 210, 254], bevelT * 0.45);
-            }
-            [r, g, b, a] = blendOver(r, g, b, a, wCol[0], wCol[1], wCol[2], wAlpha);
-          }
+          [r, g, b, a] = blendOver(r, g, b, a, wCol[0], wCol[1], wCol[2], wAlpha);
         }
       }
+    }
+
+    return [r, g, b, a];
+  };
+
+  for (let py = 0; py < size; py++) {
+    for (let px = 0; px < size; px++) {
+      let accR = 0;
+      let accG = 0;
+      let accB = 0;
+      let accA = 0;
+
+      for (let sy = 0; sy < subSamples; sy++) {
+        const y = (py + (sy + 0.5) / subSamples) * scaleTo512;
+        for (let sx = 0; sx < subSamples; sx++) {
+          const x = (px + (sx + 0.5) / subSamples) * scaleTo512;
+          const [sr, sg, sb, sa] = evalSample(x, y);
+          // Accumulate premultiplied for accurate supersampling
+          accR += sr * sa;
+          accG += sg * sa;
+          accB += sb * sa;
+          accA += sa;
+        }
+      }
+
+      const totalSamples = subSamples * subSamples;
+      const finalA = accA / totalSamples;
+      const finalR = finalA > 1e-6 ? accR / accA : 0;
+      const finalG = finalA > 1e-6 ? accG / accA : 0;
+      const finalB = finalA > 1e-6 ? accB / accA : 0;
 
       const idx = (py * size + px) * 4;
-      rgba[idx] = Math.round(clamp(r, 0, 255));
-      rgba[idx + 1] = Math.round(clamp(g, 0, 255));
-      rgba[idx + 2] = Math.round(clamp(b, 0, 255));
-      rgba[idx + 3] = Math.round(clamp(a * 255, 0, 255));
+      rgba[idx] = Math.round(clamp(finalR, 0, 255));
+      rgba[idx + 1] = Math.round(clamp(finalG, 0, 255));
+      rgba[idx + 2] = Math.round(clamp(finalB, 0, 255));
+      rgba[idx + 3] = Math.round(clamp(finalA * 255, 0, 255));
     }
   }
 
@@ -417,7 +449,7 @@ export function generateAll3DFavicons(publicDir: string, distDir?: string) {
     fs.mkdirSync(publicDir, { recursive: true });
   }
 
-  // Render exact native resolutions directly using analytical SDF anti-aliasing (zero resize blur!)
+  // Render exact native resolutions directly using analytical SDF + 4x4 SSAA anti-aliasing
   const sizesToRender: Array<{ file: string; size: number; mode: 'standard' | 'apple' | 'maskable' }> = [
     { file: 'android-chrome-512x512.png', size: 512, mode: 'standard' },
     { file: 'android-chrome-maskable-512x512.png', size: 512, mode: 'maskable' },
@@ -447,12 +479,14 @@ export function generateAll3DFavicons(publicDir: string, distDir?: string) {
     }
   }
 
-  // Build multi-resolution 32-bit RGBA favicon.ico (48x48 + 32x32 lossless PNG-in-ICO container)
+  // Build multi-resolution 32-bit RGBA favicon.ico (48x48 + 32x32 + 16x16 lossless PNG-in-ICO container)
   const png48 = cache.get('48:standard') || fs.readFileSync(path.join(publicDir, 'favicon-48x48.png'));
   const png32 = cache.get('32:standard') || fs.readFileSync(path.join(publicDir, 'favicon-32x32.png'));
+  const png16 = cache.get('16:standard') || fs.readFileSync(path.join(publicDir, 'favicon-16x16.png'));
   const frames = [
     { size: 48, buf: png48 },
     { size: 32, buf: png32 },
+    { size: 16, buf: png16 },
   ];
   const headerSize = 6 + frames.length * 16;
   const icoHeader = Buffer.alloc(headerSize);
