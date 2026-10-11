@@ -235,15 +235,7 @@ export async function generateEndpointTechDigest(): Promise<TechDigest> {
           if (Array.isArray(data.hits)) {
             data.hits.forEach((item: any, idx: number) => {
               if (item.title) {
-                let hnImg = getFastTopicImage(item.title || 'hn', idx);
-                if (item.url) {
-                  try {
-                    const host = new URL(item.url).hostname;
-                    if (host && !host.includes('ycombinator.com')) {
-                      hnImg = `https://www.google.com/s2/favicons?domain=${host}&sz=128`;
-                    }
-                  } catch {}
-                }
+                const hnImg = getFastTopicImage(item.title || 'hn', idx);
                 hnHighlights.push({
                   category: "Hacker News",
                   title: item.title,
@@ -273,7 +265,7 @@ export async function generateEndpointTechDigest(): Promise<TechDigest> {
                   title: item.title,
                   detail: item.description || `Published by ${item.user?.name || 'Developer'} • ${item.positive_reactions_count || 0} reactions`,
                   url: item.url,
-                  imageUrl: item.user?.profile_image_90 || item.cover_image || item.social_image || getFastTopicImage(item.title, idx + 2)
+                  imageUrl: getFastTopicImage(item.title, idx + 2)
                 });
                 if (item.tag_list && Array.isArray(item.tag_list)) {
                   item.tag_list.slice(0, 2).forEach((t: string) => trendingToolsSet.add(t));
@@ -300,13 +292,12 @@ export async function generateEndpointTechDigest(): Promise<TechDigest> {
               const post = child.data;
               if (post && post.title && !post.stickied) {
                 const fullPostDetail = post.selftext ? `${post.selftext} [${post.score || 0} upvotes • ${post.num_comments || 0} comments • r/${post.subreddit}]` : `${post.score || 0} upvotes • ${post.num_comments || 0} comments • r/${post.subreddit} • Author: ${post.author || 'Anonymous'} • Domain: ${post.domain || 'reddit.com'}`;
-                const thumb = post.thumbnail && post.thumbnail.startsWith('http') ? post.thumbnail : (post.preview?.images?.[0]?.source?.url ? post.preview.images[0].source.url.replace(/&amp;/g, '&') : undefined);
                 redditHighlights.push({
                   category: "Reddit Technology",
                   title: post.title,
                   detail: fullPostDetail,
                   url: `https://reddit.com${post.permalink}`,
-                  imageUrl: thumb || getFastTopicImage(post.title, idx + 4)
+                  imageUrl: getFastTopicImage(post.title, idx + 4)
                 });
               }
             });
@@ -334,7 +325,7 @@ export async function generateEndpointTechDigest(): Promise<TechDigest> {
                   title: `${repo.full_name} — ⭐ ${repo.stargazers_count?.toLocaleString() || 0}`,
                   detail: fullRepoDetail,
                   url: repo.html_url,
-                  imageUrl: repo.owner?.avatar_url ? `${repo.owner.avatar_url}&s=96` : getFastTopicImage(repo.name, idx + 6)
+                  imageUrl: getFastTopicImage(repo.name, idx + 6)
                 });
                 if (repo.language) trendingToolsSet.add(repo.language);
               }

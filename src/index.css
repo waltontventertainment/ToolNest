@@ -127,6 +127,18 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
+  /* Global Zero-CLS Image & Container Layout Stability */
+  img {
+    max-width: 100%;
+    height: auto;
+    vertical-align: middle;
+  }
+
+  .aspect-video,
+  .aspect-square {
+    contain: paint layout;
+  }
+
   input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]),
   textarea,
   select {

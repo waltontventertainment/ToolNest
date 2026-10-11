@@ -926,20 +926,17 @@ export const Index: React.FC<{ forcedBookmarks?: boolean }> = ({ forcedBookmarks
                 <div className="space-y-3">
                   <div className="overflow-hidden rounded-xl aspect-video relative bg-muted">
                     <img
-                      src={
-                        post.coverImage && post.coverImage.includes('images.unsplash.com')
-                          ? post.coverImage
-                              .replace(/w=\d+/g, 'w=560')
-                              .replace(/q=\d+/g, 'q=70')
-                          : post.coverImage
-                      }
+                      src={post.coverImage}
                       alt={post.title}
                       loading="lazy"
                       decoding="async"
-                      width={400}
-                      height={225}
+                      width={480}
+                      height={270}
                       referrerPolicy="no-referrer"
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 ease-out"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&auto=format&fit=crop&q=80';
+                      }}
                     />
                   </div>
 

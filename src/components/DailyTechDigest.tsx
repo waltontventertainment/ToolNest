@@ -248,12 +248,13 @@ export const DailyTechDigest: React.FC = () => {
               return (
                 <span
                   key={`mob-topic-${idx}`}
+                  style={{ contain: 'strict' }}
                   className="w-7 h-7 rounded-full overflow-hidden shrink-0 border-2 border-card ring-1 ring-amber-500/50 bg-muted shadow-2xs relative block"
                 >
                   <img
                     src={imgSrc}
                     alt={item.title}
-                    loading="lazy"
+                    loading="eager"
                     decoding="async"
                     referrerPolicy="no-referrer"
                     width={28}
@@ -295,11 +296,14 @@ export const DailyTechDigest: React.FC = () => {
                   aria-label={`${item.category}: ${item.title}`}
                   title={`${item.category}: ${item.title}`}
                 >
-                  <span className="w-7 h-7 rounded-full overflow-hidden shrink-0 border-2 border-amber-500/45 hover:border-amber-500 bg-muted shadow-2xs block">
+                  <span 
+                    style={{ contain: 'strict' }}
+                    className="w-7 h-7 rounded-full overflow-hidden shrink-0 border-2 border-amber-500/45 hover:border-amber-500 bg-muted shadow-2xs block"
+                  >
                     <img
                       src={imgSrc}
                       alt={item.title}
-                      loading="lazy"
+                      loading="eager"
                       decoding="async"
                       referrerPolicy="no-referrer"
                       width={28}

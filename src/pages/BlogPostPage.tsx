@@ -330,7 +330,10 @@ export const BlogPostPage: React.FC<{ forcedSlug?: string }> = ({ forcedSlug }) 
                       className="group flex items-center gap-3.5 p-2.5 sm:p-3 rounded-2xl border border-border/80 bg-background/60 hover:bg-muted/40 hover:border-primary/50 hover:shadow-md transition-all duration-300 no-underline"
                     >
                       {/* Compact Rounded-Corner Thumbnail Image */}
-                      <div className="relative w-16 h-16 sm:w-[72px] sm:h-[72px] shrink-0 rounded-2xl overflow-hidden bg-muted border border-border/80 ring-2 ring-primary/15 group-hover:ring-primary/45 shadow-xs">
+                      <div 
+                        style={{ contain: 'strict' }}
+                        className="relative w-16 h-16 sm:w-[72px] sm:h-[72px] shrink-0 rounded-2xl overflow-hidden bg-muted border border-border/80 ring-2 ring-primary/15 group-hover:ring-primary/45 shadow-xs"
+                      >
                         <img
                           src={rel.coverImage || DEFAULT_THUMB_FALLBACK}
                           alt={rel.title}
