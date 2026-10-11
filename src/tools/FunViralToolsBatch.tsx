@@ -3559,13 +3559,11 @@ export const FoodRecipeRouletteTool: React.FC = () => {
   const [spinTickerIdx, setSpinTickerIdx] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [isFullRecipeOpen, setIsFullRecipeOpen] = useState<boolean>(false);
-  const [showInAppVideo, setShowInAppVideo] = useState<boolean>(false);
   const [checkedIngredients, setCheckedIngredients] = useState<Record<string, boolean>>({});
 
   const spinRoulette = async (categoryOverride?: string) => {
     const activeCat = categoryOverride ?? selectedCategory;
     setLoading(true);
-    setShowInAppVideo(false);
     setCheckedIngredients({});
 
     // Animated slot-machine ticker while spinning
@@ -3625,7 +3623,7 @@ export const FoodRecipeRouletteTool: React.FC = () => {
   const copyFullRecipe = () => {
     const ingText = ingredients.map(i => `- ${i.ingredient}: ${i.measure}`).join('\n');
     const stepText = steps.map((s, idx) => `${idx + 1}. ${s}`).join('\n');
-    const full = `${meal.strMeal} (${meal.strArea} • ${meal.strCategory})\n\nIngredients:\n${ingText}\n\nInstructions:\n${stepText}`;
+    const full = `${meal.strMeal} (${meal.strArea} • ${meal.strCategory})\n\nFull Description:\n${meal.strInstructions}\n\nIngredients:\n${ingText}\n\nStep-by-Step:\n${stepText}`;
     navigator.clipboard.writeText(full);
     toast.success('Full recipe & ingredients copied to clipboard!');
   };
@@ -3633,7 +3631,7 @@ export const FoodRecipeRouletteTool: React.FC = () => {
   const speakRecipe = () => {
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
-      const text = `${meal.strMeal}. ${meal.strArea} ${meal.strCategory} dish. Instructions: ${steps.slice(0, 5).join(' ')}`;
+      const text = `${meal.strMeal}. ${meal.strArea} ${meal.strCategory} dish. ${meal.strInstructions || ''}`;
       const u = new SpeechSynthesisUtterance(text);
       window.speechSynthesis.speak(u);
     }
@@ -3713,24 +3711,17 @@ export const FoodRecipeRouletteTool: React.FC = () => {
           </button>
         </div>
 
-        {/* Dish Photo + Summary / Clickable Full Post Trigger */}
+        {/* Dish Photo + Full Recipe Post & Ingredients */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
           <div className="md:col-span-5 space-y-3">
-            <div
-              onClick={() => setIsFullRecipeOpen(v => !v)}
-              className="group relative rounded-2xl overflow-hidden border border-border cursor-pointer"
-              title="Click to read full recipe & ingredients"
-            >
+            <div className="rounded-2xl overflow-hidden border border-border">
               <img
                 src={meal.strMealThumb}
                 alt={meal.strMeal}
-                className={`w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300 ${
+                className={`w-full h-64 object-cover transition-transform duration-300 ${
                   loading ? 'blur-xs scale-95' : ''
                 }`}
               />
-              <div className="absolute bottom-2.5 right-2.5 px-3 py-1 rounded-xl bg-black/75 backdrop-blur-xs text-[11px] font-bold text-white flex items-center gap-1.5">
-                <span>📖 Click to {isFullRecipeOpen ? 'Collapse' : 'Read Full Recipe'}</span>
-              </div>
             </div>
 
             {/* Quick Action Bar */}
@@ -3741,7 +3732,7 @@ export const FoodRecipeRouletteTool: React.FC = () => {
                 className="flex-1 px-3 py-2 rounded-xl bg-secondary hover:bg-muted border border-border text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer"
               >
                 <Copy className="w-3.5 h-3.5 text-primary" />
-                <span>Copy Recipe</span>
+                <span>Copy Full Recipe</span>
               </button>
               <button
                 type="button"
@@ -3749,58 +3740,69 @@ export const FoodRecipeRouletteTool: React.FC = () => {
                 className="flex-1 px-3 py-2 rounded-xl bg-secondary hover:bg-muted border border-border text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer"
               >
                 <Volume2 className="w-3.5 h-3.5 text-primary" />
-                <span>Listen</span>
+                <span>Listen Audio</span>
               </button>
             </div>
           </div>
 
-          {/* Right Column: Interactive Click-to-Read Full Recipe & Video Controls */}
+          {/* Right Column: Full Post Reader + Ingredients */}
           <div className="md:col-span-7 space-y-4">
-            {/* Clickable Recipe Post Box */}
-            <div
-              onClick={() => setIsFullRecipeOpen(v => !v)}
-              className="p-4 sm:p-5 rounded-2xl bg-secondary/40 hover:bg-secondary/60 border border-border transition-colors cursor-pointer space-y-3"
-            >
-              <div className="flex items-center justify-between">
+            {/* Single Clean Full Post Reader Box */}
+            <div className="p-4 sm:p-5 rounded-2xl bg-secondary/40 border border-border space-y-3">
+              <div className="flex items-center justify-between gap-2">
                 <span className="text-xs font-black uppercase tracking-wider text-primary flex items-center gap-1.5">
                   <Utensils className="w-3.5 h-3.5" />
-                  <span>Cooking Guide & Instructions</span>
+                  <span>Full Recipe Post & Cooking Guide</span>
                 </span>
-                <span className="px-2.5 py-1 rounded-lg bg-primary/15 text-primary text-[11px] font-black">
-                  {isFullRecipeOpen ? '▲ Show Less' : '▼ Click to Read Full Post'}
-                </span>
+                <button
+                  type="button"
+                  onClick={() => setIsFullRecipeOpen(v => !v)}
+                  className="px-3 py-1 rounded-xl bg-primary text-white text-[11px] font-black cursor-pointer hover:opacity-90 transition-opacity"
+                >
+                  {isFullRecipeOpen ? '▲ Collapse Post' : '📖 Click to Read Full Post'}
+                </button>
               </div>
 
               {!isFullRecipeOpen ? (
-                <div className="space-y-2">
-                  <p className="text-xs sm:text-sm text-foreground/90 line-clamp-5 leading-relaxed">
-                    {meal.strInstructions}
-                  </p>
-                  <p className="text-xs font-extrabold text-primary pt-1">
-                    👉 Tap here to read all {steps.length} cooking steps & {ingredients.length} exact ingredients...
-                  </p>
-                </div>
-              ) : (
-                <div
-                  onClick={e => e.stopPropagation()}
-                  className="space-y-4 pt-2 border-t border-border/60 cursor-default"
+                <p
+                  onClick={() => setIsFullRecipeOpen(true)}
+                  className="text-xs sm:text-sm text-foreground/90 line-clamp-5 leading-relaxed cursor-pointer"
                 >
-                  {/* Step-by-Step Numbered Instructions */}
-                  <div className="space-y-2.5">
-                    {steps.map((stepText, idx) => (
-                      <div
-                        key={idx}
-                        className="p-3 rounded-xl bg-background/80 border border-border/70 flex items-start gap-3"
-                      >
-                        <span className="w-6 h-6 rounded-lg bg-primary text-white text-xs font-black flex items-center justify-center shrink-0 mt-0.5">
-                          {idx + 1}
-                        </span>
-                        <p className="text-xs sm:text-sm text-foreground leading-relaxed">
-                          {stepText}
-                        </p>
-                      </div>
-                    ))}
+                  {meal.strInstructions}
+                </p>
+              ) : (
+                <div className="space-y-4 pt-2 border-t border-border/60">
+                  {/* Complete Uncut Recipe Post Description */}
+                  <div className="p-3.5 rounded-xl bg-background/90 border border-border space-y-1.5">
+                    <span className="text-[10px] font-black uppercase tracking-wider text-primary block">
+                      📄 Complete Recipe Description
+                    </span>
+                    <p className="text-xs sm:text-sm text-foreground leading-relaxed whitespace-pre-line">
+                      {meal.strInstructions}
+                    </p>
                   </div>
+
+                  {/* Step-by-Step Numbered Breakdown */}
+                  {steps.length > 1 && (
+                    <div className="space-y-2">
+                      <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground block">
+                        👨‍🍳 Step-by-Step Breakdown ({steps.length} Steps)
+                      </span>
+                      {steps.map((stepText, idx) => (
+                        <div
+                          key={idx}
+                          className="p-3 rounded-xl bg-background/70 border border-border/70 flex items-start gap-3"
+                        >
+                          <span className="w-6 h-6 rounded-lg bg-primary text-white text-xs font-black flex items-center justify-center shrink-0 mt-0.5">
+                            {idx + 1}
+                          </span>
+                          <p className="text-xs sm:text-sm text-foreground leading-relaxed">
+                            {stepText}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -3842,65 +3844,61 @@ export const FoodRecipeRouletteTool: React.FC = () => {
                 })}
               </div>
             </div>
-
-            {/* YouTube In-App Video Player Toggle + External Link */}
-            {meal.strYoutube && (
-              <div className="space-y-3 pt-1">
-                <div className="flex flex-wrap items-center gap-2.5">
-                  {youtubeId && (
-                    <button
-                      type="button"
-                      onClick={() => setShowInAppVideo(v => !v)}
-                      className="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-black flex items-center gap-2 shadow-md shadow-rose-600/20 cursor-pointer transition-all"
-                    >
-                      <Play className="w-3.5 h-3.5 fill-current" />
-                      <span>
-                        {showInAppVideo
-                          ? 'Hide Recipe Video Player'
-                          : 'Watch Recipe Video Here (In-App Player)'}
-                      </span>
-                    </button>
-                  )}
-
-                  <a
-                    href={meal.strYoutube}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-3.5 py-2.5 rounded-xl bg-secondary hover:bg-muted border border-border text-xs font-bold text-foreground inline-flex items-center gap-1.5"
-                  >
-                    <span>Open on YouTube</span>
-                    <ExternalLink className="w-3.5 h-3.5 text-primary" />
-                  </a>
-
-                  {meal.strSource && (
-                    <a
-                      href={meal.strSource}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="px-3.5 py-2.5 rounded-xl bg-secondary hover:bg-muted border border-border text-xs font-bold text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5"
-                    >
-                      <span>Original Source</span>
-                      <ExternalLink className="w-3.5 h-3.5" />
-                    </a>
-                  )}
-                </div>
-
-                {/* Built-in Privacy-Enhanced YouTube Embed Player */}
-                {showInAppVideo && youtubeId && (
-                  <div className="rounded-2xl overflow-hidden border-2 border-rose-500/40 bg-black aspect-video w-full shadow-lg">
-                    <iframe
-                      src={`https://www.youtube-nocookie.com/embed/${youtubeId}?rel=0`}
-                      title={`${meal.strMeal} Recipe Video`}
-                      className="w-full h-full"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                    />
-                  </div>
-                )}
-              </div>
-            )}
           </div>
         </div>
+
+        {/* AUTO-LOADED IN-APP YOUTUBE RECIPE VIDEO PLAYER WITH THUMBNAIL */}
+        {youtubeId && (
+          <div className="pt-2 border-t border-border space-y-3">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <span className="px-2.5 py-1 rounded-lg bg-rose-500/15 text-rose-500 border border-rose-500/30 text-xs font-black flex items-center gap-1.5">
+                  <Play className="w-3.5 h-3.5 fill-current" />
+                  <span>Official Recipe Video Tutorial</span>
+                </span>
+                <span className="text-xs font-bold text-muted-foreground">
+                  Watch how to cook {meal.strMeal} step by step
+                </span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-center">
+              {/* Auto-Loaded Embedded YouTube Player */}
+              <div className="lg:col-span-8 rounded-2xl overflow-hidden border-2 border-border bg-black aspect-video w-full shadow-lg">
+                <iframe
+                  key={youtubeId}
+                  src={`https://www.youtube-nocookie.com/embed/${youtubeId}?rel=0`}
+                  title={`${meal.strMeal} Recipe Video`}
+                  className="w-full h-full"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
+
+              {/* Video Thumbnail Preview Card */}
+              <div className="lg:col-span-4 p-4 rounded-2xl bg-secondary/40 border border-border space-y-2.5">
+                <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground block">
+                  🎬 Video Thumbnail Preview
+                </span>
+                <div className="relative rounded-xl overflow-hidden border border-border aspect-video bg-black">
+                  <img
+                    src={`https://i.ytimg.com/vi/${youtubeId}/hqdefault.jpg`}
+                    alt={`${meal.strMeal} Video Thumbnail`}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                  />
+                  <div className="absolute bottom-2 right-2 px-2 py-0.5 rounded bg-black/80 text-[10px] font-bold text-white">
+                    HD Guide
+                  </div>
+                </div>
+                <p className="text-xs font-semibold text-muted-foreground leading-snug">
+                  Press play on the video player to watch the full kitchen preparation for{' '}
+                  <strong className="text-foreground">{meal.strMeal}</strong> right here on this page.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
