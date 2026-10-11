@@ -1,0 +1,75 @@
+{
+  "name": "Toolzaro Web Utilities Suite",
+  "description": "Privacy-first online platform offering 168+ browser-native tools for PDF processing, image compression, developer formatting, QR generation, calculators, and real-time data.",
+  "url": "https://toolzaro.cyou/",
+  "version": "1.0.0",
+  "documentationUrl": "https://toolzaro.cyou/llms.txt",
+  "provider": {
+    "organization": "Toolzaro",
+    "url": "https://toolzaro.cyou/"
+  },
+  "capabilities": {
+    "streaming": false,
+    "pushNotifications": false,
+    "stateTransitionHistory": false
+  },
+  "defaultInputModes": [
+    "text/plain",
+    "application/json"
+  ],
+  "defaultOutputModes": [
+    "text/plain",
+    "application/json",
+    "text/markdown"
+  ],
+  "skills": [
+    {
+      "id": "pdf-and-document-tools",
+      "name": "PDF & Document Processing Suite",
+      "description": "Merge, split, compress, rotate, watermark, and convert PDF files locally in the browser with zero server uploads.",
+      "tags": [
+        "pdf",
+        "document",
+        "merge",
+        "compress",
+        "convert"
+      ],
+      "examples": [
+        "Merge multiple PDF files into one document",
+        "Compress a PDF file without losing quality"
+      ]
+    },
+    {
+      "id": "image-and-color-tools",
+      "name": "Image & Color Optimization Suite",
+      "description": "Compress, resize, crop, convert images (PNG, JPG, WebP) and generate accessible color palettes.",
+      "tags": [
+        "image",
+        "compress",
+        "resize",
+        "webp",
+        "color"
+      ],
+      "examples": [
+        "Compress and resize an image for web performance",
+        "Convert PNG images to WebP format"
+      ]
+    },
+    {
+      "id": "developer-and-seo-utilities",
+      "name": "Developer, JSON, QR & SEO Utilities",
+      "description": "Format and validate JSON, encode Base64, generate QR codes and barcodes, inspect meta tags, and run technical SEO checks.",
+      "tags": [
+        "developer",
+        "json",
+        "qrcode",
+        "seo",
+        "utilities"
+      ],
+      "examples": [
+        "Format and validate a JSON payload",
+        "Generate a custom QR code or barcode"
+      ]
+    }
+  ]
+}

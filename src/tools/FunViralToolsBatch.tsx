@@ -119,7 +119,11 @@ export const MemeGeneratorStudioTool: React.FC = () => {
       URL.revokeObjectURL(url);
       toast.success('Meme PNG downloaded!');
     } catch {
-      window.open(memeUrl, '_blank', 'noopener,noreferrer');
+      const a = document.createElement('a');
+      a.href = `/api/proxy-image?url=${encodeURIComponent(memeUrl)}&filename=toolzaro-meme-${selectedId}.png`;
+      a.download = `toolzaro-meme-${selectedId}.png`;
+      a.click();
+      toast.success('Meme download started!');
     } finally {
       setDownloading(false);
     }

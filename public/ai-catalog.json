@@ -1,0 +1,34 @@
+{
+  "specVersion": "1.0",
+  "host": {
+    "identifier": "toolzaro.cyou",
+    "displayName": "Toolzaro",
+    "documentationUrl": "https://toolzaro.cyou/about",
+    "logoUrl": "https://toolzaro.cyou/android-chrome-512x512.png"
+  },
+  "entries": [
+    {
+      "identifier": "urn:air:toolzaro.cyou:skills:toolzaro-llms-index",
+      "displayName": "Toolzaro AI & LLM Documentation Index",
+      "type": "text/markdown; profile=\"urn:air:agent-skills\"",
+      "url": "https://toolzaro.cyou/llms.txt",
+      "representativeQueries": [
+        "Find free client-side PDF, image, developer, and SEO browser utilities on Toolzaro",
+        "Merge, split, compress, or convert PDF documents and images locally in the browser",
+        "Format JSON, generate QR codes, inspect metadata, and run web developer tools online",
+        "Read technical guides on client-side privacy architecture and web utility workflows"
+      ]
+    },
+    {
+      "identifier": "urn:air:toolzaro.cyou:agents:toolzaro-agent-card",
+      "displayName": "Toolzaro Web Utilities Agent Card",
+      "type": "application/agent-card+json",
+      "url": "https://toolzaro.cyou/.well-known/agent-card.json",
+      "representativeQueries": [
+        "Discover Toolzaro browser utility capabilities, endpoints, and supported agent skills",
+        "Query available client-side PDF, image, text, calculator, and developer tools",
+        "Access zero-upload privacy-first online utilities and real-time data tools"
+      ]
+    }
+  ]
+}

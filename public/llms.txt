@@ -1,9 +1,15 @@
+---
+name: toolzaro-llms-index
+description: Toolzaro (https://toolzaro.cyou) is a privacy-first online utility platform offering 168+ browser-native developer, PDF, image, calculator, converter, and SEO tools.
+version: 1.0.0
+---
+
 # Toolzaro - Free Online Developer, PDF, Image & Utility Suite
-> Toolzaro (https://toolzaro.cyou) is a privacy-first online utility platform offering 156+ browser-native tools across 12 categories. All tools run 100% client-side with zero cloud uploads and flat root-level URLs.
+> Toolzaro (https://toolzaro.cyou) is a privacy-first online utility platform offering 168+ browser-native tools across 13 categories. All tools run 100% client-side with zero cloud uploads and flat root-level URLs.
 
 ## Core Pages
-- [Home](https://toolzaro.cyou/): Main hub with instant search across 156+ utilities.
-- [All Tools Directory](https://toolzaro.cyou/tools): Complete A-Z categorized directory of all 156 tools.
+- [Home](https://toolzaro.cyou/): Main hub with instant search across 168+ utilities.
+- [All Tools Directory](https://toolzaro.cyou/tools): Complete A-Z categorized directory of all 168 tools.
 - [Saved Bookmarks](https://toolzaro.cyou/bookmarks): Personal workspace for saved browser tools.
 - [HTML Sitemap](https://toolzaro.cyou/sitemap): Full index of all tools, categories, and guides.
 - [Engineering Blog](https://toolzaro.cyou/blog): Technical tutorials, privacy architecture guides, and developer articles.
@@ -13,7 +19,7 @@
 - [Terms of Service](https://toolzaro.cyou/terms): Fair use terms and conditions.
 - [Disclaimer](https://toolzaro.cyou/disclaimer): Accuracy and verification disclosures.
 
-## Tool Categories (12)
+## Tool Categories (13)
 - [Universal Data Suite Tools (12)](https://toolzaro.cyou/universal-data-suite)
 - [Wikipedia Tools (3)](https://toolzaro.cyou/wikipedia)
 - [PDF Tools (7)](https://toolzaro.cyou/pdf)
@@ -26,8 +32,9 @@
 - [Calculators Tools (4)](https://toolzaro.cyou/calculators)
 - [SEO Tools (11)](https://toolzaro.cyou/seo)
 - [Utility Tools (11)](https://toolzaro.cyou/utility)
+- [Fun & Viral Tools (12)](https://toolzaro.cyou/fun-viral)
 
-## Complete Directory of 156 Tools (Flat Root-Level URLs)
+## Complete Directory of 168 Tools (Flat Root-Level URLs)
 - [Global Country Directory](https://toolzaro.cyou/rest-countries-explorer): Instantly lookup details, flags, capitals, and currencies of 200+ countries. (Category: Universal Data Suite)
 - [Lexicon Word Definitions](https://toolzaro.cyou/free-dictionary-lookup): Lookup English word definitions, phonetic spellings, synonyms, and audio pronunciation. (Category: Universal Data Suite)
 - [Universal Library Explorer](https://toolzaro.cyou/open-library-book-search): Search millions of books, authors, and cover art seamlessly. (Category: Universal Data Suite)
@@ -184,6 +191,18 @@
 - [Text to Decimal](https://toolzaro.cyou/text-to-decimal): Convert plain text into its numeric decimal byte values. (Category: Developer)
 - [Decimal to Text](https://toolzaro.cyou/decimal-to-text): Decode numeric decimal byte values back into plain text. (Category: Developer)
 - [Basic JS Minifier](https://toolzaro.cyou/basic-js-minifier): Compress your JavaScript code by removing comments and whitespace. (Category: Developer)
+- [Viral Meme Studio](https://toolzaro.cyou/viral-meme-generator): Create custom viral memes instantly using 100+ popular meme templates and download high-res PNGs. (Category: Fun & Viral)
+- [Name Vibe & Origin Predictor](https://toolzaro.cyou/name-age-nationality-predictor): Enter any first name to predict statistical age, top country origins, demographic match, and personality vibe. (Category: Fun & Viral)
+- [Yes/No Magic GIF Oracle](https://toolzaro.cyou/yes-no-magic-gif-oracle): Ask any Yes or No question and get an instant verdict paired with a hilarious reaction GIF. (Category: Fun & Viral)
+- [Live Trivia & Brain Quiz](https://toolzaro.cyou/live-trivia-quiz-arena): Test your IQ with live multiple-choice trivia questions, streak counters, and instant scoring. (Category: Fun & Viral)
+- [Pokémon Battle Simulator](https://toolzaro.cyou/pokemon-pokedex-battle): Compare official Pokémon artwork, base HP/Attack/Speed stats, and simulate head-to-head arena battles. (Category: Fun & Viral)
+- [Dad Joke & Comedy Machine](https://toolzaro.cyou/dad-joke-generator): Generate hilarious dad jokes and puns with one click, complete with text-to-speech voice playback. (Category: Fun & Viral)
+- [Weird & Useless Facts](https://toolzaro.cyou/weird-useless-facts): Discover mind-blowing, weird, and 100% verified useless facts from science, history, and nature. (Category: Fun & Viral)
+- [Smart Excuse & Alibi Maker](https://toolzaro.cyou/random-excuse-generator): Generate clever, hilarious excuses for developers, office meetings, college assignments, and parties. (Category: Fun & Viral)
+- [Cute Dog & Cat Booster](https://toolzaro.cyou/cute-dog-cat-generator): Instant mood booster featuring random adorable dog and cat photos paired with fun pet facts. (Category: Fun & Viral)
+- [What Should I Eat? Roulette](https://toolzaro.cyou/what-to-eat-food-roulette): Spin the Food Roulette wheel to discover a random global dish with photo, instructions, and video recipe. (Category: Fun & Viral)
+- [Multiverse Character Scanner](https://toolzaro.cyou/rick-and-morty-character-explorer): Search and explore hundreds of multiverse characters, origins, species, and avatars instantly. (Category: Fun & Viral)
+- [Funny Dialect Translator](https://toolzaro.cyou/pirate-shakespeare-translator): Convert ordinary English sentences into Pirate talk, Shakespearean English, Cute UwU, or 1337 Hacker speak. (Category: Fun & Viral)
 
 ## Technical Guides & Articles (5)
 - [The Definitive Guide to Client-Side Web Privacy: How WebAssembly & Web Crypto Eliminate Cloud Leaks](https://toolzaro.cyou/definitive-guide-client-side-privacy-web-utilities): An architectural deep-dive into zero-knowledge browser utilities. Learn how Web Cryptography, Canvas APIs, and WebAssembly enable military-grade encryption, PDF manipulation, and image processing without transmitting a single byte to remote servers.

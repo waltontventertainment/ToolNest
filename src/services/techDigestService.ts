@@ -1,9 +1,3 @@
-import localThumb1 from '../assets/images/hero_visual_premium_1791369917245.jpg';
-import localThumb2 from '../assets/images/premium_hero_banner_1791390453868.jpg';
-import localThumb3 from '../assets/images/categories_1785690511849.jpg';
-import localThumb4 from '../assets/images/hero_visual_1785690377657.jpg';
-import localThumb5 from '../assets/images/toolzaro_icon_logo_1791427467156.jpg';
-
 let firestoreDepsPromise: Promise<{
   doc: typeof import('firebase/firestore').doc;
   getDoc: typeof import('firebase/firestore').getDoc;
@@ -47,25 +41,22 @@ export interface TechDigest {
 }
 
 const LOCAL_BUNDLED_THUMBS = [
-  localThumb1,
-  localThumb2,
-  localThumb3,
-  localThumb4,
-  localThumb5,
+  '/favicon-96x96.png',
+  '/android-chrome-192x192.png',
 ];
 
 /**
- * Direct-edge, zero-redirect 120x120px CDN thumbnails for instant topic rendering
+ * Direct-edge, zero-redirect 64x64px CDN thumbnails for instant topic rendering
  */
 const FAST_TOPIC_THUMBNAILS = [
-  'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=120&h=120&auto=format&fit=crop&q=75',
-  'https://images.unsplash.com/photo-1563986768609-322da13575f3?w=120&h=120&auto=format&fit=crop&q=75',
-  'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=120&h=120&auto=format&fit=crop&q=75',
-  'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=120&h=120&auto=format&fit=crop&q=75',
-  'https://images.unsplash.com/photo-1518770660439-4636190af475?w=120&h=120&auto=format&fit=crop&q=75',
-  'https://images.unsplash.com/photo-1504639725590-34d0984388bd?w=120&h=120&auto=format&fit=crop&q=75',
-  'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=120&h=120&auto=format&fit=crop&q=75',
-  'https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?w=120&h=120&auto=format&fit=crop&q=75',
+  'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=64&h=64&auto=format&fit=crop&q=65',
+  'https://images.unsplash.com/photo-1563986768609-322da13575f3?w=64&h=64&auto=format&fit=crop&q=65',
+  'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=64&h=64&auto=format&fit=crop&q=65',
+  'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=64&h=64&auto=format&fit=crop&q=65',
+  'https://images.unsplash.com/photo-1518770660439-4636190af475?w=64&h=64&auto=format&fit=crop&q=65',
+  'https://images.unsplash.com/photo-1504639725590-34d0984388bd?w=64&h=64&auto=format&fit=crop&q=65',
+  'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=64&h=64&auto=format&fit=crop&q=65',
+  'https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?w=64&h=64&auto=format&fit=crop&q=65',
 ];
 
 export function getFallbackTopicImage(index: number): string {

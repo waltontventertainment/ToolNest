@@ -376,26 +376,6 @@ export const QrCodeScanner: React.FC = () => {
           <div className="flex flex-wrap items-center gap-2 pt-2">
             <CopyButton text={scanResult.text} />
 
-            {scanResult.type === 'url' && (
-              <a
-                href={scanResult.text.startsWith('http') ? scanResult.text : `https://${scanResult.text}`}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90"
-              >
-                <ExternalLink className="w-4 h-4" /> Open Link
-              </a>
-            )}
-
-            <a
-              href={`https://www.google.com/search?q=${encodeURIComponent(scanResult.text)}`}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium bg-secondary text-secondary-foreground hover:bg-secondary/80"
-            >
-              <Search className="w-4 h-4" /> Search Google
-            </a>
-
             <DownloadButton onClick={() => {
               const blob = new Blob([scanResult.text], { type: 'text/plain;charset=utf-8' });
               const url = URL.createObjectURL(blob);
@@ -765,24 +745,6 @@ export const BarcodeScanner: React.FC = () => {
 
           <div className="flex flex-wrap items-center gap-2 pt-2">
             <CopyButton text={scanResult.text} />
-
-            <a
-              href={`https://www.google.com/search?q=${encodeURIComponent(scanResult.text)}`}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90"
-            >
-              <Search className="w-4 h-4" /> Google Product Search
-            </a>
-
-            <a
-              href={`https://www.amazon.com/s?k=${encodeURIComponent(scanResult.text)}`}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium bg-secondary text-secondary-foreground hover:bg-secondary/80"
-            >
-              <ExternalLink className="w-4 h-4" /> Search Amazon
-            </a>
 
             <DownloadButton onClick={() => {
               const blob = new Blob([`Format: ${scanResult.format}\nValue: ${scanResult.text}`], { type: 'text/plain;charset=utf-8' });

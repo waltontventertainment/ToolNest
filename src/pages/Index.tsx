@@ -902,7 +902,13 @@ export const Index: React.FC<{ forcedBookmarks?: boolean }> = ({ forcedBookmarks
                 <div className="space-y-3">
                   <div className="overflow-hidden rounded-xl aspect-video relative bg-muted">
                     <img
-                      src={post.coverImage}
+                      src={
+                        post.coverImage && post.coverImage.includes('images.unsplash.com')
+                          ? post.coverImage
+                              .replace(/w=\d+/g, 'w=560')
+                              .replace(/q=\d+/g, 'q=70')
+                          : post.coverImage
+                      }
                       alt={post.title}
                       loading="lazy"
                       decoding="async"

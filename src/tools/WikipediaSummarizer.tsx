@@ -240,17 +240,6 @@ export const WikipediaSummarizer: React.FC = () => {
                         <BookOpen className="w-3 h-3 text-indigo-500" />
                         <span>{lang === 'bn' ? 'সম্পূর্ণ আর্টিকেল পড়ুন' : 'Read Full Article'}</span>
                       </button>
-                      {selectedArticle.content_urls?.desktop && (
-                        <a
-                          href={selectedArticle.content_urls.desktop.page}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="px-2.5 py-1 rounded bg-blue-500/10 text-blue-600 dark:text-blue-400 font-bold transition-all flex items-center gap-1 border border-blue-500/20"
-                        >
-                          <ExternalLink className="w-3 h-3" />
-                          <span>{lang === 'bn' ? 'উইকিপিডিয়ায় দেখুন' : 'View on Wikipedia'}</span>
-                        </a>
-                      )}
                     </div>
                   </div>
                 </div>

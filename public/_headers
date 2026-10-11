@@ -143,7 +143,12 @@
 
 /llms.txt
   Cache-Control: public, max-age=3600, s-maxage=3600
-  Content-Type: text/plain; charset=utf-8
+  Content-Type: text/markdown; charset=utf-8
+  Access-Control-Allow-Origin: *
+
+/SKILL.md
+  Cache-Control: public, max-age=3600, s-maxage=3600
+  Content-Type: text/markdown; charset=utf-8
   Access-Control-Allow-Origin: *
 
 /ai-catalog.json
@@ -152,6 +157,26 @@
   Access-Control-Allow-Origin: *
 
 /.well-known/ai-catalog.json
+  Cache-Control: public, max-age=3600, s-maxage=3600
+  Content-Type: application/json; charset=utf-8
+  Access-Control-Allow-Origin: *
+
+/ard.json
+  Cache-Control: public, max-age=3600, s-maxage=3600
+  Content-Type: application/json; charset=utf-8
+  Access-Control-Allow-Origin: *
+
+/.well-known/ard.json
+  Cache-Control: public, max-age=3600, s-maxage=3600
+  Content-Type: application/json; charset=utf-8
+  Access-Control-Allow-Origin: *
+
+/agent-card.json
+  Cache-Control: public, max-age=3600, s-maxage=3600
+  Content-Type: application/json; charset=utf-8
+  Access-Control-Allow-Origin: *
+
+/.well-known/agent-card.json
   Cache-Control: public, max-age=3600, s-maxage=3600
   Content-Type: application/json; charset=utf-8
   Access-Control-Allow-Origin: *

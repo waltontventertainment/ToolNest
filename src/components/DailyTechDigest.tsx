@@ -245,9 +245,9 @@ export const DailyTechDigest: React.FC = () => {
             className="cursor-pointer group/title flex items-center gap-2 min-w-0 flex-1"
             title="Click to open live article"
           >
-            <h3 className="text-xs sm:text-sm font-bold text-foreground group-hover/title:text-amber-500 transition-colors truncate">
+            <h2 className="text-xs sm:text-sm font-bold text-foreground group-hover/title:text-amber-500 transition-colors truncate">
               {digest.headline}
-            </h3>
+            </h2>
             {!expanded && (
               <span className="hidden xl:inline text-xs text-muted-foreground truncate max-w-xs">
                 — {digest.summary}
@@ -281,9 +281,8 @@ export const DailyTechDigest: React.FC = () => {
                   <img
                     src={imgSrc}
                     alt={item.title}
-                    loading="eager"
+                    loading="lazy"
                     decoding="async"
-                    fetchPriority="high"
                     referrerPolicy="no-referrer"
                     width={28}
                     height={28}
@@ -328,9 +327,8 @@ export const DailyTechDigest: React.FC = () => {
                   <img
                     src={imgSrc}
                     alt={item.title}
-                    loading="eager"
+                    loading="lazy"
                     decoding="async"
-                    fetchPriority="high"
                     referrerPolicy="no-referrer"
                     width={28}
                     height={28}
@@ -442,9 +440,9 @@ export const DailyTechDigest: React.FC = () => {
                         </div>
                         <ExternalLink className="w-3.5 h-3.5 text-muted-foreground group-hover/card:text-amber-500 transition-colors shrink-0" />
                       </div>
-                      <h4 className="text-xs font-bold text-foreground group-hover/card:text-amber-500 transition-colors leading-tight pt-0.5">
+                      <h3 className="text-xs font-bold text-foreground group-hover/card:text-amber-500 transition-colors leading-tight pt-0.5">
                         {item.title}
-                      </h4>
+                      </h3>
                     </div>
                     <p className="text-[11px] text-muted-foreground leading-relaxed line-clamp-2 pt-1">
                       {item.detail}

@@ -544,16 +544,27 @@ export const RestCountriesTool: React.FC = () => {
                 {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
                 <span>{copied ? 'Copied Profile' : 'Copy Country Data'}</span>
               </button>
-              <a 
-                href={`https://flagcdn.com/w640/${selectedCountry.iso2?.toLowerCase()}.png`}
-                target="_blank"
-                rel="noopener noreferrer"
-                download={`${selectedCountry.name}-flag.png`}
+              <button
+                type="button"
+                onClick={async () => {
+                  const flagUrl = `https://flagcdn.com/w640/${selectedCountry.iso2?.toLowerCase()}.png`;
+                  try {
+                    const res = await fetch(flagUrl);
+                    const blob = await res.blob();
+                    downloadBlob(blob, `${selectedCountry.name}-flag.png`);
+                    toast.success('High-Res Flag downloaded!');
+                  } catch {
+                    const a = document.createElement('a');
+                    a.href = `/api/proxy-image?url=${encodeURIComponent(flagUrl)}&filename=${encodeURIComponent(selectedCountry.name)}-flag.png`;
+                    a.download = `${selectedCountry.name}-flag.png`;
+                    a.click();
+                  }
+                }}
                 className="px-3.5 py-2 rounded-xl bg-secondary hover:bg-muted border border-border text-xs font-bold text-foreground flex items-center gap-1.5 cursor-pointer transition-all"
               >
                 <Download className="w-3.5 h-3.5" />
-                <span>High-Res Flag</span>
-              </a>
+                <span>Download HD Flag</span>
+              </button>
             </div>
 
             {/* Comprehensive details grid */}
@@ -579,30 +590,30 @@ export const RestCountriesTool: React.FC = () => {
               ))}
             </div>
 
-            {/* External Navigation Links */}
-            <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 space-y-2">
-              <span className="text-[10px] font-black text-amber-600 dark:text-amber-400 uppercase tracking-wider block">Live Geographic Mapping</span>
-              <div className="grid grid-cols-2 gap-2">
-                <a 
-                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(selectedCountry.name)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-3 py-2 rounded-lg bg-amber-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 hover:bg-amber-600 transition-colors shadow-sm"
+            {/* In-App Geographic Coordinate Copy */}
+            {selectedCountry.latitude && selectedCountry.longitude && (
+              <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-between gap-2">
+                <div>
+                  <span className="text-[10px] font-black text-amber-600 dark:text-amber-400 uppercase tracking-wider block">
+                    Geographic Coordinates
+                  </span>
+                  <span className="text-xs font-mono font-bold text-foreground">
+                    Lat: {selectedCountry.latitude}°, Lon: {selectedCountry.longitude}°
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigator.clipboard.writeText(`${selectedCountry.latitude}, ${selectedCountry.longitude}`);
+                    toast.success('Coordinates copied to clipboard!');
+                  }}
+                  className="px-3 py-2 rounded-lg bg-amber-500 text-white font-bold text-xs flex items-center gap-1.5 hover:bg-amber-600 transition-colors cursor-pointer"
                 >
-                  <span>Google Maps</span>
-                  <ExternalLink className="w-3 h-3" />
-                </a>
-                <a 
-                  href={`https://www.openstreetmap.org/search?query=${encodeURIComponent(selectedCountry.name)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-3 py-2 rounded-lg bg-secondary text-foreground font-bold text-xs flex items-center justify-center gap-1.5 hover:bg-muted border border-border transition-colors"
-                >
-                  <span>OpenStreetMap</span>
-                  <ExternalLink className="w-3 h-3" />
-                </a>
+                  <Copy className="w-3.5 h-3.5" />
+                  <span>Copy GPS</span>
+                </button>
               </div>
-            </div>
+            )}
           </div>
         )}
       />
@@ -1268,20 +1279,6 @@ export const LexiconDictionaryTool: React.FC = () => {
                 </div>
               ))}
             </div>
-
-            {result.sourceUrls && result.sourceUrls.length > 0 && (
-              <div className="pt-6 border-t border-border">
-                <span className="text-[10px] font-bold text-muted-foreground uppercase block mb-2">Sources & References</span>
-                <div className="flex flex-col gap-2">
-                  {result.sourceUrls.map((url: string, i: number) => (
-                    <a key={i} href={url} target="_blank" rel="noopener noreferrer" className="text-xs text-amber-600 hover:underline flex items-center gap-1.5 truncate">
-                      <ExternalLink className="w-3 h-3 shrink-0" />
-                      {url}
-                    </a>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
         )}
       />
@@ -1885,31 +1882,12 @@ export const OpenLibraryTool: React.FC = () => {
                       <Maximize2 className="w-3.5 h-3.5" />
                       <span>Read Live Inside Website (Full Screen)</span>
                     </button>
-
-                    <a
-                      href={`https://archive.org/details/${selectedBook.ia[0]}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-4 py-2.5 rounded-[0.875rem] bg-secondary hover:bg-secondary/80 text-foreground font-bold border border-border/80 hover:border-amber-500/50 transition-all text-xs no-underline shadow-xs hover:shadow-sm active:scale-98"
-                      title="Open and read the full original digital scan on official Internet Archive"
-                    >
-                      <ExternalLink className="w-3.5 h-3.5 text-amber-500" />
-                      <span>Official Archive Edition ↗</span>
-                    </a>
                   </>
                 ) : (
                   <div className="flex flex-wrap items-center gap-3">
-                    {selectedBook.key && (
-                      <a
-                        href={`https://openlibrary.org${selectedBook.key}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 px-4 py-2 rounded-[0.875rem] bg-secondary hover:bg-secondary/80 text-foreground font-bold border border-border/80 hover:border-amber-500/50 transition-all text-xs no-underline shadow-xs"
-                      >
-                        <ExternalLink className="w-3.5 h-3.5 text-amber-500" />
-                        <span>Official Open Library Catalog ↗</span>
-                      </a>
-                    )}
+                    <span className="text-xs font-semibold text-muted-foreground">
+                      Catalog Record Verified • Copy citation above for bibliography use.
+                    </span>
                   </div>
                 )}
               </div>
@@ -1932,22 +1910,12 @@ export const OpenLibraryTool: React.FC = () => {
                 </h3>
                 <p className="text-[11px] text-neutral-400 truncate">
                   {selectedBook.author_name?.[0] ? `By ${selectedBook.author_name[0]} • ` : ''}
-                  Internet Archive Official BookReader
+                  In-App Digital BookReader
                 </p>
               </div>
             </div>
 
             <div className="flex items-center gap-2.5 shrink-0">
-              <a
-                href={`https://archive.org/details/${selectedBook.ia[0]}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-3 py-1.5 text-xs font-bold text-amber-400 hover:text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 rounded-[0.875rem] transition-colors flex items-center gap-1.5 no-underline"
-              >
-                <ExternalLink className="w-3.5 h-3.5 text-amber-400" />
-                <span className="hidden sm:inline">Archive Page</span>
-              </a>
-
               <button
                 type="button"
                 onClick={() => setShowLiveReader(false)}
@@ -3004,7 +2972,7 @@ export const AvatarGeneratorTool: React.FC = () => {
         toast.success('Downloaded High-Res PNG (512×512).');
       };
       img.onerror = () => {
-        window.open(avatarUrl, '_blank');
+        toast.error('Unable to render PNG.');
       };
       img.src = blobURL;
     } catch {
@@ -4189,16 +4157,14 @@ Generated At : ${new Date().toISOString()}
                 <span>{copiedField === 'IP Address' ? 'Copied!' : 'Copy IP Address'}</span>
               </button>
 
-              <a
-                href={`https://www.google.com/maps?q=${activeIpData.latitude},${activeIpData.longitude}`}
-                target="_blank"
-                rel="noopener noreferrer"
+              <button
+                type="button"
+                onClick={() => handleCopy(`${activeIpData.latitude}, ${activeIpData.longitude}`, 'Coordinates')}
                 className="px-4 py-2.5 bg-secondary hover:bg-muted text-foreground font-bold text-xs rounded-xl border border-border flex items-center gap-2 cursor-pointer transition-all"
               >
                 <MapPin className="w-4 h-4 text-rose-500" />
-                <span>Google Maps Pin</span>
-                <ExternalLink className="w-3 h-3 opacity-60" />
-              </a>
+                <span>{copiedField === 'Coordinates' ? 'Copied GPS!' : 'Copy GPS Coordinates'}</span>
+              </button>
             </div>
           </div>
         </div>
@@ -5129,26 +5095,30 @@ export const HipolabsUniversitiesTool: React.FC = () => {
                 </div>
 
                 <div className="pt-3 border-t border-border/60 flex items-center justify-between text-xs">
-                  <a
-                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(uni.name + ' ' + uni.country)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-[11px] text-muted-foreground hover:text-foreground font-semibold flex items-center gap-1"
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard.writeText(`${uni.name} (${uni.country})`);
+                      toast.success('University name & country copied!');
+                    }}
+                    className="text-[11px] text-muted-foreground hover:text-foreground font-semibold flex items-center gap-1 cursor-pointer"
                   >
-                    <MapPin className="w-3.5 h-3.5 text-rose-500" />
-                    <span>Campus Map</span>
-                  </a>
+                    <Copy className="w-3.5 h-3.5 text-amber-500" />
+                    <span>Copy Name</span>
+                  </button>
 
                   {webLink !== '#' && (
-                    <a
-                      href={webLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="px-3 py-1 rounded-lg bg-amber-500 hover:bg-amber-600 text-white font-bold text-[11px] flex items-center gap-1 shadow-xs no-underline"
+                    <button
+                      type="button"
+                      onClick={() => {
+                        navigator.clipboard.writeText(uni.domains?.[0] || webLink);
+                        toast.success('Official domain copied to clipboard!');
+                      }}
+                      className="px-3 py-1 rounded-lg bg-amber-500 hover:bg-amber-600 text-white font-bold text-[11px] flex items-center gap-1 shadow-xs cursor-pointer"
                     >
-                      <span>Official Portal</span>
-                      <ExternalLink className="w-3 h-3" />
-                    </a>
+                      <Copy className="w-3 h-3" />
+                      <span>Copy Domain</span>
+                    </button>
                   )}
                 </div>
               </div>
@@ -5267,7 +5237,7 @@ export const WebsiteScreenshotTool: React.FC = () => {
         const blob = await res.blob();
         downloadBlob(blob, filename);
       } catch {
-        window.open(screenshotUrl, '_blank');
+        toast.error('Could not download snapshot image directly.');
       }
     } finally {
       setIsDownloading(false);
@@ -5453,15 +5423,14 @@ export const WebsiteScreenshotTool: React.FC = () => {
             </div>
 
             <div className="flex items-center gap-2">
-              <a
-                href={screenshotUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-4 py-2.5 rounded-xl bg-secondary hover:bg-muted text-foreground font-bold text-xs border border-border flex items-center gap-1.5 no-underline transition-all"
+              <button
+                type="button"
+                onClick={() => setShowFullModal(true)}
+                className="px-4 py-2.5 rounded-xl bg-secondary hover:bg-muted text-foreground font-bold text-xs border border-border flex items-center gap-1.5 transition-all cursor-pointer"
               >
-                <ExternalLink className="w-3.5 h-3.5 text-amber-500" />
-                <span>Open Original Image</span>
-              </a>
+                <Maximize2 className="w-3.5 h-3.5 text-amber-500" />
+                <span>Full Screen Preview</span>
+              </button>
 
               <button
                 type="button"

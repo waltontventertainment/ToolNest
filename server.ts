@@ -458,8 +458,8 @@ async function startServer() {
     app.use(vite.middlewares);
     console.log('Vite development server middleware mounted successfully.');
   } else {
-    // Serve static built files from Vite dist directory
-    app.use(express.static(path.join(__dirname, 'dist')));
+    // Serve static built files from Vite dist directory (including /.well-known/* discovery manifests)
+    app.use(express.static(path.join(__dirname, 'dist'), { dotfiles: 'allow' }));
 
     // SPA client-side router fallback
     app.get('*', (req, res) => {

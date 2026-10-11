@@ -260,8 +260,14 @@ ${rssItemsXml}
   writeSeoFile('rss.xml', rssXml);
   writeSeoFile('feed.xml', rssXml);
 
-  // 6. Generate llms.txt for AI Search Engines (ChatGPT Search, Perplexity, Google AI Overviews, Claude)
+  // 6. Generate llms.txt for AI Search Engines & Agent Skills (urn:air:agent-skills)
   const llmsLines: string[] = [
+    `---`,
+    `name: toolzaro-llms-index`,
+    `description: Toolzaro (${BASE_URL}) is a privacy-first online utility platform offering ${tools.length}+ browser-native developer, PDF, image, calculator, converter, and SEO tools.`,
+    `version: 1.0.0`,
+    `---`,
+    ``,
     `# Toolzaro - Free Online Developer, PDF, Image & Utility Suite`,
     `> Toolzaro (${BASE_URL}) is a privacy-first online utility platform offering ${tools.length}+ browser-native tools across ${categories.length} categories. All tools run 100% client-side with zero cloud uploads and flat root-level URLs.`,
     ``,
@@ -291,9 +297,68 @@ ${rssItemsXml}
     ...BUILTIN_BLOG_POSTS.map(p => `- [${p.title}](${BASE_URL}/${p.slug}): ${p.excerpt}`),
     ``,
   ];
-  writeSeoFile('llms.txt', llmsLines.join('\n'));
+  const llmsContent = llmsLines.join('\n');
+  writeSeoFile('llms.txt', llmsContent);
+  writeSeoFile('SKILL.md', llmsContent);
 
-  // 6b. Generate ARD v1.0 (Agentic Resource Discovery) ai-catalog.json for PageSpeed Insights "Agentic Browsing" (4/4 score)
+  // 6a. Generate A2A-compliant agent-card.json for autonomous agent discovery
+  const agentCardJson = JSON.stringify(
+    {
+      name: 'Toolzaro Web Utilities Suite',
+      description: `Privacy-first online platform offering ${tools.length}+ browser-native tools for PDF processing, image compression, developer formatting, QR generation, calculators, and real-time data.`,
+      url: `${BASE_URL}/`,
+      version: '1.0.0',
+      documentationUrl: `${BASE_URL}/llms.txt`,
+      provider: {
+        organization: 'Toolzaro',
+        url: `${BASE_URL}/`,
+      },
+      capabilities: {
+        streaming: false,
+        pushNotifications: false,
+        stateTransitionHistory: false,
+      },
+      defaultInputModes: ['text/plain', 'application/json'],
+      defaultOutputModes: ['text/plain', 'application/json', 'text/markdown'],
+      skills: [
+        {
+          id: 'pdf-and-document-tools',
+          name: 'PDF & Document Processing Suite',
+          description: 'Merge, split, compress, rotate, watermark, and convert PDF files locally in the browser with zero server uploads.',
+          tags: ['pdf', 'document', 'merge', 'compress', 'convert'],
+          examples: [
+            'Merge multiple PDF files into one document',
+            'Compress a PDF file without losing quality',
+          ],
+        },
+        {
+          id: 'image-and-color-tools',
+          name: 'Image & Color Optimization Suite',
+          description: 'Compress, resize, crop, convert images (PNG, JPG, WebP) and generate accessible color palettes.',
+          tags: ['image', 'compress', 'resize', 'webp', 'color'],
+          examples: [
+            'Compress and resize an image for web performance',
+            'Convert PNG images to WebP format',
+          ],
+        },
+        {
+          id: 'developer-and-seo-utilities',
+          name: 'Developer, JSON, QR & SEO Utilities',
+          description: 'Format and validate JSON, encode Base64, generate QR codes and barcodes, inspect meta tags, and run technical SEO checks.',
+          tags: ['developer', 'json', 'qrcode', 'seo', 'utilities'],
+          examples: [
+            'Format and validate a JSON payload',
+            'Generate a custom QR code or barcode',
+          ],
+        },
+      ],
+    },
+    null,
+    2
+  );
+  writeSeoFile('agent-card.json', agentCardJson);
+
+  // 6b. Generate ARD v1.0 (Agentic Resource Discovery) ai-catalog.json & ard.json (100% RFC 8141 URN + Standard Media Types + representativeQueries)
   const aiCatalogJson = JSON.stringify(
     {
       specVersion: '1.0',
@@ -305,16 +370,27 @@ ${rssItemsXml}
       },
       entries: [
         {
-          identifier: 'toolzaro-llms-index',
+          identifier: 'urn:air:toolzaro.cyou:skills:toolzaro-llms-index',
           displayName: 'Toolzaro AI & LLM Documentation Index',
-          type: 'text/markdown',
+          type: 'text/markdown; profile="urn:air:agent-skills"',
           url: `${BASE_URL}/llms.txt`,
+          representativeQueries: [
+            'Find free client-side PDF, image, developer, and SEO browser utilities on Toolzaro',
+            'Merge, split, compress, or convert PDF documents and images locally in the browser',
+            'Format JSON, generate QR codes, inspect metadata, and run web developer tools online',
+            'Read technical guides on client-side privacy architecture and web utility workflows',
+          ],
         },
         {
-          identifier: 'toolzaro-rss-feed',
-          displayName: 'Toolzaro Tools & Technical Articles RSS Feed',
-          type: 'application/rss+xml',
-          url: `${BASE_URL}/rss.xml`,
+          identifier: 'urn:air:toolzaro.cyou:agents:toolzaro-agent-card',
+          displayName: 'Toolzaro Web Utilities Agent Card',
+          type: 'application/agent-card+json',
+          url: `${BASE_URL}/.well-known/agent-card.json`,
+          representativeQueries: [
+            'Discover Toolzaro browser utility capabilities, endpoints, and supported agent skills',
+            'Query available client-side PDF, image, text, calculator, and developer tools',
+            'Access zero-upload privacy-first online utilities and real-time data tools',
+          ],
         },
       ],
     },
@@ -322,17 +398,22 @@ ${rssItemsXml}
     2
   );
   writeSeoFile('ai-catalog.json', aiCatalogJson);
+  writeSeoFile('ard.json', aiCatalogJson);
   const wellKnownPublicDir = path.join(PUBLIC_DIR, '.well-known');
   if (!fs.existsSync(wellKnownPublicDir)) {
     fs.mkdirSync(wellKnownPublicDir, { recursive: true });
   }
   fs.writeFileSync(path.join(wellKnownPublicDir, 'ai-catalog.json'), aiCatalogJson, 'utf8');
+  fs.writeFileSync(path.join(wellKnownPublicDir, 'ard.json'), aiCatalogJson, 'utf8');
+  fs.writeFileSync(path.join(wellKnownPublicDir, 'agent-card.json'), agentCardJson, 'utf8');
   if (fs.existsSync(DIST_DIR)) {
     const wellKnownDistDir = path.join(DIST_DIR, '.well-known');
     if (!fs.existsSync(wellKnownDistDir)) {
       fs.mkdirSync(wellKnownDistDir, { recursive: true });
     }
     fs.writeFileSync(path.join(wellKnownDistDir, 'ai-catalog.json'), aiCatalogJson, 'utf8');
+    fs.writeFileSync(path.join(wellKnownDistDir, 'ard.json'), aiCatalogJson, 'utf8');
+    fs.writeFileSync(path.join(wellKnownDistDir, 'agent-card.json'), agentCardJson, 'utf8');
   }
 
   // 7. Update robots.txt with AdSense Mediapartners-Google, Googlebot, Bingbot & all sitemaps

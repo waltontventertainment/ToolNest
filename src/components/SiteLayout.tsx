@@ -316,7 +316,7 @@ export const SiteLayout: React.FC = () => {
           </div>
 
           <div>
-            <h4 className="font-bold text-xs uppercase tracking-wider text-muted-foreground mb-3">Tool Categories</h4>
+            <h2 className="font-bold text-xs uppercase tracking-wider text-muted-foreground mb-3">Tool Categories</h2>
             <ul className="space-y-2 text-xs font-medium text-muted-foreground">
               {categories.slice(0, 5).map((cat) => {
                 const slug = cat.toLowerCase().replace(/ & /g, '-').replace(/ /g, '-');
@@ -332,7 +332,7 @@ export const SiteLayout: React.FC = () => {
           </div>
 
           <div>
-            <h4 className="font-bold text-xs uppercase tracking-wider text-muted-foreground mb-3">More Categories</h4>
+            <h2 className="font-bold text-xs uppercase tracking-wider text-muted-foreground mb-3">More Categories</h2>
             <ul className="space-y-2 text-xs font-medium text-muted-foreground">
               {categories.slice(5).map((cat) => {
                 const slug = cat.toLowerCase().replace(/ & /g, '-').replace(/ /g, '-');
@@ -348,7 +348,7 @@ export const SiteLayout: React.FC = () => {
           </div>
 
           <div>
-            <h4 className="font-bold text-xs uppercase tracking-wider text-muted-foreground mb-3">Resources & Guides</h4>
+            <h2 className="font-bold text-xs uppercase tracking-wider text-muted-foreground mb-3">Resources & Guides</h2>
             <ul className="space-y-2 text-xs font-medium text-muted-foreground">
               <li><Link to={getToolsHubUrl()} className="hover:text-primary transition-colors flex items-center gap-1.5"><Wrench className="w-3.5 h-3.5 text-primary" /> All Tools Directory</Link></li>
               <li><Link to={getBlogUrl()} className="hover:text-primary transition-colors flex items-center gap-1.5"><BookOpen className="w-3.5 h-3.5 text-primary" /> Blog & Insights</Link></li>

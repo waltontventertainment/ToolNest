@@ -945,20 +945,6 @@ export const YoutubeTranscriptTool: React.FC = () => {
                             {formatTimestamp(playerSeekTime)}
                           </span>
                         </div>
-
-                        <a
-                          href={youtubeWatchUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="h-8 px-3 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 shadow-xs cursor-pointer"
-                        >
-                          <span>Watch on YouTube App/Web at {formatTimestamp(playerSeekTime)}</span>
-                          <ExternalLink className="w-3.5 h-3.5" />
-                        </a>
-
-                        <p className="text-[10px] text-muted-foreground leading-normal">
-                          Notice: If YouTube displays a TV graphic above ("Playback disabled by owner"), click the red button to watch directly on YouTube at this exact moment.
-                        </p>
                       </div>
                     )}
 
