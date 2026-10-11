@@ -225,9 +225,10 @@ export function getHomeSeoData(baseUrl = 'https://toolzaro.cyou', toolCount = to
       url: `${baseUrl}/`,
       logo: {
         '@type': 'ImageObject',
-        url: `${baseUrl}/logo.png`,
-        width: 600,
-        height: 402,
+        url: `${baseUrl}/android-chrome-512x512.png`,
+        contentUrl: `${baseUrl}/android-chrome-512x512.png`,
+        width: 512,
+        height: 512,
       },
       image: `${baseUrl}/og-banner.jpg`,
       contactPoint: {

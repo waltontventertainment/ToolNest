@@ -3,6 +3,7 @@ import path from 'path';
 import { execSync } from 'child_process';
 import { tools, categories } from '../src/lib/registry';
 import { BUILTIN_BLOG_POSTS } from '../src/lib/blogData';
+import { generateAll3DFavicons } from './render-3d-favicons';
 
 const BASE_URL = (process.env.SITE_URL || 'https://toolzaro.cyou').replace(/\/+$/, '');
 const PUBLIC_DIR = path.resolve(process.cwd(), 'public');
@@ -85,82 +86,49 @@ function writeSeoFile(fileName: string, content: string) {
 }
 
 function ensureFaviconsInPublic() {
-  const faviconSrc = path.join(ASSETS_IMG_DIR, 'toolzaro_favicon_1791427479017.jpg');
-  const iconLogoSrc = path.join(ASSETS_IMG_DIR, 'toolzaro_icon_logo_1791427467156.jpg');
-  const fullLogoSrc = path.join(ASSETS_IMG_DIR, 'toolzaro_full_logo_1791427489081.jpg');
   const heroBannerSrc = path.join(ASSETS_IMG_DIR, 'premium_hero_banner_1791390453868.jpg');
 
-  const requiredFiles = [
-    'favicon.ico',
-    'favicon.png',
-    'favicon-16x16.png',
-    'favicon-32x32.png',
-    'favicon-48x48.png',
-    'favicon-96x96.png',
-    'apple-touch-icon.png',
-    'android-chrome-192x192.png',
-    'android-chrome-512x512.png',
-    'logo.png',
-    'og-banner.jpg',
-  ];
-
-  const allExist = requiredFiles.every(f => fs.existsSync(path.join(PUBLIC_DIR, f)));
-  if (allExist) {
-    // Also mirror to dist/ if dist/ already exists
-    if (fs.existsSync(DIST_DIR)) {
-      for (const f of requiredFiles) {
-        const src = path.join(PUBLIC_DIR, f);
-        const dest = path.join(DIST_DIR, f);
-        if (fs.existsSync(src) && !fs.existsSync(dest)) {
-          fs.copyFileSync(src, dest);
-        }
+  // Always ensure high-resolution 32-bit RGBA 3D Toolzaro Wrench Logo favicons exist & mirror to dist/
+  const markerFile = path.join(PUBLIC_DIR, '.favicon-3d-v2');
+  if (!fs.existsSync(markerFile)) {
+    generateAll3DFavicons(PUBLIC_DIR, DIST_DIR);
+    fs.writeFileSync(markerFile, '3d-v2', 'utf8');
+  } else if (fs.existsSync(DIST_DIR)) {
+    const requiredFiles = [
+      'favicon.svg',
+      'favicon.ico',
+      'favicon.png',
+      'favicon-16x16.png',
+      'favicon-32x32.png',
+      'favicon-48x48.png',
+      'favicon-96x96.png',
+      'apple-touch-icon.png',
+      'android-chrome-192x192.png',
+      'android-chrome-512x512.png',
+      'android-chrome-maskable-512x512.png',
+      'logo.png',
+      'og-banner.jpg',
+    ];
+    for (const f of requiredFiles) {
+      const src = path.join(PUBLIC_DIR, f);
+      const dest = path.join(DIST_DIR, f);
+      if (fs.existsSync(src)) {
+        fs.copyFileSync(src, dest);
       }
     }
-    console.log('[SEO & Favicons] All root domain favicons & OG images verified in public/.');
-    return;
   }
 
-  try {
-    if (fs.existsSync(faviconSrc) && fs.existsSync(iconLogoSrc)) {
-      execSync(
-        `convert "${faviconSrc}" -resize 16x16 "${path.join(PUBLIC_DIR, 'favicon-16x16.png')}" && ` +
-          `convert "${faviconSrc}" -resize 32x32 "${path.join(PUBLIC_DIR, 'favicon-32x32.png')}" && ` +
-          `convert "${faviconSrc}" -resize 48x48 "${path.join(PUBLIC_DIR, 'favicon-48x48.png')}" && ` +
-          `convert "${faviconSrc}" -resize 96x96 "${path.join(PUBLIC_DIR, 'favicon-96x96.png')}" && ` +
-          `convert "${faviconSrc}" -resize 96x96 "${path.join(PUBLIC_DIR, 'favicon.png')}" && ` +
-          `convert "${path.join(PUBLIC_DIR, 'favicon-16x16.png')}" "${path.join(PUBLIC_DIR, 'favicon-32x32.png')}" "${path.join(PUBLIC_DIR, 'favicon-48x48.png')}" "${path.join(PUBLIC_DIR, 'favicon.ico')}" && ` +
-          `convert "${iconLogoSrc}" -resize 180x180 "${path.join(PUBLIC_DIR, 'apple-touch-icon.png')}" && ` +
-          `convert "${iconLogoSrc}" -resize 192x192 "${path.join(PUBLIC_DIR, 'android-chrome-192x192.png')}" && ` +
-          `convert "${iconLogoSrc}" -resize 512x512 "${path.join(PUBLIC_DIR, 'android-chrome-512x512.png')}"`,
-        { stdio: 'pipe' }
-      );
-    }
-    if (fs.existsSync(fullLogoSrc) && !fs.existsSync(path.join(PUBLIC_DIR, 'logo.png'))) {
-      execSync(`convert "${fullLogoSrc}" -resize 360x241 -strip -quality 82 "${path.join(PUBLIC_DIR, 'logo.png')}"`, { stdio: 'pipe' });
-    }
-    if (fs.existsSync(heroBannerSrc) && !fs.existsSync(path.join(PUBLIC_DIR, 'og-banner.jpg'))) {
+  if (fs.existsSync(heroBannerSrc) && !fs.existsSync(path.join(PUBLIC_DIR, 'og-banner.jpg'))) {
+    try {
       execSync(
         `convert "${heroBannerSrc}" -gravity center -crop 1200x630+0+0 +repage -strip -interlace Plane -quality 78 "${path.join(PUBLIC_DIR, 'og-banner.jpg')}"`,
         { stdio: 'pipe' }
       );
-    }
-  } catch {
-    if (fs.existsSync(faviconSrc)) {
-      for (const f of ['favicon.ico', 'favicon.png', 'favicon-16x16.png', 'favicon-32x32.png', 'favicon-48x48.png', 'favicon-96x96.png']) {
-        const dest = path.join(PUBLIC_DIR, f);
-        if (!fs.existsSync(dest)) fs.copyFileSync(faviconSrc, dest);
-      }
-    }
-    if (fs.existsSync(iconLogoSrc)) {
-      for (const f of ['apple-touch-icon.png', 'android-chrome-192x192.png', 'android-chrome-512x512.png']) {
-        const dest = path.join(PUBLIC_DIR, f);
-        if (!fs.existsSync(dest)) fs.copyFileSync(iconLogoSrc, dest);
-      }
-    }
-    if (fs.existsSync(heroBannerSrc) && !fs.existsSync(path.join(PUBLIC_DIR, 'og-banner.jpg'))) {
+    } catch {
       fs.copyFileSync(heroBannerSrc, path.join(PUBLIC_DIR, 'og-banner.jpg'));
     }
   }
+  console.log('[SEO & Favicons] All root domain 3D favicons & OG images verified in public/.');
 }
 
 function generateAllSitemapsAndSeoFiles() {

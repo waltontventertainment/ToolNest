@@ -1,22 +1,79 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
   <defs>
-    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#4f46e5" />
-      <stop offset="50%" stop-color="#6366f1" />
-      <stop offset="100%" stop-color="#9333ea" />
+    <!-- 3D Extruded Bottom Rim Gradient -->
+    <linearGradient id="extrusionGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3730a3" />
+      <stop offset="50%" stop-color="#312e81" />
+      <stop offset="100%" stop-color="#1e1b4b" />
     </linearGradient>
-    <linearGradient id="boltGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#fde047" />
-      <stop offset="100%" stop-color="#f59e0b" />
+
+    <!-- Main 3D Radiant Royal Purple-Indigo Surface (.logo-3d) -->
+    <linearGradient id="surfaceGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8b5cf6" />
+      <stop offset="48%" stop-color="#6366f1" />
+      <stop offset="100%" stop-color="#4f46e5" />
     </linearGradient>
-    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
-      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#0f172a" flood-opacity="0.35" />
-    </filter>
+
+    <!-- Top Glossy Specular Sheen -->
+    <linearGradient id="glossGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.45" />
+      <stop offset="45%" stop-color="#ffffff" stop-opacity="0.12" />
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.0" />
+    </linearGradient>
+
+    <!-- 3D Inner Bevel Rim Highlight -->
+    <linearGradient id="rimGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.78" />
+      <stop offset="50%" stop-color="#ffffff" stop-opacity="0.32" />
+      <stop offset="100%" stop-color="#1e1b4b" stop-opacity="0.35" />
+    </linearGradient>
+
+    <!-- Crisp 3D White Wrench Fill Gradient -->
+    <linearGradient id="wrenchGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="70%" stop-color="#f8fafc" />
+      <stop offset="100%" stop-color="#e0e7ff" />
+    </linearGradient>
   </defs>
-  <rect width="512" height="512" rx="116" fill="url(#bgGrad)" />
-  <rect x="18" y="18" width="476" height="476" rx="100" fill="none" stroke="#ffffff" stroke-opacity="0.2" stroke-width="6" />
-  <g filter="url(#shadow)">
-    <path d="M136 144h240c13.3 0 24 10.7 24 24v36c0 13.3-10.7 24-24 24H296v164c0 13.3-10.7 24-24 24h-32c-13.3 0-24-10.7-24-24V228H136c-13.3 0-24-10.7-24-24v-36c0-13.3 10.7-24 24-24z" fill="#ffffff" />
-    <path d="M336 248l-68 92h50l-18 80 80-100h-52l8-72z" fill="url(#boltGrad)" />
+
+  <!-- Soft Ambient Drop Shadow Base -->
+  <rect x="28" y="48" width="456" height="452" rx="166" fill="#1e1b4b" fill-opacity="0.28" />
+
+  <!-- 3D Physical Extrusion Base (Bottom Ledge) -->
+  <rect x="20" y="38" width="472" height="454" rx="170" fill="url(#extrusionGrad)" />
+
+  <!-- Main 3D Top Badge Surface -->
+  <rect x="20" y="14" width="472" height="450" rx="170" fill="url(#surfaceGrad)" />
+
+  <!-- Top Glossy Specular Reflection -->
+  <rect x="26" y="20" width="460" height="230" rx="164" fill="url(#glossGrad)" />
+
+  <!-- Inner 3D Specular Rim Border -->
+  <rect x="24" y="18" width="464" height="442" rx="166" fill="none" stroke="url(#rimGrad)" stroke-width="8" />
+
+  <!-- 3D Wrench Drop Shadow Layer -->
+  <g transform="translate(112, 110) scale(12)">
+    <path
+      d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"
+      fill="#1e1b4b"
+      fill-opacity="0.42"
+      stroke="#1e1b4b"
+      stroke-opacity="0.42"
+      stroke-width="2.1"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+  </g>
+
+  <!-- 3D Crisp White Wrench Icon (Exact Toolzaro Header Logo) -->
+  <g transform="translate(112, 96) scale(12)">
+    <path
+      d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"
+      fill="url(#wrenchGrad)"
+      stroke="#ffffff"
+      stroke-width="2.1"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
   </g>
 </svg>
