@@ -56,6 +56,10 @@ const CATEGORY_VISUAL_THEMES: Record<string, { iconBox: string; categoryText: st
     iconBox: 'bg-orange-500/12 text-orange-600 dark:text-orange-400 border-orange-500/25',
     categoryText: 'text-orange-600 dark:text-orange-400',
   },
+  'Fun & Viral': {
+    iconBox: 'bg-pink-500/12 text-pink-600 dark:text-pink-400 border-pink-500/25',
+    categoryText: 'text-pink-600 dark:text-pink-400',
+  },
 };
 
 export const ToolCard: React.FC<{ tool: ToolDefinition; compact?: boolean }> = React.memo(({ tool, compact = false }) => {

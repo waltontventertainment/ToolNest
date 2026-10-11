@@ -13,7 +13,8 @@ export type ToolCategory =
   | 'Calculators' 
   | 'SEO' 
   | 'Utility'
-  | 'PDF';
+  | 'PDF'
+  | 'Fun & Viral';
 
 export interface ToolDefinition {
   slug: string; 

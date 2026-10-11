@@ -49,7 +49,7 @@ export const CategoryPage: React.FC<{ forcedSlug?: string }> = ({ forcedSlug }) 
       'PDF', 'Text',
       'Developer', 'Converters', 'Generators',
       'Calculators', 'Color & Image', 'QR & Barcode',
-      'SEO', 'Utility', 'Wikipedia', 'Universal Data Suite'
+      'SEO', 'Utility', 'Fun & Viral', 'Wikipedia', 'Universal Data Suite'
     ];
     const present = desiredOrder.filter(cat => categories.includes(cat as any));
     const remainder = categories.filter(cat => !desiredOrder.includes(cat));

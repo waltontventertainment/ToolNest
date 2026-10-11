@@ -177,6 +177,14 @@ export const CATEGORY_SEO_DATA: Record<
     editorialSummary:
       'Real-time global reference tools combining open public datasets (Open-Meteo, REST Countries, Open Library, Dictionary API) with zero sign-ups.',
   },
+  'Fun & Viral': {
+    title: 'Fun & Viral Tools – Meme Generator, Trivia Quiz, Pokémon & Name Predictor | Toolzaro',
+    description:
+      'Explore 12 free interactive Fun & Viral web tools powered by open APIs: Meme Generator Studio, Name Age & Country Predictor, Live Trivia Quiz, Pokémon Battle, Dad Jokes, and Food Roulette.',
+    keywords: ['fun online tools', 'viral meme generator', 'name age predictor', 'online trivia quiz', 'pokemon battle simulator', 'dad joke generator', 'yes no oracle gif', 'random excuse generator'],
+    editorialSummary:
+      'Powered by free, open-source public APIs (Memegen, Agify, Nationalize, Open Trivia DB, PokéAPI, YesNo.wtf, TheMealDB, and RickAndMortyAPI) for instant entertainment and viral social sharing.',
+  },
 };
 
 export function getHomeSeoData(baseUrl = 'https://toolzaro.cyou', toolCount = tools.length) {

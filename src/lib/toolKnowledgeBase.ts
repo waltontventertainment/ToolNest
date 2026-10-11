@@ -177,6 +177,20 @@ const categoryKnowledgeDefaults: Record<ToolCategory, Omit<ToolKnowledge, 'featu
       { q: 'Do timers continue working if my computer goes to sleep?', a: 'System sleep halts CPU cycles; ensure your operating system sleep settings accommodate extended alarm or countdown durations.' },
       { q: 'Is the Scratchpad saved across page refreshes?', a: 'Yes. Scratchpad text is automatically saved in your browser’s HTML5 `localStorage` so you can return to your notes at any time.' }
     ]
+  },
+  'Fun & Viral': {
+    technicalOverview:
+      'Toolzaro’s Fun & Viral Suite connects directly to curated, open-source public REST APIs (including Memegen.link, Agify, Nationalize, Open Trivia DB, PokéAPI, YesNo.wtf, TheMealDB, and RickAndMortyAPI) from your browser. Every interaction—whether generating watermark-free memes, running live trivia quizzes, or simulating Pokémon battles—happens with zero sign-ups or account tracking.',
+    bestPractices: [
+      { title: 'Download High-Resolution Memes', advice: 'Use the Download Meme PNG button to save full-resolution graphics directly to your device for sharing on Discord, Reddit, or X.' },
+      { title: 'Combine First Names Only for Predictors', advice: 'When using the Name Age & Origin Predictor, enter a single given name without titles or middle initials for the highest statistical accuracy.' },
+      { title: 'Use Read Aloud for Comedy & Trivia', advice: 'Enable voice playback on the Dad Joke Generator during team standups or study breaks for instant icebreakers.' }
+    ],
+    extendedFaqs: [
+      { q: 'Are these Fun & Viral tools completely free to use?', a: 'Yes. Every tool in the Fun & Viral category is 100% free with unlimited usage and zero watermarks.' },
+      { q: 'Where does the data come from?', a: 'Each tool queries verified open-source community APIs (such as PokéAPI v2, Open Trivia Database, and Memegen) directly over HTTPS.' },
+      { q: 'Can I share generated memes and results on social media?', a: 'Absolutely. All generated memes, trivia scores, and vibe checks are designed for instant sharing across social platforms.' }
+    ]
   }
 };
 

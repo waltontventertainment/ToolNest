@@ -252,8 +252,23 @@ const PdfToImagesTool = lazyTool(loadPdfSuiteTools, 'PdfToImagesTool');
 const PdfRotateTool = lazyTool(loadPdfSuiteTools, 'PdfRotateTool');
 const PdfWatermarkTool = lazyTool(loadPdfSuiteTools, 'PdfWatermarkTool');
 
+// 18. FunViralToolsBatch (Fun & Viral Open API Suite)
+const loadFunViralToolsBatch = () => import('../tools/FunViralToolsBatch');
+const MemeGeneratorStudioTool = lazyTool(loadFunViralToolsBatch, 'MemeGeneratorStudioTool');
+const NameAgeNationalityPredictorTool = lazyTool(loadFunViralToolsBatch, 'NameAgeNationalityPredictorTool');
+const YesNoMagicGifOracleTool = lazyTool(loadFunViralToolsBatch, 'YesNoMagicGifOracleTool');
+const LiveTriviaQuizArenaTool = lazyTool(loadFunViralToolsBatch, 'LiveTriviaQuizArenaTool');
+const PokemonPokedexBattleTool = lazyTool(loadFunViralToolsBatch, 'PokemonPokedexBattleTool');
+const DadJokeComedyMachineTool = lazyTool(loadFunViralToolsBatch, 'DadJokeComedyMachineTool');
+const WeirdUselessFactsExplorerTool = lazyTool(loadFunViralToolsBatch, 'WeirdUselessFactsExplorerTool');
+const RandomExcuseGeneratorTool = lazyTool(loadFunViralToolsBatch, 'RandomExcuseGeneratorTool');
+const CuteDogCatMoodBoosterTool = lazyTool(loadFunViralToolsBatch, 'CuteDogCatMoodBoosterTool');
+const FoodRecipeRouletteTool = lazyTool(loadFunViralToolsBatch, 'FoodRecipeRouletteTool');
+const RickMortyMultiverseScannerTool = lazyTool(loadFunViralToolsBatch, 'RickMortyMultiverseScannerTool');
+const PirateShakespeareTranslatorTool = lazyTool(loadFunViralToolsBatch, 'PirateShakespeareTranslatorTool');
+
 export const categories: ToolCategory[] = [
-  'Universal Data Suite', 'Wikipedia', 'PDF', 'Text', 'Developer', 'Converters', 'Generators', 'QR & Barcode', 'Color & Image', 'Calculators', 'SEO', 'Utility'
+  'Universal Data Suite', 'Wikipedia', 'PDF', 'Text', 'Developer', 'Converters', 'Generators', 'QR & Barcode', 'Color & Image', 'Calculators', 'SEO', 'Utility', 'Fun & Viral'
 ];
 
 export const tools: ToolDefinition[] = [
@@ -2834,6 +2849,177 @@ export const tools: ToolDefinition[] = [
     howTo: ['Paste your uncompressed JS code.', 'Copy the minified output.'],
     faq: [{ q: 'Is it safe for complex apps?', a: 'This is a basic regex-based tool and does not parse the AST. It is best used on simple scripts.' }],
     Component: BasicJsMinifier
+  },
+  // ==========================================================================
+  // FUN & VIRAL SUITE (12 Interactive Open-API Tools)
+  // ==========================================================================
+  {
+    slug: 'viral-meme-generator',
+    name: 'Viral Meme Studio',
+    category: 'Fun & Viral',
+    icon: Smile,
+    previewIcons: [Smile, ImageIcon, Download],
+    keywords: ['meme generator', 'make memes online', 'drake meme generator', 'memegen', 'funny meme maker'],
+    metaTitle: 'Free Viral Meme Generator Studio Online',
+    metaDescription: 'Create custom viral memes instantly using 100+ popular meme templates and download high-res PNGs.',
+    intro: 'Design and download high-resolution memes in seconds using over 100 iconic meme templates powered by the open Memegen API.',
+    howTo: ['Pick a popular meme template or search by name.', 'Type your custom Top and Bottom captions.', 'Download your finished Meme PNG or copy the direct link.'],
+    faq: [{ q: 'Are generated memes watermark-free?', a: 'Yes, all memes are rendered cleanly in high resolution with zero watermarks.' }],
+    Component: MemeGeneratorStudioTool
+  },
+  {
+    slug: 'name-age-nationality-predictor',
+    name: 'Name Vibe & Origin Predictor',
+    category: 'Fun & Viral',
+    icon: Sparkles,
+    previewIcons: [Sparkles, Globe, Users],
+    keywords: ['name age predictor', 'name nationality predictor', 'agify', 'nationalize', 'genderize', 'name vibe check'],
+    metaTitle: 'Name Age, Nationality & Vibe Predictor',
+    metaDescription: 'Enter any first name to predict statistical age, top country origins, demographic match, and personality vibe.',
+    intro: 'Discover the statistical age, top countries of origin, and viral personality archetype behind any first name using global Agify, Nationalize, and Genderize open datasets.',
+    howTo: ['Type any first name into the box.', 'Click Predict Vibe & Origins to query global name statistics.', 'Compare top country probabilities and share your vibe check.'],
+    faq: [{ q: 'How does it predict nationality and age?', a: 'It queries aggregated public demographic datasets from Agify.io, Nationalize.io, and Genderize.io in real time.' }],
+    Component: NameAgeNationalityPredictorTool
+  },
+  {
+    slug: 'yes-no-magic-gif-oracle',
+    name: 'Yes/No Magic GIF Oracle',
+    category: 'Fun & Viral',
+    icon: Eye,
+    previewIcons: [Eye, Sparkles, Video],
+    keywords: ['yes or no oracle', 'magic 8 ball gif', 'yesno wtf', 'random decision maker gif'],
+    metaTitle: 'Yes or No Magic GIF Decision Oracle',
+    metaDescription: 'Ask any Yes or No question and get an instant verdict paired with a hilarious reaction GIF.',
+    intro: 'Can’t decide? Ask the Magic GIF Oracle any Yes or No question and receive an instant verdict accompanied by a randomized reaction GIF.',
+    howTo: ['Type any Yes/No question into the prompt.', 'Click Ask Magic Oracle to reveal the animated GIF verdict.'],
+    faq: [{ q: 'Where do the GIFs come from?', a: 'They are fetched live from the curated YesNo.wtf open API.' }],
+    Component: YesNoMagicGifOracleTool
+  },
+  {
+    slug: 'live-trivia-quiz-arena',
+    name: 'Live Trivia & Brain Quiz',
+    category: 'Fun & Viral',
+    icon: GraduationCap,
+    previewIcons: [GraduationCap, Zap, CheckCircle2],
+    keywords: ['online trivia quiz', 'brain quiz game', 'open trivia db', 'general knowledge quiz'],
+    metaTitle: 'Live Trivia & General Knowledge Quiz Arena',
+    metaDescription: 'Test your IQ with live multiple-choice trivia questions, streak counters, and instant scoring.',
+    intro: 'Challenge yourself with thousands of verified multiple-choice trivia questions across science, computers, pop culture, and history powered by Open Trivia DB.',
+    howTo: ['Read the multiple-choice question.', 'Click an answer option to check if you are right and build your streak.', 'Click Next Question or load a fresh 10-question set anytime.'],
+    faq: [{ q: 'Are questions different every time?', a: 'Yes, every quiz round fetches fresh randomized questions from Open Trivia DB.' }],
+    Component: LiveTriviaQuizArenaTool
+  },
+  {
+    slug: 'pokemon-pokedex-battle',
+    name: 'Pokémon Battle Simulator',
+    category: 'Fun & Viral',
+    icon: Zap,
+    previewIcons: [Zap, Activity, ShieldCheck],
+    keywords: ['pokemon battle simulator', 'pokedex lookup', 'pokeapi', 'pokemon stats comparator'],
+    metaTitle: 'Interactive Pokédex & Pokémon Battle Simulator',
+    metaDescription: 'Compare official Pokémon artwork, base HP/Attack/Speed stats, and simulate head-to-head arena battles.',
+    intro: 'Search over 1,000 Pokémon by name or ID, inspect official artwork and base combat stats (HP, Attack, Defense, Speed), and simulate instant arena battles via PokéAPI.',
+    howTo: ['Enter two Pokémon names or click the dice button for random challengers.', 'Compare their HP, Attack, Defense, and Speed stats.', 'Click Simulate Pokémon Battle to see the winner.'],
+    faq: [{ q: 'Does it include all generations?', a: 'Yes, it connects directly to PokéAPI v2 covering over 1,000 Pokémon.' }],
+    Component: PokemonPokedexBattleTool
+  },
+  {
+    slug: 'dad-joke-generator',
+    name: 'Dad Joke & Comedy Machine',
+    category: 'Fun & Viral',
+    icon: Volume2,
+    previewIcons: [Smile, Volume2, RefreshCw],
+    keywords: ['dad joke generator', 'funny jokes online', 'icanhazdadjoke', 'random pun generator'],
+    metaTitle: 'Random Dad Joke & Pun Generator with Voice',
+    metaDescription: 'Generate hilarious dad jokes and puns with one click, complete with text-to-speech voice playback.',
+    intro: 'Need a quick laugh or icebreaker for your team meeting? Generate endless clean dad jokes and puns with built-in voice synthesis.',
+    howTo: ['Click Generate Another Joke for a fresh punchline.', 'Click Read Aloud to hear it spoken or Copy to share in chat.'],
+    faq: [{ q: 'Are these jokes safe for work and school?', a: 'Yes, all jokes come from curated family-friendly dad joke collections.' }],
+    Component: DadJokeComedyMachineTool
+  },
+  {
+    slug: 'weird-useless-facts',
+    name: 'Weird & Useless Facts',
+    category: 'Fun & Viral',
+    icon: Info,
+    previewIcons: [Info, Sparkles, BookOpen],
+    keywords: ['weird facts generator', 'useless facts', 'random fun facts', 'true trivia facts'],
+    metaTitle: 'Weird & Useless True Facts Explorer',
+    metaDescription: 'Discover mind-blowing, weird, and 100% verified useless facts from science, history, and nature.',
+    intro: 'Explore bizarre, fascinating, and 100% true facts that sound too strange to be real—powered by the UselessFacts open API.',
+    howTo: ['Click Next Weird Fact to load a verified strange fact.', 'Copy and share your favorite facts on social media.'],
+    faq: [{ q: 'Are these facts verified?', a: 'Yes, the UselessFacts database curates real, citable trivia from history and science.' }],
+    Component: WeirdUselessFactsExplorerTool
+  },
+  {
+    slug: 'random-excuse-generator',
+    name: 'Smart Excuse & Alibi Maker',
+    category: 'Fun & Viral',
+    icon: ShieldAlert,
+    previewIcons: [ShieldAlert, Briefcase, RefreshCw],
+    keywords: ['random excuse generator', 'funny alibi maker', 'developer excuses', 'office excuse generator'],
+    metaTitle: 'Funny Excuse & Developer Alibi Generator',
+    metaDescription: 'Generate clever, hilarious excuses for developers, office meetings, college assignments, and parties.',
+    intro: 'Out of excuses for a late commit or missed meeting? Generate hilarious, creative alibis tailored for developers, office work, college, or social events.',
+    howTo: ['Select a category: Developers, Office, College, or Party.', 'Click Generate New Excuse and copy your favorite alibi.'],
+    faq: [{ q: 'Is this meant for humor?', a: 'Yes! It combines the open Excuser API with classic tech & office humor.' }],
+    Component: RandomExcuseGeneratorTool
+  },
+  {
+    slug: 'cute-dog-cat-generator',
+    name: 'Cute Dog & Cat Booster',
+    category: 'Fun & Viral',
+    icon: Heart,
+    previewIcons: [Heart, ImageIcon, Smile],
+    keywords: ['random dog pictures', 'random cat pictures', 'cute pet generator', 'cat facts', 'dog ceo api'],
+    metaTitle: 'Random Cute Dog & Cat Photo Mood Booster',
+    metaDescription: 'Instant mood booster featuring random adorable dog and cat photos paired with fun pet facts.',
+    intro: 'Take a 10-second stress break with endless high-resolution photos of adorable dogs and cats paired with verified pet trivia.',
+    howTo: ['Click Random Cute Dog or Random Cute Cat.', 'Enjoy instant wholesome pet photos and fun facts.'],
+    faq: [{ q: 'Where are the pet photos sourced?', a: 'Directly from the open Dog CEO API and TheCatAPI.' }],
+    Component: CuteDogCatMoodBoosterTool
+  },
+  {
+    slug: 'what-to-eat-food-roulette',
+    name: 'What Should I Eat? Roulette',
+    category: 'Fun & Viral',
+    icon: Utensils,
+    previewIcons: [Utensils, Globe2, Video],
+    keywords: ['what should i eat', 'random meal picker', 'food roulette', 'recipe generator', 'themealdb'],
+    metaTitle: 'What Should I Eat? Random Meal & Recipe Roulette',
+    metaDescription: 'Spin the Food Roulette wheel to discover a random global dish with photo, instructions, and video recipe.',
+    intro: 'Can’t decide what to cook or order tonight? Spin the Food Roulette to discover a delicious dish from global cuisines complete with cooking instructions and YouTube video guide.',
+    howTo: ['Click Spin Food Roulette to pick a random meal.', 'Read the dish overview or click the YouTube recipe link.'],
+    faq: [{ q: 'Does it include international cuisines?', a: 'Yes, TheMealDB includes Indian, Italian, Mexican, Japanese, Thai, American, and Mediterranean dishes.' }],
+    Component: FoodRecipeRouletteTool
+  },
+  {
+    slug: 'rick-and-morty-character-explorer',
+    name: 'Multiverse Character Scanner',
+    category: 'Fun & Viral',
+    icon: Users,
+    previewIcons: [Users, Search, Sparkles],
+    keywords: ['rick and morty api', 'character explorer', 'multiverse scanner', 'cartoon character lookup'],
+    metaTitle: 'Rick & Morty Multiverse Character Scanner',
+    metaDescription: 'Search and explore hundreds of multiverse characters, origins, species, and avatars instantly.',
+    intro: 'Scan the Rick & Morty multiverse database to inspect character avatars, survival status, species, and dimension of origin.',
+    howTo: ['Type any character name (e.g., Rick, Morty, Summer, Birdperson).', 'Click Scan Portal to view matching character cards.'],
+    faq: [{ q: 'How many characters are indexed?', a: 'Over 800 characters across all dimensions via the open RickAndMortyAPI.' }],
+    Component: RickMortyMultiverseScannerTool
+  },
+  {
+    slug: 'pirate-shakespeare-translator',
+    name: 'Funny Dialect Translator',
+    category: 'Fun & Viral',
+    icon: Replace,
+    previewIcons: [Replace, Type, Smile],
+    keywords: ['pirate translator', 'shakespeare translator', 'uwu translator', 'leet speak converter'],
+    metaTitle: 'Pirate, Shakespeare, UwU & 1337 Dialect Translator',
+    metaDescription: 'Convert ordinary English sentences into Pirate talk, Shakespearean English, Cute UwU, or 1337 Hacker speak.',
+    intro: 'Transform boring English text into hilarious Pirate captain slang, dramatic Shakespearean prose, cute UwU speak, or classic 1337 hacker text in real time.',
+    howTo: ['Choose a dialect tab (Pirate, Shakespeare, UwU, or 1337).', 'Type your sentence and copy the translated output.'],
+    faq: [{ q: 'Does it translate in real time?', a: 'Yes, translations happen instantaneously as you type.' }],
+    Component: PirateShakespeareTranslatorTool
   }
 ];
 
@@ -2882,6 +3068,7 @@ const FLAGSHIP_INTERLEAVED_SLUGS = [
   'temperature-converter',    // Converters
   'meta-tag-generator',       // SEO
   'stopwatch',                // Utility
+  'viral-meme-generator',     // Fun & Viral
   'wikipedia-summarizer',     // Wikipedia
 ];
 
@@ -2897,6 +3084,7 @@ const INTERLEAVE_CATEGORY_ROTATION = [
   'Converters',
   'SEO',
   'Utility',
+  'Fun & Viral',
   'Wikipedia',
 ];
 
