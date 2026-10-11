@@ -8,13 +8,12 @@ import { GoogleDriveProvider } from './context/GoogleDriveContext';
 import { SiteLayout } from './components/SiteLayout';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { Index } from './pages/Index';
+import { ToolPage } from './pages/ToolPage';
 import { isBloggerHost, extractSlugFromBloggerPath } from './lib/appUrls';
 import { tools, categories } from './lib/registry';
 import { getPublishedBlogs } from './lib/firestoreBlogService';
 
-// Code-split sub-route pages so the Homepage ('/') loads with minimal JS on Mobile Slow 4G,
-// then silently warm route chunks in the background after LCP completes.
-const ToolPage = React.lazy(() => import('./pages/ToolPage').then(m => ({ default: m.ToolPage })));
+// Code-split secondary route pages while keeping Index and ToolPage immediate for 0ms LCP
 const CategoryPage = React.lazy(() => import('./pages/CategoryPage').then(m => ({ default: m.CategoryPage })));
 const ToolsHubPage = React.lazy(() => import('./pages/ToolsHubPage').then(m => ({ default: m.ToolsHubPage })));
 const BlogPage = React.lazy(() => import('./pages/BlogPage').then(m => ({ default: m.BlogPage })));

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Type, QrCode, Image as ImageIcon, KeyRound, Search, FileText, Binary, Code, Barcode, FileSearch, Timer, Scissors, ArrowDownAZ, Space, Filter, ArrowLeftRight, WrapText, SplitSquareHorizontal, Mail, Link, Hash, FileDiff, Replace, ListPlus, ShieldX, Calculator, Superscript, Clock, Palette, Database, Fingerprint, Scan, Crop, Globe, Heart, Activity, FileCode, Box, Share2, BarChart2, Tag, Zap, BookOpen, Layers as Hierarchy, Volume2, Keyboard, Monitor, Shuffle, Maximize2, Sliders, Stamp, Eye, EyeOff, Sparkles, Merge, RotateCw, ShieldAlert, CheckCircle2, Video, Briefcase, ShoppingBag, Users, GraduationCap, Globe2, Utensils, Scale, Calendar, MapPin, CloudSun, Cloud, Smile, Wifi, Download, User, Info, Map, Wind, Thermometer, ShieldCheck, Bookmark, RefreshCw } from 'lucide-react';
 import { ToolDefinition, ToolCategory } from './types';
+import { OpenMeteoWeatherTool } from '../tools/OpenMeteoWeatherTool';
 
 /**
  * Helper for route & tool-level code splitting with 0ms synchronous cache & instant hover/URL preloading.
@@ -144,7 +145,6 @@ const loadFreeApiToolsBatch = () => import('../tools/FreeApiToolsBatch');
 const RestCountriesTool = lazyTool(loadFreeApiToolsBatch, 'RestCountriesTool');
 const LexiconDictionaryTool = lazyTool(loadFreeApiToolsBatch, 'LexiconDictionaryTool');
 const OpenLibraryTool = lazyTool(loadFreeApiToolsBatch, 'OpenLibraryTool');
-const OpenMeteoWeatherTool = lazyTool(loadFreeApiToolsBatch, 'OpenMeteoWeatherTool');
 const AvatarGeneratorTool = lazyTool(loadFreeApiToolsBatch, 'AvatarGeneratorTool');
 const QrServerGeneratorTool = lazyTool(loadFreeApiToolsBatch, 'QrServerGeneratorTool');
 const LoremPicsumTool = lazyTool(loadFreeApiToolsBatch, 'LoremPicsumTool');

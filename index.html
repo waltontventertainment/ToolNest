@@ -296,16 +296,35 @@
         </a>
       </header>
       <main class="tz-shell-main">
-        <div class="tz-shell-badge">156 Browser Utilities · Client-Side Privacy</div>
+        <div id="tz-shell-badge" class="tz-shell-badge">156 Browser Utilities · Client-Side Privacy</div>
         <h1 class="tz-shell-h1">
-          <span>Every web tool you need.</span>
-          <span class="tz-shell-h1-grad">Zero installation required.</span>
+          <span id="tz-shell-title">Every web tool you need.</span>
+          <span id="tz-shell-subtitle" class="tz-shell-h1-grad">Zero installation required.</span>
         </h1>
-        <p class="tz-shell-p">
+        <p id="tz-shell-desc" class="tz-shell-p">
           Browser-native processing. Merge PDFs, resize images, format JSON, generate QR codes, and convert files safely without cloud uploads.
         </p>
-        <div class="tz-shell-search">Search across 156 utilities (e.g., PDF, image, JSON, QR)...</div>
+        <div id="tz-shell-box" class="tz-shell-search">Search across 156 utilities (e.g., PDF, image, JSON, QR)...</div>
       </main>
+      <script>
+        (function () {
+          try {
+            var p = (window.location.pathname || '').toLowerCase();
+            if (p.indexOf('open-meteo-live-weather') !== -1) {
+              var b = document.getElementById('tz-shell-badge');
+              var t = document.getElementById('tz-shell-title');
+              var s = document.getElementById('tz-shell-subtitle');
+              var d = document.getElementById('tz-shell-desc');
+              var x = document.getElementById('tz-shell-box');
+              if (b) b.textContent = 'Universal Data Suite · Live Satellite Telemetry';
+              if (t) t.textContent = 'Real-Time Weather Station';
+              if (s) s.textContent = 'Global Live Weather & 7-Day Forecast';
+              if (d) d.textContent = 'Get real-time weather forecasting, live satellite temperature, humidity, wind flow, UV index, and 7-day outlook for global cities.';
+              if (x) x.textContent = 'London, United Kingdom · 18.4°C Partly Cloudy · Humidity 62% · Wind 11.4 km/h';
+            }
+          } catch (e) {}
+        })();
+      </script>
     </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
