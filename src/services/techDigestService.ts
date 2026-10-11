@@ -19,26 +19,26 @@ export interface TechDigest {
 }
 
 export const REAL_TECH_TOPIC_IMAGES = [
-  'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=160&h=160&auto=format&fit=crop&q=80', // Modern IDE & Code
-  'https://images.unsplash.com/photo-1563986768609-322da13575f3?w=160&h=160&auto=format&fit=crop&q=80', // Cybersecurity & Zero-Trust
-  'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=160&h=160&auto=format&fit=crop&q=80', // Developer Toolkits & Workstation
-  'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=160&h=160&auto=format&fit=crop&q=80', // WebAssembly & High-Speed Processing
-  'https://images.unsplash.com/photo-1515879218367-8466d910aaa4?w=160&h=160&auto=format&fit=crop&q=80', // Modern TypeScript Architecture
-  'https://images.unsplash.com/photo-1504639725590-34d0984388bd?w=160&h=160&auto=format&fit=crop&q=80', // Web Crypto & Security Primitives
-  'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=160&h=160&auto=format&fit=crop&q=80', // AI & Cloud Computing
-  'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=160&h=160&auto=format&fit=crop&q=80', // Edge Networks & Global Data
+  'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=64&h=64&auto=format&fit=crop&q=75&fm=webp', // Modern IDE & Code
+  'https://images.unsplash.com/photo-1563986768609-322da13575f3?w=64&h=64&auto=format&fit=crop&q=75&fm=webp', // Cybersecurity & Zero-Trust
+  'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=64&h=64&auto=format&fit=crop&q=75&fm=webp', // Developer Toolkits & Workstation
+  'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=64&h=64&auto=format&fit=crop&q=75&fm=webp', // WebAssembly & High-Speed Processing
+  'https://images.unsplash.com/photo-1515879218367-8466d910aaa4?w=64&h=64&auto=format&fit=crop&q=75&fm=webp', // Modern TypeScript Architecture
+  'https://images.unsplash.com/photo-1504639725590-34d0984388bd?w=64&h=64&auto=format&fit=crop&q=75&fm=webp', // Web Crypto & Security Primitives
+  'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=64&h=64&auto=format&fit=crop&q=75&fm=webp', // AI & Cloud Computing
+  'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=64&h=64&auto=format&fit=crop&q=75&fm=webp', // Edge Networks & Global Data
 ];
 
 export function getFallbackTopicImage(index: number): string {
   return REAL_TECH_TOPIC_IMAGES[Math.abs(index) % REAL_TECH_TOPIC_IMAGES.length];
 }
 
-export function getFastTopicImage(seedText: string, index: number): string {
-  let hash = index;
-  for (let i = 0; i < seedText.length; i++) {
-    hash = (hash * 31 + seedText.charCodeAt(i)) >>> 0;
-  }
-  return REAL_TECH_TOPIC_IMAGES[hash % REAL_TECH_TOPIC_IMAGES.length];
+/**
+ * Assigns a rock-solid, deterministic WebP topic thumbnail based on the item index.
+ * Index-based assignment ensures images never change or jump on news updates or page refreshes.
+ */
+export function getFastTopicImage(_seedText: string, index: number): string {
+  return REAL_TECH_TOPIC_IMAGES[Math.abs(index) % REAL_TECH_TOPIC_IMAGES.length];
 }
 
 /**

@@ -360,6 +360,9 @@ export const DailyTechDigest: React.FC = () => {
                 const imgSrc =
                   item.imageUrl ||
                   getFastTopicImage(item.title || item.category || `topic-${index}`, index);
+                const cardImgSrc =
+                  item.imageUrl ||
+                  getFastTopicImage('', index).replace('w=64&h=64', 'w=360&h=180');
                 return (
                   <div 
                     key={index} 
@@ -377,9 +380,9 @@ export const DailyTechDigest: React.FC = () => {
                     <div>
                       <div className="w-full h-24 rounded-lg overflow-hidden mb-2 bg-muted/40 relative">
                         <img 
-                          src={imgSrc} 
+                          src={cardImgSrc} 
                           alt={item.title}
-                          loading="eager"
+                          loading="lazy"
                           decoding="async"
                           referrerPolicy="no-referrer"
                           className="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-300"

@@ -23,6 +23,7 @@ import { BreadcrumbNavigation } from '../components/BreadcrumbNavigation';
 import { BlogAuthorBadge } from '../components/BlogAuthorBadge';
 import { useSiteSettings } from '../context/SiteSettingsContext';
 import { getBlogPostUrl } from '../lib/appUrls';
+import { getResponsiveCardImage } from '../lib/imageUtils';
 
 export const BlogPage: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -192,18 +193,25 @@ export const BlogPage: React.FC = () => {
             >
               {/* Cover Image */}
               <div className="relative aspect-video overflow-hidden bg-muted block">
-                <img
-                  src={post.coverImage}
-                  alt={post.title}
-                  loading="lazy"
-                  decoding="async"
-                  width={480}
-                  height={270}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 ease-out"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&auto=format&fit=crop&q=80';
-                  }}
-                />
+                {(() => {
+                  const imgAttrs = getResponsiveCardImage(post.coverImage);
+                  return (
+                    <img
+                      src={imgAttrs.src}
+                      srcSet={imgAttrs.srcSet}
+                      sizes={imgAttrs.sizes}
+                      alt={post.title}
+                      loading="lazy"
+                      decoding="async"
+                      width={480}
+                      height={270}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 ease-out"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=600&auto=format&fit=crop&q=75&fm=webp';
+                      }}
+                    />
+                  );
+                })()}
                 <span className="absolute top-3 left-3 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-black/60 text-white backdrop-blur-xs border border-white/20">
                   {post.category}
                 </span>

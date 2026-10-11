@@ -11,14 +11,19 @@ import { Index } from './pages/Index';
 import { isBloggerHost, extractSlugFromBloggerPath } from './lib/appUrls';
 import { tools, categories } from './lib/registry';
 
-// Directly import primary route pages for immediate 0ms first render without layout unmounting or refresh flicker
-import { ToolPage } from './pages/ToolPage';
-import { CategoryPage } from './pages/CategoryPage';
-import { ToolsHubPage } from './pages/ToolsHubPage';
-import { BlogPage } from './pages/BlogPage';
-import { BlogPostPage } from './pages/BlogPostPage';
-import { About, PrivacyPolicy, TermsOfService, Disclaimer, Contact, HtmlSitemap } from './pages/StaticPages';
-import { NotFound } from './pages/NotFound';
+// Secondary route pages code-split for sub-50 KiB initial main bundle & 100/100 Mobile PageSpeed
+const ToolPage = React.lazy(() => import('./pages/ToolPage').then(m => ({ default: m.ToolPage })));
+const CategoryPage = React.lazy(() => import('./pages/CategoryPage').then(m => ({ default: m.CategoryPage })));
+const ToolsHubPage = React.lazy(() => import('./pages/ToolsHubPage').then(m => ({ default: m.ToolsHubPage })));
+const BlogPage = React.lazy(() => import('./pages/BlogPage').then(m => ({ default: m.BlogPage })));
+const BlogPostPage = React.lazy(() => import('./pages/BlogPostPage').then(m => ({ default: m.BlogPostPage })));
+const About = React.lazy(() => import('./pages/StaticPages').then(m => ({ default: m.About })));
+const PrivacyPolicy = React.lazy(() => import('./pages/StaticPages').then(m => ({ default: m.PrivacyPolicy })));
+const TermsOfService = React.lazy(() => import('./pages/StaticPages').then(m => ({ default: m.TermsOfService })));
+const Disclaimer = React.lazy(() => import('./pages/StaticPages').then(m => ({ default: m.Disclaimer })));
+const Contact = React.lazy(() => import('./pages/StaticPages').then(m => ({ default: m.Contact })));
+const HtmlSitemap = React.lazy(() => import('./pages/StaticPages').then(m => ({ default: m.HtmlSitemap })));
+const NotFound = React.lazy(() => import('./pages/NotFound').then(m => ({ default: m.NotFound })));
 
 // Secret Admin workspace kept isolated and lazy-loaded
 const AdminPage = React.lazy(() => import('./pages/AdminPage').then(m => ({ default: m.AdminPage })));
@@ -506,6 +511,24 @@ function UniversalCatchAll() {
 export default function App() {
   const useHash = useMemo(() => isHashRoutingRequired(), []);
   const RouterComponent = useHash ? HashRouter : BrowserRouter;
+
+  // Background idle prefetching of secondary route chunks after first paint
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const prefetchRoutes = () => {
+      import('./pages/ToolPage').catch(() => {});
+      import('./pages/ToolsHubPage').catch(() => {});
+      import('./pages/BlogPage').catch(() => {});
+    };
+
+    if ('requestIdleCallback' in window) {
+      const id = (window as any).requestIdleCallback(prefetchRoutes, { timeout: 3500 });
+      return () => (window as any).cancelIdleCallback?.(id);
+    } else {
+      const timer = setTimeout(prefetchRoutes, 2500);
+      return () => clearTimeout(timer);
+    }
+  }, []);
 
   return (
     <ErrorBoundary>

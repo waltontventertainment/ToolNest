@@ -35,8 +35,7 @@ import { HeroShowcase } from '../components/HeroShowcase';
 import { BlogAuthorBadge } from '../components/BlogAuthorBadge';
 import { getBlogUrl, getBlogPostUrl, getBookmarksUrl, getToolsHubUrl } from '../lib/appUrls';
 import { getHomeSeoData } from '../lib/seoHelper';
-
-import emptyImg from '../assets/images/empty_state_1785690459297.jpg';
+import { getResponsiveCardImage } from '../lib/imageUtils';
 
 const POPULAR_SEARCH_TAGS = ['PDF', 'Image', 'JSON', 'QR Code', 'Password', 'Base64', 'Weather'];
 
@@ -853,7 +852,9 @@ export const Index: React.FC<{ forcedBookmarks?: boolean }> = ({ forcedBookmarks
                 </div>
               ) : (
                 <div className="text-center py-12 sm:py-16 bg-card/50 rounded-3xl border-2 border-dashed border-border flex flex-col items-center p-6">
-                  <img src={emptyImg} alt="No tools found" loading="lazy" decoding="async" width={144} height={144} className="w-32 h-32 sm:w-36 sm:h-36 mb-4 opacity-80" />
+                  <div className="w-16 h-16 rounded-2xl bg-muted/80 flex items-center justify-center mb-4 text-muted-foreground border border-border">
+                    <Search className="w-8 h-8" />
+                  </div>
                   <h3 className="text-base font-bold mb-1">No matching tools found</h3>
                   <p className="text-xs text-muted-foreground mb-5 max-w-sm">
                     We couldn't find anything matching "{search}".
@@ -925,19 +926,26 @@ export const Index: React.FC<{ forcedBookmarks?: boolean }> = ({ forcedBookmarks
               >
                 <div className="space-y-3">
                   <div className="overflow-hidden rounded-xl aspect-video relative bg-muted">
-                    <img
-                      src={post.coverImage}
-                      alt={post.title}
-                      loading="lazy"
-                      decoding="async"
-                      width={480}
-                      height={270}
-                      referrerPolicy="no-referrer"
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 ease-out"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&auto=format&fit=crop&q=80';
-                      }}
-                    />
+                    {(() => {
+                      const imgAttrs = getResponsiveCardImage(post.coverImage);
+                      return (
+                        <img
+                          src={imgAttrs.src}
+                          srcSet={imgAttrs.srcSet}
+                          sizes={imgAttrs.sizes}
+                          alt={post.title}
+                          loading="lazy"
+                          decoding="async"
+                          width={480}
+                          height={270}
+                          referrerPolicy="no-referrer"
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 ease-out"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=600&auto=format&fit=crop&q=75&fm=webp';
+                          }}
+                        />
+                      );
+                    })()}
                   </div>
 
                   <div className="flex items-center gap-2 text-[11px] text-muted-foreground">

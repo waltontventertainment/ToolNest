@@ -33,6 +33,7 @@ import { CustomCodeRenderer } from '../components/CustomCodeRenderer';
 import { BlogAuthorBadge } from '../components/BlogAuthorBadge';
 import { useSiteSettings } from '../context/SiteSettingsContext';
 import { getBlogPostUrl } from '../lib/appUrls';
+import { getResponsiveHeroCover } from '../lib/imageUtils';
 import { NotFound } from './NotFound';
 import { toast } from 'sonner';
 
@@ -231,21 +232,28 @@ export const BlogPostPage: React.FC<{ forcedSlug?: string }> = ({ forcedSlug }) 
           {/* Cover Image */}
           {post.coverImage && (
             <div className="rounded-2xl overflow-hidden aspect-video border border-border shadow-xs bg-muted relative">
-              <img
-                src={post.coverImage}
-                alt={post.title}
-                loading="eager"
-                decoding="async"
-                width={896}
-                height={504}
-                onError={e => {
-                  const target = e.currentTarget;
-                  if (target.src !== DEFAULT_COVER_FALLBACK) {
-                    target.src = DEFAULT_COVER_FALLBACK;
-                  }
-                }}
-                className="w-full h-full object-cover block"
-              />
+              {(() => {
+                const imgAttrs = getResponsiveHeroCover(post.coverImage);
+                return (
+                  <img
+                    src={imgAttrs.src}
+                    srcSet={imgAttrs.srcSet}
+                    sizes={imgAttrs.sizes}
+                    alt={post.title}
+                    loading="eager"
+                    decoding="async"
+                    width={896}
+                    height={504}
+                    onError={e => {
+                      const target = e.currentTarget;
+                      if (target.src !== DEFAULT_COVER_FALLBACK) {
+                        target.src = DEFAULT_COVER_FALLBACK;
+                      }
+                    }}
+                    className="w-full h-full object-cover block"
+                  />
+                );
+              })()}
             </div>
           )}
 
