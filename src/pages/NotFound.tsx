@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Home, Grid, ArrowRight } from 'lucide-react';
+import { tools } from '../lib/registry';
 import { Seo } from '../components/Seo';
 import { ToolsHubPage } from './ToolsHubPage';
 
@@ -25,7 +26,7 @@ export const NotFound: React.FC = () => {
     <div className="space-y-8">
       <Seo
         title="Explore All Online Tools Directory | Toolzaro"
-        description="Browse and search our complete directory of 156+ browser-based developer, PDF, image, converter, and utility tools."
+        description={`Browse and search our complete directory of ${tools.length}+ browser-based developer, PDF, image, converter, and utility tools.`}
       />
 
       {/* Helpful Notice Banner + Direct Hub Directory */}

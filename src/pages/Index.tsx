@@ -59,8 +59,8 @@ export const Index: React.FC<{ forcedBookmarks?: boolean }> = ({ forcedBookmarks
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(isBookmarksRoute);
   const { favorites, clearFavorites } = useFavorites();
 
-  // Show 24 tools initially on the homepage grid
-  const [displayCount, setDisplayCount] = useState(24);
+  // Show 12 curated tools initially on the homepage grid (optimizes initial DOM element count for 100/100 Lighthouse)
+  const [displayCount, setDisplayCount] = useState(12);
   const [incrementCount, setIncrementCount] = useState(24);
   
   // Blog state initialized synchronously with instant cache + built-in posts (0ms render, zero Firestore loading flash)
@@ -124,9 +124,9 @@ export const Index: React.FC<{ forcedBookmarks?: boolean }> = ({ forcedBookmarks
   }, [forcedBookmarks, location.pathname, searchParams]);
 
   useEffect(() => {
-    const count = 24;
+    const count = 12;
     setDisplayCount(count);
-    setIncrementCount(count);
+    setIncrementCount(24);
   }, []);
 
   const handleExitFavorites = () => {
@@ -306,7 +306,7 @@ export const Index: React.FC<{ forcedBookmarks?: boolean }> = ({ forcedBookmarks
                   onClick={handleExitFavorites}
                   className="btn-signature-primary px-4 py-1.5 text-xs font-bold cursor-pointer flex items-center gap-1.5 rounded-[0.875rem]"
                 >
-                  <span>Explore All {tools.length} Tools</span>
+                  <span>Explore All {activeToolsList.length} Tools</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </button>
               </div>
@@ -331,10 +331,13 @@ export const Index: React.FC<{ forcedBookmarks?: boolean }> = ({ forcedBookmarks
                     <button
                       type="button"
                       onClick={() => setSearch('')}
-                      className="absolute inset-y-0 right-2.5 my-auto w-6 h-6 rounded-lg bg-muted/80 hover:bg-muted flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                      className="absolute inset-y-0 right-1 my-auto w-11 h-11 flex items-center justify-center rounded-lg text-muted-foreground hover:text-foreground cursor-pointer"
+                      aria-label="Clear search"
                       title="Clear search"
                     >
-                      <X className="w-3.5 h-3.5" />
+                      <span className="w-6 h-6 rounded-md bg-muted/80 hover:bg-muted flex items-center justify-center">
+                        <X className="w-3.5 h-3.5" />
+                      </span>
                     </button>
                   )}
                 </div>
@@ -410,7 +413,7 @@ export const Index: React.FC<{ forcedBookmarks?: boolean }> = ({ forcedBookmarks
                     onClick={handleExitFavorites}
                     className="btn-signature-primary px-5 py-2 text-xs font-bold cursor-pointer flex items-center gap-2 rounded-[0.875rem]"
                   >
-                    <span>Explore All {tools.length} Tools</span>
+                    <span>Explore All {activeToolsList.length} Tools</span>
                     <ArrowRight className="w-4 h-4" />
                   </button>
                 )}
@@ -428,14 +431,14 @@ export const Index: React.FC<{ forcedBookmarks?: boolean }> = ({ forcedBookmarks
             <div className="lg:col-span-7 w-full flex flex-col items-center lg:items-start text-center lg:text-left min-w-0">
               <div className="flex items-center gap-2 text-xs font-bold text-primary mb-2.5 tracking-tight">
                 <Sparkles className="w-3.5 h-3.5 shrink-0" />
-                <span>{tools.length} Browser Utilities</span>
+                <span>{activeToolsList.length} Browser Utilities</span>
                 <span aria-hidden="true" className="text-muted-foreground">·</span>
                 <span className="text-muted-foreground font-semibold">Client-Side Privacy</span>
               </div>
               
               {/* Locked Single-Line Keyboard Typewriter Heading (Zero 2-Line Wrap or Vertical Jump) */}
               <div className="w-full min-w-0">
-                <TypewriterHeading />
+                <TypewriterHeading toolCount={activeToolsList.length} />
               </div>
               
               <p className="text-sm sm:text-base text-muted-foreground mb-4 sm:mb-5 leading-relaxed max-w-xl font-normal text-center lg:text-left">
@@ -453,7 +456,7 @@ export const Index: React.FC<{ forcedBookmarks?: boolean }> = ({ forcedBookmarks
                   <input
                     type="text"
                     className="w-full h-12 pl-13 pr-24 rounded-xl border border-border bg-card text-sm font-medium focus:outline-none focus:border-primary focus:ring-3 focus:ring-primary/15 shadow-xs transition-colors placeholder:text-muted-foreground/75"
-                    placeholder={`Search ${tools.length} utilities (e.g., PDF merger, image resizer, JSON, QR)...`}
+                    placeholder={`Search ${activeToolsList.length} utilities (e.g., PDF merger, image resizer, JSON, QR)...`}
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                   />
@@ -462,10 +465,13 @@ export const Index: React.FC<{ forcedBookmarks?: boolean }> = ({ forcedBookmarks
                       <button
                         type="button"
                         onClick={clearSearchQuery}
-                        className="w-7 h-7 rounded-lg bg-muted hover:bg-muted/80 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                        className="w-10 h-10 flex items-center justify-center text-muted-foreground hover:text-foreground cursor-pointer"
+                        aria-label="Clear search query"
                         title="Clear search"
                       >
-                        <X className="w-3.5 h-3.5" />
+                        <span className="w-7 h-7 rounded-lg bg-muted hover:bg-muted/80 flex items-center justify-center">
+                          <X className="w-3.5 h-3.5" />
+                        </span>
                       </button>
                     ) : (
                       <span className="text-[11px] font-mono text-muted-foreground bg-muted/70 px-2 py-0.5 rounded-md border border-border">
@@ -512,7 +518,7 @@ export const Index: React.FC<{ forcedBookmarks?: boolean }> = ({ forcedBookmarks
                 <span aria-hidden="true">·</span>
                 <span className="inline-flex items-center gap-1.5">
                   <Layers className="w-3.5 h-3.5 text-indigo-500" />
-                  <span>{tools.length} Free Utilities</span>
+                  <span>{activeToolsList.length} Free Utilities</span>
                 </span>
               </div>
             </div>
@@ -539,7 +545,7 @@ export const Index: React.FC<{ forcedBookmarks?: boolean }> = ({ forcedBookmarks
               <input
                 type="text"
                 className="w-full h-13 pl-14 pr-12 rounded-2xl border-2 border-border/80 bg-card text-sm font-medium focus:outline-none focus:border-primary focus:ring-3 focus:ring-primary/10 shadow-xs transition-colors placeholder:text-muted-foreground/75"
-                placeholder={`Search across ${tools.length} utilities (e.g., PDF, image, JSON, QR)...`}
+                placeholder={`Search across ${activeToolsList.length} utilities (e.g., PDF, image, JSON, QR)...`}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
@@ -547,10 +553,13 @@ export const Index: React.FC<{ forcedBookmarks?: boolean }> = ({ forcedBookmarks
                 <button
                   type="button"
                   onClick={clearSearchQuery}
-                  className="absolute inset-y-0 right-3.5 my-auto w-8 h-8 rounded-xl bg-muted/80 hover:bg-muted flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                  className="absolute inset-y-0 right-1.5 my-auto w-12 h-12 flex items-center justify-center text-muted-foreground hover:text-foreground cursor-pointer"
+                  aria-label="Clear search query"
                   title="Clear search"
                 >
-                  <X className="w-4 h-4" />
+                  <span className="w-8 h-8 rounded-xl bg-muted/80 hover:bg-muted flex items-center justify-center">
+                    <X className="w-4 h-4" />
+                  </span>
                 </button>
               )}
             </div>
@@ -566,7 +575,7 @@ export const Index: React.FC<{ forcedBookmarks?: boolean }> = ({ forcedBookmarks
               <button
                 type="button"
                 onClick={() => setActiveCategory('All')}
-                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-colors border cursor-pointer select-none ${
+                className={`inline-flex items-center gap-1.5 min-h-[36px] px-3.5 py-1.5 rounded-xl text-xs font-bold transition-colors border cursor-pointer select-none ${
                   activeCategory === 'All'
                     ? 'bg-blue-700 text-white border-blue-800 shadow-xs'
                     : 'bg-card text-foreground border-border hover:border-primary/40'
@@ -591,7 +600,7 @@ export const Index: React.FC<{ forcedBookmarks?: boolean }> = ({ forcedBookmarks
                     key={cat}
                     type="button"
                     onClick={() => setActiveCategory(cat)}
-                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-colors border cursor-pointer select-none ${
+                    className={`inline-flex items-center gap-1.5 min-h-[36px] px-3.5 py-1.5 rounded-xl text-xs font-bold transition-colors border cursor-pointer select-none ${
                       isActive
                         ? 'bg-blue-700 text-white border-blue-800 shadow-xs'
                         : 'bg-card text-foreground border-border hover:border-primary/40'

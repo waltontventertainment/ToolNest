@@ -4,8 +4,8 @@
     <meta charset="UTF-8" />
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Toolzaro – 156+ Free Online Developer, PDF, Image &amp; Utility Tools</title>
-    <meta name="description" content="Access 156+ free, fast, and 100% private browser tools on Toolzaro. Merge PDFs, compress &amp; resize images, format JSON, generate QR codes, and convert files with zero uploads." />
+    <title>Toolzaro – 168+ Free Online Developer, PDF, Image &amp; Utility Tools</title>
+    <meta name="description" content="Access 168+ free, fast, and 100% private browser tools on Toolzaro. Merge PDFs, compress &amp; resize images, format JSON, generate QR codes, and convert files with zero uploads." />
     <meta name="keywords" content="Toolzaro, free online tools, developer tools, online pdf tools, image compressor, image resizer, json formatter, qr code generator, password generator, word counter, unit converter, seo tools, client-side web utilities" />
     <meta name="author" content="Toolzaro" />
     <meta name="theme-color" content="#4f46e5" />
@@ -77,17 +77,17 @@
     <meta property="og:site_name" content="Toolzaro" />
     <meta property="og:locale" content="en_US" />
     <meta property="og:url" content="https://toolzaro.cyou/" />
-    <meta property="og:title" content="Toolzaro – 156+ Free Online Developer, PDF, Image &amp; Utility Tools" />
-    <meta property="og:description" content="Access 156+ free, fast, and 100% private browser tools on Toolzaro. Merge PDFs, compress &amp; resize images, format JSON, generate QR codes, and convert files with zero uploads." />
+    <meta property="og:title" content="Toolzaro – 168+ Free Online Developer, PDF, Image &amp; Utility Tools" />
+    <meta property="og:description" content="Access 168+ free, fast, and 100% private browser tools on Toolzaro. Merge PDFs, compress &amp; resize images, format JSON, generate QR codes, and convert files with zero uploads." />
     <meta property="og:image" content="https://toolzaro.cyou/og-banner.jpg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="Toolzaro - 156+ Free Online Developer, PDF &amp; Utility Tools" />
+    <meta property="og:image:alt" content="Toolzaro - 168+ Free Online Developer, PDF &amp; Utility Tools" />
 
     <!-- Twitter / X Cards -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Toolzaro – 156+ Free Online Developer, PDF, Image &amp; Utility Tools" />
-    <meta name="twitter:description" content="Access 156+ free, fast, and 100% private browser tools on Toolzaro. Merge PDFs, compress &amp; resize images, format JSON, generate QR codes, and convert files with zero uploads." />
+    <meta name="twitter:title" content="Toolzaro – 168+ Free Online Developer, PDF, Image &amp; Utility Tools" />
+    <meta name="twitter:description" content="Access 168+ free, fast, and 100% private browser tools on Toolzaro. Merge PDFs, compress &amp; resize images, format JSON, generate QR codes, and convert files with zero uploads." />
     <meta name="twitter:image" content="https://toolzaro.cyou/og-banner.jpg" />
 
     <!-- Non-Render-Blocking Google Fonts (Eliminates Render-Blocking CSS Penalty on Mobile) -->
@@ -180,10 +180,72 @@
         display: flex;
         flex-direction: column;
       }
+      #tz-app-shell {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        background-color: var(--tz-bg);
+        color: var(--tz-fg);
+      }
     </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Instant Zero-Delay App Shell (Instant Paint for <1.0s FCP/LCP on Mobile Slow 4G) -->
+      <div id="tz-app-shell" class="min-h-screen flex flex-col bg-background text-foreground">
+        <!-- Top Announcement Bar Pre-Render -->
+        <div class="hidden md:block w-full bg-gradient-to-r from-indigo-950 via-purple-950 to-slate-950 border-b border-primary/30 text-white text-xs py-2 px-4">
+          <div class="max-w-[1400px] mx-auto flex items-center justify-between gap-4">
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-primary/30 border border-primary/40 text-[10px] font-black uppercase text-white">✨ Toolzaro 2.0</span>
+            <p class="font-semibold text-slate-200 text-xs">168 Professional Browser Utilities • 100% Client-Side Privacy</p>
+            <span class="text-[11px] font-bold text-white bg-primary/40 px-3 py-1 rounded-lg border border-primary/50">Explore All Tools →</span>
+          </div>
+        </div>
+
+        <!-- Sticky Navigation Header Pre-Render -->
+        <header class="sticky top-0 z-40 w-full border-b border-border/80 bg-background/95 backdrop-blur-md h-16 flex items-center shadow-xs">
+          <div class="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center text-white shadow-xs font-black text-sm">
+                ⚙️
+              </div>
+              <span class="text-brand-gradient font-display font-black text-xl tracking-tight">Toolzaro</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <div class="px-3 py-1.5 rounded-xl border border-border bg-secondary/80 text-xs font-bold text-foreground">
+                Search (⌘K)
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <!-- Hero Section Pre-Render -->
+        <main class="flex-1 max-w-[1400px] w-full mx-auto px-4 sm:px-6 lg:px-8 pt-2 sm:pt-4 pb-8">
+          <section class="pt-2 pb-6 grid grid-cols-1 lg:grid-cols-12 items-center gap-6 lg:gap-8">
+            <div class="lg:col-span-7 w-full flex flex-col items-center lg:items-start text-center lg:text-left min-w-0">
+              <div class="flex items-center gap-2 text-xs font-bold text-primary mb-2.5 tracking-tight">
+                <span>✨ 168 Browser Utilities</span>
+                <span aria-hidden="true" class="text-muted-foreground">·</span>
+                <span class="text-muted-foreground font-semibold">Client-Side Privacy</span>
+              </div>
+              <h1 class="text-[1.6rem] sm:text-3xl md:text-4xl lg:text-[2.45rem] xl:text-[2.75rem] font-display font-black tracking-[-0.03em] mb-3 text-foreground leading-[1.2]">
+                <span class="block mb-1">Every web tool you need.</span>
+                <span class="text-brand-gradient block">Zero installation required.</span>
+              </h1>
+              <p class="text-sm sm:text-base text-muted-foreground mb-4 sm:mb-5 leading-relaxed max-w-xl font-normal">
+                Browser-native processing. Merge PDFs, resize images, format JSON, generate QR codes, and convert files safely without cloud uploads.
+              </p>
+            </div>
+          </section>
+        </main>
+      </div>
+      <script>
+        if (window.location.pathname !== '/' && window.location.pathname !== '') {
+          var s = document.getElementById('tz-app-shell');
+          if (s) s.style.display = 'none';
+        }
+      </script>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

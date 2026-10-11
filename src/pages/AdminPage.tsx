@@ -845,7 +845,7 @@ export const AdminPage: React.FC = () => {
                   Welcome to Toolzaro Control Center
                 </h2>
                 <p className="text-sm text-slate-400 mt-1">
-                  Manage your browser utility suite, publish custom articles, customize all 156+ tools, and configure site branding.
+                  Manage your browser utility suite, publish custom articles, customize all {totalToolsCount}+ tools, and configure site branding.
                 </p>
               </div>
 
@@ -966,7 +966,7 @@ export const AdminPage: React.FC = () => {
                     Tools Manager & Customization
                   </h2>
                   <p className="text-sm text-slate-400 mt-1">
-                    Edit title, category, description, badges, disabled status, and inject custom code for all 156+ tools.
+                    Edit title, category, description, badges, disabled status, and inject custom code for all {totalToolsCount}+ tools.
                   </p>
                 </div>
 
@@ -2030,7 +2030,7 @@ export const AdminPage: React.FC = () => {
                     <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between">
                       <div>
                         <span className="font-bold text-white block">sitemap.xml</span>
-                        <span className="text-[11px] text-slate-400">156+ tools & dynamic articles</span>
+                        <span className="text-[11px] text-slate-400">{totalToolsCount}+ tools & dynamic articles</span>
                       </div>
                       <div className="flex items-center gap-1.5">
                         <button

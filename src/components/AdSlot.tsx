@@ -40,7 +40,7 @@ export const AdSlot: React.FC<AdSlotProps> = ({
       const iframe = adRef.current.querySelector('iframe');
       const status = adRef.current.getAttribute('data-ad-status');
       
-      if (status === 'filled' || (iframe && (iframe.clientHeight > 20 || iframe.offsetHeight > 20))) {
+      if (status === 'filled' || (iframe && iframe.getAttribute('width') !== '0')) {
         setIsFilled(true);
       } else if (status === 'unfilled') {
         setIsFilled(false);

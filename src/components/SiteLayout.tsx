@@ -3,6 +3,7 @@ import { Outlet, Link, useLocation } from 'react-router-dom';
 import { Moon, Sun, Wrench, Star, ArrowRight, BookOpen, Cloud, Bug, MessageSquarePlus, Sparkles, X, ArrowUp } from 'lucide-react';
 import { useLocalStorage } from '../lib/toolkit';
 import { categories, tools } from '../lib/registry';
+import { getEffectiveTools } from '../lib/toolOverrides';
 import { HeaderSearch } from './HeaderSearch';
 import { ThemeToggle3D } from './ThemeToggle3D';
 import { useFavorites } from '../context/FavoritesContext';
@@ -34,25 +35,37 @@ export const SiteLayout: React.FC = () => {
   const location = useLocation();
   const { pathname } = location;
 
-  React.useLayoutEffect(() => {
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
+  React.useEffect(() => {
+    const isDark = theme === 'dark';
+    const hasDark = document.documentElement.classList.contains('dark');
+    if (isDark !== hasDark) {
+      if (isDark) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
     }
   }, [theme]);
 
-  // Synchronously reset scroll position BEFORE browser paint on route changes to prevent any visual scroll jump
-  React.useLayoutEffect(() => {
-    if (typeof window !== 'undefined' && 'scrollRestoration' in window.history) {
-      window.history.scrollRestoration = 'manual';
+  // Reset scroll position ONLY on actual route navigation, never on initial mount (eliminates 206ms Forced Reflow)
+  const prevRouteRef = React.useRef(pathname + location.search);
+  React.useEffect(() => {
+    if (prevRouteRef.current !== pathname + location.search) {
+      prevRouteRef.current = pathname + location.search;
+      if (typeof window !== 'undefined') {
+        window.scrollTo(0, 0);
+      }
     }
-    window.scrollTo({ top: 0, left: 0, behavior: 'instant' as ScrollBehavior });
-    document.documentElement.scrollTop = 0;
-    document.body.scrollTop = 0;
   }, [pathname, location.search]);
 
-  const liveCount = tools.length;
+  const liveCount = React.useMemo(() => {
+    try {
+      return getEffectiveTools(tools, settings.toolOverrides, false).length;
+    } catch {
+      return tools.length;
+    }
+  }, [settings.toolOverrides]);
+
   const isAnnouncementActive = settings.announcement.enabled && !isBannerDismissed;
   const bannerBadge = settings.announcement.badge || 'Toolzaro 2.0';
 
@@ -60,8 +73,8 @@ export const SiteLayout: React.FC = () => {
     const raw = settings.announcement.text || '{count} Professional Browser Utilities • 100% Client-Side Privacy';
     return raw
       .replace(/\{count\}|\{total\}|\{tools\}/gi, `${liveCount}`)
-      .replace(/\b16[0-9]\s*(?:\+|plus)\s*(?:tools?|utilities?)/gi, `${liveCount} Utilities`)
-      .replace(/\b16[0-9]\s*(?:\+|plus|\b)/gi, `${liveCount}`);
+      .replace(/\b(?:156|168|268|\d{2,3})\s*(?:\+|plus)\s*(?:professional\s*)?(?:browser\s*)?(?:tools?|utilities?)/gi, `${liveCount} Professional Browser Utilities`)
+      .replace(/\b(?:156|168|268|\d{2,3})\s*(?:\+|plus|\b)/gi, `${liveCount}`);
   }, [settings.announcement.text, liveCount]);
 
   const bannerLinkText = settings.announcement.linkText || 'Explore All Tools';
@@ -321,7 +334,7 @@ export const SiteLayout: React.FC = () => {
             </p>
             <div className="inline-flex items-center gap-2 text-xs font-bold text-emerald-900 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-950/80 px-3 py-1.5 rounded-full border border-emerald-300 dark:border-emerald-800 shadow-2xs">
               <span className="w-2.5 h-2.5 rounded-full bg-emerald-600 dark:bg-emerald-400 animate-pulse" />
-              <span>{tools.length} Live Utilities Available</span>
+              <span>{liveCount} Live Utilities Available</span>
             </div>
           </div>
 

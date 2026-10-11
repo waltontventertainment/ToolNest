@@ -15,6 +15,8 @@ import {
 } from 'lucide-react';
 import { getToolUrl, getToolsHubUrl } from '../lib/appUrls';
 import { tools, preloadToolBySlug } from '../lib/registry';
+import { getEffectiveTools } from '../lib/toolOverrides';
+import { useSiteSettings } from '../context/SiteSettingsContext';
 
 const QUICK_LAUNCH_TOOLS = [
   {
@@ -62,6 +64,15 @@ const QUICK_LAUNCH_TOOLS = [
 ];
 
 export const HeroShowcase: React.FC = () => {
+  const { settings } = useSiteSettings();
+  const activeCount = React.useMemo(() => {
+    try {
+      return getEffectiveTools(tools, settings.toolOverrides, false).length;
+    } catch {
+      return tools.length;
+    }
+  }, [settings.toolOverrides]);
+
   const triggerCommandPalette = () => {
     window.dispatchEvent(
       new KeyboardEvent('keydown', { key: 'k', ctrlKey: true, bubbles: true })
@@ -133,15 +144,15 @@ export const HeroShowcase: React.FC = () => {
         </div>
 
         {/* Console Bottom Status Strip */}
-        <div className="px-4 py-2.5 bg-muted/30 border-t border-border flex items-center justify-between gap-3 text-[11px]">
+        <div className="px-4 py-2.5 bg-muted/40 border-t border-border flex items-center justify-between gap-3 text-[11px]">
           <div className="flex items-center gap-3 text-muted-foreground font-medium">
-            <span className="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-semibold">
-              <ShieldCheck className="w-3.5 h-3.5" />
+            <span className="inline-flex items-center gap-1 text-emerald-950 dark:text-emerald-200 font-extrabold">
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
               <span>100% Local Sandbox</span>
             </span>
             <span aria-hidden="true">·</span>
-            <span className="inline-flex items-center gap-1">
-              <Zap className="w-3.5 h-3.5 text-amber-500" />
+            <span className="inline-flex items-center gap-1 text-amber-950 dark:text-amber-200 font-extrabold">
+              <Zap className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
               <span>Zero Cloud Upload</span>
             </span>
           </div>
@@ -151,7 +162,7 @@ export const HeroShowcase: React.FC = () => {
             className="inline-flex items-center gap-1 font-bold text-primary hover:underline whitespace-nowrap"
           >
             <Layers className="w-3 h-3" />
-            <span>All {tools.length} Tools →</span>
+            <span>All {activeCount} Tools →</span>
           </Link>
         </div>
       </div>

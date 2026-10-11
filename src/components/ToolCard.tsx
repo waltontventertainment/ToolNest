@@ -116,15 +116,15 @@ export const ToolCard: React.FC<{ tool: ToolDefinition; compact?: boolean }> = R
             type="button"
             onClick={toggleFavorite}
             className={cn(
-              "btn-micro-star w-7 h-7 cursor-pointer",
+              "btn-micro-star w-11 h-11 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-xl cursor-pointer",
               isFavorite
                 ? "bg-amber-500/15 border-amber-300/80 dark:border-amber-700 text-amber-500"
                 : "text-muted-foreground/60 hover:text-amber-500 hover:border-amber-300/50"
             )}
-            aria-label={isFavorite ? "Remove from bookmarks" : "Save to bookmarks"}
+            aria-label={isFavorite ? `Remove ${tool.name} from bookmarks` : `Save ${tool.name} to bookmarks`}
             title={isFavorite ? "Bookmarked" : "Bookmark tool"}
           >
-            <Star className={cn("w-3.5 h-3.5", isFavorite ? "fill-amber-500" : "")} />
+            <Star className={cn("w-4 h-4", isFavorite ? "fill-amber-500" : "")} />
           </button>
           <ArrowUpRight className="w-4 h-4 text-muted-foreground/40 group-hover:text-primary transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
         </div>
@@ -156,12 +156,12 @@ export const ToolCard: React.FC<{ tool: ToolDefinition; compact?: boolean }> = R
             type="button"
             onClick={toggleFavorite}
             className={cn(
-              "btn-micro-star w-8 h-8 shadow-2xs cursor-pointer",
+              "btn-micro-star w-11 h-11 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-xl shadow-2xs cursor-pointer",
               isFavorite 
                 ? "bg-amber-500/15 border-amber-300/80 dark:border-amber-700 text-amber-500 shadow-amber-500/10" 
                 : "text-muted-foreground/60 hover:text-amber-500 hover:border-amber-300/50"
             )}
-            aria-label={isFavorite ? "Remove from bookmarks" : "Save to bookmarks"}
+            aria-label={isFavorite ? `Remove ${tool.name} from bookmarks` : `Save ${tool.name} to bookmarks`}
             title={isFavorite ? "Bookmarked" : "Bookmark tool"}
           >
             <Star 

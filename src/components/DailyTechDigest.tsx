@@ -182,22 +182,23 @@ export const DailyTechDigest: React.FC = () => {
           </div>
 
           {/* Mobile-only Right Action Controls */}
-          <div className="flex lg:hidden items-center gap-1.5">
+          <div className="flex lg:hidden items-center gap-2">
             <button
               type="button"
               onClick={handleManualRefresh}
               disabled={refreshing}
-              className="px-2 py-1 rounded-lg bg-secondary hover:bg-secondary/80 text-foreground text-[11px] font-bold transition-colors cursor-pointer border border-border/70 flex items-center gap-1 disabled:opacity-50"
+              className="min-h-[36px] min-w-[36px] px-2.5 py-1.5 rounded-lg bg-secondary hover:bg-secondary/80 text-foreground text-xs font-bold transition-colors cursor-pointer border border-border/70 flex items-center justify-center gap-1 disabled:opacity-50"
               title="Sync latest live Hacker News & tech news"
               aria-label="Sync latest live tech news"
             >
-              <RefreshCw className={`w-3 h-3 text-amber-700 dark:text-amber-400 ${refreshing ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`w-3.5 h-3.5 text-amber-700 dark:text-amber-400 ${refreshing ? 'animate-spin' : ''}`} />
             </button>
 
             <button
               type="button"
               onClick={() => setExpanded(!expanded)}
-              className="px-2.5 py-1 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 text-amber-800 dark:text-amber-300 text-[11px] font-extrabold transition-colors cursor-pointer flex items-center gap-1 border border-amber-500/30"
+              className="min-h-[36px] px-3 py-1.5 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 text-amber-800 dark:text-amber-300 text-xs font-extrabold transition-colors cursor-pointer flex items-center gap-1 border border-amber-500/30"
+              aria-label={expanded ? 'Hide details' : 'View details'}
             >
               <span>{expanded ? 'Hide' : 'Details'}</span>
               {expanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
@@ -231,58 +232,44 @@ export const DailyTechDigest: React.FC = () => {
             <ExternalLink className="w-3.5 h-3.5 text-muted-foreground group-hover/title:text-amber-500 shrink-0" />
           </div>
 
-          {/* Mobile & Tablet Round Topic Images (Always visible from outside on < lg) */}
-          <div className="flex lg:hidden items-center -space-x-1.5 shrink-0 pl-1">
+          {/* Mobile & Tablet Round Topic Images (Unified Touch Target) */}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              setExpanded(true);
+            }}
+            className="flex lg:hidden items-center -space-x-1.5 shrink-0 pl-1 min-h-[48px] min-w-[48px] p-2 rounded-full cursor-pointer hover:opacity-90 transition-opacity"
+            aria-label="View 6 daily tech digest topics"
+            title="Click to view full tech highlights"
+          >
             {topicHighlights.slice(0, 6).map((item, idx) => {
-              const imgSrc =
-                item.imageUrl ||
-                getFastTopicImage(item.title || item.category || `topic-${idx}`, idx);
+              const imgSrc = getFastTopicImage(item.title || item.category || `topic-${idx}`, idx);
               return (
-                <button
+                <span
                   key={`mob-topic-${idx}`}
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (item.url) {
-                      window.open(item.url, '_blank');
-                      toast.success(`Opening: ${item.title}`);
-                    } else {
-                      setExpanded(true);
-                    }
-                  }}
-                  className="w-6 h-6 sm:w-7 sm:h-7 rounded-full overflow-hidden shrink-0 border-2 border-card ring-1 ring-amber-500/50 hover:ring-amber-500 bg-muted shadow-2xs cursor-pointer hover:scale-110 hover:z-20 transition-transform relative p-0"
-                  title={`${item.category}: ${item.title}`}
+                  className="w-7 h-7 rounded-full overflow-hidden shrink-0 border-2 border-card ring-1 ring-amber-500/50 bg-muted shadow-2xs relative block"
                 >
                   <img
                     src={imgSrc}
                     alt={item.title}
                     loading="lazy"
                     decoding="async"
-                    referrerPolicy="no-referrer"
                     width={28}
                     height={28}
                     className="w-full h-full object-cover rounded-full"
-                    onError={(e) => {
-                      const target = e.currentTarget;
-                      const fallback = getFallbackTopicImage(idx);
-                      if (target.src !== fallback) {
-                        target.src = fallback;
-                      }
-                    }}
                   />
-                </button>
+                </span>
               );
             })}
-          </div>
+          </button>
         </div>
 
         {/* Right on PC: Always-Visible Round Topic Thumbnails + Action Controls */}
-        <div className="hidden lg:flex items-center gap-2.5 shrink-0">
-          <div className="flex items-center gap-1.5 pr-2.5 border-r border-border/60">
+        <div className="hidden lg:flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-0.5 pr-2 border-r border-border/60">
             {topicHighlights.slice(0, 6).map((item, idx) => {
-              const imgSrc =
-                item.imageUrl ||
-                getFastTopicImage(item.title || item.category || `topic-${idx}`, idx);
+              const imgSrc = getFastTopicImage(item.title || item.category || `topic-${idx}`, idx);
               return (
                 <button
                   key={`pc-topic-${idx}`}
@@ -296,26 +283,21 @@ export const DailyTechDigest: React.FC = () => {
                       setExpanded(true);
                     }
                   }}
-                  className="w-7 h-7 rounded-full overflow-hidden shrink-0 border-2 border-amber-500/45 hover:border-amber-500 bg-muted shadow-2xs cursor-pointer hover:scale-110 hover:z-20 transition-transform relative p-0"
+                  className="w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center p-1.5 rounded-full hover:bg-amber-500/10 transition-colors cursor-pointer relative"
+                  aria-label={`${item.category}: ${item.title}`}
                   title={`${item.category}: ${item.title}`}
                 >
-                  <img
-                    src={imgSrc}
-                    alt={item.title}
-                    loading="lazy"
-                    decoding="async"
-                    referrerPolicy="no-referrer"
-                    width={28}
-                    height={28}
-                    className="w-full h-full object-cover rounded-full"
-                    onError={(e) => {
-                      const target = e.currentTarget;
-                      const fallback = getFallbackTopicImage(idx);
-                      if (target.src !== fallback) {
-                        target.src = fallback;
-                      }
-                    }}
-                  />
+                  <span className="w-7 h-7 rounded-full overflow-hidden shrink-0 border-2 border-amber-500/45 hover:border-amber-500 bg-muted shadow-2xs block">
+                    <img
+                      src={imgSrc}
+                      alt={item.title}
+                      loading="lazy"
+                      decoding="async"
+                      width={28}
+                      height={28}
+                      className="w-full h-full object-cover rounded-full"
+                    />
+                  </span>
                 </button>
               );
             })}
@@ -409,7 +391,7 @@ export const DailyTechDigest: React.FC = () => {
                               }
                             }}
                           />
-                          <span className="text-[9px] font-extrabold uppercase tracking-wider text-amber-600 dark:text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20 truncate">
+                          <span className="text-[9px] font-extrabold uppercase tracking-wider text-amber-800 dark:text-amber-300 bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20 truncate">
                             {item.category}
                           </span>
                         </div>
@@ -432,7 +414,7 @@ export const DailyTechDigest: React.FC = () => {
           <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-start gap-2.5">
             <Lightbulb className="w-4 h-4 text-amber-500 shrink-0 mt-0.5 fill-amber-500/20" />
             <div className="space-y-0.5 min-w-0 flex-1">
-              <span className="text-[10px] font-extrabold text-amber-600 dark:text-amber-400 uppercase tracking-wider block">
+              <span className="text-[10px] font-extrabold text-amber-800 dark:text-amber-300 uppercase tracking-wider block">
                 Developer Key Takeaway
               </span>
               <p className="text-xs font-medium text-foreground leading-relaxed">

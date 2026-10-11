@@ -24,17 +24,17 @@ const LOCAL_BUNDLED_THUMBS = [
 ];
 
 /**
- * Direct-edge, zero-redirect 64x64px CDN thumbnails for instant topic rendering
+ * Ultra-fast, zero-network-request SVG data URIs for instant 0ms topic icon rendering
  */
 const FAST_TOPIC_THUMBNAILS = [
-  'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=64&h=64&auto=format&fit=crop&q=65',
-  'https://images.unsplash.com/photo-1563986768609-322da13575f3?w=64&h=64&auto=format&fit=crop&q=65',
-  'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=64&h=64&auto=format&fit=crop&q=65',
-  'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=64&h=64&auto=format&fit=crop&q=65',
-  'https://images.unsplash.com/photo-1518770660439-4636190af475?w=64&h=64&auto=format&fit=crop&q=65',
-  'https://images.unsplash.com/photo-1504639725590-34d0984388bd?w=64&h=64&auto=format&fit=crop&q=65',
-  'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=64&h=64&auto=format&fit=crop&q=65',
-  'https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?w=64&h=64&auto=format&fit=crop&q=65',
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g1' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%236366f1'/%3E%3Cstop offset='100%25' stop-color='%238b5cf6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url(%23g1)'/%3E%3Cpath d='M20 24l8 8-8 8m14 0h10' stroke='%23fff' stroke-width='4' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E",
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g2' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23059669'/%3E%3Cstop offset='100%25' stop-color='%2310b981'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url(%23g2)'/%3E%3Cpath d='M32 18v28m-12-14h24' stroke='%23fff' stroke-width='4' stroke-linecap='round' fill='none'/%3E%3Ccircle cx='32' cy='32' r='12' stroke='%23fff' stroke-width='3' fill='none'/%3E%3C/svg%3E",
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g3' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23d97706'/%3E%3Cstop offset='100%25' stop-color='%23f59e0b'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url(%23g3)'/%3E%3Cpath d='M34 16L22 36h10l-2 12 12-20H32z' fill='%23fff'/%3E%3C/svg%3E",
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g4' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%230284c7'/%3E%3Cstop offset='100%25' stop-color='%2306b6d4'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url(%23g4)'/%3E%3Cpath d='M22 38a10 10 0 0 1 18-4 8 8 0 0 1 8 8H20a6 6 0 0 1 2-4z' fill='%23fff'/%3E%3C/svg%3E",
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g5' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%237c3aed'/%3E%3Cstop offset='100%25' stop-color='%23a855f7'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url(%23g5)'/%3E%3Cpath d='M24 22h16v6H24zm0 10h16v6H24zm0 10h10v6H24z' fill='%23fff'/%3E%3C/svg%3E",
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g6' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23e11d48'/%3E%3Cstop offset='100%25' stop-color='%23f43f5e'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url(%23g6)'/%3E%3Ccircle cx='32' cy='32' r='14' stroke='%23fff' stroke-width='4' fill='none'/%3E%3Cpath d='M32 24v8l6 4' stroke='%23fff' stroke-width='3' stroke-linecap='round' fill='none'/%3E%3C/svg%3E",
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g7' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%230f766e'/%3E%3Cstop offset='100%25' stop-color='%2314b8a6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url(%23g7)'/%3E%3Cpath d='M20 32a12 12 0 1 0 24 0 12 12 0 1 0-24 0z' stroke='%23fff' stroke-width='4' fill='none'/%3E%3Cpath d='M32 18v28M18 32h28' stroke='%23fff' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E",
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g8' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%234338ca'/%3E%3Cstop offset='100%25' stop-color='%236366f1'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url(%23g8)'/%3E%3Cpolygon points='32,18 42,42 22,42' fill='%23fff'/%3E%3C/svg%3E",
 ];
 
 export function getFallbackTopicImage(index: number): string {

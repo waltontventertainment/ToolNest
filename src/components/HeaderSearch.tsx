@@ -2,16 +2,27 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Search, X, ArrowRight, CornerDownLeft, Sparkles, Command } from 'lucide-react';
 import { tools } from '../lib/registry';
+import { getEffectiveTools } from '../lib/toolOverrides';
+import { useSiteSettings } from '../context/SiteSettingsContext';
 import { ToolDefinition } from '../lib/types';
 import { getToolUrl } from '../lib/appUrls';
 import { useLockBodyScroll } from '../lib/toolkit';
 
 export const HeaderSearch: React.FC = () => {
+  const { settings } = useSiteSettings();
   const [query, setQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const navigate = useNavigate();
   const location = useLocation();
+
+  const effectiveTools = useMemo(() => {
+    try {
+      return getEffectiveTools(tools, settings.toolOverrides, false);
+    } catch {
+      return tools;
+    }
+  }, [settings.toolOverrides]);
 
   // Lock background website scroll while Command Search popup is open
   useLockBodyScroll(isOpen);
@@ -82,10 +93,10 @@ export const HeaderSearch: React.FC = () => {
     const trimmed = query.trim().toLowerCase();
     if (!trimmed) {
       // Default curated popular tools
-      return tools.slice(0, 6);
+      return effectiveTools.slice(0, 6);
     }
 
-    return tools
+    return effectiveTools
       .filter((tool) => {
         const nameMatch = tool.name.toLowerCase().includes(trimmed);
         const catMatch = tool.category.toLowerCase().includes(trimmed);
@@ -94,7 +105,7 @@ export const HeaderSearch: React.FC = () => {
         return nameMatch || catMatch || descMatch || kwMatch;
       })
       .slice(0, 8);
-  }, [query]);
+  }, [query, effectiveTools]);
 
   // Reset selected index when filtered tools change
   useEffect(() => {
@@ -174,7 +185,7 @@ export const HeaderSearch: React.FC = () => {
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  placeholder={`Search ${tools.length} tools (e.g. PDF, Image, QR)...`}
+                  placeholder={`Search ${effectiveTools.length} tools (e.g. PDF, Image, QR)...`}
                   className="w-full h-11 pl-11 pr-32 sm:pr-36 bg-secondary/50 focus:bg-background border border-border/80 focus:border-primary/60 rounded-xl text-sm font-medium text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-3 focus:ring-primary/15 transition-all"
                 />
 

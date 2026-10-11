@@ -26,7 +26,7 @@ export default defineConfig(() => {
       assetsDir: 'assets',
       emptyOutDir: true,
       copyPublicDir: true,
-      target: 'es2020',
+      target: 'es2022',
       cssCodeSplit: !isSingleFile,
       minify: 'esbuild',
       modulePreload: isSingleFile
@@ -49,7 +49,11 @@ export default defineConfig(() => {
                   !dep.includes('ToolsHubPage') &&
                   !dep.includes('StaticPages') &&
                   !dep.includes('PdfSuiteTools') &&
-                  !dep.includes('ScannerTools')
+                  !dep.includes('ScannerTools') &&
+                  !dep.includes('FreeApiToolsBatch') &&
+                  !dep.includes('FunViralToolsBatch') &&
+                  !dep.includes('SeoToolsBatch') &&
+                  !dep.includes('ColorImageToolsBatch')
               );
             },
           },
@@ -84,14 +88,20 @@ export default defineConfig(() => {
                   if (id.includes('firebase') || id.includes('@firebase')) {
                     return 'vendor-firebase';
                   }
+                  if (id.includes('lucide-react')) {
+                    return 'vendor-icons';
+                  }
                   if (
                     id.includes('react-dom') ||
                     id.includes('react-router') ||
                     id.includes('@remix-run') ||
                     id.includes('scheduler') ||
-                    id.includes('react-helmet-async')
+                    (id.includes('/react/') && !id.includes('qrcode'))
                   ) {
-                    return 'vendor-react';
+                    return 'vendor-framework';
+                  }
+                  if (id.includes('react-helmet-async')) {
+                    return 'vendor-helmet';
                   }
                 }
                 return undefined;

@@ -95,7 +95,7 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
   branding: {
     siteName: 'Toolzaro',
     tagline: 'Premium Online Utility Suite',
-    heroTitle: '156+ High-Performance Browser Utilities',
+    heroTitle: `${tools.length}+ High-Performance Browser Utilities`,
     heroSubtitle: 'Free, instant, and 100% private. All transformations happen entirely inside your browser.',
     contactEmail: 'support@toolzaro.cyou',
     copyrightText: '© 2026 Toolzaro. All rights reserved. Zero-knowledge privacy guaranteed.',
@@ -113,8 +113,8 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
     bottomSlotId: ''
   },
   seo: {
-    defaultTitle: 'Toolzaro – 156+ Free Online Developer, PDF, Image & Utility Tools',
-    defaultDescription: 'Access 156+ free, fast, and 100% private browser tools on Toolzaro. Merge PDFs, compress & resize images, format JSON, generate QR codes, and convert files with zero uploads.',
+    defaultTitle: `Toolzaro – ${tools.length}+ Free Online Developer, PDF, Image & Utility Tools`,
+    defaultDescription: `Access ${tools.length}+ free, fast, and 100% private browser tools on Toolzaro. Merge PDFs, compress & resize images, format JSON, generate QR codes, and convert files with zero uploads.`,
     canonicalBaseUrl: 'https://toolzaro.cyou',
     defaultOgImage: 'https://toolzaro.cyou/og-banner.jpg',
     googleVerificationCode: 'googlea0fb90138c92702a.html',
@@ -134,6 +134,18 @@ const SETTINGS_COLLECTION = 'site_settings';
 const LOCAL_STORAGE_KEY = 'toolzaro_site_settings_cache';
 
 /**
+ * Format any string containing hardcoded counts or {count} placeholder with the live tool count
+ */
+export function formatDynamicToolCount(text?: string, count: number = tools.length): string {
+  if (!text) return '';
+  return text
+    .replace(/\{count\}|\{total\}|\{tools\}/gi, `${count}`)
+    .replace(/\b(?:156|168|268|\d{2,3})\s*(?:\+|plus)\s*(?:professional\s*)?(?:browser\s*)?(?:tools?|utilities?)/gi, `${count}+ Free Browser Utilities`)
+    .replace(/\b(?:156|168|268)\s*(?:\+|plus)\s*/gi, `${count}+ `)
+    .replace(/\b(?:156|168|268)\s*(?:tools?|utilities?)\b/gi, `${count} utilities`);
+}
+
+/**
  * Get current site settings with synchronous local fallback
  */
 export function getCachedSiteSettings(): SiteSettings {
@@ -149,13 +161,26 @@ export function getCachedSiteSettings(): SiteSettings {
         adminData.allowedEmails = [];
       }
 
+      const branding = {
+        ...DEFAULT_SITE_SETTINGS.branding,
+        ...(parsed.branding || {}),
+        heroTitle: formatDynamicToolCount(parsed.branding?.heroTitle || DEFAULT_SITE_SETTINGS.branding.heroTitle)
+      };
+
+      const seo = {
+        ...DEFAULT_SITE_SETTINGS.seo,
+        ...(parsed.seo || {}),
+        defaultTitle: formatDynamicToolCount(parsed.seo?.defaultTitle || DEFAULT_SITE_SETTINGS.seo.defaultTitle),
+        defaultDescription: formatDynamicToolCount(parsed.seo?.defaultDescription || DEFAULT_SITE_SETTINGS.seo.defaultDescription)
+      };
+
       return {
         ...DEFAULT_SITE_SETTINGS,
         ...parsed,
-        announcement: { ...DEFAULT_SITE_SETTINGS.announcement, ...parsed.announcement },
-        branding: { ...DEFAULT_SITE_SETTINGS.branding, ...parsed.branding },
-        ads: { ...DEFAULT_SITE_SETTINGS.ads, ...parsed.ads },
-        seo: { ...DEFAULT_SITE_SETTINGS.seo, ...parsed.seo },
+        announcement: { ...DEFAULT_SITE_SETTINGS.announcement, ...(parsed.announcement || {}) },
+        branding,
+        ads: { ...DEFAULT_SITE_SETTINGS.ads, ...(parsed.ads || {}) },
+        seo,
         toolOverrides: { ...DEFAULT_SITE_SETTINGS.toolOverrides, ...(parsed.toolOverrides || {}) },
         admin: adminData
       };
@@ -189,13 +214,26 @@ export async function fetchSiteSettings(): Promise<SiteSettings> {
     const snap = await getDoc(docRef);
     if (snap.exists()) {
       const data = snap.data() as Partial<SiteSettings>;
+      const branding = {
+        ...DEFAULT_SITE_SETTINGS.branding,
+        ...(data.branding || {}),
+        heroTitle: formatDynamicToolCount(data.branding?.heroTitle || DEFAULT_SITE_SETTINGS.branding.heroTitle)
+      };
+      const seo = {
+        ...DEFAULT_SITE_SETTINGS.seo,
+        ...(data.seo || {}),
+        defaultTitle: formatDynamicToolCount(data.seo?.defaultTitle || DEFAULT_SITE_SETTINGS.seo.defaultTitle),
+        defaultDescription: formatDynamicToolCount(data.seo?.defaultDescription || DEFAULT_SITE_SETTINGS.seo.defaultDescription)
+      };
+
       const merged: SiteSettings = {
         ...DEFAULT_SITE_SETTINGS,
         ...data,
         announcement: { ...DEFAULT_SITE_SETTINGS.announcement, ...(data.announcement || {}) },
-        branding: { ...DEFAULT_SITE_SETTINGS.branding, ...(data.branding || {}) },
+        branding,
         ads: { ...DEFAULT_SITE_SETTINGS.ads, ...(data.ads || {}) },
-        seo: { ...DEFAULT_SITE_SETTINGS.seo, ...(data.seo || {}) },
+        seo,
+        toolOverrides: { ...DEFAULT_SITE_SETTINGS.toolOverrides, ...(data.toolOverrides || {}) },
         admin: { ...DEFAULT_SITE_SETTINGS.admin, ...(data.admin || {}) }
       };
       localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(merged));
