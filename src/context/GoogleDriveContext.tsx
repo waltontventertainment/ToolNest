@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { User } from 'firebase/auth';
+import type { User } from 'firebase/auth';
 import { toast } from 'sonner';
 import { 
   initAuthListener, 
@@ -55,7 +55,7 @@ export const GoogleDriveProvider: React.FC<{ children: React.ReactNode }> = ({ c
         setAccessToken(token);
         setLoading(false);
       });
-    }, 2000);
+    }, 3500);
     return () => {
       clearTimeout(timer);
       unsubscribe();

@@ -34,13 +34,20 @@ export default defineConfig(() => {
         : {
             polyfill: false,
             resolveDependencies: (_filename, deps) => {
-              // Prevent preloading heavy optional tool chunks on initial mobile page load
+              // Prevent preloading heavy optional tool & Firebase chunks on initial mobile page load
               return deps.filter(
                 dep =>
                   !dep.includes('vendor-pdf') &&
                   !dep.includes('vendor-scanner') &&
                   !dep.includes('vendor-qr-barcode') &&
+                  !dep.includes('vendor-firebase') &&
                   !dep.includes('AdminPage') &&
+                  !dep.includes('ToolPage') &&
+                  !dep.includes('BlogPostPage') &&
+                  !dep.includes('BlogPage') &&
+                  !dep.includes('CategoryPage') &&
+                  !dep.includes('ToolsHubPage') &&
+                  !dep.includes('StaticPages') &&
                   !dep.includes('PdfSuiteTools') &&
                   !dep.includes('ScannerTools')
               );

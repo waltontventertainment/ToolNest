@@ -17,8 +17,6 @@ import {
   ExternalLink
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { doc, onSnapshot } from 'firebase/firestore';
-import { db } from '../lib/firebase';
 import { 
   TechDigest, 
   TechHighlight,
@@ -47,7 +45,7 @@ export const DailyTechDigest: React.FC = () => {
 
   const driveContext = useGoogleDrive();
 
-  // 1. Fast background initial sync so live topics & round images stay fresh
+  // 1. Background initial sync after first paint so live topics & round images stay fresh without contending with FCP/LCP
   useEffect(() => {
     let isMounted = true;
     const initTimer = setTimeout(() => {
@@ -66,7 +64,7 @@ export const DailyTechDigest: React.FC = () => {
         .finally(() => {
           if (isMounted) setRefreshing(false);
         });
-    }, 150);
+    }, 2800);
 
     return () => {
       isMounted = false;
@@ -74,26 +72,35 @@ export const DailyTechDigest: React.FC = () => {
     };
   }, []);
 
-  // 2. Realtime Firebase Firestore listener (always normalizes topic images via ensureDigestImages)
+  // 2. Realtime Firebase Firestore listener (lazily loaded after initial paint)
   useEffect(() => {
-    let unsubscribe: () => void = () => {};
+    let cancelled = false;
+    let unsubscribe: (() => void) | null = null;
     const snapshotTimer = setTimeout(() => {
-      try {
-        const todayKey = getTodayKey();
-        unsubscribe = onSnapshot(doc(db, 'tech_digests', todayKey), (docSnap) => {
-          if (docSnap.exists()) {
-            const data = docSnap.data() as TechDigest;
-            if (data && data.headline && data.summary) {
-              setDigest(ensureDigestImages(data));
-            }
-          }
-        }, () => {});
-      } catch {}
-    }, 600);
+      Promise.all([import('firebase/firestore'), import('../lib/firebase')])
+        .then(([{ doc, onSnapshot }, { db }]) => {
+          if (cancelled) return;
+          const todayKey = getTodayKey();
+          unsubscribe = onSnapshot(
+            doc(db, 'tech_digests', todayKey),
+            (docSnap) => {
+              if (docSnap.exists()) {
+                const data = docSnap.data() as TechDigest;
+                if (data && data.headline && data.summary) {
+                  setDigest(ensureDigestImages(data));
+                }
+              }
+            },
+            () => {}
+          );
+        })
+        .catch(() => {});
+    }, 3500);
 
     return () => {
+      cancelled = true;
       clearTimeout(snapshotTimer);
-      unsubscribe();
+      if (unsubscribe) unsubscribe();
     };
   }, []);
 

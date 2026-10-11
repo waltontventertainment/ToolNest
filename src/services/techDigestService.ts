@@ -1,11 +1,30 @@
-import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { db } from '../lib/firebase';
-
 import localThumb1 from '../assets/images/hero_visual_premium_1791369917245.jpg';
 import localThumb2 from '../assets/images/premium_hero_banner_1791390453868.jpg';
 import localThumb3 from '../assets/images/categories_1785690511849.jpg';
 import localThumb4 from '../assets/images/hero_visual_1785690377657.jpg';
 import localThumb5 from '../assets/images/toolzaro_icon_logo_1791427467156.jpg';
+
+let firestoreDepsPromise: Promise<{
+  doc: typeof import('firebase/firestore').doc;
+  getDoc: typeof import('firebase/firestore').getDoc;
+  setDoc: typeof import('firebase/firestore').setDoc;
+  db: typeof import('../lib/firebase').db;
+}> | null = null;
+
+function loadFirestoreDeps() {
+  if (!firestoreDepsPromise) {
+    firestoreDepsPromise = Promise.all([
+      import('firebase/firestore'),
+      import('../lib/firebase'),
+    ]).then(([fsMod, fbMod]) => ({
+      doc: fsMod.doc,
+      getDoc: fsMod.getDoc,
+      setDoc: fsMod.setDoc,
+      db: fbMod.db,
+    }));
+  }
+  return firestoreDepsPromise;
+}
 
 export interface TechHighlight {
   category: string;
@@ -399,6 +418,7 @@ export async function generateEndpointTechDigest(): Promise<TechDigest> {
 
   // Save to Firestore
   try {
+    const { doc, setDoc, db } = await loadFirestoreDeps();
     await setDoc(doc(db, 'tech_digests', todayKey), digest);
   } catch {}
 
@@ -434,6 +454,7 @@ export async function getOrFetchTodayTechDigest(forceRefresh = false): Promise<T
 
     // 2. Check Firestore
     try {
+      const { doc, getDoc, db } = await loadFirestoreDeps();
       const docRef = doc(db, 'tech_digests', todayKey);
       const docSnap = await getDoc(docRef);
 

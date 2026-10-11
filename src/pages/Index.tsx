@@ -85,7 +85,7 @@ export const Index: React.FC<{ forcedBookmarks?: boolean }> = ({ forcedBookmarks
           }
         })
         .catch(() => {});
-    }, 1200);
+    }, 3200);
     return () => {
       isMounted = false;
       clearTimeout(timer);

@@ -293,6 +293,48 @@ ${rssItemsXml}
   ];
   writeSeoFile('llms.txt', llmsLines.join('\n'));
 
+  // 6b. Generate ARD v1.0 (Agentic Resource Discovery) ai-catalog.json for PageSpeed Insights "Agentic Browsing" (4/4 score)
+  const aiCatalogJson = JSON.stringify(
+    {
+      specVersion: '1.0',
+      host: {
+        identifier: 'toolzaro.cyou',
+        displayName: 'Toolzaro',
+        documentationUrl: `${BASE_URL}/about`,
+        logoUrl: `${BASE_URL}/android-chrome-512x512.png`,
+      },
+      entries: [
+        {
+          identifier: 'toolzaro-llms-index',
+          displayName: 'Toolzaro AI & LLM Documentation Index',
+          type: 'text/markdown',
+          url: `${BASE_URL}/llms.txt`,
+        },
+        {
+          identifier: 'toolzaro-rss-feed',
+          displayName: 'Toolzaro Tools & Technical Articles RSS Feed',
+          type: 'application/rss+xml',
+          url: `${BASE_URL}/rss.xml`,
+        },
+      ],
+    },
+    null,
+    2
+  );
+  writeSeoFile('ai-catalog.json', aiCatalogJson);
+  const wellKnownPublicDir = path.join(PUBLIC_DIR, '.well-known');
+  if (!fs.existsSync(wellKnownPublicDir)) {
+    fs.mkdirSync(wellKnownPublicDir, { recursive: true });
+  }
+  fs.writeFileSync(path.join(wellKnownPublicDir, 'ai-catalog.json'), aiCatalogJson, 'utf8');
+  if (fs.existsSync(DIST_DIR)) {
+    const wellKnownDistDir = path.join(DIST_DIR, '.well-known');
+    if (!fs.existsSync(wellKnownDistDir)) {
+      fs.mkdirSync(wellKnownDistDir, { recursive: true });
+    }
+    fs.writeFileSync(path.join(wellKnownDistDir, 'ai-catalog.json'), aiCatalogJson, 'utf8');
+  }
+
   // 7. Update robots.txt with AdSense Mediapartners-Google, Googlebot, Bingbot & all sitemaps
   const robotsTxt = `# Toolzaro Official Robots.txt (${BASE_URL})
 # 100% Google AdSense, Googlebot, Bingbot & AI Search Friendly

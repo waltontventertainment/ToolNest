@@ -146,6 +146,16 @@
   Content-Type: text/plain; charset=utf-8
   Access-Control-Allow-Origin: *
 
+/ai-catalog.json
+  Cache-Control: public, max-age=3600, s-maxage=3600
+  Content-Type: application/json; charset=utf-8
+  Access-Control-Allow-Origin: *
+
+/.well-known/ai-catalog.json
+  Cache-Control: public, max-age=3600, s-maxage=3600
+  Content-Type: application/json; charset=utf-8
+  Access-Control-Allow-Origin: *
+
 /humans.txt
   Cache-Control: public, max-age=86400
   Content-Type: text/plain; charset=utf-8

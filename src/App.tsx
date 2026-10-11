@@ -8,19 +8,24 @@ import { GoogleDriveProvider } from './context/GoogleDriveContext';
 import { SiteLayout } from './components/SiteLayout';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { Index } from './pages/Index';
-import { ToolPage } from './pages/ToolPage';
-import { CategoryPage } from './pages/CategoryPage';
-import { ToolsHubPage } from './pages/ToolsHubPage';
-import { BlogPage } from './pages/BlogPage';
-import { BlogPostPage } from './pages/BlogPostPage';
-import { About, PrivacyPolicy, TermsOfService, Disclaimer, Contact, HtmlSitemap } from './pages/StaticPages';
-import { NotFound } from './pages/NotFound';
 import { isBloggerHost, extractSlugFromBloggerPath } from './lib/appUrls';
 import { tools, categories } from './lib/registry';
 import { getPublishedBlogs } from './lib/firestoreBlogService';
 
-// Keep heavy Admin CMS isolated in its own lazy chunk; all public route shells render in 0ms
-// while the 156+ individual tool components inside ToolPage are code-split & preloaded via lazyTool()
+// Code-split sub-route pages so the Homepage ('/') loads with minimal JS on Mobile Slow 4G,
+// then silently warm route chunks in the background after LCP completes.
+const ToolPage = React.lazy(() => import('./pages/ToolPage').then(m => ({ default: m.ToolPage })));
+const CategoryPage = React.lazy(() => import('./pages/CategoryPage').then(m => ({ default: m.CategoryPage })));
+const ToolsHubPage = React.lazy(() => import('./pages/ToolsHubPage').then(m => ({ default: m.ToolsHubPage })));
+const BlogPage = React.lazy(() => import('./pages/BlogPage').then(m => ({ default: m.BlogPage })));
+const BlogPostPage = React.lazy(() => import('./pages/BlogPostPage').then(m => ({ default: m.BlogPostPage })));
+const About = React.lazy(() => import('./pages/StaticPages').then(m => ({ default: m.About })));
+const PrivacyPolicy = React.lazy(() => import('./pages/StaticPages').then(m => ({ default: m.PrivacyPolicy })));
+const TermsOfService = React.lazy(() => import('./pages/StaticPages').then(m => ({ default: m.TermsOfService })));
+const Disclaimer = React.lazy(() => import('./pages/StaticPages').then(m => ({ default: m.Disclaimer })));
+const Contact = React.lazy(() => import('./pages/StaticPages').then(m => ({ default: m.Contact })));
+const HtmlSitemap = React.lazy(() => import('./pages/StaticPages').then(m => ({ default: m.HtmlSitemap })));
+const NotFound = React.lazy(() => import('./pages/NotFound').then(m => ({ default: m.NotFound })));
 const AdminPage = React.lazy(() => import('./pages/AdminPage').then(m => ({ default: m.AdminPage })));
 
 function RouteLoadingFallback() {
@@ -236,10 +241,13 @@ function SmartSpaLinkInterceptor() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Silently warm Firestore blog cache in background so all blog articles open in 0ms
+    // Silently warm Firestore blog cache & primary route chunks after initial LCP completes
     const warmTimer = setTimeout(() => {
       getPublishedBlogs().catch(() => {});
-    }, 900);
+      import('./pages/ToolPage').catch(() => {});
+      import('./pages/BlogPostPage').catch(() => {});
+      import('./pages/BlogPage').catch(() => {});
+    }, 3500);
 
     const handleGlobalClick = (event: MouseEvent) => {
       if (

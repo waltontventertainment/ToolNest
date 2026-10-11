@@ -34,7 +34,7 @@ export const SiteSettingsProvider: React.FC<{ children: React.ReactNode }> = ({ 
   useEffect(() => {
     const timer = setTimeout(() => {
       refreshSettings();
-    }, 1800);
+    }, 3500);
 
     const handleUpdate = (e: Event) => {
       const customEvent = e as CustomEvent<SiteSettings>;

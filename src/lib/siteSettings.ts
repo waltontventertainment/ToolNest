@@ -1,6 +1,26 @@
-import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { db } from './firebase';
 import { tools } from './registry';
+
+let firestoreDepsPromise: Promise<{
+  doc: typeof import('firebase/firestore').doc;
+  getDoc: typeof import('firebase/firestore').getDoc;
+  setDoc: typeof import('firebase/firestore').setDoc;
+  db: typeof import('./firebase').db;
+}> | null = null;
+
+function loadFirestoreDeps() {
+  if (!firestoreDepsPromise) {
+    firestoreDepsPromise = Promise.all([
+      import('firebase/firestore'),
+      import('./firebase'),
+    ]).then(([fsMod, fbMod]) => ({
+      doc: fsMod.doc,
+      getDoc: fsMod.getDoc,
+      setDoc: fsMod.setDoc,
+      db: fbMod.db,
+    }));
+  }
+  return firestoreDepsPromise;
+}
 
 export interface ToolOverride {
   customName?: string;
@@ -164,6 +184,7 @@ export function getFirestoreSyncStatus(): FirestoreSyncStatus {
  */
 export async function fetchSiteSettings(): Promise<SiteSettings> {
   try {
+    const { doc, getDoc, db } = await loadFirestoreDeps();
     const docRef = doc(db, SETTINGS_COLLECTION, SETTINGS_DOC_ID);
     const snap = await getDoc(docRef);
     if (snap.exists()) {
@@ -220,6 +241,7 @@ export async function saveSiteSettings(newSettings: Partial<SiteSettings>): Prom
 
   // 2. Persist to Firestore in toolzaro-56fe1
   try {
+    const { doc, setDoc, db } = await loadFirestoreDeps();
     const docRef = doc(db, SETTINGS_COLLECTION, SETTINGS_DOC_ID);
     await setDoc(docRef, updated, { merge: true });
     currentSyncStatus = { hasPermissionError: false, isOnline: true };

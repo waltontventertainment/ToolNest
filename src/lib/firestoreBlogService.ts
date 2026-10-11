@@ -1,16 +1,38 @@
-import { 
-  collection, 
-  doc, 
-  getDocs, 
-  getDoc, 
-  setDoc, 
-  deleteDoc, 
-  query, 
-  where, 
-  limit, 
-} from 'firebase/firestore';
-import { db } from './firebase';
 import { BUILTIN_BLOG_POSTS } from './blogData';
+
+let firestoreDepsPromise: Promise<{
+  collection: typeof import('firebase/firestore').collection;
+  doc: typeof import('firebase/firestore').doc;
+  getDocs: typeof import('firebase/firestore').getDocs;
+  getDoc: typeof import('firebase/firestore').getDoc;
+  setDoc: typeof import('firebase/firestore').setDoc;
+  deleteDoc: typeof import('firebase/firestore').deleteDoc;
+  query: typeof import('firebase/firestore').query;
+  where: typeof import('firebase/firestore').where;
+  limit: typeof import('firebase/firestore').limit;
+  db: typeof import('./firebase').db;
+}> | null = null;
+
+function loadFirestoreDeps() {
+  if (!firestoreDepsPromise) {
+    firestoreDepsPromise = Promise.all([
+      import('firebase/firestore'),
+      import('./firebase'),
+    ]).then(([fsMod, fbMod]) => ({
+      collection: fsMod.collection,
+      doc: fsMod.doc,
+      getDocs: fsMod.getDocs,
+      getDoc: fsMod.getDoc,
+      setDoc: fsMod.setDoc,
+      deleteDoc: fsMod.deleteDoc,
+      query: fsMod.query,
+      where: fsMod.where,
+      limit: fsMod.limit,
+      db: fbMod.db,
+    }));
+  }
+  return firestoreDepsPromise;
+}
 
 export interface FirestoreBlog {
   id: string;
@@ -181,6 +203,7 @@ export async function getPublishedBlogs(forceRefresh = false): Promise<Firestore
 
   inflightFetchPromise = (async () => {
     try {
+      const { collection, getDocs, db } = await loadFirestoreDeps();
       const blogsRef = collection(db, COLLECTION_NAME);
       const snapshot = await getDocs(blogsRef);
 
@@ -215,6 +238,7 @@ export async function getPublishedBlogs(forceRefresh = false): Promise<Firestore
  */
 export async function getAllAdminBlogs(): Promise<FirestoreBlog[]> {
   try {
+    const { collection, getDocs, db } = await loadFirestoreDeps();
     const blogsRef = collection(db, COLLECTION_NAME);
     const snapshot = await getDocs(blogsRef);
 
@@ -252,6 +276,7 @@ export async function getBlogBySlug(slugOrId: string): Promise<FirestoreBlog | n
   }
 
   try {
+    const { collection, doc, getDoc, getDocs, query, where, limit, db } = await loadFirestoreDeps();
     // 1. Try direct ID doc fetch
     const docRef = doc(db, COLLECTION_NAME, clean);
     const docSnap = await getDoc(docRef);
@@ -325,6 +350,7 @@ export async function saveBlogToFirestore(blog: Partial<FirestoreBlog>): Promise
   setLocalCache(merged);
 
   try {
+    const { doc, setDoc, db } = await loadFirestoreDeps();
     const docRef = doc(db, COLLECTION_NAME, id);
     await setDoc(docRef, completeBlog, { merge: true });
   } catch (error: any) {
@@ -353,6 +379,7 @@ export async function deleteBlogFromFirestore(id: string): Promise<boolean> {
     setLocalCache(memoryBlogsCache);
 
     try {
+      const { doc, setDoc, db } = await loadFirestoreDeps();
       const docRef = doc(db, COLLECTION_NAME, id);
       await setDoc(docRef, tombstone, { merge: true });
     } catch (error: any) {
@@ -366,6 +393,7 @@ export async function deleteBlogFromFirestore(id: string): Promise<boolean> {
   setLocalCache(memoryBlogsCache);
 
   try {
+    const { doc, deleteDoc, db } = await loadFirestoreDeps();
     const docRef = doc(db, COLLECTION_NAME, id);
     await deleteDoc(docRef);
   } catch (error: any) {
@@ -382,6 +410,7 @@ export async function seedStarterPostIfEmpty(): Promise<FirestoreBlog[]> {
   const builtins = getBuiltinAsFirestoreBlogs();
   for (const post of builtins) {
     try {
+      const { doc, getDoc, setDoc, db } = await loadFirestoreDeps();
       const docRef = doc(db, COLLECTION_NAME, post.id);
       const snap = await getDoc(docRef);
       if (!snap.exists()) {
