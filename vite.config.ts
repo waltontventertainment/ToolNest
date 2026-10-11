@@ -42,12 +42,6 @@ export default defineConfig(() => {
                   !dep.includes('vendor-qr-barcode') &&
                   !dep.includes('vendor-firebase') &&
                   !dep.includes('AdminPage') &&
-                  !dep.includes('ToolPage') &&
-                  !dep.includes('BlogPostPage') &&
-                  !dep.includes('BlogPage') &&
-                  !dep.includes('CategoryPage') &&
-                  !dep.includes('ToolsHubPage') &&
-                  !dep.includes('StaticPages') &&
                   !dep.includes('PdfSuiteTools') &&
                   !dep.includes('ScannerTools') &&
                   !dep.includes('FreeApiToolsBatch') &&
@@ -55,6 +49,7 @@ export default defineConfig(() => {
                   !dep.includes('SeoToolsBatch') &&
                   !dep.includes('ColorImageToolsBatch')
               );
+
             },
           },
       rollupOptions: {

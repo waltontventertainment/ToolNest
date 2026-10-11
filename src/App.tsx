@@ -11,33 +11,18 @@ import { Index } from './pages/Index';
 import { isBloggerHost, extractSlugFromBloggerPath } from './lib/appUrls';
 import { tools, categories } from './lib/registry';
 
-// Code-split secondary route pages while keeping Index immediate for 0ms LCP
-const ToolPage = React.lazy(() => import('./pages/ToolPage').then(m => ({ default: m.ToolPage })));
-const CategoryPage = React.lazy(() => import('./pages/CategoryPage').then(m => ({ default: m.CategoryPage })));
-const ToolsHubPage = React.lazy(() => import('./pages/ToolsHubPage').then(m => ({ default: m.ToolsHubPage })));
-const BlogPage = React.lazy(() => import('./pages/BlogPage').then(m => ({ default: m.BlogPage })));
-const BlogPostPage = React.lazy(() => import('./pages/BlogPostPage').then(m => ({ default: m.BlogPostPage })));
-const About = React.lazy(() => import('./pages/StaticPages').then(m => ({ default: m.About })));
-const PrivacyPolicy = React.lazy(() => import('./pages/StaticPages').then(m => ({ default: m.PrivacyPolicy })));
-const TermsOfService = React.lazy(() => import('./pages/StaticPages').then(m => ({ default: m.TermsOfService })));
-const Disclaimer = React.lazy(() => import('./pages/StaticPages').then(m => ({ default: m.Disclaimer })));
-const Contact = React.lazy(() => import('./pages/StaticPages').then(m => ({ default: m.Contact })));
-const HtmlSitemap = React.lazy(() => import('./pages/StaticPages').then(m => ({ default: m.HtmlSitemap })));
-const NotFound = React.lazy(() => import('./pages/NotFound').then(m => ({ default: m.NotFound })));
+// Directly import primary route pages for immediate 0ms first render without layout unmounting or refresh flicker
+import { ToolPage } from './pages/ToolPage';
+import { CategoryPage } from './pages/CategoryPage';
+import { ToolsHubPage } from './pages/ToolsHubPage';
+import { BlogPage } from './pages/BlogPage';
+import { BlogPostPage } from './pages/BlogPostPage';
+import { About, PrivacyPolicy, TermsOfService, Disclaimer, Contact, HtmlSitemap } from './pages/StaticPages';
+import { NotFound } from './pages/NotFound';
+
+// Secret Admin workspace kept isolated and lazy-loaded
 const AdminPage = React.lazy(() => import('./pages/AdminPage').then(m => ({ default: m.AdminPage })));
 
-function RouteLoadingFallback() {
-  return (
-    <div className="w-full max-w-5xl mx-auto py-8 space-y-6 animate-pulse">
-      <div className="h-5 w-40 rounded-lg bg-muted" />
-      <div className="space-y-3">
-        <div className="h-10 w-72 sm:w-96 rounded-xl bg-muted" />
-        <div className="h-4 w-full max-w-xl rounded-lg bg-muted/70" />
-      </div>
-      <div className="h-64 w-full rounded-3xl bg-card border border-border/60" />
-    </div>
-  );
-}
 
 /**
  * Hash Routing is only strictly required for standalone offline local HTML files
@@ -531,58 +516,71 @@ export default function App() {
               <RouterComponent>
                 <UrlNormalizationEffect />
                 <SmartSpaLinkInterceptor />
-                <Suspense fallback={<RouteLoadingFallback />}>
-                  <Routes>
-                    {/* Secret Admin Portal (/sabbir & /sabbir.html) - completely isolated from public SiteLayout */}
-                    <Route path="sabbir" element={<AdminPage />} />
-                    <Route path="sabbir.html" element={<AdminPage />} />
+                <Routes>
+                  {/* Secret Admin Portal (/sabbir & /sabbir.html) - completely isolated from public SiteLayout */}
+                  <Route
+                    path="sabbir"
+                    element={
+                      <Suspense fallback={null}>
+                        <AdminPage />
+                      </Suspense>
+                    }
+                  />
+                  <Route
+                    path="sabbir.html"
+                    element={
+                      <Suspense fallback={null}>
+                        <AdminPage />
+                      </Suspense>
+                    }
+                  />
 
-                    {/* Public Site Layout with standard Header, Announcement, and Footer */}
-                    <Route path="/" element={<SiteLayout />}>
-                      {/* Smart Root Dispatcher: handles Home, ?tool=, ?category=, ?page=, ?blog= */}
-                      <Route index element={<UniversalIndexDispatcher />} />
+                  {/* Public Site Layout with standard Header, Announcement, and Footer */}
+                  <Route path="/" element={<SiteLayout />}>
+                    {/* Smart Root Dispatcher: handles Home, ?tool=, ?category=, ?page=, ?blog= */}
+                    <Route index element={<UniversalIndexDispatcher />} />
 
-                      {/* Bookmarks / Saved Tools Flat Routes */}
-                      <Route path="bookmarks" element={<Index forcedBookmarks={true} />} />
-                      <Route path="saved" element={<Index forcedBookmarks={true} />} />
-                      <Route path="favorites" element={<Index forcedBookmarks={true} />} />
+                    {/* Bookmarks / Saved Tools Flat Routes */}
+                    <Route path="bookmarks" element={<Index forcedBookmarks={true} />} />
+                    <Route path="saved" element={<Index forcedBookmarks={true} />} />
+                    <Route path="favorites" element={<Index forcedBookmarks={true} />} />
 
-                      {/* All Tools Hub & Directory Routes (Never 404 on directory/root visits) */}
-                      <Route path="tools" element={<ToolsHubPage />} />
-                      <Route path="all-tools" element={<ToolsHubPage />} />
-                      <Route path="directory" element={<ToolsHubPage />} />
-                      <Route path="hub" element={<ToolsHubPage />} />
-                      <Route path="categories" element={<ToolsHubPage />} />
-                      <Route path="category" element={<ToolsHubPage />} />
+                    {/* All Tools Hub & Directory Routes (Never 404 on directory/root visits) */}
+                    <Route path="tools" element={<ToolsHubPage />} />
+                    <Route path="all-tools" element={<ToolsHubPage />} />
+                    <Route path="directory" element={<ToolsHubPage />} />
+                    <Route path="hub" element={<ToolsHubPage />} />
+                    <Route path="categories" element={<ToolsHubPage />} />
+                    <Route path="category" element={<ToolsHubPage />} />
 
-                      {/* Legacy /tools/:slug, /category/:slug, and /blog/:slug redirect to flat /:slug */}
-                      <Route path="tools/:slug" element={<LegacyToolRedirect />} />
-                      <Route path="category/:slug" element={<LegacyCategoryRedirect />} />
-                      <Route path="blog" element={<BlogPage />} />
-                      <Route path="blog/:slug" element={<LegacyBlogRedirect />} />
+                    {/* Legacy /tools/:slug, /category/:slug, and /blog/:slug redirect to flat /:slug */}
+                    <Route path="tools/:slug" element={<LegacyToolRedirect />} />
+                    <Route path="category/:slug" element={<LegacyCategoryRedirect />} />
+                    <Route path="blog" element={<BlogPage />} />
+                    <Route path="blog/:slug" element={<LegacyBlogRedirect />} />
 
-                      {/* Static Pages */}
-                      <Route path="about" element={<About />} />
-                      <Route path="privacy-policy" element={<PrivacyPolicy />} />
-                      <Route path="terms" element={<TermsOfService />} />
-                      <Route path="disclaimer" element={<Disclaimer />} />
-                      <Route path="contact" element={<Contact />} />
-                      <Route path="sitemap" element={<HtmlSitemap />} />
+                    {/* Static Pages */}
+                    <Route path="about" element={<About />} />
+                    <Route path="privacy-policy" element={<PrivacyPolicy />} />
+                    <Route path="terms" element={<TermsOfService />} />
+                    <Route path="disclaimer" element={<Disclaimer />} />
+                    <Route path="contact" element={<Contact />} />
+                    <Route path="sitemap" element={<HtmlSitemap />} />
 
-                      {/* Official Blogger Post Permalinks: /:year/:month/:postSlug (with or without .html) */}
-                      <Route path=":year/:month/:postSlug" element={<ToolOrPostViewer />} />
+                    {/* Official Blogger Post Permalinks: /:year/:month/:postSlug (with or without .html) */}
+                    <Route path=":year/:month/:postSlug" element={<ToolOrPostViewer />} />
 
-                      {/* Official Blogger Static Pages: /p/:pageSlug (with or without .html) */}
-                      <Route path="p/:pageSlug" element={<StaticPageView />} />
+                    {/* Official Blogger Static Pages: /p/:pageSlug (with or without .html) */}
+                    <Route path="p/:pageSlug" element={<StaticPageView />} />
 
-                      {/* Flat Root-Level Tool & Category Route (e.g. /open-meteo-live-weather) */}
-                      <Route path=":slug" element={<RootSlugDispatcher />} />
+                    {/* Flat Root-Level Tool & Category Route (e.g. /open-meteo-live-weather) */}
+                    <Route path=":slug" element={<RootSlugDispatcher />} />
 
-                      {/* Smart Catch-All: captures any additional paths */}
-                      <Route path="*" element={<UniversalCatchAll />} />
-                    </Route>
-                  </Routes>
-                </Suspense>
+                    {/* Smart Catch-All: captures any additional paths */}
+                    <Route path="*" element={<UniversalCatchAll />} />
+                  </Route>
+                </Routes>
+
               </RouterComponent>
               <Toaster position="bottom-right" richColors />
             </GoogleDriveProvider>
