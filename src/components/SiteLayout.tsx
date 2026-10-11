@@ -287,15 +287,7 @@ export const SiteLayout: React.FC = () => {
       )}
 
       <main className="flex-1 w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-3 sm:pt-4 md:pt-6 pb-12 sm:pb-16 md:pb-20">
-        <React.Suspense
-          fallback={
-            <div className="w-full py-8 space-y-5 animate-pulse">
-              <div className="h-6 w-44 rounded-lg bg-muted" />
-              <div className="h-10 w-72 rounded-xl bg-muted" />
-              <div className="h-64 w-full rounded-3xl bg-card border border-border/60" />
-            </div>
-          }
-        >
+        <React.Suspense fallback={null}>
           <Outlet />
         </React.Suspense>
       </main>

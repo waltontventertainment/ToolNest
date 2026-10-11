@@ -43,11 +43,6 @@ export default defineConfig(() => {
                   !dep.includes('vendor-firebase') &&
                   !dep.includes('vendor-math') &&
                   !dep.includes('AdminPage') &&
-                  !dep.includes('ToolPage') &&
-                  !dep.includes('BlogPage') &&
-                  !dep.includes('BlogPostPage') &&
-                  !dep.includes('StaticPages') &&
-                  !dep.includes('ToolsHubPage') &&
                   !dep.includes('PdfSuiteTools') &&
                   !dep.includes('ScannerTools') &&
                   !dep.includes('FreeApiToolsBatch') &&
