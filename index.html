@@ -149,183 +149,44 @@
             return;
           }
           var saved = localStorage.getItem('toolnest-theme');
-          var isDark = saved === '"dark"' || saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches);
-          if (isDark) {
-            document.documentElement.classList.add('dark');
-          } else {
+          var isLight = saved === '"light"' || saved === 'light' || (!saved && window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches);
+          if (isLight) {
             document.documentElement.classList.remove('dark');
+          } else {
+            document.documentElement.classList.add('dark');
           }
         } catch (e) {}
       })();
     </script>
 
-    <!-- Critical First-Paint Inline CSS for Sub-Second Mobile FCP & LCP (Zero Render-Blocking Wait) -->
+    <!-- Critical First-Paint Inline CSS (Zero Flash, Exact Theme Match) -->
     <style>
       :root {
-        --tz-bg: #f8fafc;
-        --tz-fg: #0f172a;
-        --tz-muted: #475569;
-        --tz-card: #ffffff;
-        --tz-border: #e2e8f0;
-        --tz-primary: #4f46e5;
+        --tz-bg: hsl(258, 8%, 98%);
+        --tz-fg: hsl(258, 8%, 14%);
       }
       html.dark {
-        --tz-bg: #090d16;
-        --tz-fg: #f8fafc;
-        --tz-muted: #94a3b8;
-        --tz-card: #111726;
-        --tz-border: #1e293b;
-        --tz-primary: #6366f1;
+        --tz-bg: hsl(258, 6%, 8%);
+        --tz-fg: hsl(258, 8%, 94%);
       }
-      body {
+      html, body {
         margin: 0;
+        padding: 0;
+        min-height: 100%;
         background-color: var(--tz-bg);
         color: var(--tz-fg);
         font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         -webkit-font-smoothing: antialiased;
       }
-      .tz-shell-header {
-        height: 64px;
-        border-bottom: 1px solid var(--tz-border);
-        background: var(--tz-card);
+      #root {
+        min-height: 100vh;
         display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0 16px;
-      }
-      .tz-shell-brand {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        font-weight: 800;
-        font-size: 1.25rem;
-        color: var(--tz-fg);
-        text-decoration: none;
-        letter-spacing: -0.03em;
-      }
-      .tz-shell-logo {
-        width: 36px;
-        height: 36px;
-        border-radius: 12px;
-        background: linear-gradient(145deg, #8b5cf6 0%, #6366f1 45%, #4f46e5 100%);
-        box-shadow: 0 3px 0 #312e81;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        color: #fff;
-      }
-      .tz-shell-main {
-        max-width: 1280px;
-        margin: 0 auto;
-        padding: 20px 16px 32px;
-        text-align: center;
-      }
-      .tz-shell-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        font-size: 0.75rem;
-        font-weight: 700;
-        color: var(--tz-primary);
-        margin-bottom: 10px;
-      }
-      .tz-shell-h1 {
-        font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        font-size: clamp(1.6rem, 4.5vw, 2.65rem);
-        font-weight: 900;
-        line-height: 1.22;
-        letter-spacing: -0.03em;
-        margin: 0 0 12px;
-        color: var(--tz-fg);
-      }
-      .tz-shell-h1-grad {
-        display: block;
-        background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #0284c7 100%);
-        -webkit-background-clip: text;
-        background-clip: text;
-        color: transparent;
-      }
-      html.dark .tz-shell-h1-grad {
-        background: linear-gradient(135deg, #818cf8 0%, #c084fc 50%, #38bdf8 100%);
-        -webkit-background-clip: text;
-        background-clip: text;
-        color: transparent;
-      }
-      .tz-shell-p {
-        font-size: 0.925rem;
-        line-height: 1.6;
-        color: var(--tz-muted);
-        max-width: 560px;
-        margin: 0 auto 18px;
-      }
-      .tz-shell-search {
-        max-width: 640px;
-        height: 50px;
-        margin: 0 auto;
-        border-radius: 16px;
-        border: 2px solid var(--tz-border);
-        background: var(--tz-card);
-        display: flex;
-        align-items: center;
-        padding: 0 16px;
-        color: var(--tz-muted);
-        font-size: 0.875rem;
-      }
-      @media (min-width: 1024px) {
-        .tz-shell-main {
-          text-align: left;
-          padding: 32px 24px;
-        }
-        .tz-shell-p, .tz-shell-search {
-          margin-left: 0;
-        }
+        flex-direction: column;
       }
     </style>
   </head>
   <body>
-    <div id="root">
-      <!-- Instant Pre-Hydration Hero Shell (Paints FCP & LCP in <1s on Mobile Slow 4G; seamlessly replaced by React) -->
-      <header class="tz-shell-header">
-        <a href="/" class="tz-shell-brand">
-          <span class="tz-shell-logo" aria-hidden="true">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
-            </svg>
-          </span>
-          <span>Toolzaro</span>
-        </a>
-      </header>
-      <main class="tz-shell-main">
-        <div id="tz-shell-badge" class="tz-shell-badge">156 Browser Utilities · Client-Side Privacy</div>
-        <h1 class="tz-shell-h1">
-          <span id="tz-shell-title">Every web tool you need.</span>
-          <span id="tz-shell-subtitle" class="tz-shell-h1-grad">Zero installation required.</span>
-        </h1>
-        <p id="tz-shell-desc" class="tz-shell-p">
-          Browser-native processing. Merge PDFs, resize images, format JSON, generate QR codes, and convert files safely without cloud uploads.
-        </p>
-        <div id="tz-shell-box" class="tz-shell-search">Search across 156 utilities (e.g., PDF, image, JSON, QR)...</div>
-      </main>
-      <script>
-        (function () {
-          try {
-            var p = (window.location.pathname || '').toLowerCase();
-            if (p.indexOf('open-meteo-live-weather') !== -1) {
-              var b = document.getElementById('tz-shell-badge');
-              var t = document.getElementById('tz-shell-title');
-              var s = document.getElementById('tz-shell-subtitle');
-              var d = document.getElementById('tz-shell-desc');
-              var x = document.getElementById('tz-shell-box');
-              if (b) b.textContent = 'Universal Data Suite · Live Satellite Telemetry';
-              if (t) t.textContent = 'Real-Time Weather Station';
-              if (s) s.textContent = 'Global Live Weather & 7-Day Forecast';
-              if (d) d.textContent = 'Get real-time weather forecasting, live satellite temperature, humidity, wind flow, UV index, and 7-day outlook for global cities.';
-              if (x) x.textContent = 'London, United Kingdom · 18.4°C Partly Cloudy · Humidity 62% · Wind 11.4 km/h';
-            }
-          } catch (e) {}
-        })();
-      </script>
-    </div>
+    <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

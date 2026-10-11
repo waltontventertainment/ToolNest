@@ -13,9 +13,19 @@ import { useSiteSettings } from '../context/SiteSettingsContext';
 const GoogleDriveModal = React.lazy(() => import('./GoogleDriveModal').then(m => ({ default: m.GoogleDriveModal })));
 const FeedbackModal = React.lazy(() => import('./FeedbackModal').then(m => ({ default: m.FeedbackModal })));
 
+function getDefaultTheme(): 'light' | 'dark' {
+  if (typeof window === 'undefined') return 'dark';
+  try {
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+      return 'light';
+    }
+  } catch {}
+  return 'dark';
+}
+
 export const SiteLayout: React.FC = () => {
   const { settings } = useSiteSettings();
-  const [theme, setTheme] = useLocalStorage<'light' | 'dark'>('toolnest-theme', 'light');
+  const [theme, setTheme] = useLocalStorage<'light' | 'dark'>('toolnest-theme', getDefaultTheme());
   const { favorites } = useFavorites();
   const { user, accessToken } = useGoogleDrive();
   const [isDriveModalOpen, setIsDriveModalOpen] = useState(false);
@@ -24,7 +34,7 @@ export const SiteLayout: React.FC = () => {
   const location = useLocation();
   const { pathname } = location;
 
-  useEffect(() => {
+  React.useLayoutEffect(() => {
     if (theme === 'dark') {
       document.documentElement.classList.add('dark');
     } else {
