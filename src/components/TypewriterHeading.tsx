@@ -4,7 +4,9 @@ const ROTATING_PHRASES = [
   "Zero installation required.",
   "100% private in browser.",
   "Instant PDF & image tools.",
-  "Zero cloud server uploads."
+  "Zero cloud server uploads.",
+  "156+ free daily utilities.",
+  "Built for speed & privacy."
 ];
 
 export const TypewriterHeading: React.FC = () => {
@@ -16,16 +18,16 @@ export const TypewriterHeading: React.FC = () => {
   useEffect(() => {
     const fullPhrase = ROTATING_PHRASES[phraseIndex];
 
-    // If full phrase is currently displayed and not yet deleting, pause before starting animation
+    // Continuous flow: brief 900ms reading beat at the end of a phrase instead of a long 5-6s freeze
     if (!isDeleting && currentText === fullPhrase) {
-      const pauseTimer = setTimeout(() => setIsDeleting(true), 6500);
+      const pauseTimer = setTimeout(() => setIsDeleting(true), 900);
       return () => clearTimeout(pauseTimer);
     }
 
-    // Typing speed calculation
-    let typingSpeed = isDeleting ? 35 : 70;
+    // Smooth, continuous keyboard typing & backspacing speed
+    let typingSpeed = isDeleting ? 28 : 55;
     if (!isDeleting) {
-      typingSpeed += Math.floor(Math.random() * 20);
+      typingSpeed += Math.floor(Math.random() * 15);
     }
 
     const handleType = () => {
