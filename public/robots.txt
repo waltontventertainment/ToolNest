@@ -6,16 +6,22 @@ Allow: /
 
 User-agent: Googlebot
 Allow: /
+Allow: /assets/
 Disallow: /sabbir
 Disallow: /sabbir.html
 
+User-agent: Googlebot-Image
+Allow: /
+
 User-agent: Bingbot
 Allow: /
+Allow: /assets/
 Disallow: /sabbir
 Disallow: /sabbir.html
 
 User-agent: *
 Allow: /
+Allow: /assets/
 Disallow: /sabbir
 Disallow: /sabbir.html
 

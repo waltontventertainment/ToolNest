@@ -1,5 +1,6 @@
 // Toolzaro ImgBB Image Hosting Integration
 // Direct client-side image uploader via ImgBB API
+import { getCachedSiteSettings } from './siteSettings';
 
 export const IMGBB_API_KEY = '1ba7e3014ff726df236cef13ca1a79f3';
 export const IMGBB_UPLOAD_ENDPOINT = 'https://api.imgbb.com/1/upload';
@@ -15,6 +16,20 @@ export interface ImgBBUploadResponse {
 }
 
 /**
+ * Resolves the active ImgBB API Key from Admin Site Settings (Firestore/Cache) or falls back to default key.
+ */
+export function getActiveImgBBApiKey(customApiKey?: string): string {
+  if (customApiKey && customApiKey.trim()) return customApiKey.trim();
+  try {
+    const cachedKey = getCachedSiteSettings()?.admin?.imgbbApiKey?.trim();
+    if (cachedKey) return cachedKey;
+  } catch {
+    // Ignore storage errors
+  }
+  return IMGBB_API_KEY;
+}
+
+/**
  * Uploads an image file or base64 data to ImgBB and returns the public CDN image URL.
  * @param imageFileOrBase64 File object or Base64 data URI
  * @param customApiKey Optional override API key
@@ -22,10 +37,10 @@ export interface ImgBBUploadResponse {
  */
 export async function uploadToImgBB(
   imageFileOrBase64: File | string,
-  customApiKey: string = IMGBB_API_KEY,
+  customApiKey?: string,
   name?: string
 ): Promise<ImgBBUploadResponse> {
-  const apiKey = (customApiKey || IMGBB_API_KEY).trim();
+  const apiKey = getActiveImgBBApiKey(customApiKey);
   if (!apiKey) {
     return {
       success: false,
@@ -39,7 +54,7 @@ export async function uploadToImgBB(
 
     if (typeof imageFileOrBase64 === 'string') {
       // Strip data:image/...;base64, prefix if present
-      const cleanBase64 = imageFileOrBase64.replace(/^data:image\/[a-z0-9.+]+;base64,/, '');
+      const cleanBase64 = imageFileOrBase64.replace(/^data:image\/[a-zA-Z0-9.+_-]+;base64,/, '');
       formData.append('image', cleanBase64);
     } else {
       formData.append('image', imageFileOrBase64);
@@ -78,4 +93,25 @@ export async function uploadToImgBB(
       error: error?.message || 'Network error while uploading image to ImgBB.'
     };
   }
+}
+
+/**
+ * Scans text/HTML for any embedded base64 `data:image/...` strings, uploads them to ImgBB,
+ * and replaces them with clean ImgBB CDN URLs so Firebase Firestore only stores lightweight text.
+ */
+export async function replaceBase64ImagesWithImgBB(input: string): Promise<string> {
+  if (!input || !input.includes('data:image/')) return input;
+
+  const base64Regex = /data:image\/[a-zA-Z0-9.+_-]+;base64,[A-Za-z0-9+/=]+/g;
+  const matches = Array.from(new Set(input.match(base64Regex) || []));
+  if (matches.length === 0) return input;
+
+  let updated = input;
+  for (const dataUri of matches) {
+    const res = await uploadToImgBB(dataUri);
+    if (res.success && res.url) {
+      updated = updated.split(dataUri).join(res.url);
+    }
+  }
+  return updated;
 }

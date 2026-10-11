@@ -4,6 +4,7 @@ import { Search, X, ArrowRight, CornerDownLeft, Sparkles, Command } from 'lucide
 import { tools } from '../lib/registry';
 import { ToolDefinition } from '../lib/types';
 import { getToolUrl } from '../lib/appUrls';
+import { useLockBodyScroll } from '../lib/toolkit';
 
 export const HeaderSearch: React.FC = () => {
   const [query, setQuery] = useState('');
@@ -11,6 +12,9 @@ export const HeaderSearch: React.FC = () => {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const navigate = useNavigate();
   const location = useLocation();
+
+  // Lock background website scroll while Command Search popup is open
+  useLockBodyScroll(isOpen);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
@@ -215,7 +219,10 @@ export const HeaderSearch: React.FC = () => {
             </div>
 
             {/* Results List */}
-            <div className="flex-1 overflow-y-auto p-2 space-y-1 divide-y divide-border/20">
+            <div
+              data-modal-scroll-container="true"
+              className="flex-1 overflow-y-auto overscroll-contain touch-pan-y p-2 space-y-1 divide-y divide-border/20"
+            >
               {filteredTools.length > 0 ? (
                 filteredTools.map((tool, idx) => {
                   const Icon = tool.icon;

@@ -32,9 +32,9 @@ export const BUILTIN_BLOG_POSTS: BlogPost[] = [
     excerpt: 'An architectural deep-dive into zero-knowledge browser utilities. Learn how Web Cryptography, Canvas APIs, and WebAssembly enable military-grade encryption, PDF manipulation, and image processing without transmitting a single byte to remote servers.',
     category: 'Security & Privacy',
     author: {
-      name: 'Dr. Marcus Vance',
-      role: 'Principal Security Architect & Systems Engineer',
-      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80'
+      name: 'Toolzaro',
+      role: 'Admin',
+      avatar: ''
     },
     publishedAt: '2026-10-04',
     readTimeMinutes: 12,
@@ -153,9 +153,9 @@ When selecting digital utilities for personal or corporate workflows:
     excerpt: 'A comprehensive, step-by-step masterclass on technical search optimization. Learn how to construct multi-type Schema.org JSON-LD trees, prevent canonical cannibalization, optimize social cards, and satisfy Google Search Essentials.',
     category: 'SEO & Growth',
     author: {
-      name: 'Elena Rostova',
-      role: 'Head of Search Strategy & Information Architecture',
-      avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80'
+      name: 'Toolzaro',
+      role: 'Admin',
+      avatar: ''
     },
     publishedAt: '2026-10-03',
     readTimeMinutes: 14,
@@ -338,9 +338,9 @@ Achieving top-tier organic visibility requires consistent technical hygiene:
     excerpt: 'A practical, engineering-focused manual on image and asset optimization. Master the trade-offs between WebP, AVIF, and SVG, eliminate Largest Contentful Paint (LCP) bottlenecks, and optimize digital assets for peak web performance.',
     category: 'Design & UX',
     author: {
-      name: 'Kavita Sundaram',
-      role: 'Staff Frontend Performance Architect',
-      avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&auto=format&fit=crop&q=80'
+      name: 'Toolzaro',
+      role: 'Admin',
+      avatar: ''
     },
     publishedAt: '2026-10-02',
     readTimeMinutes: 13,
@@ -491,9 +491,9 @@ async function compressImageInBrowser(
     excerpt: 'The ultimate content strategy playbook for creators, educators, and marketers. Learn how to extract clean video transcripts, clean automated speech recognition (ASR) errors, format timestamped guides, and repurpose video content.',
     category: 'SEO & Growth',
     author: {
-      name: 'Tariq Al-Mansoor',
-      role: 'Content Strategist & Digital Publishing Director',
-      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80'
+      name: 'Toolzaro',
+      role: 'Admin',
+      avatar: ''
     },
     publishedAt: '2026-10-01',
     readTimeMinutes: 11,
@@ -645,9 +645,9 @@ Video content is one of the richest sources of high-value information on the mod
     excerpt: 'An authoritative reference guide for software engineers and security practitioners. Clarify the critical differences between encoding, hashing, and encryption, avoid JWT validation pitfalls, and implement secure data workflows.',
     category: 'Developer Workflows',
     author: {
-      name: 'Alexander Chen',
-      role: 'Senior Staff Security Researcher & Cryptographer',
-      avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80'
+      name: 'Toolzaro',
+      role: 'Admin',
+      avatar: ''
     },
     publishedAt: '2026-09-30',
     readTimeMinutes: 15,

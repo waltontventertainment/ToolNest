@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Upload, Image as ImageIcon, Check, Loader2, Copy, AlertCircle, ExternalLink } from 'lucide-react';
-import { uploadToImgBB, IMGBB_API_KEY } from '../../lib/imgbb';
+import { uploadToImgBB } from '../../lib/imgbb';
 import { toast } from 'sonner';
 
 interface ImgBBUploaderProps {
@@ -12,7 +12,7 @@ interface ImgBBUploaderProps {
 
 export const ImgBBUploader: React.FC<ImgBBUploaderProps> = ({
   onImageUploaded,
-  apiKey = IMGBB_API_KEY,
+  apiKey,
   className = '',
   buttonLabel = 'Upload to ImgBB'
 }) => {
@@ -20,12 +20,10 @@ export const ImgBBUploader: React.FC<ImgBBUploaderProps> = ({
   const [uploadedUrl, setUploadedUrl] = useState<string | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
+  const processAndUploadFile = async (file: File) => {
     if (!file.type.startsWith('image/')) {
       toast.error('Please select a valid image file (PNG, JPG, WebP, GIF)');
       return;
@@ -36,7 +34,6 @@ export const ImgBBUploader: React.FC<ImgBBUploaderProps> = ({
       return;
     }
 
-    // Set preview
     const objectUrl = URL.createObjectURL(file);
     setPreviewUrl(objectUrl);
     setUploading(true);
@@ -46,7 +43,7 @@ export const ImgBBUploader: React.FC<ImgBBUploaderProps> = ({
       const result = await uploadToImgBB(file, apiKey, file.name);
       if (result.success && result.url) {
         setUploadedUrl(result.url);
-        toast.success('Image successfully uploaded to ImgBB!');
+        toast.success('Image uploaded to ImgBB CDN!');
         if (onImageUploaded) {
           onImageUploaded(result.url);
         }
@@ -65,6 +62,21 @@ export const ImgBBUploader: React.FC<ImgBBUploaderProps> = ({
     }
   };
 
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    await processAndUploadFile(file);
+  };
+
+  const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) {
+      await processAndUploadFile(file);
+    }
+  };
+
   const copyUrl = () => {
     if (uploadedUrl) {
       navigator.clipboard.writeText(uploadedUrl);
@@ -73,7 +85,19 @@ export const ImgBBUploader: React.FC<ImgBBUploaderProps> = ({
   };
 
   return (
-    <div className={`p-4 rounded-xl border border-dashed border-slate-300 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-900/40 text-center ${className}`}>
+    <div
+      onDragOver={(e) => {
+        e.preventDefault();
+        setIsDragging(true);
+      }}
+      onDragLeave={() => setIsDragging(false)}
+      onDrop={handleDrop}
+      className={`p-4 rounded-xl border border-dashed transition-colors text-center ${
+        isDragging
+          ? 'border-indigo-500 bg-indigo-500/10'
+          : 'border-slate-300 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-900/40'
+      } ${className}`}
+    >
       <input
         ref={fileInputRef}
         type="file"

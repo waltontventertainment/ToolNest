@@ -1,51 +1,256 @@
+import React from 'react';
 import { Type, QrCode, Image as ImageIcon, KeyRound, Search, FileText, Binary, Code, Barcode, FileSearch, Timer, Scissors, ArrowDownAZ, Space, Filter, ArrowLeftRight, WrapText, SplitSquareHorizontal, Mail, Link, Hash, FileDiff, Replace, ListPlus, ShieldX, Calculator, Superscript, Clock, Palette, Database, Fingerprint, Scan, Crop, Globe, Heart, Activity, FileCode, Box, Share2, BarChart2, Tag, Zap, BookOpen, Layers as Hierarchy, Volume2, Keyboard, Monitor, Shuffle, Maximize2, Sliders, Stamp, Eye, EyeOff, Sparkles, Merge, RotateCw, ShieldAlert, CheckCircle2, Video, Briefcase, ShoppingBag, Users, GraduationCap, Globe2, Utensils, Scale, Calendar, MapPin, CloudSun, Cloud, Smile, Wifi, Download, User, Info, Map, Wind, Thermometer, ShieldCheck, Bookmark, RefreshCw } from 'lucide-react';
 import { ToolDefinition, ToolCategory } from './types';
-import {
-  TemperatureConverter, LengthConverter, WeightConverter, VolumeConverter, DataStorageConverter, AngleConverter, Rot13Converter, TextToOctal, OctalToText, RomanNumeralConverter
-} from '../tools/ConvertersBatch';
-import {
-  CronGenerator, CssGradientGenerator, PlaceholderImageGenerator, MockDataGenerator, SqlInsertGenerator, IdGeneratorSuite, SecretKeyGenerator, AdvancedSlugGenerator, FaviconManifestGenerator, BcryptHashGenerator
-} from '../tools/GeneratorsBatch';
-import { QrCodeScanner, BarcodeScanner } from '../tools/ScannerTools';
-import {
-  ColorPickerPalette, CssBoxShadowGenerator, JsonToTypescript, UnixCronHumanizer, SvgOptimizer, JwtGeneratorTester, DiscountTaxCalculator, BmiCalorieCalculator, TextCleanerPro, DomainIpLookup
-} from '../tools/NewToolsBatch';
-import {
-  MarkdownToHtmlConverter, JsonToXmlConverter, ScreenAspectRatioCalculator, ColorPaletteGenerator, PxToRemConverter, TimeZoneConverter, UserAgentParser, FinancialEmiCalculator, TextCaseCounterStats, SvgToPngConverter
-} from '../tools/BatchExtraTools';
-import {
-  RobotsTxtGenerator, SitemapXmlGenerator, OpenGraphPreviewer, SchemaMarkupGenerator, KeywordDensityAnalyzer, SerpSnippetOptimizer, HrefLangRedirectGenerator, HeadingStructureAnalyzer, SeoSlugHealthChecker, SeoContentReadabilityAudit
-} from '../tools/SeoToolsBatch';
-import {
-  CountdownTimerAlarm, WorldClockScheduler, RandomChoicePicker, UnitPriceComparator, ScreenWebcamTester, AudioToneGenerator, FileHashCalculator, KeyboardKeyTester, ImageToBase64Converter, QuickScratchpadNotes
-} from '../tools/UtilityToolsBatch';
-import {
-  ImageResizerConverter, ImageCropperRatio, ImagePaletteExtractor, ImageFiltersAdjuster, ImageWatermarkAdder, ColorContrastWcagChecker, SvgToCssDataUriConverter, ColorGradientMeshGenerator, ColorBlindnessSimulator, ImageAnonymizerBlur
-} from '../tools/ColorImageToolsBatch';
-import { YoutubeTranscriptTool } from '../tools/YoutubeTranscriptTool';
-import { WikipediaSummarizer } from '../tools/WikipediaSummarizer';
-import { WikipediaHistory } from '../tools/WikipediaHistory';
-import { WikipediaNearby } from '../tools/WikipediaNearby';
-import {
-  RestCountriesTool, LexiconDictionaryTool, OpenLibraryTool, OpenMeteoWeatherTool,
-  AvatarGeneratorTool, QrServerGeneratorTool, LoremPicsumTool, IpifyInspectorTool,
-  JokeQuotableTool, HipolabsUniversitiesTool, WebsiteScreenshotTool
-} from '../tools/FreeApiToolsBatch';
 
-import { 
-  CaseConverter, QRGenerator, ImageCompressor, PasswordGenerator, WordCounter, 
-  Base64Converter, BaseConverter, BarcodeGenerator, MetaTagGenerator, Stopwatch,
-  RemoveDuplicateLines, SortLines, RemoveExtraSpaces, RemoveEmptyLines, ReverseText,
-  ReverseLines, HtmlStripper, ExtractEmails, ExtractUrls, TextToBinary, BinaryToText,
-  TextToHex, HexToText, TextToAscii, AsciiToText, ShuffleLines, AddLineNumbers,
-  PrefixSuffixLines, TextDiff, FindAndReplace,
-  SimpleCalculator, AdvancedCalculator,
-  JsonFormatter, UrlEncoder, HtmlEntityEncoder, Md5Generator, JwtDecoder, UuidGenerator, LoremIpsumGenerator, UnixTimestampConverter, CssMinifier, ColorConverter,
-  HtmlEditor, RegexTester, UrlParser, ShaGenerator, JsonMinifier, XmlFormatter, SqlMinifier, HtmlMinifier, ChmodCalculator, TextToSlugConverter,
-  CsvToJson, JsonToCsv, StringEscape, HmacGenerator, Ipv4SubnetCalc, MimeTypeLookup, JsKeycodeInfo, QueryStringParser, MacAddressGenerator, Ipv4Generator,
-  Ipv6Generator, HttpStatusCodes, TextToMorse, MorseToText, RandomStringGenerator, DeviceResolutionLookup, PasswordStrengthChecker, TextToDecimal, DecimalToText, BasicJsMinifier,
-  PdfMergerTool, PdfSplitterTool, PdfToTextTool, TextToPdfTool, PdfToImagesTool, PdfRotateTool, PdfWatermarkTool
-} from '../tools';
+/**
+ * Helper for route & tool-level code splitting with 0ms synchronous cache & instant hover/URL preloading.
+ * Once a tool chunk is preloaded (on URL match or card hover), it renders synchronously in 0ms without triggering Suspense fallback.
+ */
+function lazyTool<T extends Record<string, any>>(
+  loader: () => Promise<T>,
+  exportName: keyof T
+): React.ComponentType<any> & { preload?: () => Promise<any> } {
+  let ResolvedComp: React.ComponentType<any> | null = null;
+  let promise: Promise<{ default: React.ComponentType<any> }> | null = null;
+
+  const load = () => {
+    if (!promise) {
+      promise = loader().then((mod) => {
+        const comp = mod[exportName] as React.ComponentType<any>;
+        ResolvedComp = comp;
+        return { default: comp };
+      });
+    }
+    return promise;
+  };
+
+  const LazyComp = React.lazy(load);
+
+  const InstantOrLazyTool: React.FC<any> & { preload?: () => Promise<any> } = (props) => {
+    if (ResolvedComp) {
+      return React.createElement(ResolvedComp, props);
+    }
+    return React.createElement(LazyComp, props);
+  };
+
+  InstantOrLazyTool.preload = load;
+  return InstantOrLazyTool;
+}
+
+// 1. ConvertersBatch
+const loadConvertersBatch = () => import('../tools/ConvertersBatch');
+const TemperatureConverter = lazyTool(loadConvertersBatch, 'TemperatureConverter');
+const LengthConverter = lazyTool(loadConvertersBatch, 'LengthConverter');
+const WeightConverter = lazyTool(loadConvertersBatch, 'WeightConverter');
+const VolumeConverter = lazyTool(loadConvertersBatch, 'VolumeConverter');
+const DataStorageConverter = lazyTool(loadConvertersBatch, 'DataStorageConverter');
+const AngleConverter = lazyTool(loadConvertersBatch, 'AngleConverter');
+const Rot13Converter = lazyTool(loadConvertersBatch, 'Rot13Converter');
+const TextToOctal = lazyTool(loadConvertersBatch, 'TextToOctal');
+const OctalToText = lazyTool(loadConvertersBatch, 'OctalToText');
+const RomanNumeralConverter = lazyTool(loadConvertersBatch, 'RomanNumeralConverter');
+
+// 2. GeneratorsBatch
+const loadGeneratorsBatch = () => import('../tools/GeneratorsBatch');
+const CronGenerator = lazyTool(loadGeneratorsBatch, 'CronGenerator');
+const CssGradientGenerator = lazyTool(loadGeneratorsBatch, 'CssGradientGenerator');
+const PlaceholderImageGenerator = lazyTool(loadGeneratorsBatch, 'PlaceholderImageGenerator');
+const MockDataGenerator = lazyTool(loadGeneratorsBatch, 'MockDataGenerator');
+const SqlInsertGenerator = lazyTool(loadGeneratorsBatch, 'SqlInsertGenerator');
+const IdGeneratorSuite = lazyTool(loadGeneratorsBatch, 'IdGeneratorSuite');
+const SecretKeyGenerator = lazyTool(loadGeneratorsBatch, 'SecretKeyGenerator');
+const AdvancedSlugGenerator = lazyTool(loadGeneratorsBatch, 'AdvancedSlugGenerator');
+const FaviconManifestGenerator = lazyTool(loadGeneratorsBatch, 'FaviconManifestGenerator');
+const BcryptHashGenerator = lazyTool(loadGeneratorsBatch, 'BcryptHashGenerator');
+
+// 3. ScannerTools (html5-qrcode isolated chunk)
+const loadScannerTools = () => import('../tools/ScannerTools');
+const QrCodeScanner = lazyTool(loadScannerTools, 'QrCodeScanner');
+const BarcodeScanner = lazyTool(loadScannerTools, 'BarcodeScanner');
+
+// 4. NewToolsBatch
+const loadNewToolsBatch = () => import('../tools/NewToolsBatch');
+const ColorPickerPalette = lazyTool(loadNewToolsBatch, 'ColorPickerPalette');
+const CssBoxShadowGenerator = lazyTool(loadNewToolsBatch, 'CssBoxShadowGenerator');
+const JsonToTypescript = lazyTool(loadNewToolsBatch, 'JsonToTypescript');
+const UnixCronHumanizer = lazyTool(loadNewToolsBatch, 'UnixCronHumanizer');
+const SvgOptimizer = lazyTool(loadNewToolsBatch, 'SvgOptimizer');
+const JwtGeneratorTester = lazyTool(loadNewToolsBatch, 'JwtGeneratorTester');
+const DiscountTaxCalculator = lazyTool(loadNewToolsBatch, 'DiscountTaxCalculator');
+const BmiCalorieCalculator = lazyTool(loadNewToolsBatch, 'BmiCalorieCalculator');
+const TextCleanerPro = lazyTool(loadNewToolsBatch, 'TextCleanerPro');
+const DomainIpLookup = lazyTool(loadNewToolsBatch, 'DomainIpLookup');
+
+// 5. BatchExtraTools
+const loadBatchExtraTools = () => import('../tools/BatchExtraTools');
+const MarkdownToHtmlConverter = lazyTool(loadBatchExtraTools, 'MarkdownToHtmlConverter');
+const JsonToXmlConverter = lazyTool(loadBatchExtraTools, 'JsonToXmlConverter');
+const ScreenAspectRatioCalculator = lazyTool(loadBatchExtraTools, 'ScreenAspectRatioCalculator');
+const ColorPaletteGenerator = lazyTool(loadBatchExtraTools, 'ColorPaletteGenerator');
+const PxToRemConverter = lazyTool(loadBatchExtraTools, 'PxToRemConverter');
+const TimeZoneConverter = lazyTool(loadBatchExtraTools, 'TimeZoneConverter');
+const UserAgentParser = lazyTool(loadBatchExtraTools, 'UserAgentParser');
+const FinancialEmiCalculator = lazyTool(loadBatchExtraTools, 'FinancialEmiCalculator');
+const TextCaseCounterStats = lazyTool(loadBatchExtraTools, 'TextCaseCounterStats');
+const SvgToPngConverter = lazyTool(loadBatchExtraTools, 'SvgToPngConverter');
+
+// 6. SeoToolsBatch
+const loadSeoToolsBatch = () => import('../tools/SeoToolsBatch');
+const RobotsTxtGenerator = lazyTool(loadSeoToolsBatch, 'RobotsTxtGenerator');
+const SitemapXmlGenerator = lazyTool(loadSeoToolsBatch, 'SitemapXmlGenerator');
+const OpenGraphPreviewer = lazyTool(loadSeoToolsBatch, 'OpenGraphPreviewer');
+const SchemaMarkupGenerator = lazyTool(loadSeoToolsBatch, 'SchemaMarkupGenerator');
+const KeywordDensityAnalyzer = lazyTool(loadSeoToolsBatch, 'KeywordDensityAnalyzer');
+const SerpSnippetOptimizer = lazyTool(loadSeoToolsBatch, 'SerpSnippetOptimizer');
+const HrefLangRedirectGenerator = lazyTool(loadSeoToolsBatch, 'HrefLangRedirectGenerator');
+const HeadingStructureAnalyzer = lazyTool(loadSeoToolsBatch, 'HeadingStructureAnalyzer');
+const SeoSlugHealthChecker = lazyTool(loadSeoToolsBatch, 'SeoSlugHealthChecker');
+const SeoContentReadabilityAudit = lazyTool(loadSeoToolsBatch, 'SeoContentReadabilityAudit');
+
+// 7. UtilityToolsBatch
+const loadUtilityToolsBatch = () => import('../tools/UtilityToolsBatch');
+const CountdownTimerAlarm = lazyTool(loadUtilityToolsBatch, 'CountdownTimerAlarm');
+const WorldClockScheduler = lazyTool(loadUtilityToolsBatch, 'WorldClockScheduler');
+const RandomChoicePicker = lazyTool(loadUtilityToolsBatch, 'RandomChoicePicker');
+const UnitPriceComparator = lazyTool(loadUtilityToolsBatch, 'UnitPriceComparator');
+const ScreenWebcamTester = lazyTool(loadUtilityToolsBatch, 'ScreenWebcamTester');
+const AudioToneGenerator = lazyTool(loadUtilityToolsBatch, 'AudioToneGenerator');
+const FileHashCalculator = lazyTool(loadUtilityToolsBatch, 'FileHashCalculator');
+const KeyboardKeyTester = lazyTool(loadUtilityToolsBatch, 'KeyboardKeyTester');
+const ImageToBase64Converter = lazyTool(loadUtilityToolsBatch, 'ImageToBase64Converter');
+const QuickScratchpadNotes = lazyTool(loadUtilityToolsBatch, 'QuickScratchpadNotes');
+
+// 8. ColorImageToolsBatch
+const loadColorImageToolsBatch = () => import('../tools/ColorImageToolsBatch');
+const ImageResizerConverter = lazyTool(loadColorImageToolsBatch, 'ImageResizerConverter');
+const ImageCropperRatio = lazyTool(loadColorImageToolsBatch, 'ImageCropperRatio');
+const ImagePaletteExtractor = lazyTool(loadColorImageToolsBatch, 'ImagePaletteExtractor');
+const ImageFiltersAdjuster = lazyTool(loadColorImageToolsBatch, 'ImageFiltersAdjuster');
+const ImageWatermarkAdder = lazyTool(loadColorImageToolsBatch, 'ImageWatermarkAdder');
+const ColorContrastWcagChecker = lazyTool(loadColorImageToolsBatch, 'ColorContrastWcagChecker');
+const SvgToCssDataUriConverter = lazyTool(loadColorImageToolsBatch, 'SvgToCssDataUriConverter');
+const ColorGradientMeshGenerator = lazyTool(loadColorImageToolsBatch, 'ColorGradientMeshGenerator');
+const ColorBlindnessSimulator = lazyTool(loadColorImageToolsBatch, 'ColorBlindnessSimulator');
+const ImageAnonymizerBlur = lazyTool(loadColorImageToolsBatch, 'ImageAnonymizerBlur');
+
+// 9. Standalone Media & Wikipedia Tools
+const YoutubeTranscriptTool = lazyTool(() => import('../tools/YoutubeTranscriptTool'), 'YoutubeTranscriptTool');
+const WikipediaSummarizer = lazyTool(() => import('../tools/WikipediaSummarizer'), 'WikipediaSummarizer');
+const WikipediaHistory = lazyTool(() => import('../tools/WikipediaHistory'), 'WikipediaHistory');
+const WikipediaNearby = lazyTool(() => import('../tools/WikipediaNearby'), 'WikipediaNearby');
+
+// 10. FreeApiToolsBatch
+const loadFreeApiToolsBatch = () => import('../tools/FreeApiToolsBatch');
+const RestCountriesTool = lazyTool(loadFreeApiToolsBatch, 'RestCountriesTool');
+const LexiconDictionaryTool = lazyTool(loadFreeApiToolsBatch, 'LexiconDictionaryTool');
+const OpenLibraryTool = lazyTool(loadFreeApiToolsBatch, 'OpenLibraryTool');
+const OpenMeteoWeatherTool = lazyTool(loadFreeApiToolsBatch, 'OpenMeteoWeatherTool');
+const AvatarGeneratorTool = lazyTool(loadFreeApiToolsBatch, 'AvatarGeneratorTool');
+const QrServerGeneratorTool = lazyTool(loadFreeApiToolsBatch, 'QrServerGeneratorTool');
+const LoremPicsumTool = lazyTool(loadFreeApiToolsBatch, 'LoremPicsumTool');
+const IpifyInspectorTool = lazyTool(loadFreeApiToolsBatch, 'IpifyInspectorTool');
+const JokeQuotableTool = lazyTool(loadFreeApiToolsBatch, 'JokeQuotableTool');
+const HipolabsUniversitiesTool = lazyTool(loadFreeApiToolsBatch, 'HipolabsUniversitiesTool');
+const WebsiteScreenshotTool = lazyTool(loadFreeApiToolsBatch, 'WebsiteScreenshotTool');
+
+// 11. Core Single-File Tools
+const CaseConverter = lazyTool(() => import('../tools/CaseConverter'), 'CaseConverter');
+const QRGenerator = lazyTool(() => import('../tools/QRGenerator'), 'QRGenerator');
+const ImageCompressor = lazyTool(() => import('../tools/ImageCompressor'), 'ImageCompressor');
+const PasswordGenerator = lazyTool(() => import('../tools/PasswordGenerator'), 'PasswordGenerator');
+const WordCounter = lazyTool(() => import('../tools/WordCounter'), 'WordCounter');
+const Base64Converter = lazyTool(() => import('../tools/Base64Converter'), 'Base64Converter');
+const BaseConverter = lazyTool(() => import('../tools/BaseConverter'), 'BaseConverter');
+const BarcodeGenerator = lazyTool(() => import('../tools/BarcodeGenerator'), 'BarcodeGenerator');
+const MetaTagGenerator = lazyTool(() => import('../tools/MetaTagGenerator'), 'MetaTagGenerator');
+const Stopwatch = lazyTool(() => import('../tools/Stopwatch'), 'Stopwatch');
+const SimpleCalculator = lazyTool(() => import('../tools/SimpleCalculator'), 'SimpleCalculator');
+const AdvancedCalculator = lazyTool(() => import('../tools/AdvancedCalculator'), 'AdvancedCalculator');
+
+// 12. TextUtilities
+const loadTextUtilities = () => import('../tools/TextUtilities');
+const RemoveDuplicateLines = lazyTool(loadTextUtilities, 'RemoveDuplicateLines');
+const SortLines = lazyTool(loadTextUtilities, 'SortLines');
+const RemoveExtraSpaces = lazyTool(loadTextUtilities, 'RemoveExtraSpaces');
+const RemoveEmptyLines = lazyTool(loadTextUtilities, 'RemoveEmptyLines');
+const ReverseText = lazyTool(loadTextUtilities, 'ReverseText');
+const ReverseLines = lazyTool(loadTextUtilities, 'ReverseLines');
+const HtmlStripper = lazyTool(loadTextUtilities, 'HtmlStripper');
+const ExtractEmails = lazyTool(loadTextUtilities, 'ExtractEmails');
+const ExtractUrls = lazyTool(loadTextUtilities, 'ExtractUrls');
+const TextToBinary = lazyTool(loadTextUtilities, 'TextToBinary');
+const BinaryToText = lazyTool(loadTextUtilities, 'BinaryToText');
+const TextToHex = lazyTool(loadTextUtilities, 'TextToHex');
+const HexToText = lazyTool(loadTextUtilities, 'HexToText');
+const TextToAscii = lazyTool(loadTextUtilities, 'TextToAscii');
+const AsciiToText = lazyTool(loadTextUtilities, 'AsciiToText');
+const ShuffleLines = lazyTool(loadTextUtilities, 'ShuffleLines');
+const AddLineNumbers = lazyTool(loadTextUtilities, 'AddLineNumbers');
+const PrefixSuffixLines = lazyTool(loadTextUtilities, 'PrefixSuffixLines');
+const TextDiff = lazyTool(loadTextUtilities, 'TextDiff');
+const FindAndReplace = lazyTool(loadTextUtilities, 'FindAndReplace');
+
+// 13. MoreDeveloperTools
+const loadMoreDeveloperTools = () => import('../tools/MoreDeveloperTools');
+const JsonFormatter = lazyTool(loadMoreDeveloperTools, 'JsonFormatter');
+const UrlEncoder = lazyTool(loadMoreDeveloperTools, 'UrlEncoder');
+const HtmlEntityEncoder = lazyTool(loadMoreDeveloperTools, 'HtmlEntityEncoder');
+const Md5Generator = lazyTool(loadMoreDeveloperTools, 'Md5Generator');
+const JwtDecoder = lazyTool(loadMoreDeveloperTools, 'JwtDecoder');
+const UuidGenerator = lazyTool(loadMoreDeveloperTools, 'UuidGenerator');
+const LoremIpsumGenerator = lazyTool(loadMoreDeveloperTools, 'LoremIpsumGenerator');
+const UnixTimestampConverter = lazyTool(loadMoreDeveloperTools, 'UnixTimestampConverter');
+const CssMinifier = lazyTool(loadMoreDeveloperTools, 'CssMinifier');
+const ColorConverter = lazyTool(loadMoreDeveloperTools, 'ColorConverter');
+
+// 14. EvenMoreDeveloperTools
+const loadEvenMoreDeveloperTools = () => import('../tools/EvenMoreDeveloperTools');
+const HtmlEditor = lazyTool(loadEvenMoreDeveloperTools, 'HtmlEditor');
+const RegexTester = lazyTool(loadEvenMoreDeveloperTools, 'RegexTester');
+const UrlParser = lazyTool(loadEvenMoreDeveloperTools, 'UrlParser');
+const ShaGenerator = lazyTool(loadEvenMoreDeveloperTools, 'ShaGenerator');
+const JsonMinifier = lazyTool(loadEvenMoreDeveloperTools, 'JsonMinifier');
+const XmlFormatter = lazyTool(loadEvenMoreDeveloperTools, 'XmlFormatter');
+const SqlMinifier = lazyTool(loadEvenMoreDeveloperTools, 'SqlMinifier');
+const HtmlMinifier = lazyTool(loadEvenMoreDeveloperTools, 'HtmlMinifier');
+const ChmodCalculator = lazyTool(loadEvenMoreDeveloperTools, 'ChmodCalculator');
+const TextToSlugConverter = lazyTool(loadEvenMoreDeveloperTools, 'TextToSlugConverter');
+
+// 15. DeveloperToolsBatch3
+const loadDeveloperToolsBatch3 = () => import('../tools/DeveloperToolsBatch3');
+const CsvToJson = lazyTool(loadDeveloperToolsBatch3, 'CsvToJson');
+const JsonToCsv = lazyTool(loadDeveloperToolsBatch3, 'JsonToCsv');
+const StringEscape = lazyTool(loadDeveloperToolsBatch3, 'StringEscape');
+const HmacGenerator = lazyTool(loadDeveloperToolsBatch3, 'HmacGenerator');
+const Ipv4SubnetCalc = lazyTool(loadDeveloperToolsBatch3, 'Ipv4SubnetCalc');
+const MimeTypeLookup = lazyTool(loadDeveloperToolsBatch3, 'MimeTypeLookup');
+const JsKeycodeInfo = lazyTool(loadDeveloperToolsBatch3, 'JsKeycodeInfo');
+const QueryStringParser = lazyTool(loadDeveloperToolsBatch3, 'QueryStringParser');
+const MacAddressGenerator = lazyTool(loadDeveloperToolsBatch3, 'MacAddressGenerator');
+const Ipv4Generator = lazyTool(loadDeveloperToolsBatch3, 'Ipv4Generator');
+
+// 16. DeveloperToolsBatch4
+const loadDeveloperToolsBatch4 = () => import('../tools/DeveloperToolsBatch4');
+const Ipv6Generator = lazyTool(loadDeveloperToolsBatch4, 'Ipv6Generator');
+const HttpStatusCodes = lazyTool(loadDeveloperToolsBatch4, 'HttpStatusCodes');
+const TextToMorse = lazyTool(loadDeveloperToolsBatch4, 'TextToMorse');
+const MorseToText = lazyTool(loadDeveloperToolsBatch4, 'MorseToText');
+const RandomStringGenerator = lazyTool(loadDeveloperToolsBatch4, 'RandomStringGenerator');
+const DeviceResolutionLookup = lazyTool(loadDeveloperToolsBatch4, 'DeviceResolutionLookup');
+const PasswordStrengthChecker = lazyTool(loadDeveloperToolsBatch4, 'PasswordStrengthChecker');
+const TextToDecimal = lazyTool(loadDeveloperToolsBatch4, 'TextToDecimal');
+const DecimalToText = lazyTool(loadDeveloperToolsBatch4, 'DecimalToText');
+const BasicJsMinifier = lazyTool(loadDeveloperToolsBatch4, 'BasicJsMinifier');
+
+// 17. PdfSuiteTools (pdf-lib & pdfjs-dist isolated chunk)
+const loadPdfSuiteTools = () => import('../tools/PdfSuiteTools');
+const PdfMergerTool = lazyTool(loadPdfSuiteTools, 'PdfMergerTool');
+const PdfSplitterTool = lazyTool(loadPdfSuiteTools, 'PdfSplitterTool');
+const PdfToTextTool = lazyTool(loadPdfSuiteTools, 'PdfToTextTool');
+const TextToPdfTool = lazyTool(loadPdfSuiteTools, 'TextToPdfTool');
+const PdfToImagesTool = lazyTool(loadPdfSuiteTools, 'PdfToImagesTool');
+const PdfRotateTool = lazyTool(loadPdfSuiteTools, 'PdfRotateTool');
+const PdfWatermarkTool = lazyTool(loadPdfSuiteTools, 'PdfWatermarkTool');
 
 export const categories: ToolCategory[] = [
   'Universal Data Suite', 'Wikipedia', 'PDF', 'Text', 'Developer', 'Converters', 'Generators', 'QR & Barcode', 'Color & Image', 'Calculators', 'SEO', 'Utility'
@@ -2631,3 +2836,153 @@ export const tools: ToolDefinition[] = [
     Component: BasicJsMinifier
   }
 ];
+
+/**
+ * Preloads a tool's JS chunk into memory by slug so navigation or page refresh renders in 0ms.
+ */
+export function preloadToolBySlug(rawSlug: string): void {
+  if (!rawSlug) return;
+  const clean = rawSlug
+    .replace(/\.html$/i, '')
+    .replace(/^\/+|\/+$/g, '')
+    .replace(/^tools\//i, '')
+    .trim()
+    .toLowerCase();
+  if (!clean) return;
+  const found = tools.find(t => t.slug.toLowerCase() === clean);
+  if (found && typeof (found.Component as any)?.preload === 'function') {
+    (found.Component as any).preload();
+  }
+}
+
+// Immediately preload the matching tool chunk at 0ms when refreshing or landing directly on domain.com/tool-name
+if (typeof window !== 'undefined') {
+  try {
+    const pathname = window.location.pathname.replace(/^\/+|\/+$/g, '').replace(/^tools\//i, '');
+    if (pathname && !pathname.includes('/')) {
+      preloadToolBySlug(pathname);
+    }
+    const params = new URLSearchParams(window.location.search);
+    const qTool = params.get('tool');
+    if (qTool) {
+      preloadToolBySlug(qTool);
+    }
+  } catch {}
+}
+
+const FLAGSHIP_INTERLEAVED_SLUGS = [
+  'pdf-merger',               // PDF
+  'image-compressor',         // Color & Image
+  'json-formatter',           // Developer
+  'qr-generator',             // QR & Barcode
+  'word-counter',             // Text
+  'password-generator',       // Generators
+  'open-meteo-live-weather',  // Universal Data Suite
+  'scientific-calculator',    // Calculators
+  'temperature-converter',    // Converters
+  'meta-tag-generator',       // SEO
+  'stopwatch',                // Utility
+  'wikipedia-summarizer',     // Wikipedia
+];
+
+const INTERLEAVE_CATEGORY_ROTATION = [
+  'PDF',
+  'Color & Image',
+  'Developer',
+  'QR & Barcode',
+  'Text',
+  'Generators',
+  'Universal Data Suite',
+  'Calculators',
+  'Converters',
+  'SEO',
+  'Utility',
+  'Wikipedia',
+];
+
+/**
+ * Mixes tools across all categories using Round-Robin + Priority Balancing so that
+ * under the Home 'All Tools' view, tools from every category are interleaved and
+ * two tools of the same category never appear consecutively.
+ */
+export function getInterleavedTools(toolsList: ToolDefinition[]): ToolDefinition[] {
+  if (toolsList.length <= 1) return toolsList;
+
+  const result: ToolDefinition[] = [];
+  const usedSlugs = new Set<string>();
+
+  // 1. Place the 12 flagship tools first (each from a distinct category)
+  for (const slug of FLAGSHIP_INTERLEAVED_SLUGS) {
+    const found = toolsList.find(t => t.slug === slug);
+    if (found && !usedSlugs.has(found.slug)) {
+      result.push(found);
+      usedSlugs.add(found.slug);
+    }
+  }
+
+  // 2. Group remaining tools into per-category queues
+  const buckets: Record<string, ToolDefinition[]> = {};
+  for (const cat of INTERLEAVE_CATEGORY_ROTATION) {
+    buckets[cat] = [];
+  }
+  for (const tool of toolsList) {
+    if (usedSlugs.has(tool.slug)) continue;
+    if (!buckets[tool.category]) {
+      buckets[tool.category] = [];
+    }
+    buckets[tool.category].push(tool);
+  }
+
+  const allCats: string[] = Object.keys(buckets);
+  let rotationCursor = 0;
+  let lastCategory = result.length > 0 ? result[result.length - 1].category : '';
+
+  const totalRemaining = () => {
+    let sum = 0;
+    for (const c of allCats) sum += buckets[c].length;
+    return sum;
+  };
+
+  // 3. Interleave remaining tools so no two consecutive tools share a category
+  while (totalRemaining() > 0) {
+    const availableCats = allCats.filter(c => (buckets[c]?.length || 0) > 0);
+    if (availableCats.length === 0) break;
+
+    const nonRepeatingCats = availableCats.filter(c => c !== lastCategory);
+    const pool = nonRepeatingCats.length > 0 ? nonRepeatingCats : availableCats;
+
+    // If one bucket is getting disproportionately large (> 45% of remaining), drain it first
+    const rem = totalRemaining();
+    let chosenCat: string | null = null;
+    for (const c of pool) {
+      const len = buckets[c].length;
+      if (len > rem * 0.42) {
+        chosenCat = c;
+        break;
+      }
+    }
+
+    // Otherwise advance smoothly along the category rotation wheel
+    if (!chosenCat) {
+      for (let step = 0; step < allCats.length; step++) {
+        const candidate = allCats[(rotationCursor + step) % allCats.length];
+        if (pool.includes(candidate)) {
+          chosenCat = candidate;
+          rotationCursor = (rotationCursor + step + 1) % allCats.length;
+          break;
+        }
+      }
+    }
+
+    if (!chosenCat) {
+      chosenCat = pool[0];
+    }
+
+    const nextTool = buckets[chosenCat].shift()!;
+    result.push(nextTool);
+    lastCategory = nextTool.category;
+  }
+
+  return result;
+}
+

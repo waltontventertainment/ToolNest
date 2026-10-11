@@ -3,6 +3,7 @@ import { X, ExternalLink, Copy, Check, Share2, Flame, BookOpen, Globe, Download,
 import { toast } from 'sonner';
 import { TechHighlight, TechDigest } from '../services/techDigestService';
 import { downloadBlob } from '../lib/downloadHelper';
+import { useLockBodyScroll } from '../lib/toolkit';
 
 interface TechDigestReaderModalProps {
   item: TechHighlight | null;
@@ -17,6 +18,9 @@ export const TechDigestReaderModal: React.FC<TechDigestReaderModalProps> = ({ it
   const [loadingExpanded, setLoadingExpanded] = useState(false);
   const [textSize, setTextSize] = useState<'sm' | 'base' | 'lg' | 'xl'>('base');
   const [isPlayingSpeech, setIsPlayingSpeech] = useState(false);
+
+  // Lock background website scroll while Tech Digest Reader modal is open
+  useLockBodyScroll(isOpen && !!(item || digest));
 
   const synthRef = React.useRef<SpeechSynthesis | null>(null);
 

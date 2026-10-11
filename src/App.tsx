@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo, useEffect, Suspense } from 'react';
 import { BrowserRouter, HashRouter, Routes, Route, useSearchParams, useLocation, useNavigate, useParams, Navigate } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { Toaster } from 'sonner';
@@ -13,11 +13,28 @@ import { CategoryPage } from './pages/CategoryPage';
 import { ToolsHubPage } from './pages/ToolsHubPage';
 import { BlogPage } from './pages/BlogPage';
 import { BlogPostPage } from './pages/BlogPostPage';
-import { AdminPage } from './pages/AdminPage';
 import { About, PrivacyPolicy, TermsOfService, Disclaimer, Contact, HtmlSitemap } from './pages/StaticPages';
 import { NotFound } from './pages/NotFound';
 import { isBloggerHost, extractSlugFromBloggerPath } from './lib/appUrls';
 import { tools, categories } from './lib/registry';
+import { getPublishedBlogs } from './lib/firestoreBlogService';
+
+// Keep heavy Admin CMS isolated in its own lazy chunk; all public route shells render in 0ms
+// while the 156+ individual tool components inside ToolPage are code-split & preloaded via lazyTool()
+const AdminPage = React.lazy(() => import('./pages/AdminPage').then(m => ({ default: m.AdminPage })));
+
+function RouteLoadingFallback() {
+  return (
+    <div className="w-full max-w-5xl mx-auto py-8 space-y-6 animate-pulse">
+      <div className="h-5 w-40 rounded-lg bg-muted" />
+      <div className="space-y-3">
+        <div className="h-10 w-72 sm:w-96 rounded-xl bg-muted" />
+        <div className="h-4 w-full max-w-xl rounded-lg bg-muted/70" />
+      </div>
+      <div className="h-64 w-full rounded-3xl bg-card border border-border/60" />
+    </div>
+  );
+}
 
 /**
  * Hash Routing is only strictly required for standalone offline local HTML files
@@ -155,19 +172,19 @@ function UniversalIndexDispatcher() {
   // 2. Tool query: ?tool=image-resizer
   const toolSlug = searchParams.get('tool');
   if (toolSlug) {
-    return <ToolPage forcedSlug={toolSlug} />;
+    return <ToolPage key={`tool-${toolSlug}`} forcedSlug={toolSlug} />;
   }
 
   // 2. Category query: ?category=image-tools
   const categorySlug = searchParams.get('category');
   if (categorySlug) {
-    return <CategoryPage forcedSlug={categorySlug} />;
+    return <CategoryPage key={`cat-${categorySlug}`} forcedSlug={categorySlug} />;
   }
 
   // 3. Blog post query: ?blog=post-slug
   const blogSlug = searchParams.get('blog');
   if (blogSlug) {
-    return <BlogPostPage forcedSlug={blogSlug} />;
+    return <BlogPostPage key={`blog-${blogSlug}`} forcedSlug={blogSlug} />;
   }
 
   // 4. Static page queries: ?page=blog | tools | about | privacy-policy | terms | disclaimer | contact
@@ -211,15 +228,19 @@ function UniversalIndexDispatcher() {
 }
 
 /**
- * Smart SPA Link Interceptor (Zero Refresh Bridge):
- * Automatically intercepts clicks on any internal links (such as flat root-level /tool-name,
- * legacy /tools/slug, Blogger .html permalinks, /blog, /about, etc.) and routes them
- * through React Router without a browser page reload or flash.
+ * Smart SPA Link Interceptor for Custom HTML Snippets Only:
+ * Only intercepts raw <a> tags inside injected custom HTML (.custom-post-wrapper or .tool-custom-injected-snippet).
+ * Standard React Router <Link> components update the browser URL and route state natively in 0ms without interference.
  */
 function SmartSpaLinkInterceptor() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Silently warm Firestore blog cache in background so all blog articles open in 0ms
+    const warmTimer = setTimeout(() => {
+      getPublishedBlogs().catch(() => {});
+    }, 900);
+
     const handleGlobalClick = (event: MouseEvent) => {
       if (
         event.defaultPrevented ||
@@ -233,7 +254,13 @@ function SmartSpaLinkInterceptor() {
       }
 
       const target = event.target as HTMLElement | null;
-      const anchor = target?.closest('a') as HTMLAnchorElement | null;
+      if (!target) return;
+
+      // Only intercept raw links inside custom HTML containers; let React Router <Link> run natively
+      const inCustomHtml = target.closest('.custom-post-wrapper, .tool-custom-injected-snippet');
+      if (!inCustomHtml) return;
+
+      const anchor = target.closest('a') as HTMLAnchorElement | null;
       if (!anchor) return;
 
       if (anchor.target === '_blank' || anchor.hasAttribute('download') || anchor.rel?.includes('external')) {
@@ -252,7 +279,6 @@ function SmartSpaLinkInterceptor() {
           event.preventDefault();
           const targetPath = url.pathname + url.search + url.hash;
           navigate(targetPath);
-          window.scrollTo({ top: 0, behavior: 'smooth' });
         }
       } catch {
         // Fallback to normal navigation
@@ -261,6 +287,7 @@ function SmartSpaLinkInterceptor() {
 
     document.addEventListener('click', handleGlobalClick);
     return () => {
+      clearTimeout(warmTimer);
       document.removeEventListener('click', handleGlobalClick);
     };
   }, [navigate]);
@@ -339,18 +366,18 @@ function RootSlugDispatcher() {
   // 3. Direct flat root-level Tool match (e.g. /open-meteo-live-weather)
   const matchedTool = findMatchingTool(rawSlug);
   if (matchedTool) {
-    return <ToolPage forcedSlug={matchedTool.slug} />;
+    return <ToolPage key={`tool-${matchedTool.slug}`} forcedSlug={matchedTool.slug} />;
   }
 
   // 4. Direct root-level Category match (e.g. /pdf, /developer, /color-image, /universal-data-suite)
   const matchedCatSlug = findMatchingCategorySlug(rawSlug);
   if (matchedCatSlug) {
-    return <CategoryPage forcedSlug={matchedCatSlug} />;
+    return <CategoryPage key={`cat-${matchedCatSlug}`} forcedSlug={matchedCatSlug} />;
   }
 
   // 5. Direct root-level Blog Post match (e.g. /definitive-guide-client-side-privacy-web-utilities)
   // BlogPostPage checks built-in & Firestore blog posts, and renders <NotFound /> if none match
-  return <BlogPostPage forcedSlug={rawSlug} />;
+  return <BlogPostPage key={`blog-${lower}`} forcedSlug={rawSlug} />;
 }
 
 /**
@@ -367,10 +394,10 @@ function ToolOrPostViewer() {
 
   const matchedTool = findMatchingTool(rawSlug);
   if (matchedTool) {
-    return <ToolPage forcedSlug={matchedTool.slug} />;
+    return <ToolPage key={`tool-${matchedTool.slug}`} forcedSlug={matchedTool.slug} />;
   }
 
-  return <BlogPostPage forcedSlug={rawSlug} />;
+  return <BlogPostPage key={`blog-${rawSlug.toLowerCase()}`} forcedSlug={rawSlug} />;
 }
 
 /**
@@ -485,56 +512,58 @@ export default function App() {
               <RouterComponent>
                 <UrlNormalizationEffect />
                 <SmartSpaLinkInterceptor />
-                <Routes>
-                  {/* Secret Admin Portal (/sabbir & /sabbir.html) - completely isolated from public SiteLayout */}
-                  <Route path="sabbir" element={<AdminPage />} />
-                  <Route path="sabbir.html" element={<AdminPage />} />
+                <Suspense fallback={<RouteLoadingFallback />}>
+                  <Routes>
+                    {/* Secret Admin Portal (/sabbir & /sabbir.html) - completely isolated from public SiteLayout */}
+                    <Route path="sabbir" element={<AdminPage />} />
+                    <Route path="sabbir.html" element={<AdminPage />} />
 
-                  {/* Public Site Layout with standard Header, Announcement, and Footer */}
-                  <Route path="/" element={<SiteLayout />}>
-                    {/* Smart Root Dispatcher: handles Home, ?tool=, ?category=, ?page=, ?blog= */}
-                    <Route index element={<UniversalIndexDispatcher />} />
+                    {/* Public Site Layout with standard Header, Announcement, and Footer */}
+                    <Route path="/" element={<SiteLayout />}>
+                      {/* Smart Root Dispatcher: handles Home, ?tool=, ?category=, ?page=, ?blog= */}
+                      <Route index element={<UniversalIndexDispatcher />} />
 
-                    {/* Bookmarks / Saved Tools Flat Routes */}
-                    <Route path="bookmarks" element={<Index forcedBookmarks={true} />} />
-                    <Route path="saved" element={<Index forcedBookmarks={true} />} />
-                    <Route path="favorites" element={<Index forcedBookmarks={true} />} />
+                      {/* Bookmarks / Saved Tools Flat Routes */}
+                      <Route path="bookmarks" element={<Index forcedBookmarks={true} />} />
+                      <Route path="saved" element={<Index forcedBookmarks={true} />} />
+                      <Route path="favorites" element={<Index forcedBookmarks={true} />} />
 
-                    {/* All Tools Hub & Directory Routes (Never 404 on directory/root visits) */}
-                    <Route path="tools" element={<ToolsHubPage />} />
-                    <Route path="all-tools" element={<ToolsHubPage />} />
-                    <Route path="directory" element={<ToolsHubPage />} />
-                    <Route path="hub" element={<ToolsHubPage />} />
-                    <Route path="categories" element={<ToolsHubPage />} />
-                    <Route path="category" element={<ToolsHubPage />} />
+                      {/* All Tools Hub & Directory Routes (Never 404 on directory/root visits) */}
+                      <Route path="tools" element={<ToolsHubPage />} />
+                      <Route path="all-tools" element={<ToolsHubPage />} />
+                      <Route path="directory" element={<ToolsHubPage />} />
+                      <Route path="hub" element={<ToolsHubPage />} />
+                      <Route path="categories" element={<ToolsHubPage />} />
+                      <Route path="category" element={<ToolsHubPage />} />
 
-                    {/* Legacy /tools/:slug, /category/:slug, and /blog/:slug redirect to flat /:slug */}
-                    <Route path="tools/:slug" element={<LegacyToolRedirect />} />
-                    <Route path="category/:slug" element={<LegacyCategoryRedirect />} />
-                    <Route path="blog" element={<BlogPage />} />
-                    <Route path="blog/:slug" element={<LegacyBlogRedirect />} />
+                      {/* Legacy /tools/:slug, /category/:slug, and /blog/:slug redirect to flat /:slug */}
+                      <Route path="tools/:slug" element={<LegacyToolRedirect />} />
+                      <Route path="category/:slug" element={<LegacyCategoryRedirect />} />
+                      <Route path="blog" element={<BlogPage />} />
+                      <Route path="blog/:slug" element={<LegacyBlogRedirect />} />
 
-                    {/* Static Pages */}
-                    <Route path="about" element={<About />} />
-                    <Route path="privacy-policy" element={<PrivacyPolicy />} />
-                    <Route path="terms" element={<TermsOfService />} />
-                    <Route path="disclaimer" element={<Disclaimer />} />
-                    <Route path="contact" element={<Contact />} />
-                    <Route path="sitemap" element={<HtmlSitemap />} />
+                      {/* Static Pages */}
+                      <Route path="about" element={<About />} />
+                      <Route path="privacy-policy" element={<PrivacyPolicy />} />
+                      <Route path="terms" element={<TermsOfService />} />
+                      <Route path="disclaimer" element={<Disclaimer />} />
+                      <Route path="contact" element={<Contact />} />
+                      <Route path="sitemap" element={<HtmlSitemap />} />
 
-                    {/* Official Blogger Post Permalinks: /:year/:month/:postSlug (with or without .html) */}
-                    <Route path=":year/:month/:postSlug" element={<ToolOrPostViewer />} />
+                      {/* Official Blogger Post Permalinks: /:year/:month/:postSlug (with or without .html) */}
+                      <Route path=":year/:month/:postSlug" element={<ToolOrPostViewer />} />
 
-                    {/* Official Blogger Static Pages: /p/:pageSlug (with or without .html) */}
-                    <Route path="p/:pageSlug" element={<StaticPageView />} />
+                      {/* Official Blogger Static Pages: /p/:pageSlug (with or without .html) */}
+                      <Route path="p/:pageSlug" element={<StaticPageView />} />
 
-                    {/* Flat Root-Level Tool & Category Route (e.g. /open-meteo-live-weather) */}
-                    <Route path=":slug" element={<RootSlugDispatcher />} />
+                      {/* Flat Root-Level Tool & Category Route (e.g. /open-meteo-live-weather) */}
+                      <Route path=":slug" element={<RootSlugDispatcher />} />
 
-                    {/* Smart Catch-All: captures any additional paths */}
-                    <Route path="*" element={<UniversalCatchAll />} />
-                  </Route>
-                </Routes>
+                      {/* Smart Catch-All: captures any additional paths */}
+                      <Route path="*" element={<UniversalCatchAll />} />
+                    </Route>
+                  </Routes>
+                </Suspense>
               </RouterComponent>
               <Toaster position="bottom-right" richColors />
             </GoogleDriveProvider>

@@ -47,6 +47,7 @@ import {
 } from 'lucide-react';
 import { useSiteSettings } from '../context/SiteSettingsContext';
 import { getFirestoreSyncStatus, FirestoreSyncStatus, ToolOverride } from '../lib/siteSettings';
+import { BlogAuthorBadge } from '../components/BlogAuthorBadge';
 import { 
   FirestoreBlog, 
   getAllAdminBlogs, 
@@ -77,14 +78,11 @@ export const AdminPage: React.FC = () => {
   const { settings, updateSettings, refreshSettings } = useSiteSettings();
   const navigate = useNavigate();
 
-  // Authentication state
+  // Authentication state — strictly verified via Firebase Google Auth
   const [currentUser, setCurrentUser] = useState<FirebaseUser | null>(auth.currentUser);
-  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState<boolean>(() => {
-    return localStorage.getItem(ADMIN_SESSION_KEY) !== null;
-  });
-  const [adminEmail, setAdminEmail] = useState<string>(() => {
-    return localStorage.getItem(ADMIN_SESSION_KEY) || '';
-  });
+  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState<boolean>(false);
+  const [adminEmail, setAdminEmail] = useState<string>('');
+  const [authChecking, setAuthChecking] = useState<boolean>(true);
   const [authLoading, setAuthLoading] = useState(false);
   const [loginError, setLoginError] = useState('');
   const [unauthorizedDomainError, setUnauthorizedDomainError] = useState(false);
@@ -121,13 +119,18 @@ export const AdminPage: React.FC = () => {
   const [syncStatus, setSyncStatus] = useState<FirestoreSyncStatus>(() => getFirestoreSyncStatus());
   const [showRulesInfo, setShowRulesInfo] = useState(false);
 
-  // Listen to Firebase Auth state
+  // Listen to Firebase Auth state — strictly requires active Google Sign-In
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setCurrentUser(user);
       if (user && user.email) {
-        verifyAndAuthorizeAdmin(user.email, user.uid);
+        await verifyAndAuthorizeAdmin(user.email, user.uid);
+      } else {
+        localStorage.removeItem(ADMIN_SESSION_KEY);
+        setIsAdminAuthenticated(false);
+        setAdminEmail('');
       }
+      setAuthChecking(false);
     });
     return () => unsubscribe();
   }, [settings.admin]);
@@ -514,11 +517,54 @@ export const AdminPage: React.FC = () => {
               <Link to="/" className="hover:text-slate-300 flex items-center gap-1 transition-colors">
                 ← Back to Toolzaro Home
               </Link>
-              <span>Toolzaro CMS v2.4</span>
+              <span>{authChecking ? 'Checking Google Session...' : 'Toolzaro CMS v2.4'}</span>
             </div>
           </div>
         </div>
       </div>
+    );
+  }
+
+  // =========================================================================
+  // FULL-SCREEN PAGE 1: TOOL CUSTOMIZATION STUDIO (No Popup / Modal)
+  // =========================================================================
+  if (isToolEditorOpen && editingTool) {
+    return (
+      <ToolEditorModal
+        tool={editingTool}
+        currentOverride={settings.toolOverrides?.[editingTool.slug]}
+        isOpen={isToolEditorOpen}
+        onClose={() => {
+          setIsToolEditorOpen(false);
+          setEditingTool(null);
+        }}
+        onSave={handleSaveToolOverride}
+      />
+    );
+  }
+
+  // =========================================================================
+  // FULL-SCREEN PAGE 2: BLOGGER POST STUDIO (Compose Text & <> HTML/Code View)
+  // =========================================================================
+  if (isBlogEditorOpen) {
+    return (
+      <BlogEditorModal
+        post={editingBlog}
+        isOpen={isBlogEditorOpen}
+        onClose={() => {
+          setIsBlogEditorOpen(false);
+          setEditingBlog(null);
+        }}
+        onSaved={(savedPost) => {
+          setBlogs((prev) => {
+            const exists = prev.some((p) => p.id === savedPost.id);
+            if (exists) {
+              return prev.map((p) => (p.id === savedPost.id ? savedPost : p));
+            }
+            return [savedPost, ...prev];
+          });
+        }}
+      />
     );
   }
 
@@ -1117,6 +1163,107 @@ export const AdminPage: React.FC = () => {
                 </button>
               </div>
 
+              {/* Global Blog Profile Identity (Default: Toolzaro + Admin + Header 3D Logo) */}
+              <div className="p-5 rounded-2xl bg-slate-900 border border-slate-800 space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+                  <div>
+                    <h3 className="text-xs font-extrabold uppercase tracking-wider text-indigo-400 flex items-center gap-2">
+                      <Wrench className="w-4 h-4" />
+                      <span>Default Blog Author Profile &amp; Header 3D Logo</span>
+                    </h3>
+                    <p className="text-xs text-slate-400 mt-0.5">
+                      Controls the default profile name (<strong>Toolzaro</strong>), subtitle (<strong>Admin</strong>), and 3D Wrench logo across all blog posts.
+                    </p>
+                  </div>
+                  <div className="px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 self-start sm:self-auto">
+                    <BlogAuthorBadge
+                      author={{
+                        name: brandingForm.blogAuthorName || 'Toolzaro',
+                        role:
+                          brandingForm.showBlogAuthorRole === false
+                            ? ''
+                            : brandingForm.blogAuthorRole ?? 'Admin',
+                        avatar: brandingForm.blogAuthorAvatar || '',
+                      }}
+                      size="md"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
+                  <div className="space-y-1.5">
+                    <label className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">
+                      Default Profile Name
+                    </label>
+                    <input
+                      type="text"
+                      value={brandingForm.blogAuthorName ?? 'Toolzaro'}
+                      onChange={e =>
+                        setBrandingForm({ ...brandingForm, blogAuthorName: e.target.value })
+                      }
+                      placeholder="Toolzaro"
+                      className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white focus:outline-hidden focus:border-indigo-500"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <label className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                        Subtitle Text Below Name
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setBrandingForm({
+                            ...brandingForm,
+                            showBlogAuthorRole:
+                              brandingForm.showBlogAuthorRole === false ? true : false,
+                          })
+                        }
+                        className={`text-[10px] font-bold px-2 py-0.5 rounded cursor-pointer ${
+                          brandingForm.showBlogAuthorRole !== false
+                            ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                            : 'bg-slate-800 text-slate-400'
+                        }`}
+                      >
+                        {brandingForm.showBlogAuthorRole !== false ? 'Shown' : 'Hidden'}
+                      </button>
+                    </div>
+                    <input
+                      type="text"
+                      value={brandingForm.blogAuthorRole ?? 'Admin'}
+                      onChange={e =>
+                        setBrandingForm({ ...brandingForm, blogAuthorRole: e.target.value })
+                      }
+                      placeholder="Admin"
+                      className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white focus:outline-hidden focus:border-indigo-500"
+                    />
+                  </div>
+
+                  <div className="flex justify-end">
+                    <button
+                      type="button"
+                      disabled={savingSettings}
+                      onClick={async () => {
+                        setSavingSettings(true);
+                        try {
+                          await updateSettings({ branding: brandingForm });
+                          toast.success('Blog profile settings saved!');
+                        } catch (err: any) {
+                          toast.error('Failed to save: ' + err?.message);
+                        } finally {
+                          setSavingSettings(false);
+                        }
+                      }}
+                      className="w-full sm:w-auto px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-50"
+                    >
+                      <Save className="w-3.5 h-3.5" />
+                      <span>Save Blog Profile</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
               {/* ImgBB Quick Image Uploader Widget */}
               <div className="p-5 rounded-2xl bg-slate-900 border border-slate-800 space-y-3">
                 <div className="flex items-center justify-between">
@@ -1210,13 +1357,25 @@ export const AdminPage: React.FC = () => {
                         <button
                           type="button"
                           onClick={() => {
-                            setEditingBlog(blog);
+                            setEditingBlog({ ...blog, contentType: 'text' });
                             setIsBlogEditorOpen(true);
                           }}
-                          className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold flex items-center gap-1.5 transition-colors"
+                          className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
                         >
                           <Edit3 className="w-3.5 h-3.5" />
-                          <span>Edit</span>
+                          <span>Edit Text</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setEditingBlog({ ...blog, contentType: 'code' });
+                            setIsBlogEditorOpen(true);
+                          }}
+                          className="px-3 py-1.5 rounded-xl bg-indigo-600/20 hover:bg-indigo-600/30 border border-indigo-500/30 text-indigo-300 text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
+                          title="Edit this post's text in HTML + CSS Code mode"
+                        >
+                          <Code className="w-3.5 h-3.5" />
+                          <span>&lt;&gt; Code + CSS</span>
                         </button>
                         <button
                           type="button"
@@ -1433,6 +1592,60 @@ export const AdminPage: React.FC = () => {
                       onChange={e => setBrandingForm({ ...brandingForm, copyrightText: e.target.value })}
                       className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-white focus:outline-hidden focus:border-indigo-500"
                     />
+                  </div>
+                </div>
+
+                {/* Blog Author Profile Settings inside Branding */}
+                <div className="pt-4 border-t border-slate-800 space-y-3">
+                  <h3 className="text-xs font-extrabold uppercase tracking-wider text-indigo-400">
+                    Blog Section Default Author Profile (Toolzaro / Admin)
+                  </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                        Blog Author Name (Default: Toolzaro)
+                      </label>
+                      <input
+                        type="text"
+                        value={brandingForm.blogAuthorName ?? 'Toolzaro'}
+                        onChange={e =>
+                          setBrandingForm({ ...brandingForm, blogAuthorName: e.target.value })
+                        }
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-white focus:outline-hidden focus:border-indigo-500"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <div className="flex items-center justify-between">
+                        <label className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                          Subtitle Below Name (Default: Admin)
+                        </label>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setBrandingForm({
+                              ...brandingForm,
+                              showBlogAuthorRole:
+                                brandingForm.showBlogAuthorRole === false ? true : false,
+                            })
+                          }
+                          className={`text-[10px] font-bold px-2 py-0.5 rounded cursor-pointer ${
+                            brandingForm.showBlogAuthorRole !== false
+                              ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                              : 'bg-slate-800 text-slate-400'
+                          }`}
+                        >
+                          {brandingForm.showBlogAuthorRole !== false ? 'Show Subtitle' : 'Hidden'}
+                        </button>
+                      </div>
+                      <input
+                        type="text"
+                        value={brandingForm.blogAuthorRole ?? 'Admin'}
+                        onChange={e =>
+                          setBrandingForm({ ...brandingForm, blogAuthorRole: e.target.value })
+                        }
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-white focus:outline-hidden focus:border-indigo-500"
+                      />
+                    </div>
                   </div>
                 </div>
 
@@ -2015,40 +2228,6 @@ export const AdminPage: React.FC = () => {
           )}
         </main>
       </div>
-
-      {/* ================= MODALS ================= */}
-      {/* 1. Tool Editor Modal */}
-      {editingTool && (
-        <ToolEditorModal
-          tool={editingTool}
-          currentOverride={settings.toolOverrides?.[editingTool.slug]}
-          isOpen={isToolEditorOpen}
-          onClose={() => {
-            setIsToolEditorOpen(false);
-            setEditingTool(null);
-          }}
-          onSave={handleSaveToolOverride}
-        />
-      )}
-
-      {/* 2. Blog Editor Modal (Dual Mode) */}
-      <BlogEditorModal
-        post={editingBlog}
-        isOpen={isBlogEditorOpen}
-        onClose={() => {
-          setIsBlogEditorOpen(false);
-          setEditingBlog(null);
-        }}
-        onSaved={savedPost => {
-          setBlogs(prev => {
-            const exists = prev.some(p => p.id === savedPost.id);
-            if (exists) {
-              return prev.map(p => p.id === savedPost.id ? savedPost : p);
-            }
-            return [savedPost, ...prev];
-          });
-        }}
-      />
     </div>
   );
 };

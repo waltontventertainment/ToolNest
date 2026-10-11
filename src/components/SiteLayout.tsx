@@ -7,11 +7,11 @@ import { HeaderSearch } from './HeaderSearch';
 import { ThemeToggle3D } from './ThemeToggle3D';
 import { useFavorites } from '../context/FavoritesContext';
 import { useGoogleDrive } from '../context/GoogleDriveContext';
-import { GoogleDriveModal } from './GoogleDriveModal';
-import { FeedbackModal } from './FeedbackModal';
-import { getBloggerAnnouncement } from '../lib/bloggerLayoutAdmin';
 import { getBlogUrl, getCategoryUrl, getStaticPageUrl, getToolsHubUrl, getBookmarksUrl } from '../lib/appUrls';
 import { useSiteSettings } from '../context/SiteSettingsContext';
+
+const GoogleDriveModal = React.lazy(() => import('./GoogleDriveModal').then(m => ({ default: m.GoogleDriveModal })));
+const FeedbackModal = React.lazy(() => import('./FeedbackModal').then(m => ({ default: m.FeedbackModal })));
 
 export const SiteLayout: React.FC = () => {
   const { settings } = useSiteSettings();
@@ -32,10 +32,15 @@ export const SiteLayout: React.FC = () => {
     }
   }, [theme]);
 
-  // Scroll to top on route change
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [pathname]);
+  // Synchronously reset scroll position BEFORE browser paint on route changes to prevent any visual scroll jump
+  React.useLayoutEffect(() => {
+    if (typeof window !== 'undefined' && 'scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual';
+    }
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' as ScrollBehavior });
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+  }, [pathname, location.search]);
 
   const liveCount = tools.length;
   const isAnnouncementActive = settings.announcement.enabled && !isBannerDismissed;
@@ -56,14 +61,11 @@ export const SiteLayout: React.FC = () => {
     <div className="min-h-screen flex flex-col bg-background text-foreground">
       {/* Premium Top Announcement Banner for Desktop / PC View */}
       {isAnnouncementActive && (
-        <div className="hidden md:block w-full bg-gradient-to-r from-indigo-950 via-purple-950 to-slate-950 border-b border-primary/30 text-white text-xs relative overflow-hidden transition-all duration-300 shadow-sm">
-          {/* Ambient Specular Glass Reflection Shimmer */}
-          <div className="absolute inset-0 bg-[linear-gradient(110deg,transparent_25%,rgba(255,255,255,0.08)_50%,transparent_75%)] bg-[length:250%_100%] animate-[shimmer_8s_infinite] pointer-events-none" />
-
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 flex items-center justify-between gap-4 relative z-10">
+        <div className="hidden md:block w-full bg-gradient-to-r from-indigo-950 via-purple-950 to-slate-950 border-b border-primary/30 text-white text-xs relative overflow-hidden shadow-xs">
+          <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-2 flex items-center justify-between gap-4 relative z-10">
             <div className="flex items-center gap-3">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-primary/30 border border-primary/40 text-[10px] font-black uppercase tracking-wider text-white shadow-2xs">
-                <Sparkles className="w-3 h-3 text-amber-400 animate-pulse" />
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-primary/30 border border-primary/40 text-[10px] font-black uppercase tracking-wider text-white">
+                <Sparkles className="w-3 h-3 text-amber-400" />
                 <span>{bannerBadge}</span>
               </span>
               <p className="font-semibold text-slate-200 text-xs">
@@ -100,17 +102,16 @@ export const SiteLayout: React.FC = () => {
         </div>
       )}
 
-      <header className="sticky top-0 z-50 w-full backdrop-blur-xl bg-background/90 border-b border-border/80 shadow-xs">
-        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+      <header className="sticky top-0 z-50 w-full backdrop-blur-md bg-background/95 border-b border-border/80 shadow-2xs">
+        <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
           {/* 3D Extruded Logo on the left */}
-          <Link to="/" className="flex items-center gap-3.5 group shrink-0" aria-label="Toolzaro Home">
+          <Link to="/" className="flex items-center gap-3 group shrink-0" aria-label="Toolzaro Home">
             <div className="logo-3d w-10 h-10 flex items-center justify-center text-white shrink-0">
-              {/* Inner ambient light specular shine */}
               <div className="absolute inset-0 rounded-2xl bg-gradient-to-t from-transparent via-white/10 to-white/35 pointer-events-none" />
-              <Wrench className="w-5 h-5 transition-transform duration-300 group-hover:rotate-12 group-hover:scale-115 drop-shadow-[0_2px_4px_rgba(0,0,0,0.4)] text-white" />
+              <Wrench className="w-5 h-5 transition-transform duration-200 group-hover:rotate-12 group-hover:scale-110 drop-shadow-[0_2px_4px_rgba(0,0,0,0.4)] text-white" />
             </div>
             <div className="flex flex-col">
-              <span className="text-brand-gradient font-display font-black text-xl sm:text-2xl tracking-[-0.035em] leading-none drop-shadow-[0_1px_1px_rgba(0,0,0,0.1)]">
+              <span className="text-brand-gradient font-display font-black text-xl sm:text-2xl tracking-[-0.035em] leading-none">
                 Toolzaro
               </span>
               <span className="text-kicker text-[9px] text-muted-foreground/80 tracking-widest mt-0.5 font-bold hidden sm:block">
@@ -119,12 +120,64 @@ export const SiteLayout: React.FC = () => {
             </div>
           </Link>
 
-          {/* Right-side toolbar: Blog, Search, Saved, Drive Sync, Report Bug, Dark Mode */}
-          <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
-            {/* Blog Hub Link */}
+          {/* Desktop Center Navigation Links (True PC App Header) */}
+          <nav className="hidden xl:flex items-center gap-6 text-xs font-semibold text-muted-foreground" aria-label="Primary Desktop Navigation">
+            <Link
+              to="/"
+              className={`hover:text-foreground transition-colors whitespace-nowrap py-1 border-b-2 ${
+                pathname === '/' ? 'text-primary font-bold border-primary' : 'border-transparent'
+              }`}
+            >
+              Workspace
+            </Link>
+            <Link
+              to={getToolsHubUrl()}
+              className={`hover:text-foreground transition-colors whitespace-nowrap py-1 border-b-2 ${
+                pathname === '/tools' ? 'text-primary font-bold border-primary' : 'border-transparent'
+              }`}
+            >
+              All Tools ({liveCount})
+            </Link>
+            <Link
+              to={getCategoryUrl('pdf')}
+              className={`hover:text-foreground transition-colors whitespace-nowrap py-1 border-b-2 ${
+                pathname === '/pdf' ? 'text-primary font-bold border-primary' : 'border-transparent'
+              }`}
+            >
+              PDF Suite
+            </Link>
+            <Link
+              to={getCategoryUrl('color-image')}
+              className={`hover:text-foreground transition-colors whitespace-nowrap py-1 border-b-2 ${
+                pathname === '/color-image' ? 'text-primary font-bold border-primary' : 'border-transparent'
+              }`}
+            >
+              Image &amp; Color
+            </Link>
+            <Link
+              to={getCategoryUrl('developer')}
+              className={`hover:text-foreground transition-colors whitespace-nowrap py-1 border-b-2 ${
+                pathname === '/developer' ? 'text-primary font-bold border-primary' : 'border-transparent'
+              }`}
+            >
+              Developer
+            </Link>
             <Link
               to={getBlogUrl()}
-              className={`btn-signature-header px-2.5 sm:px-3.5 gap-1.5 text-xs font-bold ${
+              className={`hover:text-foreground transition-colors whitespace-nowrap py-1 border-b-2 ${
+                pathname.startsWith('/blog') ? 'text-primary font-bold border-primary' : 'border-transparent'
+              }`}
+            >
+              Guides &amp; Blog
+            </Link>
+          </nav>
+
+          {/* Right-side toolbar: Blog (below xl), Search, Saved, Drive Sync, Report Bug, Dark Mode */}
+          <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
+            {/* Blog Hub Link (Visible below xl; xl uses Center Nav) */}
+            <Link
+              to={getBlogUrl()}
+              className={`xl:hidden btn-signature-header px-2.5 sm:px-3.5 gap-1.5 text-xs font-bold ${
                 pathname.startsWith('/blog') || (typeof window !== 'undefined' && window.location.search.includes('page=blog'))
                   ? 'bg-primary/15 text-primary border-primary/40 shadow-xs'
                   : 'text-muted-foreground hover:text-foreground'
@@ -196,19 +249,37 @@ export const SiteLayout: React.FC = () => {
         </div>
       </header>
 
-      {/* Google Drive Modal */}
-      <GoogleDriveModal isOpen={isDriveModalOpen} onClose={() => setIsDriveModalOpen(false)} />
+      {/* Google Drive Modal (Lazy-loaded on demand) */}
+      {isDriveModalOpen && (
+        <React.Suspense fallback={null}>
+          <GoogleDriveModal isOpen={isDriveModalOpen} onClose={() => setIsDriveModalOpen(false)} />
+        </React.Suspense>
+      )}
 
-      {/* Feedback & Bug Report Modal */}
-      <FeedbackModal isOpen={isFeedbackModalOpen} onClose={() => setIsFeedbackModalOpen(false)} />
+      {/* Feedback & Bug Report Modal (Lazy-loaded on demand) */}
+      {isFeedbackModalOpen && (
+        <React.Suspense fallback={null}>
+          <FeedbackModal isOpen={isFeedbackModalOpen} onClose={() => setIsFeedbackModalOpen(false)} />
+        </React.Suspense>
+      )}
 
-      <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-3 sm:pt-4 md:pt-6 pb-12 sm:pb-16 md:pb-20">
-        <Outlet />
+      <main className="flex-1 w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-3 sm:pt-4 md:pt-6 pb-12 sm:pb-16 md:pb-20">
+        <React.Suspense
+          fallback={
+            <div className="w-full py-8 space-y-5 animate-pulse">
+              <div className="h-6 w-44 rounded-lg bg-muted" />
+              <div className="h-10 w-72 rounded-xl bg-muted" />
+              <div className="h-64 w-full rounded-3xl bg-card border border-border/60" />
+            </div>
+          }
+        >
+          <Outlet />
+        </React.Suspense>
       </main>
 
-      <footer className="border-t border-border bg-card/60 backdrop-blur-xs py-10 sm:py-14 mt-12 sm:mt-16 md:mt-20">
+      <footer className="border-t border-border bg-card/60 py-10 sm:py-14 mt-12 sm:mt-16 md:mt-20">
         {/* Inline Safe Header with Back to Top */}
-        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8 mb-8 border-b border-border/60 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pb-8 mb-8 border-b border-border/60 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2.5 text-xs text-muted-foreground">
             <span className="w-2 h-2 rounded-full bg-primary" />
             <span className="font-semibold text-foreground">Toolzaro Directory &amp; Navigation</span>
@@ -227,7 +298,7 @@ export const SiteLayout: React.FC = () => {
           </button>
         </div>
 
-        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
+        <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
           <div className="space-y-3">
             <Link to="/" className="flex items-center gap-3 group" aria-label="Toolzaro Home">
               <div className="logo-3d w-8 h-8 flex items-center justify-center text-white shrink-0">
@@ -300,7 +371,7 @@ export const SiteLayout: React.FC = () => {
           </div>
         </div>
 
-        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 sm:mt-10 pt-6 border-t border-border/60 text-xs text-muted-foreground flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 mt-8 sm:mt-10 pt-6 border-t border-border/60 text-xs text-muted-foreground flex flex-col md:flex-row items-center justify-between gap-4">
           <div>&copy; {new Date().getFullYear()} Toolzaro. All processing happens client-side in your browser.</div>
           <div className="flex items-center gap-4 text-[11px]">
             <span className="text-muted-foreground">Fast • Private • Accessible</span>

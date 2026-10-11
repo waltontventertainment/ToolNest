@@ -27,5 +27,5 @@ export interface ToolDefinition {
   intro: string;            // 60-120 words unique copy
   howTo: string[];          // 4-6 numbered steps
   faq: { q: string; a: string }[];  // 3-5 Q&A per tool
-  Component: React.FC;
+  Component: React.ComponentType<any>;
 }

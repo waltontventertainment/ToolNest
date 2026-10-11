@@ -1,5 +1,11 @@
-import { doc, getDoc, setDoc, deleteDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
+
+import localThumb1 from '../assets/images/hero_visual_premium_1791369917245.jpg';
+import localThumb2 from '../assets/images/premium_hero_banner_1791390453868.jpg';
+import localThumb3 from '../assets/images/categories_1785690511849.jpg';
+import localThumb4 from '../assets/images/hero_visual_1785690377657.jpg';
+import localThumb5 from '../assets/images/toolzaro_icon_logo_1791427467156.jpg';
 
 export interface TechHighlight {
   category: string;
@@ -19,6 +25,40 @@ export interface TechDigest {
   trendingTools: string[];
   generatedAt: string;
   isFallback?: boolean;
+}
+
+const LOCAL_BUNDLED_THUMBS = [
+  localThumb1,
+  localThumb2,
+  localThumb3,
+  localThumb4,
+  localThumb5,
+];
+
+/**
+ * Direct-edge, zero-redirect 120x120px CDN thumbnails for instant topic rendering
+ */
+const FAST_TOPIC_THUMBNAILS = [
+  'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=120&h=120&auto=format&fit=crop&q=75',
+  'https://images.unsplash.com/photo-1563986768609-322da13575f3?w=120&h=120&auto=format&fit=crop&q=75',
+  'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=120&h=120&auto=format&fit=crop&q=75',
+  'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=120&h=120&auto=format&fit=crop&q=75',
+  'https://images.unsplash.com/photo-1518770660439-4636190af475?w=120&h=120&auto=format&fit=crop&q=75',
+  'https://images.unsplash.com/photo-1504639725590-34d0984388bd?w=120&h=120&auto=format&fit=crop&q=75',
+  'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=120&h=120&auto=format&fit=crop&q=75',
+  'https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?w=120&h=120&auto=format&fit=crop&q=75',
+];
+
+export function getFallbackTopicImage(index: number): string {
+  return LOCAL_BUNDLED_THUMBS[Math.abs(index) % LOCAL_BUNDLED_THUMBS.length];
+}
+
+export function getFastTopicImage(seedText: string, index: number): string {
+  let hash = index;
+  for (let i = 0; i < seedText.length; i++) {
+    hash = (hash * 31 + seedText.charCodeAt(i)) >>> 0;
+  }
+  return FAST_TOPIC_THUMBNAILS[hash % FAST_TOPIC_THUMBNAILS.length];
 }
 
 /**
@@ -46,7 +86,7 @@ export function getFormattedDate(): string {
 }
 
 /**
- * Default instant zero-delay fallback digest
+ * Default instant zero-delay fallback digest with guaranteed round topic images
  */
 const FALLBACK_DIGEST: TechDigest = {
   id: getTodayKey(),
@@ -57,17 +97,44 @@ const FALLBACK_DIGEST: TechDigest = {
     {
       category: "Web Dev",
       title: "Vite & Client-First Architecture",
-      detail: "Modern web apps shift towards zero-backend, client-heavy architectures to improve privacy, performance, and eliminate server overhead."
+      detail: "Modern web apps shift towards zero-backend, client-heavy architectures to improve privacy, performance, and eliminate server overhead.",
+      url: "https://news.ycombinator.com",
+      imageUrl: FAST_TOPIC_THUMBNAILS[0]
     },
     {
       category: "Cloud & Security",
       title: "Zero-Trust Browser Sandboxing",
-      detail: "Localized client-side processing becomes standard for developer utility suites and privacy-first tools."
+      detail: "Localized client-side processing becomes standard for developer utility suites and privacy-first tools.",
+      url: "https://dev.to",
+      imageUrl: FAST_TOPIC_THUMBNAILS[1]
     },
     {
       category: "Tooling",
       title: "High-Performance Developer Toolkits",
-      detail: "Standalone offline-capable browser utilities replace heavyweight desktop applications for day-to-day conversion and formatting tasks."
+      detail: "Standalone offline-capable browser utilities replace heavyweight desktop applications for day-to-day conversion and formatting tasks.",
+      url: "https://github.com/trending",
+      imageUrl: FAST_TOPIC_THUMBNAILS[2]
+    },
+    {
+      category: "WebAssembly",
+      title: "Native-Speed PDF & Image Processing in Browser",
+      detail: "Hardware-accelerated Canvas and WASM pipelines allow instant document manipulation with zero cloud latency.",
+      url: "https://webassembly.org",
+      imageUrl: FAST_TOPIC_THUMBNAILS[3]
+    },
+    {
+      category: "Open Source",
+      title: "Modern TypeScript & Edge Runtime Ecosystems",
+      detail: "Type-safe modular architectures streamline developer workflows and reduce production bundle overhead.",
+      url: "https://github.com/trending",
+      imageUrl: FAST_TOPIC_THUMBNAILS[4]
+    },
+    {
+      category: "Cryptography",
+      title: "Web Crypto API & End-to-End Local Security",
+      detail: "Hardware entropy and SubtleCrypto primitives bring zero-knowledge encryption directly to browser applications.",
+      url: "https://developer.mozilla.org/en-US/docs/Web/API/Web_Crypto_API",
+      imageUrl: FAST_TOPIC_THUMBNAILS[5]
     }
   ],
   keyTakeaway: "Building privacy-first, client-side tools gives developers maximum speed and privacy with zero server latency.",
@@ -75,6 +142,41 @@ const FALLBACK_DIGEST: TechDigest = {
   generatedAt: new Date().toISOString(),
   isFallback: true
 };
+
+/**
+ * Guarantees every digest and every highlight item always has a valid, fast-loading imageUrl
+ * and replaces slow 302-redirect picsum URLs with direct CDN thumbnails.
+ */
+export function ensureDigestImages(digest: TechDigest | null | undefined): TechDigest {
+  const todayKey = getTodayKey();
+  if (!digest || !digest.headline) {
+    return { ...FALLBACK_DIGEST, id: todayKey, dateFormatted: getFormattedDate() };
+  }
+
+  const rawHighlights =
+    Array.isArray(digest.highlights) && digest.highlights.length > 0
+      ? digest.highlights
+      : FALLBACK_DIGEST.highlights;
+
+  const normalizedHighlights: TechHighlight[] = rawHighlights.map((item, idx) => {
+    const existingImg = item.imageUrl?.trim() || '';
+    const isSlowPicsum = existingImg.includes('picsum.photos');
+    const validImageUrl =
+      existingImg && !isSlowPicsum
+        ? existingImg
+        : getFastTopicImage(item.title || item.category || `topic-${idx}`, idx);
+
+    return {
+      ...item,
+      imageUrl: validImageUrl,
+    };
+  });
+
+  return {
+    ...digest,
+    highlights: normalizedHighlights,
+  };
+}
 
 /**
  * Returns instant synchronous cached digest from LocalStorage or Fallback (0ms delay)
@@ -85,12 +187,12 @@ export function getInstantTechDigest(): TechDigest {
     const saved = localStorage.getItem(`toolnest_tech_digest_${todayKey}`);
     if (saved) {
       const parsed = JSON.parse(saved);
-      if (parsed.headline && parsed.summary) {
-        return parsed;
+      if (parsed && parsed.headline && parsed.summary) {
+        return ensureDigestImages(parsed);
       }
     }
   } catch {}
-  return { ...FALLBACK_DIGEST, id: todayKey, dateFormatted: getFormattedDate() };
+  return ensureDigestImages({ ...FALLBACK_DIGEST, id: todayKey, dateFormatted: getFormattedDate() });
 }
 
 /**
@@ -141,108 +243,119 @@ export async function generateEndpointTechDigest(): Promise<TechDigest> {
   const ghHighlights: TechHighlight[] = [];
   const trendingToolsSet = new Set<string>();
 
-  // 1. Fetch Hacker News Frontpage API (Category: Hacker News)
-  try {
-    const hnRes = await fetch('https://hn.algolia.com/api/v1/search?tags=front_page&hitsPerPage=5');
-    if (hnRes.ok) {
-      const data = await hnRes.json();
-      if (Array.isArray(data.hits)) {
-        data.hits.forEach((item: any) => {
-          if (item.title) {
-            hnHighlights.push({
-              category: "Hacker News",
-              title: item.title,
-              detail: `${item.points || 0} points • ${item.num_comments || 0} comments • Author: ${item.author || 'Community'}`,
-              url: item.url || `https://news.ycombinator.com/item?id=${item.objectID}`,
-              imageUrl: `https://picsum.photos/seed/${encodeURIComponent(item.title || 'hn')}/100/100`
+  // Run all 4 live endpoint fetches in parallel for ultra-fast completion
+  await Promise.allSettled([
+    // 1. Fetch Hacker News Frontpage API (Category: Hacker News)
+    (async () => {
+      try {
+        const hnRes = await fetch('https://hn.algolia.com/api/v1/search?tags=front_page&hitsPerPage=5');
+        if (hnRes.ok) {
+          const data = await hnRes.json();
+          if (Array.isArray(data.hits)) {
+            data.hits.forEach((item: any, idx: number) => {
+              if (item.title) {
+                hnHighlights.push({
+                  category: "Hacker News",
+                  title: item.title,
+                  detail: `${item.points || 0} points • ${item.num_comments || 0} comments • Author: ${item.author || 'Community'}`,
+                  url: item.url || `https://news.ycombinator.com/item?id=${item.objectID}`,
+                  imageUrl: getFastTopicImage(item.title || 'hn', idx)
+                });
+                trendingToolsSet.add(item.author || 'HN');
+              }
             });
-            trendingToolsSet.add(item.author || 'HN');
           }
-        });
-      }
-    }
-  } catch {}
+        }
+      } catch {}
+    })(),
 
-  // 2. Fetch Dev.to Top Articles API (Category: Dev.to)
-  try {
-    const devRes = await fetch('https://dev.to/api/articles?per_page=5');
-    if (devRes.ok) {
-      const articles = await devRes.json();
-      if (Array.isArray(articles)) {
-        articles.forEach((item: any) => {
-          if (item.title) {
-            devHighlights.push({
-              category: "Dev.to",
-              title: item.title,
-              detail: item.description || `Published by ${item.user?.name || 'Developer'} • ${item.positive_reactions_count || 0} reactions`,
-              url: item.url,
-              imageUrl: item.cover_image || item.social_image || `https://picsum.photos/seed/${encodeURIComponent(item.title)}/100/100`
+    // 2. Fetch Dev.to Top Articles API (Category: Dev.to)
+    (async () => {
+      try {
+        const devRes = await fetch('https://dev.to/api/articles?per_page=5');
+        if (devRes.ok) {
+          const articles = await devRes.json();
+          if (Array.isArray(articles)) {
+            articles.forEach((item: any, idx: number) => {
+              if (item.title) {
+                devHighlights.push({
+                  category: "Dev.to",
+                  title: item.title,
+                  detail: item.description || `Published by ${item.user?.name || 'Developer'} • ${item.positive_reactions_count || 0} reactions`,
+                  url: item.url,
+                  imageUrl: item.user?.profile_image_90 || item.cover_image || item.social_image || getFastTopicImage(item.title, idx + 2)
+                });
+                if (item.tag_list && Array.isArray(item.tag_list)) {
+                  item.tag_list.slice(0, 2).forEach((t: string) => trendingToolsSet.add(t));
+                }
+              }
             });
-            if (item.tag_list && Array.isArray(item.tag_list)) {
-              item.tag_list.slice(0, 2).forEach((t: string) => trendingToolsSet.add(t));
-            }
           }
-        });
-      }
-    }
-  } catch {}
+        }
+      } catch {}
+    })(),
 
-  // 3. Fetch Reddit Technology API with multiple CORS proxy fallbacks
-  try {
-    let redditRes = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent('https://www.reddit.com/r/technology/hot.json?limit=5')}`).catch(() => null);
-    if (!redditRes || !redditRes.ok) {
-      redditRes = await fetch(`https://corsproxy.io/?${encodeURIComponent('https://www.reddit.com/r/technology/hot.json?limit=5')}`).catch(() => null);
-    }
-    if (redditRes && redditRes.ok) {
-      const redditData = await redditRes.json();
-      const children = redditData?.data?.children || (typeof redditData === 'object' && redditData?.contents ? JSON.parse(redditData.contents || '{}')?.data?.children : null);
-      if (Array.isArray(children)) {
-        children.forEach((child: any) => {
-          const post = child.data;
-          if (post && post.title && !post.stickied) {
-            const fullPostDetail = post.selftext ? `${post.selftext} [${post.score || 0} upvotes • ${post.num_comments || 0} comments • r/${post.subreddit}]` : `${post.score || 0} upvotes • ${post.num_comments || 0} comments • r/${post.subreddit} • Author: ${post.author || 'Anonymous'} • Domain: ${post.domain || 'reddit.com'}`;
-            const thumb = post.thumbnail && post.thumbnail.startsWith('http') ? post.thumbnail : (post.preview?.images?.[0]?.source?.url ? post.preview.images[0].source.url.replace(/&amp;/g, '&') : undefined);
-            redditHighlights.push({
-              category: "Reddit Technology",
-              title: post.title,
-              detail: fullPostDetail,
-              url: `https://reddit.com${post.permalink}`,
-              imageUrl: thumb || `https://picsum.photos/seed/${encodeURIComponent(post.title)}/100/100`
+    // 3. Fetch Reddit Technology API with CORS proxy fallback
+    (async () => {
+      try {
+        let redditRes = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent('https://www.reddit.com/r/technology/hot.json?limit=5')}`).catch(() => null);
+        if (!redditRes || !redditRes.ok) {
+          redditRes = await fetch(`https://corsproxy.io/?${encodeURIComponent('https://www.reddit.com/r/technology/hot.json?limit=5')}`).catch(() => null);
+        }
+        if (redditRes && redditRes.ok) {
+          const redditData = await redditRes.json();
+          const children = redditData?.data?.children || (typeof redditData === 'object' && redditData?.contents ? JSON.parse(redditData.contents || '{}')?.data?.children : null);
+          if (Array.isArray(children)) {
+            children.forEach((child: any, idx: number) => {
+              const post = child.data;
+              if (post && post.title && !post.stickied) {
+                const fullPostDetail = post.selftext ? `${post.selftext} [${post.score || 0} upvotes • ${post.num_comments || 0} comments • r/${post.subreddit}]` : `${post.score || 0} upvotes • ${post.num_comments || 0} comments • r/${post.subreddit} • Author: ${post.author || 'Anonymous'} • Domain: ${post.domain || 'reddit.com'}`;
+                const thumb = post.thumbnail && post.thumbnail.startsWith('http') ? post.thumbnail : (post.preview?.images?.[0]?.source?.url ? post.preview.images[0].source.url.replace(/&amp;/g, '&') : undefined);
+                redditHighlights.push({
+                  category: "Reddit Technology",
+                  title: post.title,
+                  detail: fullPostDetail,
+                  url: `https://reddit.com${post.permalink}`,
+                  imageUrl: thumb || getFastTopicImage(post.title, idx + 4)
+                });
+              }
             });
           }
-        });
+        }
+      } catch (e) {
+        console.warn('Reddit fetch warning:', e);
       }
-    }
-  } catch (e) {
-    console.warn('Reddit fetch warning:', e);
-  }
+    })(),
 
-  // 4. Fetch GitHub Trending Repositories API
-  try {
-    const ghRes = await fetch('https://api.github.com/search/repositories?q=stars:>50&sort=stars&order=desc&per_page=5', {
-      headers: { 'Accept': 'application/vnd.github.v3+json' }
-    });
-    if (ghRes.ok) {
-      const ghData = await ghRes.json();
-      if (Array.isArray(ghData.items)) {
-        ghData.items.forEach((repo: any) => {
-          if (repo.name) {
-            const fullRepoDetail = `${repo.description || 'No description provided'} (Language: ${repo.language || 'Multiple'} • ⭐ Stars: ${repo.stargazers_count?.toLocaleString() || 0} • Forks: ${repo.forks_count?.toLocaleString() || 0} • Open Issues: ${repo.open_issues_count || 0})`;
-            ghHighlights.push({
-              category: "GitHub Trending",
-              title: `${repo.full_name} — ⭐ ${repo.stargazers_count?.toLocaleString() || 0}`,
-              detail: fullRepoDetail,
-              url: repo.html_url,
-              imageUrl: repo.owner?.avatar_url || `https://picsum.photos/seed/${encodeURIComponent(repo.name)}/100/100`
-            });
-            if (repo.language) trendingToolsSet.add(repo.language);
-          }
+    // 4. Fetch GitHub Trending Repositories API
+    (async () => {
+      try {
+        const ghRes = await fetch('https://api.github.com/search/repositories?q=stars:>50&sort=stars&order=desc&per_page=5', {
+          headers: { 'Accept': 'application/vnd.github.v3+json' }
         });
+        if (ghRes.ok) {
+          const ghData = await ghRes.json();
+          if (Array.isArray(ghData.items)) {
+            ghData.items.forEach((repo: any, idx: number) => {
+              if (repo.name) {
+                const fullRepoDetail = `${repo.description || 'No description provided'} (Language: ${repo.language || 'Multiple'} • ⭐ Stars: ${repo.stargazers_count?.toLocaleString() || 0} • Forks: ${repo.forks_count?.toLocaleString() || 0} • Open Issues: ${repo.open_issues_count || 0})`;
+                ghHighlights.push({
+                  category: "GitHub Trending",
+                  title: `${repo.full_name} — ⭐ ${repo.stargazers_count?.toLocaleString() || 0}`,
+                  detail: fullRepoDetail,
+                  url: repo.html_url,
+                  imageUrl: repo.owner?.avatar_url ? `${repo.owner.avatar_url}&s=96` : getFastTopicImage(repo.name, idx + 6)
+                });
+                if (repo.language) trendingToolsSet.add(repo.language);
+              }
+            });
+          }
+        }
+      } catch (e) {
+        console.warn('GitHub fetch warning:', e);
       }
-    }
-  } catch (e) {
-    console.warn('GitHub fetch warning:', e);
-  }
+    })(),
+  ]);
 
   // Interleave sources so Hacker News, Dev.to, Reddit, and GitHub are all fairly represented
   const highlights: TechHighlight[] = [];
@@ -255,23 +368,19 @@ export async function generateEndpointTechDigest(): Promise<TechDigest> {
   }
 
   if (highlights.length === 0) {
-    return {
+    return ensureDigestImages({
+      ...FALLBACK_DIGEST,
       id: todayKey,
       dateFormatted: todayDate,
-      headline: "Live API Endpoints Connecting...",
-      summary: "Fetching real-time updates from Hacker News, Dev.to, Reddit Technology, and GitHub Trending endpoints.",
-      highlights: [],
-      keyTakeaway: "Click 'Sync Live' to refresh real-time feeds instantly.",
-      trendingTools: ["Live API", "Hacker News", "Dev.to", "Reddit Technology", "GitHub"],
       generatedAt: new Date().toISOString(),
       isFallback: false
-    };
+    });
   }
 
   const primaryHeadline = highlights[0]?.title || "Latest Real-Time Developer & Tech Trends";
   const primarySummary = `Live aggregated stream from Hacker News (${highlights.filter(h => h.category === 'Hacker News').length}), Dev.to (${highlights.filter(h => h.category === 'Dev.to').length}), Reddit Technology (${highlights.filter(h => h.category === 'Reddit Technology').length}), and GitHub Trending (${highlights.filter(h => h.category === 'GitHub Trending').length}).`;
 
-  const digest: TechDigest = {
+  const digest: TechDigest = ensureDigestImages({
     id: todayKey,
     dateFormatted: todayDate,
     headline: primaryHeadline,
@@ -281,7 +390,7 @@ export async function generateEndpointTechDigest(): Promise<TechDigest> {
     trendingTools: Array.from(trendingToolsSet).slice(0, 6),
     generatedAt: new Date().toISOString(),
     isFallback: false
-  };
+  });
 
   // Cache locally
   try {
@@ -313,7 +422,13 @@ export async function getOrFetchTodayTechDigest(forceRefresh = false): Promise<T
       const saved = localStorage.getItem(`toolnest_tech_digest_${todayKey}`);
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (parsed.headline && parsed.summary) return parsed;
+        if (parsed && parsed.headline && parsed.summary && Array.isArray(parsed.highlights) && parsed.highlights.length > 0) {
+          const normalized = ensureDigestImages(parsed);
+          try {
+            localStorage.setItem(`toolnest_tech_digest_${todayKey}`, JSON.stringify(normalized));
+          } catch {}
+          return normalized;
+        }
       }
     } catch {}
 
@@ -324,11 +439,12 @@ export async function getOrFetchTodayTechDigest(forceRefresh = false): Promise<T
 
       if (docSnap.exists()) {
         const data = docSnap.data() as TechDigest;
-        if (data.headline && data.summary) {
+        if (data && data.headline && data.summary && Array.isArray(data.highlights) && data.highlights.length > 0) {
+          const normalized = ensureDigestImages(data);
           try {
-            localStorage.setItem(`toolnest_tech_digest_${todayKey}`, JSON.stringify(data));
+            localStorage.setItem(`toolnest_tech_digest_${todayKey}`, JSON.stringify(normalized));
           } catch {}
-          return data;
+          return normalized;
         }
       }
     } catch {}

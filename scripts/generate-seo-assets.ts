@@ -6,6 +6,7 @@ import { BUILTIN_BLOG_POSTS } from '../src/lib/blogData';
 
 const BASE_URL = (process.env.SITE_URL || 'https://toolzaro.cyou').replace(/\/+$/, '');
 const PUBLIC_DIR = path.resolve(process.cwd(), 'public');
+const DIST_DIR = path.resolve(process.cwd(), 'dist');
 const ASSETS_IMG_DIR = path.resolve(process.cwd(), 'src/assets/images');
 const TODAY = new Date().toISOString().split('T')[0];
 const NOW_RFC822 = new Date().toUTCString();
@@ -28,6 +29,10 @@ interface SitemapEntry {
   priority?: string;
 }
 
+/**
+ * Clean, strict Google Search Console compliant XML urlset
+ * (Avoids external XSD schemaLocation attributes that can trigger parser/fetch warnings in GSC)
+ */
 function buildUrlsetXml(entries: SitemapEntry[]): string {
   const urlsXml = entries
     .map(
@@ -41,9 +46,7 @@ function buildUrlsetXml(entries: SitemapEntry[]): string {
     .join('\n');
 
   return `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${urlsXml}
 </urlset>
 `;
@@ -64,6 +67,21 @@ function buildSitemapIndexXml(sitemapUrls: string[]): string {
 ${itemsXml}
 </sitemapindex>
 `;
+}
+
+/**
+ * Writes an SEO file to public/ AND also mirrors it directly to dist/ if dist/ already exists.
+ * This guarantees that both pre-build and post-build invocations keep public/ and dist/ 100% synced.
+ */
+function writeSeoFile(fileName: string, content: string) {
+  if (!fs.existsSync(PUBLIC_DIR)) {
+    fs.mkdirSync(PUBLIC_DIR, { recursive: true });
+  }
+  fs.writeFileSync(path.join(PUBLIC_DIR, fileName), content, 'utf8');
+
+  if (fs.existsSync(DIST_DIR)) {
+    fs.writeFileSync(path.join(DIST_DIR, fileName), content, 'utf8');
+  }
 }
 
 function ensureFaviconsInPublic() {
@@ -88,6 +106,16 @@ function ensureFaviconsInPublic() {
 
   const allExist = requiredFiles.every(f => fs.existsSync(path.join(PUBLIC_DIR, f)));
   if (allExist) {
+    // Also mirror to dist/ if dist/ already exists
+    if (fs.existsSync(DIST_DIR)) {
+      for (const f of requiredFiles) {
+        const src = path.join(PUBLIC_DIR, f);
+        const dest = path.join(DIST_DIR, f);
+        if (fs.existsSync(src) && !fs.existsSync(dest)) {
+          fs.copyFileSync(src, dest);
+        }
+      }
+    }
     console.log('[SEO & Favicons] All root domain favicons & OG images verified in public/.');
     return;
   }
@@ -108,16 +136,15 @@ function ensureFaviconsInPublic() {
       );
     }
     if (fs.existsSync(fullLogoSrc) && !fs.existsSync(path.join(PUBLIC_DIR, 'logo.png'))) {
-      execSync(`convert "${fullLogoSrc}" -resize 600x402 "${path.join(PUBLIC_DIR, 'logo.png')}"`, { stdio: 'pipe' });
+      execSync(`convert "${fullLogoSrc}" -resize 360x241 -strip -quality 82 "${path.join(PUBLIC_DIR, 'logo.png')}"`, { stdio: 'pipe' });
     }
     if (fs.existsSync(heroBannerSrc) && !fs.existsSync(path.join(PUBLIC_DIR, 'og-banner.jpg'))) {
       execSync(
-        `convert "${heroBannerSrc}" -gravity center -crop 1200x630+0+0 +repage -quality 88 "${path.join(PUBLIC_DIR, 'og-banner.jpg')}"`,
+        `convert "${heroBannerSrc}" -gravity center -crop 1200x630+0+0 +repage -strip -interlace Plane -quality 78 "${path.join(PUBLIC_DIR, 'og-banner.jpg')}"`,
         { stdio: 'pipe' }
       );
     }
   } catch {
-    // Fallback if ImageMagick is not installed in a container environment
     if (fs.existsSync(faviconSrc)) {
       for (const f of ['favicon.ico', 'favicon.png', 'favicon-16x16.png', 'favicon-32x32.png', 'favicon-48x48.png', 'favicon-96x96.png']) {
         const dest = path.join(PUBLIC_DIR, f);
@@ -184,10 +211,10 @@ function generateAllSitemapsAndSeoFiles() {
     priority: '0.8',
   }));
 
-  // Write dedicated sub-sitemaps
-  fs.writeFileSync(path.join(PUBLIC_DIR, 'sitemap-pages.xml'), buildUrlsetXml(pageEntries), 'utf8');
-  fs.writeFileSync(path.join(PUBLIC_DIR, 'sitemap-categories.xml'), buildUrlsetXml(categoryEntries), 'utf8');
-  fs.writeFileSync(path.join(PUBLIC_DIR, 'sitemap-blog.xml'), buildUrlsetXml(blogEntries), 'utf8');
+  // Write dedicated sub-sitemaps (to public/ and dist/ if present)
+  writeSeoFile('sitemap-pages.xml', buildUrlsetXml(pageEntries));
+  writeSeoFile('sitemap-categories.xml', buildUrlsetXml(categoryEntries));
+  writeSeoFile('sitemap-blog.xml', buildUrlsetXml(blogEntries));
 
   // Unlimited Tools Sitemap Chunking Support
   const childSitemapUrls: string[] = [
@@ -196,21 +223,16 @@ function generateAllSitemapsAndSeoFiles() {
   ];
 
   if (toolEntries.length <= MAX_URLS_PER_SITEMAP) {
-    fs.writeFileSync(path.join(PUBLIC_DIR, 'sitemap-tools.xml'), buildUrlsetXml(toolEntries), 'utf8');
+    writeSeoFile('sitemap-tools.xml', buildUrlsetXml(toolEntries));
     childSitemapUrls.push(`${BASE_URL}/sitemap-tools.xml`);
   } else {
-    // Automatically split into multiple sitemap-tools-1.xml, sitemap-tools-2.xml, etc. if >40,000 tools
-    fs.writeFileSync(
-      path.join(PUBLIC_DIR, 'sitemap-tools.xml'),
-      buildUrlsetXml(toolEntries.slice(0, MAX_URLS_PER_SITEMAP)),
-      'utf8'
-    );
+    writeSeoFile('sitemap-tools.xml', buildUrlsetXml(toolEntries.slice(0, MAX_URLS_PER_SITEMAP)));
     childSitemapUrls.push(`${BASE_URL}/sitemap-tools.xml`);
     let chunkIndex = 1;
     for (let i = 0; i < toolEntries.length; i += MAX_URLS_PER_SITEMAP) {
       const chunk = toolEntries.slice(i, i + MAX_URLS_PER_SITEMAP);
       const fileName = `sitemap-tools-${chunkIndex}.xml`;
-      fs.writeFileSync(path.join(PUBLIC_DIR, fileName), buildUrlsetXml(chunk), 'utf8');
+      writeSeoFile(fileName, buildUrlsetXml(chunk));
       childSitemapUrls.push(`${BASE_URL}/${fileName}`);
       chunkIndex++;
     }
@@ -219,7 +241,7 @@ function generateAllSitemapsAndSeoFiles() {
   childSitemapUrls.push(`${BASE_URL}/sitemap-blog.xml`);
 
   // Write Sitemap Index (sitemap-index.xml)
-  fs.writeFileSync(path.join(PUBLIC_DIR, 'sitemap-index.xml'), buildSitemapIndexXml(childSitemapUrls), 'utf8');
+  writeSeoFile('sitemap-index.xml', buildSitemapIndexXml(childSitemapUrls));
 
   // Write Complete Master Sitemap (sitemap.xml) containing all entries
   const allEntries: SitemapEntry[] = [
@@ -228,7 +250,7 @@ function generateAllSitemapsAndSeoFiles() {
     ...toolEntries,
     ...blogEntries,
   ];
-  fs.writeFileSync(path.join(PUBLIC_DIR, 'sitemap.xml'), buildUrlsetXml(allEntries), 'utf8');
+  writeSeoFile('sitemap.xml', buildUrlsetXml(allEntries));
 
   // 5. Generate RSS 2.0 Feed (rss.xml & feed.xml) for Google Search Console / Discover / Feed Readers
   const rssItemsXml = [
@@ -267,8 +289,8 @@ ${rssItemsXml}
   </channel>
 </rss>
 `;
-  fs.writeFileSync(path.join(PUBLIC_DIR, 'rss.xml'), rssXml, 'utf8');
-  fs.writeFileSync(path.join(PUBLIC_DIR, 'feed.xml'), rssXml, 'utf8');
+  writeSeoFile('rss.xml', rssXml);
+  writeSeoFile('feed.xml', rssXml);
 
   // 6. Generate llms.txt for AI Search Engines (ChatGPT Search, Perplexity, Google AI Overviews, Claude)
   const llmsLines: string[] = [
@@ -278,6 +300,7 @@ ${rssItemsXml}
     `## Core Pages`,
     `- [Home](${BASE_URL}/): Main hub with instant search across ${tools.length}+ utilities.`,
     `- [All Tools Directory](${BASE_URL}/tools): Complete A-Z categorized directory of all ${tools.length} tools.`,
+    `- [Saved Bookmarks](${BASE_URL}/bookmarks): Personal workspace for saved browser tools.`,
     `- [HTML Sitemap](${BASE_URL}/sitemap): Full index of all tools, categories, and guides.`,
     `- [Engineering Blog](${BASE_URL}/blog): Technical tutorials, privacy architecture guides, and developer articles.`,
     `- [About Us](${BASE_URL}/about): Client-first engineering standards and privacy commitment.`,
@@ -300,9 +323,9 @@ ${rssItemsXml}
     ...BUILTIN_BLOG_POSTS.map(p => `- [${p.title}](${BASE_URL}/${p.slug}): ${p.excerpt}`),
     ``,
   ];
-  fs.writeFileSync(path.join(PUBLIC_DIR, 'llms.txt'), llmsLines.join('\n'), 'utf8');
+  writeSeoFile('llms.txt', llmsLines.join('\n'));
 
-  // 7. Update robots.txt with AdSense Mediapartners-Google & all sitemaps
+  // 7. Update robots.txt with AdSense Mediapartners-Google, Googlebot, Bingbot & all sitemaps
   const robotsTxt = `# Toolzaro Official Robots.txt (${BASE_URL})
 # 100% Google AdSense, Googlebot, Bingbot & AI Search Friendly
 
@@ -311,16 +334,22 @@ Allow: /
 
 User-agent: Googlebot
 Allow: /
+Allow: /assets/
 Disallow: /sabbir
 Disallow: /sabbir.html
 
+User-agent: Googlebot-Image
+Allow: /
+
 User-agent: Bingbot
 Allow: /
+Allow: /assets/
 Disallow: /sabbir
 Disallow: /sabbir.html
 
 User-agent: *
 Allow: /
+Allow: /assets/
 Disallow: /sabbir
 Disallow: /sabbir.html
 
@@ -333,10 +362,10 @@ Sitemap: ${BASE_URL}/sitemap-pages.xml
 Sitemap: ${BASE_URL}/sitemap-blog.xml
 Sitemap: ${BASE_URL}/rss.xml
 `;
-  fs.writeFileSync(path.join(PUBLIC_DIR, 'robots.txt'), robotsTxt, 'utf8');
+  writeSeoFile('robots.txt', robotsTxt);
 
   console.log(
-    `[SEO Generator] Successfully generated:\n` +
+    `[SEO Generator] Successfully generated in public/${fs.existsSync(DIST_DIR) ? ' & dist/' : ''}:\n` +
       `  - sitemap-index.xml (${childSitemapUrls.length} child sitemaps)\n` +
       `  - sitemap.xml (${allEntries.length} total URLs)\n` +
       `  - sitemap-tools.xml (${toolEntries.length} flat root-level tool URLs)\n` +

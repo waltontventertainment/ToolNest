@@ -18,7 +18,7 @@ export const AdSlot: React.FC<AdSlotProps> = ({
   slot, 
   format = 'auto', 
   className = '',
-  label = false
+  label = true
 }) => {
   const adRef = useRef<HTMLModElement>(null);
   const [isFilled, setIsFilled] = useState(false);
@@ -66,23 +66,29 @@ export const AdSlot: React.FC<AdSlotProps> = ({
   }
 
   return (
-    <div 
+    <aside
+      aria-label="Advertisement"
+      data-ad-guard="safe-zone"
       className={`ad-slot-wrapper transition-all duration-300 ${
         isFilled 
-          ? `w-full flex flex-col items-center justify-center my-6 ${className}` 
+          ? `w-full max-w-full flex flex-col items-center justify-center my-7 py-3 px-3 sm:px-4 rounded-2xl bg-muted/20 border border-border/50 overflow-hidden ${className}` 
           : 'hidden h-0 max-h-0 min-h-0 m-0 p-0 border-0 opacity-0 overflow-hidden pointer-events-none'
       }`}
       data-filled={isFilled ? 'true' : 'false'}
       style={!isFilled ? { display: 'none', height: 0, minHeight: 0, margin: 0, padding: 0 } : undefined}
     >
       {label && isFilled && (
-        <span className="text-[9px] font-bold tracking-widest uppercase text-muted-foreground/60 mb-1.5 select-none">
-          Advertisement
-        </span>
+        <div className="w-full flex items-center justify-center gap-2 mb-2 select-none pointer-events-none">
+          <span className="h-px w-6 bg-border/70" />
+          <span className="text-[9px] font-bold tracking-widest uppercase text-muted-foreground/60">
+            Sponsored Advertisement
+          </span>
+          <span className="h-px w-6 bg-border/70" />
+        </div>
       )}
       <ins
         ref={adRef}
-        className="adsbygoogle block w-full text-center"
+        className="adsbygoogle block w-full max-w-full text-center overflow-hidden"
         data-ad-client={client}
         data-ad-slot={slot || '1234567890'}
         data-ad-format={format}
@@ -93,6 +99,6 @@ export const AdSlot: React.FC<AdSlotProps> = ({
           height: isFilled ? 'auto' : '0px'
         }}
       />
-    </div>
+    </aside>
   );
 };

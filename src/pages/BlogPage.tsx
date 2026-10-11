@@ -16,23 +16,23 @@ import {
   PlusCircle,
   FileText
 } from 'lucide-react';
-import { FirestoreBlog, getPublishedBlogs, seedStarterPostIfEmpty } from '../lib/firestoreBlogService';
+import { FirestoreBlog, getPublishedBlogs, getInstantPublishedBlogs, isSameBlogPost } from '../lib/firestoreBlogService';
 import { Seo } from '../components/Seo';
 import { AdSlot } from '../components/AdSlot';
 import { BreadcrumbNavigation } from '../components/BreadcrumbNavigation';
+import { BlogAuthorBadge } from '../components/BlogAuthorBadge';
 import { useSiteSettings } from '../context/SiteSettingsContext';
 import { getBlogPostUrl } from '../lib/appUrls';
 
 export const BlogPage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const { settings } = useSiteSettings();
-  const [posts, setPosts] = useState<FirestoreBlog[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [posts, setPosts] = useState<FirestoreBlog[]>(() => getInstantPublishedBlogs());
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   
   // Pagination
-  const [visiblePostsCount, setVisiblePostsCount] = useState(6);
+  const [visiblePostsCount, setVisiblePostsCount] = useState(9);
 
   useEffect(() => {
     const defaultCount = typeof window !== 'undefined' && window.innerWidth >= 1024 ? 9 : 6;
@@ -45,26 +45,26 @@ export const BlogPage: React.FC = () => {
   };
 
   useEffect(() => {
-    loadFirestorePosts();
+    let isMounted = true;
+    getPublishedBlogs()
+      .then(data => {
+        if (isMounted && data.length > 0) {
+          setPosts(prev => {
+            if (
+              prev.length === data.length &&
+              prev.every((item, idx) => isSameBlogPost(item, data[idx]))
+            ) {
+              return prev;
+            }
+            return data;
+          });
+        }
+      })
+      .catch(() => {});
+    return () => {
+      isMounted = false;
+    };
   }, []);
-
-  const loadFirestorePosts = async () => {
-    setLoading(true);
-    try {
-      const data = await getPublishedBlogs();
-      if (data.length === 0) {
-        // Auto-seed welcoming starter post so users don't see a completely blank page on first launch
-        const seeded = await seedStarterPostIfEmpty();
-        setPosts(seeded);
-      } else {
-        setPosts(data);
-      }
-    } catch (err) {
-      console.error('Failed to load Firestore blogs:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   // Derive categories dynamically from actual published Firestore posts
   const categories = useMemo(() => {
@@ -123,8 +123,7 @@ export const BlogPage: React.FC = () => {
           </h1>
 
           <p className="text-slate-300 text-sm sm:text-base leading-relaxed">
-            Discover in-depth engineering breakdowns, privacy standards, and web development practices.
-            Real-time articles powered by Firebase Firestore and ImgBB CDN.
+            Discover in-depth engineering breakdowns, client-side privacy architectures, and modern web development guides.
           </p>
         </div>
       </div>
@@ -164,18 +163,11 @@ export const BlogPage: React.FC = () => {
 
       {/* Top Ad Slot */}
       {settings.ads.enabled && (
-        <div className="my-4">
-          <AdSlot slot={settings.ads.topSlotId} format="horizontal" />
-        </div>
+        <AdSlot slot={settings.ads.topSlotId} format="horizontal" />
       )}
 
-      {/* Post Grid */}
-      {loading ? (
-        <div className="py-20 text-center space-y-3">
-          <RefreshCw className="w-8 h-8 text-primary animate-spin mx-auto" />
-          <p className="text-sm font-semibold text-muted-foreground">Loading articles from Firestore...</p>
-        </div>
-      ) : visiblePosts.length === 0 ? (
+      {/* Post Grid (Instant 0ms Render - Never shows 'Loading from Firestore') */}
+      {visiblePosts.length === 0 ? (
         <div className="py-20 text-center bg-card border border-dashed border-border rounded-3xl p-8 space-y-4 max-w-lg mx-auto">
           <FileText className="w-12 h-12 text-muted-foreground/50 mx-auto" />
           <h3 className="text-lg font-bold text-foreground">No Articles Found</h3>
@@ -192,25 +184,29 @@ export const BlogPage: React.FC = () => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           {visiblePosts.map(post => (
-            <article 
+            <Link
               key={post.id}
-              className="group flex flex-col bg-card border border-border rounded-2xl overflow-hidden hover:border-primary/50 transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+              to={getBlogPostUrl(post.slug)}
+              className="group flex flex-col bg-card border border-border rounded-2xl overflow-hidden hover:border-primary/50 transition-colors duration-200 hover:shadow-lg no-underline"
             >
               {/* Cover Image */}
-              <Link to={getBlogPostUrl(post.slug)} className="relative aspect-video overflow-hidden bg-muted block">
+              <div className="relative aspect-video overflow-hidden bg-muted block">
                 <img
                   src={post.coverImage}
                   alt={post.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  loading="lazy"
+                  decoding="async"
+                  width={480}
+                  height={270}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 ease-out"
                   onError={(e) => {
-                    // Fallback placeholder image
                     (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&auto=format&fit=crop&q=80';
                   }}
                 />
                 <span className="absolute top-3 left-3 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-black/60 text-white backdrop-blur-xs border border-white/20">
                   {post.category}
                 </span>
-              </Link>
+              </div>
 
               {/* Content Box */}
               <div className="flex-1 p-5 sm:p-6 flex flex-col justify-between space-y-4">
@@ -227,11 +223,9 @@ export const BlogPage: React.FC = () => {
                     </span>
                   </div>
 
-                  <Link to={getBlogPostUrl(post.slug)} className="block group-hover:text-primary transition-colors">
-                    <h2 className="text-base sm:text-lg font-bold text-foreground line-clamp-2 leading-snug">
-                      {post.title}
-                    </h2>
-                  </Link>
+                  <h2 className="text-base sm:text-lg font-bold text-foreground group-hover:text-primary transition-colors line-clamp-2 leading-snug">
+                    {post.title}
+                  </h2>
 
                   <p className="text-xs text-muted-foreground line-clamp-3 leading-relaxed">
                     {post.excerpt}
@@ -240,27 +234,15 @@ export const BlogPage: React.FC = () => {
 
                 {/* Author & Read More */}
                 <div className="pt-3 border-t border-border flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-2 min-w-0">
-                    <img
-                      src={post.author.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(post.author.name)}&background=6366f1&color=ffffff&bold=true`}
-                      alt={post.author.name}
-                      className="w-6 h-6 rounded-full object-cover flex-shrink-0"
-                    />
-                    <span className="text-xs font-semibold text-foreground truncate">
-                      {post.author.name}
-                    </span>
-                  </div>
+                  <BlogAuthorBadge author={post.author} size="sm" />
 
-                  <Link
-                    to={getBlogPostUrl(post.slug)}
-                    className="inline-flex items-center gap-1 text-xs font-bold text-primary group-hover:translate-x-1 transition-all"
-                  >
+                  <span className="inline-flex items-center gap-1 text-xs font-bold text-primary group-hover:translate-x-1 transition-transform shrink-0">
                     <span>Read</span>
                     <ArrowRight className="w-3.5 h-3.5" />
-                  </Link>
+                  </span>
                 </div>
               </div>
-            </article>
+            </Link>
           ))}
         </div>
       )}
@@ -280,9 +262,7 @@ export const BlogPage: React.FC = () => {
 
       {/* Bottom Ad Slot */}
       {settings.ads.enabled && (
-        <div className="my-6">
-          <AdSlot slot={settings.ads.bottomSlotId} format="rectangle" />
-        </div>
+        <AdSlot slot={settings.ads.bottomSlotId} format="rectangle" />
       )}
     </div>
   );

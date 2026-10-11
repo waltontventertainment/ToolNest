@@ -1,75 +1,73 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://toolzaro.cyou/category/universal-data-suite</loc>
+    <loc>https://toolzaro.cyou/universal-data-suite</loc>
     <lastmod>2026-10-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://toolzaro.cyou/category/wikipedia</loc>
+    <loc>https://toolzaro.cyou/wikipedia</loc>
     <lastmod>2026-10-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://toolzaro.cyou/category/pdf</loc>
+    <loc>https://toolzaro.cyou/pdf</loc>
     <lastmod>2026-10-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://toolzaro.cyou/category/text</loc>
+    <loc>https://toolzaro.cyou/text</loc>
     <lastmod>2026-10-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://toolzaro.cyou/category/developer</loc>
+    <loc>https://toolzaro.cyou/developer</loc>
     <lastmod>2026-10-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://toolzaro.cyou/category/converters</loc>
+    <loc>https://toolzaro.cyou/converters</loc>
     <lastmod>2026-10-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://toolzaro.cyou/category/generators</loc>
+    <loc>https://toolzaro.cyou/generators</loc>
     <lastmod>2026-10-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://toolzaro.cyou/category/qr-barcode</loc>
+    <loc>https://toolzaro.cyou/qr-barcode</loc>
     <lastmod>2026-10-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://toolzaro.cyou/category/color-image</loc>
+    <loc>https://toolzaro.cyou/color-image</loc>
     <lastmod>2026-10-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://toolzaro.cyou/category/calculators</loc>
+    <loc>https://toolzaro.cyou/calculators</loc>
     <lastmod>2026-10-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://toolzaro.cyou/category/seo</loc>
+    <loc>https://toolzaro.cyou/seo</loc>
     <lastmod>2026-10-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://toolzaro.cyou/category/utility</loc>
+    <loc>https://toolzaro.cyou/utility</loc>
     <lastmod>2026-10-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>

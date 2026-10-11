@@ -7,11 +7,10 @@ import {
   deleteDoc, 
   query, 
   where, 
-  orderBy, 
   limit, 
-  Timestamp 
 } from 'firebase/firestore';
 import { db } from './firebase';
+import { BUILTIN_BLOG_POSTS } from './blogData';
 
 export interface FirestoreBlog {
   id: string;
@@ -30,7 +29,7 @@ export interface FirestoreBlog {
   };
   publishedAt: string; // YYYY-MM-DD
   readTimeMinutes: number;
-  status: 'published' | 'draft';
+  status: 'published' | 'draft' | 'deleted';
   contentType?: 'text' | 'code'; // 'text' for formatted editorial text, 'code' for custom HTML/CSS/JS design
   customHtml?: string;
   customCss?: string;
@@ -42,9 +41,23 @@ export interface FirestoreBlog {
 const COLLECTION_NAME = 'blogs';
 const LOCAL_STORAGE_CACHE_KEY = 'toolzaro_firestore_blogs_cache';
 
+// Ultra-fast in-memory cache so blog pages and post readers render in 0.0ms without any loading state
+let memoryBlogsCache: FirestoreBlog[] | null = null;
+let inflightFetchPromise: Promise<FirestoreBlog[]> | null = null;
+let lastFirestoreSyncTime = 0;
+const CACHE_FRESH_TTL_MS = 45_000; // 45s in-memory freshness window to prevent redundant network jumps on every click
+
+function getBuiltinAsFirestoreBlogs(): FirestoreBlog[] {
+  return BUILTIN_BLOG_POSTS.map(p => ({
+    ...p,
+    status: 'published' as const,
+  }));
+}
+
 // Helper to get local cache
 function getLocalCache(): FirestoreBlog[] {
   try {
+    if (typeof window === 'undefined') return [];
     const raw = localStorage.getItem(LOCAL_STORAGE_CACHE_KEY);
     return raw ? JSON.parse(raw) : [];
   } catch {
@@ -55,46 +68,150 @@ function getLocalCache(): FirestoreBlog[] {
 // Helper to save local cache
 function setLocalCache(blogs: FirestoreBlog[]): void {
   try {
+    if (typeof window === 'undefined') return;
     localStorage.setItem(LOCAL_STORAGE_CACHE_KEY, JSON.stringify(blogs));
   } catch {}
 }
 
 /**
- * Fetch all published blogs for the public /blog page and search
+ * Checks if two blog objects have identical renderable content to avoid unnecessary React re-renders/jumps.
  */
-export async function getPublishedBlogs(): Promise<FirestoreBlog[]> {
-  try {
-    const blogsRef = collection(db, COLLECTION_NAME);
-    const q = query(blogsRef, where('status', '==', 'published'));
-    const snapshot = await getDocs(q);
-
-    const blogs: FirestoreBlog[] = [];
-    snapshot.forEach(docSnap => {
-      const data = docSnap.data() as FirestoreBlog;
-      blogs.push({
-        ...data,
-        id: docSnap.id,
-      });
-    });
-
-    // Sort descending by publication date
-    blogs.sort((a, b) => new Date(b.publishedAt || 0).getTime() - new Date(a.publishedAt || 0).getTime());
-
-    if (blogs.length > 0) {
-      setLocalCache(blogs);
-      return blogs;
-    }
-  } catch (error) {
-    console.warn('Firestore fetch failed, checking local cache:', error);
-  }
-
-  // Fallback to local cache if offline or initial setup
-  const cached = getLocalCache();
-  return cached.filter(b => b.status === 'published');
+export function isSameBlogPost(a: FirestoreBlog | null | undefined, b: FirestoreBlog | null | undefined): boolean {
+  if (a === b) return true;
+  if (!a || !b) return false;
+  return (
+    a.id === b.id &&
+    a.slug === b.slug &&
+    a.title === b.title &&
+    a.excerpt === b.excerpt &&
+    a.content === b.content &&
+    a.coverImage === b.coverImage &&
+    a.category === b.category &&
+    a.status === b.status &&
+    a.contentType === b.contentType &&
+    (a.customHtml || '') === (b.customHtml || '') &&
+    (a.customCss || '') === (b.customCss || '') &&
+    (a.customJs || '') === (b.customJs || '') &&
+    (a.updatedAt || '') === (b.updatedAt || '')
+  );
 }
 
 /**
- * Fetch all blogs (both published and drafts) for the Admin CMS
+ * Merges Firestore/cached posts with built-in posts without duplicates.
+ * Earlier items in `firestoreBlogs` take priority over later items and built-in defaults.
+ */
+function mergeWithBuiltinBlogs(firestoreBlogs: FirestoreBlog[]): FirestoreBlog[] {
+  const uniqueMap = new Map<string, FirestoreBlog>();
+  const seenSlugs = new Set<string>();
+
+  for (const post of firestoreBlogs) {
+    if (!post || !post.id) continue;
+    const idKey = post.id.toLowerCase();
+    const slugKey = (post.slug || '').toLowerCase();
+    if (!uniqueMap.has(idKey) && (!slugKey || !seenSlugs.has(slugKey))) {
+      uniqueMap.set(idKey, post);
+      if (slugKey) seenSlugs.add(slugKey);
+    }
+  }
+
+  for (const builtin of getBuiltinAsFirestoreBlogs()) {
+    const idKey = builtin.id.toLowerCase();
+    const slugKey = builtin.slug.toLowerCase();
+    if (!uniqueMap.has(idKey) && !seenSlugs.has(slugKey)) {
+      uniqueMap.set(idKey, builtin);
+      seenSlugs.add(slugKey);
+    }
+  }
+
+  const merged = Array.from(uniqueMap.values());
+  merged.sort((a, b) => new Date(b.publishedAt || 0).getTime() - new Date(a.publishedAt || 0).getTime());
+  return merged;
+}
+
+/**
+ * Synchronous 0ms getter for published blogs (combines in-memory cache, localStorage cache, and built-in posts).
+ * Guarantees that Blog sections and /blog never show a "Loading from Firestore..." screen.
+ */
+export function getInstantPublishedBlogs(): FirestoreBlog[] {
+  if (memoryBlogsCache && memoryBlogsCache.length > 0) {
+    return memoryBlogsCache.filter(b => b.status === 'published');
+  }
+  const cached = getLocalCache();
+  const merged = mergeWithBuiltinBlogs(cached);
+  memoryBlogsCache = merged;
+  return merged.filter(b => b.status === 'published');
+}
+
+/**
+ * Synchronous 0ms getter for a single blog post by slug or ID.
+ * Checks memoryCache, localStorage cache, and built-in blog posts immediately.
+ */
+export function getInstantBlogBySlug(slugOrId: string): FirestoreBlog | null {
+  const clean = (slugOrId || '').toLowerCase().trim();
+  if (!clean) return null;
+
+  const allInstant = getInstantPublishedBlogs();
+  const found = allInstant.find(
+    b => b.slug.toLowerCase() === clean || b.id.toLowerCase() === clean
+  );
+  if (found) return found;
+
+  const cachedAll = getLocalCache();
+  return cachedAll.find(
+    b => b.status !== 'deleted' && (b.slug.toLowerCase() === clean || b.id.toLowerCase() === clean)
+  ) || null;
+}
+
+/**
+ * Fetch all published blogs and silently update memory + localStorage cache
+ */
+export async function getPublishedBlogs(forceRefresh = false): Promise<FirestoreBlog[]> {
+  if (
+    !forceRefresh &&
+    memoryBlogsCache &&
+    memoryBlogsCache.length > 0 &&
+    Date.now() - lastFirestoreSyncTime < CACHE_FRESH_TTL_MS
+  ) {
+    return memoryBlogsCache.filter(b => b.status === 'published');
+  }
+
+  if (inflightFetchPromise) {
+    return inflightFetchPromise;
+  }
+
+  inflightFetchPromise = (async () => {
+    try {
+      const blogsRef = collection(db, COLLECTION_NAME);
+      const snapshot = await getDocs(blogsRef);
+
+      const firestoreBlogs: FirestoreBlog[] = [];
+      snapshot.forEach(docSnap => {
+        const data = docSnap.data() as FirestoreBlog;
+        firestoreBlogs.push({
+          ...data,
+          id: docSnap.id,
+        });
+      });
+
+      const merged = mergeWithBuiltinBlogs(firestoreBlogs);
+      memoryBlogsCache = merged;
+      lastFirestoreSyncTime = Date.now();
+      setLocalCache(merged);
+      return merged.filter(b => b.status === 'published');
+    } catch {
+      // Silently fallback to instant cache
+    } finally {
+      inflightFetchPromise = null;
+    }
+
+    return getInstantPublishedBlogs();
+  })();
+
+  return inflightFetchPromise;
+}
+
+/**
+ * Fetch all blogs (both published and drafts, including editable built-in posts) for the Admin CMS
  */
 export async function getAllAdminBlogs(): Promise<FirestoreBlog[]> {
   try {
@@ -110,31 +227,40 @@ export async function getAllAdminBlogs(): Promise<FirestoreBlog[]> {
       });
     });
 
-    blogs.sort((a, b) => new Date(b.publishedAt || 0).getTime() - new Date(a.publishedAt || 0).getTime());
-
-    if (blogs.length > 0) {
-      setLocalCache(blogs);
-      return blogs;
-    }
+    const merged = mergeWithBuiltinBlogs(blogs);
+    memoryBlogsCache = merged;
+    lastFirestoreSyncTime = Date.now();
+    setLocalCache(merged);
+    return merged.filter(b => b.status !== 'deleted');
   } catch (error) {
     console.warn('Failed to load admin blogs from Firestore:', error);
   }
 
-  return getLocalCache();
+  return mergeWithBuiltinBlogs(getLocalCache()).filter(b => b.status !== 'deleted');
 }
 
 /**
- * Fetch a single blog post by slug or ID
+ * Fetch a single blog post by slug or ID (returns instant cached post if available, and refreshes in background)
  */
 export async function getBlogBySlug(slugOrId: string): Promise<FirestoreBlog | null> {
   const clean = slugOrId.toLowerCase().trim();
+  if (!clean) return null;
+
+  const instant = getInstantBlogBySlug(clean);
+  if (instant && Date.now() - lastFirestoreSyncTime < CACHE_FRESH_TTL_MS) {
+    return instant;
+  }
 
   try {
     // 1. Try direct ID doc fetch
     const docRef = doc(db, COLLECTION_NAME, clean);
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
-      return { ...(docSnap.data() as FirestoreBlog), id: docSnap.id };
+      const post = { ...(docSnap.data() as FirestoreBlog), id: docSnap.id };
+      const updated = mergeWithBuiltinBlogs([post, ...getLocalCache()]);
+      memoryBlogsCache = updated;
+      setLocalCache(updated);
+      return post;
     }
 
     // 2. Query by slug
@@ -143,15 +269,17 @@ export async function getBlogBySlug(slugOrId: string): Promise<FirestoreBlog | n
     const querySnap = await getDocs(q);
     if (!querySnap.empty) {
       const first = querySnap.docs[0];
-      return { ...(first.data() as FirestoreBlog), id: first.id };
+      const post = { ...(first.data() as FirestoreBlog), id: first.id };
+      const updated = mergeWithBuiltinBlogs([post, ...getLocalCache()]);
+      memoryBlogsCache = updated;
+      setLocalCache(updated);
+      return post;
     }
-  } catch (error) {
-    console.warn('Firestore query by slug failed, checking cache:', error);
+  } catch {
+    // Fallback to instant cache
   }
 
-  // Fallback to local cache
-  const cached = getLocalCache();
-  return cached.find(b => b.slug.toLowerCase() === clean || b.id.toLowerCase() === clean) || null;
+  return instant;
 }
 
 /**
@@ -172,17 +300,29 @@ export async function saveBlogToFirestore(blog: Partial<FirestoreBlog>): Promise
     category: blog.category || 'Developer Workflows',
     tags: Array.isArray(blog.tags) ? blog.tags : ['Toolzaro', 'Web Utilities'],
     author: {
-      name: blog.author?.name || 'Admin',
-      role: blog.author?.role || 'Lead Editor',
-      avatar: blog.author?.avatar || 'https://ui-avatars.com/api/?name=Toolzaro+Admin&background=6366f1&color=ffffff&bold=true',
+      name: blog.author?.name || 'Toolzaro',
+      role: blog.author?.role !== undefined ? blog.author.role : 'Admin',
+      avatar: blog.author?.avatar || '',
       profileUrl: blog.author?.profileUrl || ''
     },
     publishedAt: blog.publishedAt || new Date().toISOString().split('T')[0],
     readTimeMinutes: blog.readTimeMinutes || Math.max(1, Math.round((blog.content?.split(/\s+/).length || 200) / 200)),
     status: blog.status || 'published',
+    contentType: blog.contentType,
+    customHtml: blog.customHtml,
+    customCss: blog.customCss,
+    customJs: blog.customJs,
     createdAt: blog.createdAt || now,
     updatedAt: now
   };
+
+  // Update memory & local cache immediately (0ms optimistic update)
+  const currentCache = getLocalCache().filter(b => b.id !== id && b.slug !== completeBlog.slug);
+  currentCache.unshift(completeBlog);
+  const merged = mergeWithBuiltinBlogs(currentCache);
+  memoryBlogsCache = merged;
+  lastFirestoreSyncTime = Date.now();
+  setLocalCache(merged);
 
   try {
     const docRef = doc(db, COLLECTION_NAME, id);
@@ -191,18 +331,40 @@ export async function saveBlogToFirestore(blog: Partial<FirestoreBlog>): Promise
     console.warn('Firestore blog save note (safely stored in local cache):', error?.message || error);
   }
 
-  // Update local cache
-  const currentCache = getLocalCache().filter(b => b.id !== id);
-  currentCache.unshift(completeBlog);
-  setLocalCache(currentCache);
-
   return completeBlog;
 }
 
 /**
- * Delete a blog post from Firestore
+ * Delete a blog post from Firestore (also supports deleting built-in starter posts via a tombstone in Firestore)
  */
 export async function deleteBlogFromFirestore(id: string): Promise<boolean> {
+  const isBuiltin = BUILTIN_BLOG_POSTS.some(b => b.id.toLowerCase() === id.toLowerCase());
+  const existing = getLocalCache().find(b => b.id === id) || getBuiltinAsFirestoreBlogs().find(b => b.id === id);
+
+  if (isBuiltin && existing) {
+    const tombstone: FirestoreBlog = {
+      ...existing,
+      status: 'deleted',
+      updatedAt: new Date().toISOString(),
+    };
+    const nextCache = [tombstone, ...getLocalCache().filter(b => b.id !== id)];
+    memoryBlogsCache = mergeWithBuiltinBlogs(nextCache);
+    lastFirestoreSyncTime = Date.now();
+    setLocalCache(memoryBlogsCache);
+
+    try {
+      const docRef = doc(db, COLLECTION_NAME, id);
+      await setDoc(docRef, tombstone, { merge: true });
+    } catch (error: any) {
+      console.warn('Firestore built-in delete note:', error?.message || error);
+    }
+    return true;
+  }
+
+  const currentCache = getLocalCache().filter(b => b.id !== id);
+  memoryBlogsCache = mergeWithBuiltinBlogs(currentCache);
+  setLocalCache(memoryBlogsCache);
+
   try {
     const docRef = doc(db, COLLECTION_NAME, id);
     await deleteDoc(docRef);
@@ -210,52 +372,163 @@ export async function deleteBlogFromFirestore(id: string): Promise<boolean> {
     console.warn('Firestore blog delete note (safely removed from local cache):', error?.message || error);
   }
 
-  const currentCache = getLocalCache().filter(b => b.id !== id);
-  setLocalCache(currentCache);
   return true;
 }
 
 /**
- * Seed starter post into Firestore if the database is newly initialized
+ * Syncs/seeds the 4 built-in starter posts into Firestore Database so they can be managed directly in Firestore
  */
 export async function seedStarterPostIfEmpty(): Promise<FirestoreBlog[]> {
-  const existing = await getAllAdminBlogs();
-  if (existing.length > 0) {
-    return existing;
+  const builtins = getBuiltinAsFirestoreBlogs();
+  for (const post of builtins) {
+    try {
+      const docRef = doc(db, COLLECTION_NAME, post.id);
+      const snap = await getDoc(docRef);
+      if (!snap.exists()) {
+        await setDoc(docRef, post, { merge: true });
+      }
+    } catch {
+      // Ignore if offline or restricted
+    }
+  }
+  return getAllAdminBlogs();
+}
+
+const RELATED_STOPWORDS = new Set([
+  'the', 'and', 'for', 'with', 'how', 'your', 'from', 'that', 'this', 'into',
+  'using', 'guide', 'complete', 'best', 'modern', 'toolzaro', 'web', 'online',
+  'free', 'tools', 'tool', 'what', 'why', 'when', 'where', 'who', 'will', 'can',
+  'are', 'was', 'were', 'have', 'has', 'had', 'not', 'but', 'all', 'any', 'new'
+]);
+
+function extractKeywords(text: string): string[] {
+  if (!text) return [];
+  return text
+    .toLowerCase()
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/[^a-z0-9\s-]/g, ' ')
+    .split(/\s+/)
+    .map(w => w.trim())
+    .filter(w => w.length >= 3 && !RELATED_STOPWORDS.has(w));
+}
+
+function deterministicPairHash(a: string, b: string): number {
+  const str = `${a}::${b}`;
+  let hash = 2166136261;
+  for (let i = 0; i < str.length; i++) {
+    hash ^= str.charCodeAt(i);
+    hash = Math.imul(hash, 16777619);
+  }
+  return Math.abs(hash);
+}
+
+/**
+ * Computes genuinely related blog posts based on category match, shared tags,
+ * title/topic keyword overlap, and content similarity.
+ */
+export function getRelatedBlogs(
+  currentPost: FirestoreBlog | null | undefined,
+  allBlogs: FirestoreBlog[],
+  maxCount: number = 4
+): FirestoreBlog[] {
+  const published = (allBlogs || []).filter(b => b && b.status === 'published');
+  if (!currentPost) {
+    return published.slice(0, maxCount);
   }
 
-  const starterPost: Partial<FirestoreBlog> = {
-    id: 'welcome-to-toolzaro-tech-hub',
-    slug: 'welcome-to-toolzaro-tech-hub',
-    title: 'Welcome to Toolzaro: Modern Client-Side Utilities for Developers and Creators',
-    excerpt: 'Discover why Toolzaro was built to deliver over 156 zero-latency browser tools with complete zero-knowledge privacy and seamless Google Drive cloud integration.',
-    content: `# Welcome to Toolzaro
+  const currentSlug = (currentPost.slug || '').toLowerCase();
+  const currentId = (currentPost.id || '').toLowerCase();
 
-Toolzaro is your all-in-one browser utility suite. Every single utility—from our high-performance **PDF Toolkit** and **Image Optimizers** to **JSON Formatters**, **Hash Generators**, and **Unit Converters**—executes entirely inside your browser.
+  const candidates = published.filter(
+    b =>
+      b.slug.toLowerCase() !== currentSlug &&
+      b.id.toLowerCase() !== currentId
+  );
 
-## Key Highlights
+  if (candidates.length === 0) return [];
 
-- **100% Client-Side Privacy:** Your confidential documents, images, and keys never touch a remote backend server.
-- **Instant Speed:** Powered by WebAssembly and native Web Cryptography for lightning-fast calculations.
-- **Firebase Firestore Hub:** Dynamic blog content, updates, and custom tutorials hosted seamlessly.
-- **High Resolution ImgBB CDN:** All media assets and illustrations are hosted and served globally.
+  const targetCategory = (currentPost.category || '').trim().toLowerCase();
+  const targetCategoryWords = new Set(extractKeywords(targetCategory));
+  const targetTags = new Set(
+    (currentPost.tags || []).map(t => t.trim().toLowerCase()).filter(Boolean)
+  );
+  const targetTitleKeywords = new Set([
+    ...extractKeywords(currentPost.title),
+    ...extractKeywords(currentPost.slug.replace(/-/g, ' ')),
+  ]);
+  const targetExcerptKeywords = new Set(extractKeywords(currentPost.excerpt));
 
-> *"Great software simplifies repetitive tasks while respecting your privacy."*
+  const scored = candidates.map(candidate => {
+    let score = 0;
+    const candCategory = (candidate.category || '').trim().toLowerCase();
+    const candCategoryWords = extractKeywords(candCategory);
+    const candTags = (candidate.tags || []).map(t => t.trim().toLowerCase()).filter(Boolean);
+    const candTitleWords = extractKeywords(
+      `${candidate.title} ${candidate.slug.replace(/-/g, ' ')}`
+    );
+    const candExcerptWords = extractKeywords(candidate.excerpt);
 
-Feel free to customize or delete this post from your new **/admin** control center!`,
-    coverImage: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=1200&auto=format&fit=crop&q=80',
-    category: 'Developer Workflows',
-    tags: ['Toolzaro', 'Privacy', 'WebAssembly', 'Client-Side'],
-    author: {
-      name: 'Toolzaro Editorial',
-      role: 'Chief Editor',
-      avatar: 'https://ui-avatars.com/api/?name=Toolzaro&background=6366f1&color=ffffff&bold=true'
-    },
-    publishedAt: new Date().toISOString().split('T')[0],
-    readTimeMinutes: 4,
-    status: 'published'
-  };
+    // 1. Exact or partial Category match (strongest signal)
+    if (targetCategory && candCategory === targetCategory) {
+      score += 65;
+    } else {
+      for (const w of candCategoryWords) {
+        if (targetCategoryWords.has(w) || targetTitleKeywords.has(w)) {
+          score += 22;
+        }
+      }
+    }
 
-  const created = await saveBlogToFirestore(starterPost);
-  return [created];
+    // 2. Shared Tags (high signal)
+    for (const tag of candTags) {
+      if (targetTags.has(tag)) {
+        score += 38;
+      } else {
+        for (const tTag of targetTags) {
+          if (tag.includes(tTag) || tTag.includes(tag)) {
+            score += 18;
+          }
+        }
+        const tagWords = extractKeywords(tag);
+        for (const tw of tagWords) {
+          if (targetTitleKeywords.has(tw) || targetCategoryWords.has(tw)) {
+            score += 12;
+          }
+        }
+      }
+    }
+
+    // 3. Title & Slug keyword overlap
+    for (const word of candTitleWords) {
+      if (targetTitleKeywords.has(word)) {
+        score += 16;
+      } else if (targetExcerptKeywords.has(word)) {
+        score += 7;
+      }
+    }
+
+    // 4. Excerpt keyword overlap
+    for (const word of candExcerptWords) {
+      if (targetTitleKeywords.has(word)) {
+        score += 8;
+      } else if (targetExcerptKeywords.has(word)) {
+        score += 4;
+      }
+    }
+
+    const tieBreaker = deterministicPairHash(currentSlug, candidate.slug.toLowerCase()) % 1000;
+
+    return {
+      blog: candidate,
+      score,
+      tieBreaker,
+    };
+  });
+
+  scored.sort((a, b) => {
+    if (b.score !== a.score) return b.score - a.score;
+    return b.tieBreaker - a.tieBreaker;
+  });
+
+  return scored.slice(0, maxCount).map(item => item.blog);
 }

@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "tsx server.ts",
     "generate:seo": "tsx scripts/generate-seo-assets.ts",
-    "build": "tsx scripts/generate-seo-assets.ts && vite build",
+    "build": "tsx scripts/generate-seo-assets.ts && vite build && tsx scripts/generate-seo-assets.ts",
     "build:single": "BUILD_SINGLEFILE=true VITE_ROUTER_MODE=hash vite build",
     "build:blogger": "tsx scripts/generate-seo-assets.ts && vite build && node scripts/generate-blogger-bundle.mjs",
     "start": "node server.ts",

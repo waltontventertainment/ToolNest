@@ -1,20 +1,20 @@
-# Security & Performance Headers for Cloudflare Pages & Netlify
+# Security, Crawler & Performance Headers for Cloudflare Pages & Workers
 /*
   X-Frame-Options: SAMEORIGIN
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(self), microphone=(self), geolocation=(self)
-  X-XSS-Protection: 1; mode=block
 
-# Prevent Search Engine Indexing of Secret Admin Workspace
+# Prevent Search Engine Indexing of Secret Admin Workspace Only
 /sabbir
   X-Robots-Tag: noindex, nofollow, noarchive
 /sabbir.html
   X-Robots-Tag: noindex, nofollow, noarchive
 
-# Aggressive immutable caching for Vite hashed production assets
+# Aggressive immutable caching for Vite hashed production JS/CSS chunks
 /assets/*
   Cache-Control: public, max-age=31536000, immutable
+  Access-Control-Allow-Origin: *
 
 # Static PDF worker, CMap font tables, and offline JSON datasets
 /pdf.worker.mjs
@@ -28,7 +28,7 @@
   Cache-Control: public, max-age=86400
   Content-Type: application/json; charset=utf-8
 
-# Domain Favicons, App Icons & Social Preview Banner
+# Domain Favicons, App Icons & Social Preview Banner (Explicit paths for Cloudflare Pages parser)
 /favicon.ico
   Cache-Control: public, max-age=604800
   Content-Type: image/x-icon
@@ -37,7 +37,23 @@
   Cache-Control: public, max-age=604800
   Content-Type: image/svg+xml
 
-/favicon*.png
+/favicon.png
+  Cache-Control: public, max-age=604800
+  Content-Type: image/png
+
+/favicon-16x16.png
+  Cache-Control: public, max-age=604800
+  Content-Type: image/png
+
+/favicon-32x32.png
+  Cache-Control: public, max-age=604800
+  Content-Type: image/png
+
+/favicon-48x48.png
+  Cache-Control: public, max-age=604800
+  Content-Type: image/png
+
+/favicon-96x96.png
   Cache-Control: public, max-age=604800
   Content-Type: image/png
 
@@ -45,7 +61,11 @@
   Cache-Control: public, max-age=604800
   Content-Type: image/png
 
-/android-chrome-*.png
+/android-chrome-192x192.png
+  Cache-Control: public, max-age=604800
+  Content-Type: image/png
+
+/android-chrome-512x512.png
   Cache-Control: public, max-age=604800
   Content-Type: image/png
 
@@ -65,34 +85,66 @@
   Cache-Control: public, max-age=86400
   Content-Type: application/manifest+json; charset=utf-8
 
-# SEO Sitemaps, RSS Feeds, AdSense & Crawler Files
-/sitemap*.xml
-  Cache-Control: public, max-age=3600
+# Explicit XML Sitemaps, RSS Feeds, AdSense & Crawler Files (Prevents GSC "Could not fetch" errors)
+/sitemap-index.xml
+  Cache-Control: public, max-age=3600, s-maxage=3600
   Content-Type: application/xml; charset=utf-8
+  Access-Control-Allow-Origin: *
+
+/sitemap.xml
+  Cache-Control: public, max-age=3600, s-maxage=3600
+  Content-Type: application/xml; charset=utf-8
+  Access-Control-Allow-Origin: *
+
+/sitemap-tools.xml
+  Cache-Control: public, max-age=3600, s-maxage=3600
+  Content-Type: application/xml; charset=utf-8
+  Access-Control-Allow-Origin: *
+
+/sitemap-categories.xml
+  Cache-Control: public, max-age=3600, s-maxage=3600
+  Content-Type: application/xml; charset=utf-8
+  Access-Control-Allow-Origin: *
+
+/sitemap-pages.xml
+  Cache-Control: public, max-age=3600, s-maxage=3600
+  Content-Type: application/xml; charset=utf-8
+  Access-Control-Allow-Origin: *
+
+/sitemap-blog.xml
+  Cache-Control: public, max-age=3600, s-maxage=3600
+  Content-Type: application/xml; charset=utf-8
+  Access-Control-Allow-Origin: *
 
 /rss.xml
-  Cache-Control: public, max-age=3600
+  Cache-Control: public, max-age=3600, s-maxage=3600
   Content-Type: application/rss+xml; charset=utf-8
+  Access-Control-Allow-Origin: *
 
 /feed.xml
-  Cache-Control: public, max-age=3600
+  Cache-Control: public, max-age=3600, s-maxage=3600
   Content-Type: application/rss+xml; charset=utf-8
+  Access-Control-Allow-Origin: *
 
 /robots.txt
-  Cache-Control: public, max-age=3600
+  Cache-Control: public, max-age=3600, s-maxage=3600
   Content-Type: text/plain; charset=utf-8
+  Access-Control-Allow-Origin: *
 
 /ads.txt
-  Cache-Control: public, max-age=3600
+  Cache-Control: public, max-age=3600, s-maxage=3600
   Content-Type: text/plain; charset=utf-8
+  Access-Control-Allow-Origin: *
 
 /app-ads.txt
-  Cache-Control: public, max-age=3600
+  Cache-Control: public, max-age=3600, s-maxage=3600
   Content-Type: text/plain; charset=utf-8
+  Access-Control-Allow-Origin: *
 
 /llms.txt
-  Cache-Control: public, max-age=3600
+  Cache-Control: public, max-age=3600, s-maxage=3600
   Content-Type: text/plain; charset=utf-8
+  Access-Control-Allow-Origin: *
 
 /humans.txt
   Cache-Control: public, max-age=86400

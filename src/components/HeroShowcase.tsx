@@ -1,67 +1,159 @@
 import React from 'react';
-import { Sparkles, Shield, Zap, ArrowUpRight, CheckCircle2 } from 'lucide-react';
-import heroBannerImg from '../assets/images/premium_hero_banner_1791390453868.jpg';
+import { Link } from 'react-router-dom';
+import {
+  FileText,
+  Image as ImageIcon,
+  Code,
+  QrCode,
+  KeyRound,
+  CloudSun,
+  ArrowUpRight,
+  ShieldCheck,
+  Zap,
+  Command,
+  Layers,
+} from 'lucide-react';
+import { getToolUrl, getToolsHubUrl } from '../lib/appUrls';
+import { tools, preloadToolBySlug } from '../lib/registry';
+
+const QUICK_LAUNCH_TOOLS = [
+  {
+    slug: 'pdf-merger',
+    name: 'Merge PDF',
+    category: 'PDF Suite',
+    icon: FileText,
+    accent: 'text-rose-600 dark:text-rose-400 bg-rose-500/10 border-rose-500/20',
+  },
+  {
+    slug: 'image-compressor',
+    name: 'Image Compressor',
+    category: 'Image & Color',
+    icon: ImageIcon,
+    accent: 'text-indigo-600 dark:text-indigo-400 bg-indigo-500/10 border-indigo-500/20',
+  },
+  {
+    slug: 'json-formatter',
+    name: 'JSON Formatter',
+    category: 'Developer',
+    icon: Code,
+    accent: 'text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border-emerald-500/20',
+  },
+  {
+    slug: 'qr-generator',
+    name: 'QR Code Maker',
+    category: 'QR & Barcode',
+    icon: QrCode,
+    accent: 'text-amber-600 dark:text-amber-400 bg-amber-500/10 border-amber-500/20',
+  },
+  {
+    slug: 'password-generator',
+    name: 'Password Gen',
+    category: 'Security',
+    icon: KeyRound,
+    accent: 'text-purple-600 dark:text-purple-400 bg-purple-500/10 border-purple-500/20',
+  },
+  {
+    slug: 'open-meteo-live-weather',
+    name: 'Live Weather',
+    category: 'Global Data',
+    icon: CloudSun,
+    accent: 'text-cyan-600 dark:text-cyan-400 bg-cyan-500/10 border-cyan-500/20',
+  },
+];
 
 export const HeroShowcase: React.FC = () => {
+  const triggerCommandPalette = () => {
+    window.dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'k', ctrlKey: true, bubbles: true })
+    );
+  };
+
   return (
-    <div className="w-full max-w-[480px] lg:max-w-[520px] relative select-none">
-      {/* Decorative Glowing Ambient Backdrops */}
-      <div className="absolute -top-6 -left-6 w-64 h-64 rounded-full bg-indigo-500/20 blur-3xl animate-pulse [animation-duration:8s] pointer-events-none" />
-      <div className="absolute -bottom-6 -right-6 w-64 h-64 rounded-full bg-cyan-500/20 blur-3xl animate-pulse [animation-duration:6s] pointer-events-none" />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 rounded-full bg-violet-500/15 blur-2xl pointer-events-none" />
-
-      {/* Main Premium Banner Showcase Container */}
-      <div className="relative rounded-3xl border border-border/80 bg-card/60 backdrop-blur-xl p-2.5 shadow-2xl shadow-indigo-500/10 group overflow-hidden transition-all duration-300 hover:border-primary/40 hover:shadow-primary/20">
-        
-        {/* Banner Image Frame */}
-        <div className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden bg-neutral-950">
-          <img
-            src={heroBannerImg}
-            alt="Toolzaro Professional Developer & Web Utility Suite"
-            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-            referrerPolicy="no-referrer"
-          />
-          
-          {/* Subtle gradient overlay at top and bottom for readability */}
-          <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/80 via-transparent to-neutral-950/40 pointer-events-none" />
-
-          {/* Top Floating Badge inside Image */}
-          <div className="absolute top-3 left-3 right-3 flex items-center justify-between z-10 pointer-events-none">
-            <div className="flex items-center gap-2 bg-neutral-900/85 backdrop-blur-md border border-white/10 px-3 py-1.5 rounded-xl shadow-lg">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-              </span>
-              <span className="text-[11px] font-bold text-white tracking-wide uppercase">Toolzaro Pro Suite</span>
+    <div className="w-full max-w-[540px] select-none">
+      {/* Crisp Desktop Workstation Quick-Launch Console (Zero heavy blur/image overhead, 0ms paint) */}
+      <div className="rounded-2xl border border-border bg-card shadow-lg overflow-hidden">
+        {/* Console Window Top Bar */}
+        <div className="px-4 py-2.5 bg-muted/50 border-b border-border flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 rounded-full bg-rose-500/80" />
+              <span className="w-2.5 h-2.5 rounded-full bg-amber-500/80" />
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/80" />
             </div>
-
-            <div className="flex items-center gap-1.5 bg-primary/90 text-white text-[11px] font-bold px-2.5 py-1 rounded-xl shadow-md backdrop-blur-sm">
-              <Sparkles className="w-3.5 h-3.5 animate-pulse" />
-              <span>v2.5 High-Speed</span>
-            </div>
+            <span className="text-xs font-bold text-foreground ml-1.5 tracking-tight">
+              Quick-Launch Workspace
+            </span>
           </div>
 
-          {/* Bottom Floating Bar inside Image */}
-          <div className="absolute bottom-3 left-3 right-3 z-10 pointer-events-none">
-            <div className="bg-neutral-900/90 backdrop-blur-md border border-white/10 p-3 rounded-2xl shadow-xl flex items-center justify-between gap-3">
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-xl bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 flex items-center justify-center shrink-0">
-                  <Zap className="w-4 h-4" />
-                </div>
-                <div>
-                  <div className="text-xs font-bold text-white leading-tight">Client-Side Privacy</div>
-                  <div className="text-[10px] text-neutral-400">Zero Server Storage • Instant Execution</div>
-                </div>
-              </div>
-              
-              <div className="flex items-center gap-1 text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded-lg shrink-0">
-                <CheckCircle2 className="w-3.5 h-3.5" />
-                <span>Encrypted</span>
-              </div>
-            </div>
-          </div>
+          <button
+            type="button"
+            onClick={triggerCommandPalette}
+            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-background hover:bg-secondary border border-border text-[11px] font-semibold text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+            title="Open Instant Command Search (Ctrl+K)"
+          >
+            <Command className="w-3 h-3 text-primary" />
+            <span>Quick Find</span>
+            <kbd className="font-mono text-[10px] px-1 bg-muted rounded border border-border/80">
+              ⌘K
+            </kbd>
+          </button>
         </div>
 
+        {/* Interactive 6-Tool Quick Launch Grid */}
+        <div className="p-3.5 grid grid-cols-2 sm:grid-cols-3 gap-2.5 bg-card">
+          {QUICK_LAUNCH_TOOLS.map((item) => {
+            const Icon = item.icon;
+            return (
+              <Link
+                key={item.slug}
+                to={getToolUrl(item.slug)}
+                onMouseEnter={() => preloadToolBySlug(item.slug)}
+                onTouchStart={() => preloadToolBySlug(item.slug)}
+                className="group p-3 rounded-xl border border-border/80 bg-background/60 hover:bg-secondary/40 hover:border-primary/50 transition-[transform,border-color,background-color] duration-150 hover:-translate-y-0.5 flex flex-col justify-between gap-2 no-underline"
+              >
+                <div className="flex items-center justify-between">
+                  <div
+                    className={`w-8 h-8 rounded-lg border flex items-center justify-center ${item.accent}`}
+                  >
+                    <Icon className="w-4 h-4" />
+                  </div>
+                  <ArrowUpRight className="w-3.5 h-3.5 text-muted-foreground/40 group-hover:text-primary group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                </div>
+                <div>
+                  <div className="text-xs font-bold text-foreground group-hover:text-primary transition-colors truncate">
+                    {item.name}
+                  </div>
+                  <div className="text-[10px] text-muted-foreground truncate">
+                    {item.category}
+                  </div>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+
+        {/* Console Bottom Status Strip */}
+        <div className="px-4 py-2.5 bg-muted/30 border-t border-border flex items-center justify-between gap-3 text-[11px]">
+          <div className="flex items-center gap-3 text-muted-foreground font-medium">
+            <span className="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-semibold">
+              <ShieldCheck className="w-3.5 h-3.5" />
+              <span>100% Local Sandbox</span>
+            </span>
+            <span aria-hidden="true">·</span>
+            <span className="inline-flex items-center gap-1">
+              <Zap className="w-3.5 h-3.5 text-amber-500" />
+              <span>Zero Cloud Upload</span>
+            </span>
+          </div>
+
+          <Link
+            to={getToolsHubUrl()}
+            className="inline-flex items-center gap-1 font-bold text-primary hover:underline whitespace-nowrap"
+          >
+            <Layers className="w-3 h-3" />
+            <span>All {tools.length} Tools →</span>
+          </Link>
+        </div>
       </div>
     </div>
   );

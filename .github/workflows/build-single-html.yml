@@ -131,6 +131,20 @@ jobs:
             exit 1
           fi
 
+          # Verify that all XML sitemaps in dist/ are valid, non-empty XML documents
+          if grep -q '<sitemapindex' dist/sitemap-index.xml && \
+             grep -q '<urlset' dist/sitemap.xml && \
+             grep -q '<urlset' dist/sitemap-tools.xml && \
+             grep -q '<urlset' dist/sitemap-categories.xml && \
+             grep -q '<urlset' dist/sitemap-pages.xml && \
+             grep -q '<urlset' dist/sitemap-blog.xml && \
+             grep -q '<rss' dist/rss.xml; then
+            echo "  [OK] All XML sitemaps and RSS feed in dist/ are valid XML."
+          else
+            echo "  [ERROR] One or more XML sitemaps in dist/ are invalid or malformed!"
+            exit 1
+          fi
+
           # Verify that dist/index.html uses root-relative (/assets/) paths and includes /favicon.ico
           if grep -q '"/assets/' dist/index.html && grep -q '"/favicon.ico"' dist/index.html; then
             echo "  [OK] dist/index.html uses root-relative '/assets/' and '/favicon.ico' paths."

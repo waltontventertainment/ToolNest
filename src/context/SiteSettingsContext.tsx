@@ -32,7 +32,9 @@ export const SiteSettingsProvider: React.FC<{ children: React.ReactNode }> = ({ 
   };
 
   useEffect(() => {
-    refreshSettings();
+    const timer = setTimeout(() => {
+      refreshSettings();
+    }, 1800);
 
     const handleUpdate = (e: Event) => {
       const customEvent = e as CustomEvent<SiteSettings>;
@@ -43,6 +45,7 @@ export const SiteSettingsProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
     window.addEventListener('toolzaro_settings_updated', handleUpdate);
     return () => {
+      clearTimeout(timer);
       window.removeEventListener('toolzaro_settings_updated', handleUpdate);
     };
   }, []);

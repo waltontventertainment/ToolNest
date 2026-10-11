@@ -4,6 +4,7 @@
 ## Core Pages
 - [Home](https://toolzaro.cyou/): Main hub with instant search across 156+ utilities.
 - [All Tools Directory](https://toolzaro.cyou/tools): Complete A-Z categorized directory of all 156 tools.
+- [Saved Bookmarks](https://toolzaro.cyou/bookmarks): Personal workspace for saved browser tools.
 - [HTML Sitemap](https://toolzaro.cyou/sitemap): Full index of all tools, categories, and guides.
 - [Engineering Blog](https://toolzaro.cyou/blog): Technical tutorials, privacy architecture guides, and developer articles.
 - [About Us](https://toolzaro.cyou/about): Client-first engineering standards and privacy commitment.
@@ -13,18 +14,18 @@
 - [Disclaimer](https://toolzaro.cyou/disclaimer): Accuracy and verification disclosures.
 
 ## Tool Categories (12)
-- [Universal Data Suite Tools (12)](https://toolzaro.cyou/category/universal-data-suite)
-- [Wikipedia Tools (3)](https://toolzaro.cyou/category/wikipedia)
-- [PDF Tools (7)](https://toolzaro.cyou/category/pdf)
-- [Text Tools (23)](https://toolzaro.cyou/category/text)
-- [Developer Tools (46)](https://toolzaro.cyou/category/developer)
-- [Converters Tools (11)](https://toolzaro.cyou/category/converters)
-- [Generators Tools (11)](https://toolzaro.cyou/category/generators)
-- [QR & Barcode Tools (4)](https://toolzaro.cyou/category/qr-barcode)
-- [Color & Image Tools (13)](https://toolzaro.cyou/category/color-image)
-- [Calculators Tools (4)](https://toolzaro.cyou/category/calculators)
-- [SEO Tools (11)](https://toolzaro.cyou/category/seo)
-- [Utility Tools (11)](https://toolzaro.cyou/category/utility)
+- [Universal Data Suite Tools (12)](https://toolzaro.cyou/universal-data-suite)
+- [Wikipedia Tools (3)](https://toolzaro.cyou/wikipedia)
+- [PDF Tools (7)](https://toolzaro.cyou/pdf)
+- [Text Tools (23)](https://toolzaro.cyou/text)
+- [Developer Tools (46)](https://toolzaro.cyou/developer)
+- [Converters Tools (11)](https://toolzaro.cyou/converters)
+- [Generators Tools (11)](https://toolzaro.cyou/generators)
+- [QR & Barcode Tools (4)](https://toolzaro.cyou/qr-barcode)
+- [Color & Image Tools (13)](https://toolzaro.cyou/color-image)
+- [Calculators Tools (4)](https://toolzaro.cyou/calculators)
+- [SEO Tools (11)](https://toolzaro.cyou/seo)
+- [Utility Tools (11)](https://toolzaro.cyou/utility)
 
 ## Complete Directory of 156 Tools (Flat Root-Level URLs)
 - [Global Country Directory](https://toolzaro.cyou/rest-countries-explorer): Instantly lookup details, flags, capitals, and currencies of 200+ countries. (Category: Universal Data Suite)
@@ -185,8 +186,8 @@
 - [Basic JS Minifier](https://toolzaro.cyou/basic-js-minifier): Compress your JavaScript code by removing comments and whitespace. (Category: Developer)
 
 ## Technical Guides & Articles (5)
-- [The Definitive Guide to Client-Side Web Privacy: How WebAssembly & Web Crypto Eliminate Cloud Leaks](https://toolzaro.cyou/blog/definitive-guide-client-side-privacy-web-utilities): An architectural deep-dive into zero-knowledge browser utilities. Learn how Web Cryptography, Canvas APIs, and WebAssembly enable military-grade encryption, PDF manipulation, and image processing without transmitting a single byte to remote servers.
-- [Technical SEO in 2026: The Complete Blueprint for Schema Markup, OpenGraph, and Rich Snippets](https://toolzaro.cyou/blog/technical-seo-blueprint-2026-schema-meta-opengraph): A comprehensive, step-by-step masterclass on technical search optimization. Learn how to construct multi-type Schema.org JSON-LD trees, prevent canonical cannibalization, optimize social cards, and satisfy Google Search Essentials.
-- [The Modern Web Asset Optimization Blueprint: Lossless Image Compression, Next-Gen Formats, and Core Web Vitals](https://toolzaro.cyou/blog/modern-web-asset-optimization-webp-avif-performance): A practical, engineering-focused manual on image and asset optimization. Master the trade-offs between WebP, AVIF, and SVG, eliminate Largest Contentful Paint (LCP) bottlenecks, and optimize digital assets for peak web performance.
-- [YouTube Transcript Intelligence: How to Transform Video Dialogue into High-Ranking SEO Content](https://toolzaro.cyou/blog/youtube-transcript-intelligence-content-repurposing): The ultimate content strategy playbook for creators, educators, and marketers. Learn how to extract clean video transcripts, clean automated speech recognition (ASR) errors, format timestamped guides, and repurpose video content.
-- [The Production Web Security & Cryptography Cheatsheet: Hashes, JSON Web Tokens (JWT), and Base64 Encoding](https://toolzaro.cyou/blog/developer-cryptography-cheatsheet-hashes-jwt-base64): An authoritative reference guide for software engineers and security practitioners. Clarify the critical differences between encoding, hashing, and encryption, avoid JWT validation pitfalls, and implement secure data workflows.
+- [The Definitive Guide to Client-Side Web Privacy: How WebAssembly & Web Crypto Eliminate Cloud Leaks](https://toolzaro.cyou/definitive-guide-client-side-privacy-web-utilities): An architectural deep-dive into zero-knowledge browser utilities. Learn how Web Cryptography, Canvas APIs, and WebAssembly enable military-grade encryption, PDF manipulation, and image processing without transmitting a single byte to remote servers.
+- [Technical SEO in 2026: The Complete Blueprint for Schema Markup, OpenGraph, and Rich Snippets](https://toolzaro.cyou/technical-seo-blueprint-2026-schema-meta-opengraph): A comprehensive, step-by-step masterclass on technical search optimization. Learn how to construct multi-type Schema.org JSON-LD trees, prevent canonical cannibalization, optimize social cards, and satisfy Google Search Essentials.
+- [The Modern Web Asset Optimization Blueprint: Lossless Image Compression, Next-Gen Formats, and Core Web Vitals](https://toolzaro.cyou/modern-web-asset-optimization-webp-avif-performance): A practical, engineering-focused manual on image and asset optimization. Master the trade-offs between WebP, AVIF, and SVG, eliminate Largest Contentful Paint (LCP) bottlenecks, and optimize digital assets for peak web performance.
+- [YouTube Transcript Intelligence: How to Transform Video Dialogue into High-Ranking SEO Content](https://toolzaro.cyou/youtube-transcript-intelligence-content-repurposing): The ultimate content strategy playbook for creators, educators, and marketers. Learn how to extract clean video transcripts, clean automated speech recognition (ASR) errors, format timestamped guides, and repurpose video content.
+- [The Production Web Security & Cryptography Cheatsheet: Hashes, JSON Web Tokens (JWT), and Base64 Encoding](https://toolzaro.cyou/developer-cryptography-cheatsheet-hashes-jwt-base64): An authoritative reference guide for software engineers and security practitioners. Clarify the critical differences between encoding, hashing, and encryption, avoid JWT validation pitfalls, and implement secure data workflows.

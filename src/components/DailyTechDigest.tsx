@@ -25,14 +25,19 @@ import {
   getInstantTechDigest, 
   getOrFetchTodayTechDigest, 
   getTodayKey,
-  getFormattedDate 
+  ensureDigestImages,
+  getFallbackTopicImage,
+  getFastTopicImage,
 } from '../services/techDigestService';
 import { useGoogleDrive } from '../context/GoogleDriveContext';
-import { TechDigestReaderModal } from './TechDigestReaderModal';
+
+const TechDigestReaderModal = React.lazy(() =>
+  import('./TechDigestReaderModal').then(m => ({ default: m.TechDigestReaderModal }))
+);
 
 export const DailyTechDigest: React.FC = () => {
-  // Instant zero-delay state initialization
-  const [digest, setDigest] = useState<TechDigest>(() => getInstantTechDigest());
+  // Instant 0ms state initialization with guaranteed round topic images
+  const [digest, setDigest] = useState<TechDigest>(() => ensureDigestImages(getInstantTechDigest()));
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [expanded, setExpanded] = useState<boolean>(false);
   const [copied, setCopied] = useState<boolean>(false);
@@ -42,51 +47,64 @@ export const DailyTechDigest: React.FC = () => {
 
   const driveContext = useGoogleDrive();
 
-  // 1. Background initial fetch / auto-sync if fallback
+  // 1. Fast background initial sync so live topics & round images stay fresh
   useEffect(() => {
     let isMounted = true;
-    const shouldForce = digest.isFallback === true;
-    if (shouldForce) {
-      setRefreshing(true);
-    }
-    getOrFetchTodayTechDigest(shouldForce)
-      .then((data) => {
-        if (isMounted && data) {
-          setDigest(data);
-        }
-      })
-      .catch(() => {})
-      .finally(() => {
-        if (isMounted) setRefreshing(false);
-      });
+    const initTimer = setTimeout(() => {
+      if (!isMounted) return;
+      const shouldForce = digest.isFallback === true;
+      if (shouldForce) {
+        setRefreshing(true);
+      }
+      getOrFetchTodayTechDigest(shouldForce)
+        .then((data) => {
+          if (isMounted && data) {
+            setDigest(ensureDigestImages(data));
+          }
+        })
+        .catch(() => {})
+        .finally(() => {
+          if (isMounted) setRefreshing(false);
+        });
+    }, 150);
 
     return () => {
       isMounted = false;
+      clearTimeout(initTimer);
     };
   }, []);
 
-  // 2. Realtime Firebase Firestore listener (0ms live update across all users)
+  // 2. Realtime Firebase Firestore listener (always normalizes topic images via ensureDigestImages)
   useEffect(() => {
     let unsubscribe: () => void = () => {};
-    try {
-      const todayKey = getTodayKey();
-      unsubscribe = onSnapshot(doc(db, 'tech_digests', todayKey), (docSnap) => {
-        if (docSnap.exists()) {
-          const data = docSnap.data() as TechDigest;
-          if (data && data.headline && data.summary) {
-            setDigest(data);
+    const snapshotTimer = setTimeout(() => {
+      try {
+        const todayKey = getTodayKey();
+        unsubscribe = onSnapshot(doc(db, 'tech_digests', todayKey), (docSnap) => {
+          if (docSnap.exists()) {
+            const data = docSnap.data() as TechDigest;
+            if (data && data.headline && data.summary) {
+              setDigest(ensureDigestImages(data));
+            }
           }
-        }
-      }, () => {});
-    } catch {}
+        }, () => {});
+      } catch {}
+    }, 600);
 
-    return () => unsubscribe();
+    return () => {
+      clearTimeout(snapshotTimer);
+      unsubscribe();
+    };
   }, []);
 
   // 3. Automatic 2-minute live news refresh interval
   useEffect(() => {
     const timer = setInterval(() => {
-      getOrFetchTodayTechDigest(true).catch(() => {});
+      getOrFetchTodayTechDigest(true)
+        .then((data) => {
+          if (data) setDigest(ensureDigestImages(data));
+        })
+        .catch(() => {});
     }, 2 * 60 * 1000); // 2 minutes
 
     return () => clearInterval(timer);
@@ -96,7 +114,7 @@ export const DailyTechDigest: React.FC = () => {
     setRefreshing(true);
     try {
       const data = await getOrFetchTodayTechDigest(true);
-      setDigest(data);
+      setDigest(ensureDigestImages(data));
       toast.success('Updated with fresh live Hacker News & Tech Digest!');
     } catch (err) {
       console.error('Refresh failed:', err);
@@ -160,120 +178,189 @@ export const DailyTechDigest: React.FC = () => {
     }
   };
 
-  return (
-    <div className="w-full bg-gradient-to-r from-amber-500/10 via-card to-card border border-amber-500/30 dark:border-amber-500/20 hover:border-amber-500/50 rounded-2xl p-3 sm:p-4 shadow-md transition-all duration-200 relative overflow-hidden group">
-      {/* Subtle Background Glow */}
-      <div className="absolute -top-12 -right-12 w-40 h-40 bg-amber-500/10 rounded-full blur-2xl pointer-events-none group-hover:bg-amber-500/15 transition-all" />
+  const topicHighlights =
+    digest.highlights && digest.highlights.length > 0
+      ? digest.highlights
+      : getInstantTechDigest().highlights;
 
-      {/* 3-Line Compact Box */}
-      <div className="flex flex-col gap-1.5 relative z-10">
-        {/* Line 1: Header Badges & Live Status */}
-        <div className="flex items-center justify-between gap-2 text-xs flex-wrap">
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[11px] font-black bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-xs">
-              <Flame className="w-3 h-3 fill-current animate-pulse" />
+  return (
+    <div className="w-full bg-card border border-amber-500/30 dark:border-amber-500/20 hover:border-amber-500/50 rounded-2xl px-3.5 py-2.5 sm:px-4 sm:py-3 shadow-2xs transition-colors duration-150 relative overflow-hidden">
+      {/* Compact Box: 1 Sleek Horizontal Row on PC (lg+), Clean Stacked on Mobile */}
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-2.5 lg:gap-4 relative z-10">
+        {/* Left: Badge & Date */}
+        <div className="flex items-center justify-between lg:justify-start gap-2 text-xs shrink-0">
+          <div className="flex items-center gap-2">
+            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[11px] font-black bg-amber-500 text-white">
+              <Flame className="w-3 h-3 fill-current" />
               <span>Daily Tech Digest</span>
             </span>
             <span className="text-[11px] font-semibold text-muted-foreground flex items-center gap-1">
               <Calendar className="w-3 h-3 text-amber-500" />
               <span>{digest.dateFormatted}</span>
             </span>
-            <span className="hidden md:inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/25">
-              <Globe className="w-3 h-3 text-emerald-500" />
-              <span>Hacker News & Tech Synced</span>
-            </span>
           </div>
 
-          {/* Right Action Controls */}
-          <div className="flex items-center gap-1.5 ml-auto">
+          {/* Mobile-only Right Action Controls */}
+          <div className="flex lg:hidden items-center gap-1.5">
             <button
               type="button"
               onClick={handleManualRefresh}
               disabled={refreshing}
-              className="px-2 py-1 rounded-lg bg-secondary hover:bg-secondary/80 text-foreground text-[11px] font-bold transition-all cursor-pointer border border-border/70 flex items-center gap-1 disabled:opacity-50"
+              className="px-2 py-1 rounded-lg bg-secondary hover:bg-secondary/80 text-foreground text-[11px] font-bold transition-colors cursor-pointer border border-border/70 flex items-center gap-1 disabled:opacity-50"
               title="Sync latest live Hacker News & tech news"
             >
               <RefreshCw className={`w-3 h-3 text-amber-500 ${refreshing ? 'animate-spin' : ''}`} />
-              <span className="hidden sm:inline">{refreshing ? 'Syncing...' : 'Sync Live'}</span>
             </button>
 
             <button
               type="button"
               onClick={() => setExpanded(!expanded)}
-              className="px-2.5 py-1 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 text-amber-700 dark:text-amber-300 text-[11px] font-extrabold transition-all cursor-pointer flex items-center gap-1 border border-amber-500/30"
+              className="px-2.5 py-1 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 text-amber-700 dark:text-amber-300 text-[11px] font-extrabold transition-colors cursor-pointer flex items-center gap-1 border border-amber-500/30"
             >
-              <span>{expanded ? 'Collapse' : 'Read Full'}</span>
+              <span>{expanded ? 'Hide' : 'Details'}</span>
               {expanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
             </button>
           </div>
         </div>
 
-        {/* Line 2: Headline (1 line truncated in compact mode) */}
-        <div 
-          onClick={() => {
-            const link = digest.highlights?.[0]?.url;
-            if (link) {
-              window.open(link, '_blank');
-              toast.success(`Opening live story: ${digest.headline}`);
-            } else {
-              toast.info('No external link available.');
-            }
-          }}
-          className="cursor-pointer group/title flex items-start justify-between gap-2 pt-0.5"
-          title="Click to open live article"
-        >
-          <h3 className={`text-xs sm:text-sm font-bold text-foreground group-hover/title:text-amber-500 transition-colors leading-snug ${expanded ? '' : 'line-clamp-1'}`}>
-            {digest.headline}
-          </h3>
-          <ExternalLink className="w-4 h-4 text-muted-foreground group-hover/title:text-amber-500 shrink-0 mt-0.5" />
-        </div>
+        {/* Center: Headline + Summary inline + Mobile Round Topic Thumbnails */}
+        <div className="flex items-center justify-between gap-2.5 min-w-0 flex-1">
+          <div
+            onClick={() => {
+              const link = topicHighlights[0]?.url;
+              if (link) {
+                window.open(link, '_blank');
+                toast.success(`Opening live story: ${digest.headline}`);
+              } else {
+                setExpanded(!expanded);
+              }
+            }}
+            className="cursor-pointer group/title flex items-center gap-2 min-w-0 flex-1"
+            title="Click to open live article"
+          >
+            <h3 className="text-xs sm:text-sm font-bold text-foreground group-hover/title:text-amber-500 transition-colors truncate">
+              {digest.headline}
+            </h3>
+            {!expanded && (
+              <span className="hidden xl:inline text-xs text-muted-foreground truncate max-w-xs">
+                — {digest.summary}
+              </span>
+            )}
+            <ExternalLink className="w-3.5 h-3.5 text-muted-foreground group-hover/title:text-amber-500 shrink-0" />
+          </div>
 
-        {/* Line 3: Compact Executive Summary (1 line) */}
-        {!expanded && (
-          <div className="space-y-1.5 pt-0.5">
-            <div className="flex items-center justify-between gap-2 text-[11px] text-muted-foreground">
-              <p className="line-clamp-1 flex-1">
-                {digest.summary}
-              </p>
-              <button
-                type="button"
-                onClick={() => setExpanded(true)}
-                className="text-[10px] font-bold text-amber-600 dark:text-amber-400 hover:underline shrink-0 flex items-center gap-0.5"
-              >
-                <span>More Details</span>
-                <ChevronDown className="w-3 h-3" />
-              </button>
-            </div>
-
-            {/* Mini Box Thumbnail Strip for all topic images */}
-            {digest.highlights && digest.highlights.filter(h => h.imageUrl).length > 0 && (
-              <div className="flex items-center gap-1.5 pt-1 overflow-x-auto no-scrollbar pb-0.5">
-                <span className="text-[9px] font-extrabold uppercase tracking-wider text-amber-600 dark:text-amber-400 shrink-0">Topics:</span>
-                {digest.highlights.filter(h => h.imageUrl).map((item, idx) => (
-                  <div
-                    key={idx}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      if (item.url) {
-                        window.open(item.url, '_blank');
-                        toast.success(`Opening: ${item.title}`);
+          {/* Mobile & Tablet Round Topic Images (Always visible from outside on < lg) */}
+          <div className="flex lg:hidden items-center -space-x-1.5 shrink-0 pl-1">
+            {topicHighlights.slice(0, 6).map((item, idx) => {
+              const imgSrc =
+                item.imageUrl ||
+                getFastTopicImage(item.title || item.category || `topic-${idx}`, idx);
+              return (
+                <button
+                  key={`mob-topic-${idx}`}
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (item.url) {
+                      window.open(item.url, '_blank');
+                      toast.success(`Opening: ${item.title}`);
+                    } else {
+                      setExpanded(true);
+                    }
+                  }}
+                  className="w-6 h-6 sm:w-7 sm:h-7 rounded-full overflow-hidden shrink-0 border-2 border-card ring-1 ring-amber-500/50 hover:ring-amber-500 bg-muted shadow-2xs cursor-pointer hover:scale-110 hover:z-20 transition-transform relative p-0"
+                  title={`${item.category}: ${item.title}`}
+                >
+                  <img
+                    src={imgSrc}
+                    alt={item.title}
+                    loading="eager"
+                    decoding="async"
+                    fetchPriority="high"
+                    referrerPolicy="no-referrer"
+                    width={28}
+                    height={28}
+                    className="w-full h-full object-cover rounded-full"
+                    onError={(e) => {
+                      const target = e.currentTarget;
+                      const fallback = getFallbackTopicImage(idx);
+                      if (target.src !== fallback) {
+                        target.src = fallback;
                       }
                     }}
-                    className="w-7 h-7 rounded-md overflow-hidden shrink-0 border border-amber-500/40 cursor-pointer hover:scale-110 transition-transform shadow-2xs relative group/thumb"
-                    title={item.title}
-                  >
-                    <img 
-                      src={item.imageUrl} 
-                      alt={item.title} 
-                      className="w-full h-full object-cover"
-                      onError={(e) => { (e.target as HTMLElement).style.display = 'none'; }}
-                    />
-                  </div>
-                ))}
-              </div>
-            )}
+                  />
+                </button>
+              );
+            })}
           </div>
-        )}
+        </div>
+
+        {/* Right on PC: Always-Visible Round Topic Thumbnails + Action Controls */}
+        <div className="hidden lg:flex items-center gap-2.5 shrink-0">
+          <div className="flex items-center gap-1.5 pr-2.5 border-r border-border/60">
+            {topicHighlights.slice(0, 6).map((item, idx) => {
+              const imgSrc =
+                item.imageUrl ||
+                getFastTopicImage(item.title || item.category || `topic-${idx}`, idx);
+              return (
+                <button
+                  key={`pc-topic-${idx}`}
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (item.url) {
+                      window.open(item.url, '_blank');
+                      toast.success(`Opening: ${item.title}`);
+                    } else {
+                      setExpanded(true);
+                    }
+                  }}
+                  className="w-7 h-7 rounded-full overflow-hidden shrink-0 border-2 border-amber-500/45 hover:border-amber-500 bg-muted shadow-2xs cursor-pointer hover:scale-110 hover:z-20 transition-transform relative p-0"
+                  title={`${item.category}: ${item.title}`}
+                >
+                  <img
+                    src={imgSrc}
+                    alt={item.title}
+                    loading="eager"
+                    decoding="async"
+                    fetchPriority="high"
+                    referrerPolicy="no-referrer"
+                    width={28}
+                    height={28}
+                    className="w-full h-full object-cover rounded-full"
+                    onError={(e) => {
+                      const target = e.currentTarget;
+                      const fallback = getFallbackTopicImage(idx);
+                      if (target.src !== fallback) {
+                        target.src = fallback;
+                      }
+                    }}
+                  />
+                </button>
+              );
+            })}
+          </div>
+
+          <button
+            type="button"
+            onClick={handleManualRefresh}
+            disabled={refreshing}
+            className="px-2.5 py-1 rounded-lg bg-secondary hover:bg-secondary/80 text-foreground text-[11px] font-bold transition-colors cursor-pointer border border-border/70 flex items-center gap-1 disabled:opacity-50"
+            title="Sync latest live Hacker News & tech news"
+          >
+            <RefreshCw className={`w-3 h-3 text-amber-500 ${refreshing ? 'animate-spin' : ''}`} />
+            <span>{refreshing ? 'Syncing...' : 'Sync Live'}</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setExpanded(!expanded)}
+            className="px-2.5 py-1 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 text-amber-700 dark:text-amber-300 text-[11px] font-extrabold transition-colors cursor-pointer flex items-center gap-1 border border-amber-500/30"
+          >
+            <span>{expanded ? 'Collapse' : 'Read Full'}</span>
+            {expanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+          </button>
+        </div>
       </div>
 
       {/* Expanded Premium Drawer View */}
@@ -285,48 +372,79 @@ export const DailyTechDigest: React.FC = () => {
           </p>
 
           {/* Grid of Key Highlights */}
-          {digest.highlights && digest.highlights.length > 0 && (
+          {topicHighlights.length > 0 && (
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-              {digest.highlights.map((item, index) => (
-                <div 
-                  key={index} 
-                  onClick={() => {
-                    if (item.url) {
-                      window.open(item.url, '_blank');
-                      toast.success(`Opening live story: ${item.title}`);
-                    } else {
-                      toast.info('No external link available for this item.');
-                    }
-                  }}
-                  className="p-3 rounded-xl bg-card/80 border border-border/80 hover:border-amber-500/50 hover:bg-muted/50 transition-all space-y-1 shadow-2xs cursor-pointer group/card flex flex-col justify-between"
-                  title="Click to open live article on original site"
-                >
-                  <div>
-                    {item.imageUrl && (
+              {topicHighlights.map((item, index) => {
+                const imgSrc =
+                  item.imageUrl ||
+                  getFastTopicImage(item.title || item.category || `topic-${index}`, index);
+                return (
+                  <div 
+                    key={index} 
+                    onClick={() => {
+                      if (item.url) {
+                        window.open(item.url, '_blank');
+                        toast.success(`Opening live story: ${item.title}`);
+                      } else {
+                        toast.info('No external link available for this item.');
+                      }
+                    }}
+                    className="p-3 rounded-xl bg-card/80 border border-border/80 hover:border-amber-500/50 hover:bg-muted/50 transition-all space-y-1.5 shadow-2xs cursor-pointer group/card flex flex-col justify-between"
+                    title="Click to open live article on original site"
+                  >
+                    <div>
                       <div className="w-full h-24 rounded-lg overflow-hidden mb-2 bg-muted/40 relative">
                         <img 
-                          src={item.imageUrl} 
+                          src={imgSrc} 
                           alt={item.title}
+                          loading="eager"
+                          decoding="async"
+                          referrerPolicy="no-referrer"
                           className="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-300"
-                          onError={(e) => { (e.target as HTMLElement).style.display = 'none'; }}
+                          onError={(e) => {
+                            const target = e.currentTarget;
+                            const fallback = getFallbackTopicImage(index);
+                            if (target.src !== fallback) {
+                              target.src = fallback;
+                            }
+                          }}
                         />
                       </div>
-                    )}
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-[9px] font-extrabold uppercase tracking-wider text-amber-600 dark:text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20">
-                        {item.category}
-                      </span>
-                      <ExternalLink className="w-3.5 h-3.5 text-muted-foreground group-hover/card:text-amber-500 transition-colors" />
+                      <div className="flex items-center justify-between mb-1">
+                        <div className="flex items-center gap-1.5 min-w-0">
+                          <img
+                            src={imgSrc}
+                            alt={item.category}
+                            loading="eager"
+                            decoding="async"
+                            referrerPolicy="no-referrer"
+                            width={18}
+                            height={18}
+                            className="w-4.5 h-4.5 rounded-full object-cover border border-amber-500/40 shrink-0"
+                            onError={(e) => {
+                              const target = e.currentTarget;
+                              const fallback = getFallbackTopicImage(index);
+                              if (target.src !== fallback) {
+                                target.src = fallback;
+                              }
+                            }}
+                          />
+                          <span className="text-[9px] font-extrabold uppercase tracking-wider text-amber-600 dark:text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20 truncate">
+                            {item.category}
+                          </span>
+                        </div>
+                        <ExternalLink className="w-3.5 h-3.5 text-muted-foreground group-hover/card:text-amber-500 transition-colors shrink-0" />
+                      </div>
+                      <h4 className="text-xs font-bold text-foreground group-hover/card:text-amber-500 transition-colors leading-tight pt-0.5">
+                        {item.title}
+                      </h4>
                     </div>
-                    <h4 className="text-xs font-bold text-foreground group-hover/card:text-amber-500 transition-colors leading-tight pt-0.5">
-                      {item.title}
-                    </h4>
+                    <p className="text-[11px] text-muted-foreground leading-relaxed line-clamp-2 pt-1">
+                      {item.detail}
+                    </p>
                   </div>
-                  <p className="text-[11px] text-muted-foreground leading-relaxed line-clamp-2 pt-1">
-                    {item.detail}
-                  </p>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
 
@@ -402,12 +520,16 @@ export const DailyTechDigest: React.FC = () => {
         </div>
       )}
 
-      <TechDigestReaderModal
-        item={selectedHighlight}
-        digest={digest}
-        isOpen={isReaderOpen}
-        onClose={() => setIsReaderOpen(false)}
-      />
+      {isReaderOpen && (
+        <React.Suspense fallback={null}>
+          <TechDigestReaderModal
+            item={selectedHighlight}
+            digest={digest}
+            isOpen={isReaderOpen}
+            onClose={() => setIsReaderOpen(false)}
+          />
+        </React.Suspense>
+      )}
     </div>
   );
 };

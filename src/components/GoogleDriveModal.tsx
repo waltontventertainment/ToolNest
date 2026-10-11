@@ -14,6 +14,7 @@ import {
   Database
 } from 'lucide-react';
 import { useGoogleDrive } from '../context/GoogleDriveContext';
+import { useLockBodyScroll } from '../lib/toolkit';
 
 interface GoogleDriveModalProps {
   isOpen: boolean;
@@ -39,6 +40,9 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({ isOpen, onCl
 
   const [confirmRestoreOpen, setConfirmRestoreOpen] = useState(false);
 
+  // Lock underlying website scroll while Drive Sync modal is open
+  useLockBodyScroll(isOpen);
+
   if (!isOpen) return null;
 
   const handleConfirmRestore = async () => {
@@ -47,10 +51,16 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({ isOpen, onCl
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-md animate-in fade-in-0 duration-150">
-      <div className="w-full max-w-lg bg-card border border-border/90 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-150">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-md animate-in fade-in-0 duration-150 overscroll-contain overflow-hidden"
+      onClick={onClose}
+    >
+      <div
+        className="w-full max-w-lg bg-card border border-border/90 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-150 overscroll-contain"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Modal Header */}
-        <div className="p-4 sm:p-5 border-b border-border/70 flex items-center justify-between bg-muted/30">
+        <div className="p-4 sm:p-5 border-b border-border/70 flex items-center justify-between bg-muted/30 shrink-0">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500/20 to-indigo-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 border border-blue-500/30">
               <Cloud className="w-5 h-5" />
@@ -81,7 +91,10 @@ export const GoogleDriveModal: React.FC<GoogleDriveModalProps> = ({ isOpen, onCl
         </div>
 
         {/* Modal Body */}
-        <div className="p-5 space-y-5 overflow-y-auto flex-1">
+        <div
+          data-modal-scroll-container="true"
+          className="p-5 space-y-5 overflow-y-auto overscroll-contain touch-pan-y flex-1"
+        >
           {!user || !accessToken ? (
             /* Unauthenticated State - Sign in with Google */
             <div className="text-center py-6 px-4 space-y-4">

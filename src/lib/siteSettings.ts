@@ -29,6 +29,10 @@ export interface SiteSettings {
     heroSubtitle: string;
     contactEmail: string;
     copyrightText: string;
+    blogAuthorName?: string;
+    blogAuthorRole?: string;
+    showBlogAuthorRole?: boolean;
+    blogAuthorAvatar?: string;
   };
   // AdSense & Monetization
   ads: {
@@ -74,7 +78,11 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
     heroTitle: '156+ High-Performance Browser Utilities',
     heroSubtitle: 'Free, instant, and 100% private. All transformations happen entirely inside your browser.',
     contactEmail: 'support@toolzaro.cyou',
-    copyrightText: '© 2026 Toolzaro. All rights reserved. Zero-knowledge privacy guaranteed.'
+    copyrightText: '© 2026 Toolzaro. All rights reserved. Zero-knowledge privacy guaranteed.',
+    blogAuthorName: 'Toolzaro',
+    blogAuthorRole: 'Admin',
+    showBlogAuthorRole: true,
+    blogAuthorAvatar: ''
   },
   ads: {
     enabled: true,

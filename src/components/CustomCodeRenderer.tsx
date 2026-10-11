@@ -15,36 +15,53 @@ export const CustomCodeRenderer: React.FC<CustomCodeRendererProps> = ({
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
+  // Extract inline <script> tags from raw HTML so Blogger-style single-box HTML+CSS+JS pastes execute properly
+  const { markupWithoutScripts, extractedInlineJs } = React.useMemo(() => {
+    if (!html) return { markupWithoutScripts: '', extractedInlineJs: '' };
+    const inlineScripts: string[] = [];
+    const cleaned = html.replace(/<script\b[^>]*>([\s\S]*?)<\/script>/gi, (_, code) => {
+      if (code && code.trim()) {
+        inlineScripts.push(code.trim());
+      }
+      return '';
+    });
+    return {
+      markupWithoutScripts: cleaned,
+      extractedInlineJs: inlineScripts.join('\n;\n')
+    };
+  }, [html]);
+
   useEffect(() => {
     if (!containerRef.current) return;
 
-    // Execute custom JS if present
-    if (js && js.trim()) {
+    const combinedJs = [extractedInlineJs, js].filter(Boolean).join('\n;\n');
+
+    if (combinedJs && combinedJs.trim()) {
       try {
-        // Execute inside a scoped function with container reference
-        const scopedFn = new Function('container', `
+        const scopedFn = new Function(
+          'container',
+          `
           try {
-            ${js}
+            ${combinedJs}
           } catch (err) {
             console.error('Custom post JS execution error:', err);
           }
-        `);
+        `
+        );
         scopedFn(containerRef.current);
       } catch (err) {
         console.error('Failed to initialize custom post script:', err);
       }
     }
-  }, [html, js]);
+  }, [markupWithoutScripts, extractedInlineJs, js]);
 
   return (
-    <div className={`custom-code-container ${className}`}>
-      {css && (
-        <style dangerouslySetInnerHTML={{ __html: css }} />
-      )}
+    <div className={`custom-code-container w-full overflow-x-auto ${className}`}>
+      {css && <style dangerouslySetInnerHTML={{ __html: css }} />}
       <div
         ref={containerRef}
         className="custom-code-markup"
-        dangerouslySetInnerHTML={{ __html: html }}
+        dangerouslySetInnerHTML={{ __html: markupWithoutScripts }}
       />
     </div>
   );

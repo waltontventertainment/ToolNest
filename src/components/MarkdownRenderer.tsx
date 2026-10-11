@@ -34,11 +34,23 @@ export function stripMarkdown(md: string): string {
 export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content, className = '', liveCursor = false }) => {
   if (!content) return null;
 
-  // Split content into blocks: code blocks vs tables vs standard text
-  const blocks = parseMarkdownBlocks(content);
+  // If the content contains <style> tags or starts as a full HTML document/widget, extract <style> so CSS designs apply cleanly
+  const extractedStyles: string[] = [];
+  const contentWithoutStyleTags = content.replace(/<style\b[^>]*>([\s\S]*?)<\/style>/gi, (_, cssCode) => {
+    if (cssCode && cssCode.trim()) {
+      extractedStyles.push(cssCode.trim());
+    }
+    return '';
+  });
+
+  // Split content into blocks: code blocks vs tables vs html blocks vs standard text
+  const blocks = parseMarkdownBlocks(contentWithoutStyleTags);
 
   return (
     <div className={`space-y-4 text-foreground leading-relaxed ${className}`}>
+      {extractedStyles.length > 0 && (
+        <style dangerouslySetInnerHTML={{ __html: extractedStyles.join('\n') }} />
+      )}
       {blocks.map((block, idx) => {
         const isLast = idx === blocks.length - 1;
         if (block.type === 'code') {
@@ -221,6 +233,52 @@ const TextBlock: React.FC<{ text: string; isLast?: boolean; liveCursor?: boolean
       continue;
     }
 
+    // Standalone Markdown Image: ![Alt text](https://i.ibb.co/...)
+    const mdImgMatch = trimmed.match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
+    if (mdImgMatch) {
+      flushList();
+      const altText = mdImgMatch[1].trim() || 'Article Image';
+      const imgUrl = mdImgMatch[2].trim();
+      elements.push(
+        <figure key={`img-${i}`} className="my-5 rounded-2xl overflow-hidden border border-border/80 bg-muted/30 shadow-xs">
+          <img
+            src={imgUrl}
+            alt={altText}
+            loading="lazy"
+            decoding="async"
+            className="w-full max-h-[540px] object-contain mx-auto block"
+          />
+          {altText && altText !== 'Article Image' && (
+            <figcaption className="px-4 py-2 text-center text-xs text-muted-foreground border-t border-border/50 bg-card/50">
+              {altText}
+            </figcaption>
+          )}
+        </figure>
+      );
+      continue;
+    }
+
+    // Standalone HTML <img> tag inside Compose mode
+    const htmlImgMatch = trimmed.match(/^<img\s+[^>]*src=["']([^"']+)["'][^>]*\/?>$/i);
+    if (htmlImgMatch) {
+      flushList();
+      const imgUrl = htmlImgMatch[1].trim();
+      const altMatch = trimmed.match(/alt=["']([^"']*)["']/i);
+      const altText = altMatch?.[1]?.trim() || 'Article Image';
+      elements.push(
+        <figure key={`html-img-${i}`} className="my-5 rounded-2xl overflow-hidden border border-border/80 bg-muted/30 shadow-xs">
+          <img
+            src={imgUrl}
+            alt={altText}
+            loading="lazy"
+            decoding="async"
+            className="w-full max-h-[540px] object-contain mx-auto block"
+          />
+        </figure>
+      );
+      continue;
+    }
+
     // Check headings (#, ##, ###, ####, #####, ######)
     const headingMatch = trimmed.match(/^(#{1,6})\s*(.*)$/);
     if (headingMatch) {
@@ -276,6 +334,28 @@ const TextBlock: React.FC<{ text: string; isLast?: boolean; liveCursor?: boolean
       continue;
     }
 
+    // Raw HTML block line (e.g., <div ...>, <section ...>, <p ...>, <h2 ...>, etc.)
+    if (/^<\/?[a-zA-Z][a-zA-Z0-9-]*(\s|>|\/)/.test(trimmed)) {
+      flushList();
+      const htmlLines: string[] = [line];
+      while (
+        i + 1 < lines.length &&
+        lines[i + 1].trim() !== '' &&
+        !/^(#{1,6}\s|[-*+•]\s|\d+\.\s|```|>)/.test(lines[i + 1].trim())
+      ) {
+        i++;
+        htmlLines.push(lines[i]);
+      }
+      elements.push(
+        <div
+          key={`raw-html-${i}`}
+          className="my-3 custom-inline-html"
+          dangerouslySetInnerHTML={{ __html: htmlLines.join('\n') }}
+        />
+      );
+      continue;
+    }
+
     // Standard paragraph - strip any leading unparsed hashes or asterisks
     flushList();
     const cleanParagraph = trimmed.replace(/^#+\s*/, '');
@@ -324,6 +404,16 @@ const FormattedInline: React.FC<{ text: string }> = ({ text }) => {
 function parseInlineStyles(str: string): string {
   if (!str) return '';
   return str
+    // 0. Inline Markdown images ![alt](url)
+    .replace(
+      /!\[([^\]]*)\]\(([^)]+)\)/g,
+      '<img src="$2" alt="$1" loading="lazy" decoding="async" class="my-3 rounded-xl max-w-full h-auto border border-border/80 mx-auto block" />'
+    )
+    // 0b. Inline Markdown links [label](url)
+    .replace(
+      /\[([^\]]+)\]\((https?:\/\/[^)]+|\/[^)]*)\)/g,
+      '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-primary font-semibold underline underline-offset-2 hover:opacity-80">$1</a>'
+    )
     // 1. Triple asterisks (bold + italic)
     .replace(/\*\*\*(.*?)\*\*\*/g, '<strong class="font-bold text-foreground"><em class="italic">$1</em></strong>')
     // 2. Double asterisks (bold)

@@ -79,6 +79,62 @@ export function useLocalStorage<T>(key: string, initialValue: T): [T, (value: T 
   return [storedValue, setValue];
 }
 
+// Reference counter for active modal scroll locks so nested modals work seamlessly
+let activeBodyScrollLocks = 0;
+let savedScrollY = 0;
+
+export function useLockBodyScroll(isLocked: boolean = true) {
+  useEffect(() => {
+    if (typeof window === 'undefined' || typeof document === 'undefined' || !isLocked) {
+      return;
+    }
+
+    const html = document.documentElement;
+    const body = document.body;
+
+    if (activeBodyScrollLocks === 0) {
+      savedScrollY = window.scrollY;
+      const scrollBarWidth = window.innerWidth - html.clientWidth;
+      if (scrollBarWidth > 0) {
+        body.style.paddingRight = `${scrollBarWidth}px`;
+      }
+      body.style.overflow = 'hidden';
+      html.style.overflow = 'hidden';
+      body.style.overscrollBehavior = 'none';
+      html.style.overscrollBehavior = 'none';
+    }
+
+    activeBodyScrollLocks += 1;
+
+    // Prevent wheel/touchmove from scrolling the background document when outside scrollable modal content
+    const preventBackgroundScroll = (e: Event) => {
+      const target = e.target as HTMLElement | null;
+      if (!target) return;
+      const scrollableParent = target.closest('[data-modal-scroll-container="true"]');
+      if (!scrollableParent) {
+        e.preventDefault();
+      }
+    };
+
+    window.addEventListener('wheel', preventBackgroundScroll, { passive: false });
+    window.addEventListener('touchmove', preventBackgroundScroll, { passive: false });
+
+    return () => {
+      window.removeEventListener('wheel', preventBackgroundScroll);
+      window.removeEventListener('touchmove', preventBackgroundScroll);
+      activeBodyScrollLocks = Math.max(0, activeBodyScrollLocks - 1);
+      if (activeBodyScrollLocks === 0) {
+        body.style.overflow = '';
+        html.style.overflow = '';
+        body.style.overscrollBehavior = '';
+        html.style.overscrollBehavior = '';
+        body.style.paddingRight = '';
+        window.scrollTo(0, savedScrollY);
+      }
+    };
+  }, [isLocked]);
+}
+
 export function CopyButton({ text, className }: { text: string; className?: string }) {
   const [copied, setCopied] = useState(false);
 

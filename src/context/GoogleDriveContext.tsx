@@ -46,14 +46,20 @@ export const GoogleDriveProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
   const { favorites, toggleFavorite } = useFavorites();
 
-  // Handle Firebase Auth Listener
+  // Handle Firebase Auth Listener (deferred slightly so critical initial mobile FCP/LCP is never blocked by Auth iframe initialization)
   useEffect(() => {
-    const unsubscribe = initAuthListener((currUser, token) => {
-      setUser(currUser);
-      setAccessToken(token);
-      setLoading(false);
-    });
-    return () => unsubscribe();
+    let unsubscribe: () => void = () => {};
+    const timer = setTimeout(() => {
+      unsubscribe = initAuthListener((currUser, token) => {
+        setUser(currUser);
+        setAccessToken(token);
+        setLoading(false);
+      });
+    }, 2000);
+    return () => {
+      clearTimeout(timer);
+      unsubscribe();
+    };
   }, []);
 
   // Save autoSync setting
