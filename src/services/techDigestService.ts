@@ -18,27 +18,19 @@ export interface TechDigest {
   isFallback?: boolean;
 }
 
-const LOCAL_BUNDLED_THUMBS = [
-  '/favicon-96x96.png',
-  '/android-chrome-192x192.png',
-];
-
-/**
- * Ultra-fast, zero-network-request SVG data URIs for instant 0ms topic icon rendering
- */
-const FAST_TOPIC_THUMBNAILS = [
-  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g1' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%236366f1'/%3E%3Cstop offset='100%25' stop-color='%238b5cf6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url(%23g1)'/%3E%3Cpath d='M20 24l8 8-8 8m14 0h10' stroke='%23fff' stroke-width='4' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E",
-  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g2' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23059669'/%3E%3Cstop offset='100%25' stop-color='%2310b981'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url(%23g2)'/%3E%3Cpath d='M32 18v28m-12-14h24' stroke='%23fff' stroke-width='4' stroke-linecap='round' fill='none'/%3E%3Ccircle cx='32' cy='32' r='12' stroke='%23fff' stroke-width='3' fill='none'/%3E%3C/svg%3E",
-  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g3' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23d97706'/%3E%3Cstop offset='100%25' stop-color='%23f59e0b'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url(%23g3)'/%3E%3Cpath d='M34 16L22 36h10l-2 12 12-20H32z' fill='%23fff'/%3E%3C/svg%3E",
-  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g4' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%230284c7'/%3E%3Cstop offset='100%25' stop-color='%2306b6d4'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url(%23g4)'/%3E%3Cpath d='M22 38a10 10 0 0 1 18-4 8 8 0 0 1 8 8H20a6 6 0 0 1 2-4z' fill='%23fff'/%3E%3C/svg%3E",
-  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g5' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%237c3aed'/%3E%3Cstop offset='100%25' stop-color='%23a855f7'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url(%23g5)'/%3E%3Cpath d='M24 22h16v6H24zm0 10h16v6H24zm0 10h10v6H24z' fill='%23fff'/%3E%3C/svg%3E",
-  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g6' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23e11d48'/%3E%3Cstop offset='100%25' stop-color='%23f43f5e'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url(%23g6)'/%3E%3Ccircle cx='32' cy='32' r='14' stroke='%23fff' stroke-width='4' fill='none'/%3E%3Cpath d='M32 24v8l6 4' stroke='%23fff' stroke-width='3' stroke-linecap='round' fill='none'/%3E%3C/svg%3E",
-  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g7' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%230f766e'/%3E%3Cstop offset='100%25' stop-color='%2314b8a6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url(%23g7)'/%3E%3Cpath d='M20 32a12 12 0 1 0 24 0 12 12 0 1 0-24 0z' stroke='%23fff' stroke-width='4' fill='none'/%3E%3Cpath d='M32 18v28M18 32h28' stroke='%23fff' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E",
-  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g8' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%234338ca'/%3E%3Cstop offset='100%25' stop-color='%236366f1'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url(%23g8)'/%3E%3Cpolygon points='32,18 42,42 22,42' fill='%23fff'/%3E%3C/svg%3E",
+export const REAL_TECH_TOPIC_IMAGES = [
+  'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=160&h=160&auto=format&fit=crop&q=80', // Modern IDE & Code
+  'https://images.unsplash.com/photo-1563986768609-322da13575f3?w=160&h=160&auto=format&fit=crop&q=80', // Cybersecurity & Zero-Trust
+  'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=160&h=160&auto=format&fit=crop&q=80', // Developer Toolkits & Workstation
+  'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=160&h=160&auto=format&fit=crop&q=80', // WebAssembly & High-Speed Processing
+  'https://images.unsplash.com/photo-1515879218367-8466d910aaa4?w=160&h=160&auto=format&fit=crop&q=80', // Modern TypeScript Architecture
+  'https://images.unsplash.com/photo-1504639725590-34d0984388bd?w=160&h=160&auto=format&fit=crop&q=80', // Web Crypto & Security Primitives
+  'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=160&h=160&auto=format&fit=crop&q=80', // AI & Cloud Computing
+  'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=160&h=160&auto=format&fit=crop&q=80', // Edge Networks & Global Data
 ];
 
 export function getFallbackTopicImage(index: number): string {
-  return LOCAL_BUNDLED_THUMBS[Math.abs(index) % LOCAL_BUNDLED_THUMBS.length];
+  return REAL_TECH_TOPIC_IMAGES[Math.abs(index) % REAL_TECH_TOPIC_IMAGES.length];
 }
 
 export function getFastTopicImage(seedText: string, index: number): string {
@@ -46,7 +38,7 @@ export function getFastTopicImage(seedText: string, index: number): string {
   for (let i = 0; i < seedText.length; i++) {
     hash = (hash * 31 + seedText.charCodeAt(i)) >>> 0;
   }
-  return FAST_TOPIC_THUMBNAILS[hash % FAST_TOPIC_THUMBNAILS.length];
+  return REAL_TECH_TOPIC_IMAGES[hash % REAL_TECH_TOPIC_IMAGES.length];
 }
 
 /**
@@ -74,7 +66,7 @@ export function getFormattedDate(): string {
 }
 
 /**
- * Default instant zero-delay fallback digest with guaranteed round topic images
+ * Default instant zero-delay fallback digest with guaranteed real topic photography images
  */
 const FALLBACK_DIGEST: TechDigest = {
   id: getTodayKey(),
@@ -87,42 +79,42 @@ const FALLBACK_DIGEST: TechDigest = {
       title: "Vite & Client-First Architecture",
       detail: "Modern web apps shift towards zero-backend, client-heavy architectures to improve privacy, performance, and eliminate server overhead.",
       url: "https://news.ycombinator.com",
-      imageUrl: FAST_TOPIC_THUMBNAILS[0]
+      imageUrl: REAL_TECH_TOPIC_IMAGES[0]
     },
     {
       category: "Cloud & Security",
       title: "Zero-Trust Browser Sandboxing",
       detail: "Localized client-side processing becomes standard for developer utility suites and privacy-first tools.",
       url: "https://dev.to",
-      imageUrl: FAST_TOPIC_THUMBNAILS[1]
+      imageUrl: REAL_TECH_TOPIC_IMAGES[1]
     },
     {
       category: "Tooling",
       title: "High-Performance Developer Toolkits",
       detail: "Standalone offline-capable browser utilities replace heavyweight desktop applications for day-to-day conversion and formatting tasks.",
       url: "https://github.com/trending",
-      imageUrl: FAST_TOPIC_THUMBNAILS[2]
+      imageUrl: REAL_TECH_TOPIC_IMAGES[2]
     },
     {
       category: "WebAssembly",
       title: "Native-Speed PDF & Image Processing in Browser",
       detail: "Hardware-accelerated Canvas and WASM pipelines allow instant document manipulation with zero cloud latency.",
       url: "https://webassembly.org",
-      imageUrl: FAST_TOPIC_THUMBNAILS[3]
+      imageUrl: REAL_TECH_TOPIC_IMAGES[3]
     },
     {
       category: "Open Source",
       title: "Modern TypeScript & Edge Runtime Ecosystems",
       detail: "Type-safe modular architectures streamline developer workflows and reduce production bundle overhead.",
       url: "https://github.com/trending",
-      imageUrl: FAST_TOPIC_THUMBNAILS[4]
+      imageUrl: REAL_TECH_TOPIC_IMAGES[4]
     },
     {
       category: "Cryptography",
       title: "Web Crypto API & End-to-End Local Security",
       detail: "Hardware entropy and SubtleCrypto primitives bring zero-knowledge encryption directly to browser applications.",
       url: "https://developer.mozilla.org/en-US/docs/Web/API/Web_Crypto_API",
-      imageUrl: FAST_TOPIC_THUMBNAILS[5]
+      imageUrl: REAL_TECH_TOPIC_IMAGES[5]
     }
   ],
   keyTakeaway: "Building privacy-first, client-side tools gives developers maximum speed and privacy with zero server latency.",
@@ -149,8 +141,9 @@ export function ensureDigestImages(digest: TechDigest | null | undefined): TechD
   const normalizedHighlights: TechHighlight[] = rawHighlights.map((item, idx) => {
     const existingImg = item.imageUrl?.trim() || '';
     const isSlowPicsum = existingImg.includes('picsum.photos');
+    const isDemoSvg = existingImg.startsWith('data:image/svg+xml');
     const validImageUrl =
-      existingImg && !isSlowPicsum
+      existingImg && !isSlowPicsum && !isDemoSvg
         ? existingImg
         : getFastTopicImage(item.title || item.category || `topic-${idx}`, idx);
 
@@ -242,12 +235,21 @@ export async function generateEndpointTechDigest(): Promise<TechDigest> {
           if (Array.isArray(data.hits)) {
             data.hits.forEach((item: any, idx: number) => {
               if (item.title) {
+                let hnImg = getFastTopicImage(item.title || 'hn', idx);
+                if (item.url) {
+                  try {
+                    const host = new URL(item.url).hostname;
+                    if (host && !host.includes('ycombinator.com')) {
+                      hnImg = `https://www.google.com/s2/favicons?domain=${host}&sz=128`;
+                    }
+                  } catch {}
+                }
                 hnHighlights.push({
                   category: "Hacker News",
                   title: item.title,
                   detail: `${item.points || 0} points • ${item.num_comments || 0} comments • Author: ${item.author || 'Community'}`,
                   url: item.url || `https://news.ycombinator.com/item?id=${item.objectID}`,
-                  imageUrl: getFastTopicImage(item.title || 'hn', idx)
+                  imageUrl: hnImg
                 });
                 trendingToolsSet.add(item.author || 'HN');
               }

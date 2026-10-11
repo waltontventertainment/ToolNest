@@ -244,7 +244,7 @@ export const DailyTechDigest: React.FC = () => {
             title="Click to view full tech highlights"
           >
             {topicHighlights.slice(0, 6).map((item, idx) => {
-              const imgSrc = getFastTopicImage(item.title || item.category || `topic-${idx}`, idx);
+              const imgSrc = item.imageUrl || getFastTopicImage(item.title || item.category || `topic-${idx}`, idx);
               return (
                 <span
                   key={`mob-topic-${idx}`}
@@ -255,9 +255,17 @@ export const DailyTechDigest: React.FC = () => {
                     alt={item.title}
                     loading="lazy"
                     decoding="async"
+                    referrerPolicy="no-referrer"
                     width={28}
                     height={28}
                     className="w-full h-full object-cover rounded-full"
+                    onError={(e) => {
+                      const target = e.currentTarget;
+                      const fallback = getFallbackTopicImage(idx);
+                      if (target.src !== fallback) {
+                        target.src = fallback;
+                      }
+                    }}
                   />
                 </span>
               );
@@ -269,7 +277,7 @@ export const DailyTechDigest: React.FC = () => {
         <div className="hidden lg:flex items-center gap-2 shrink-0">
           <div className="flex items-center gap-0.5 pr-2 border-r border-border/60">
             {topicHighlights.slice(0, 6).map((item, idx) => {
-              const imgSrc = getFastTopicImage(item.title || item.category || `topic-${idx}`, idx);
+              const imgSrc = item.imageUrl || getFastTopicImage(item.title || item.category || `topic-${idx}`, idx);
               return (
                 <button
                   key={`pc-topic-${idx}`}
@@ -293,9 +301,17 @@ export const DailyTechDigest: React.FC = () => {
                       alt={item.title}
                       loading="lazy"
                       decoding="async"
+                      referrerPolicy="no-referrer"
                       width={28}
                       height={28}
                       className="w-full h-full object-cover rounded-full"
+                      onError={(e) => {
+                        const target = e.currentTarget;
+                        const fallback = getFallbackTopicImage(idx);
+                        if (target.src !== fallback) {
+                          target.src = fallback;
+                        }
+                      }}
                     />
                   </span>
                 </button>
