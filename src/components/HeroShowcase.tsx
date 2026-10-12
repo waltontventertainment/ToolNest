@@ -41,8 +41,8 @@ const QUICK_LAUNCH_TOOLS = [
     accent: 'text-emerald-800 dark:text-emerald-300 bg-emerald-500/10 border-emerald-500/20',
   },
   {
-    slug: 'qr-generator',
-    name: 'QR Code Maker',
+    slug: 'qr-code-generator',
+    name: 'QR Code Generator',
     category: 'QR & Barcode',
     icon: QrCode,
     accent: 'text-amber-800 dark:text-amber-300 bg-amber-500/10 border-amber-500/20',
