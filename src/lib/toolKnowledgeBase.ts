@@ -299,6 +299,81 @@ const bespokeToolKnowledge: Record<string, Partial<ToolKnowledge>> = {
       { q: 'Why does crypto.getRandomValues matter?', a: 'Standard Math.random() is predictable and vulnerable to cryptanalysis. crypto.getRandomValues draws from thermal noise and hardware entropy, guaranteeing unpredictable randomness.' },
       { q: 'Should I avoid symbols on certain legacy websites?', a: 'Some legacy banking portals restrict special characters. You can toggle off symbols while increasing password length to 20+ characters to maintain strong entropy.' }
     ]
+  },
+  'json-formatter': {
+    technicalOverview:
+      'The Toolzaro JSON Formatter, Beautifier & Validator processes structured JavaScript Object Notation (RFC 8259 compliant) using recursive descent parsing. It immediately detects syntax defects such as trailing commas, single-quoted keys, unescaped control characters, and unbalanced brackets with exact character indices and line numbers. Code beautification supports 2-space, 4-space, and tab indentation, as well as ultra-compact minification for high-throughput API payloads.',
+    features: [
+      { title: 'RFC 8259 Strict Syntax Verification', description: 'Highlights syntax violations, malformed quotes, and invalid types with precise line-by-line debugging.' },
+      { title: 'Instant Indentation Customization', description: 'Switch between compact single-line minification, 2-space clean formatting, or 4-space enterprise styles.' },
+      { title: '100% In-Memory Sandbox', description: 'Proprietary payloads, JSON API secrets, and sensitive tokens never exit your local device browser.' },
+      { title: 'Tree & Table Visualization', description: 'Expand and collapse deeply nested objects and arrays with clear structural breadcrumbs.' }
+    ],
+    useCases: [
+      { audience: 'Backend Developers & API Architects', title: 'REST & GraphQL Debugging', scenario: 'Inspect and format raw JSON responses from Postman, curl, or microservice gateways to locate nested errors in seconds.' },
+      { audience: 'DevOps & Cloud Engineers', title: 'Infrastructure Configuration', scenario: 'Format AWS CloudFormation policies, Kubernetes manifests, and Docker daemon configurations before committing to Git.' },
+      { audience: 'QA Engineers', title: 'Payload Validation', scenario: 'Ensure test datasets conform strictly to JSON schema standards without risking customer PII leakage.' }
+    ],
+    bestPractices: [
+      { title: 'Double Quotes for RFC Standards', advice: 'Always verify keys and strings are enclosed in double quotes (""), as single quotes (\'\') are invalid in RFC 8259 JSON.' },
+      { title: 'Remove Trailing Commas', advice: 'Standard JSON forbids commas after the final key in an object or array; the validator highlights these immediately.' },
+      { title: 'Minify Before Network Transmission', advice: 'Use the 1-click Minify option to eliminate whitespace overhead when transmitting large JSON structures over low-bandwidth connections.' }
+    ],
+    extendedFaqs: [
+      { q: 'Is my JSON payload logged or saved?', a: 'No. The JSON formatter executes entirely in your browser JavaScript thread. No data is sent over HTTP/HTTPS to any server.' },
+      { q: 'Can this tool format multi-megabyte JSON files?', a: 'Yes. Thanks to virtualized rendering and native JSON.parse engines, the tool handles 10MB+ JSON structures smoothly.' },
+      { q: 'What causes the "Unexpected token in JSON" error?', a: 'This commonly happens when your input contains unescaped double quotes inside strings, trailing commas, single quotes, or comment lines (//) which are not permitted in strict JSON.' }
+    ]
+  },
+  'qr-code-generator': {
+    technicalOverview:
+      'Toolzaro’s QR Code Generator synthesizes ISO/IEC 18004 compliant two-dimensional matrix symbologies with selectable Reed-Solomon Error Correction Code (ECC) levels (7% L, 15% M, 25% Q, and 30% H). Generated barcodes are drawn dynamically to high-DPI HTML5 Canvases and vector SVG nodes, allowing infinite lossless scaling for billboard print, packaging, and digital displays.',
+    features: [
+      { title: 'Reed-Solomon Error Correction', description: 'Configurable ECC resilience up to Level H (30%), allowing damaged or covered QR codes to remain completely scannable.' },
+      { title: 'Universal Payload Formatting', description: 'Generate QR codes for Web URLs, Wi-Fi credentials (WPA/WPA2), vCard contacts, SMS, Email, and plain text.' },
+      { title: 'Lossless Vector SVG Export', description: 'Download production-ready vector graphics (.svg) or high-resolution PNG images for print design.' },
+      { title: 'Zero Cloud Round-Trip', description: 'QR codes render instantly in 0ms using client-side algorithms without tracking pixels or redirection redirects.' }
+    ],
+    useCases: [
+      { audience: 'Retail & Restaurant Operators', title: 'Contactless Digital Menus', scenario: 'Create permanent QR codes linking to digital menus, promotional tables, and guest Wi-Fi login networks.' },
+      { audience: 'Marketing Professionals', title: 'Print Collateral & Billboards', scenario: 'Export Level H QR codes in SVG format for billboards, exhibition banners, flyers, and business cards.' },
+      { audience: 'Event Organizers', title: 'Ticket Check-in & Schedules', scenario: 'Embed session links and ticketing information for attendees to scan instantly with iOS and Android camera apps.' }
+    ],
+    bestPractices: [
+      { title: 'Maintain Sufficient Contrast', advice: 'Ensure the dark modules have high contrast against the light background (at least 4:1 ratio); avoid light-on-light color palettes.' },
+      { title: 'Leave a Quiet Zone Border', advice: 'Always preserve a margin of at least 4 module widths around the QR code so camera sensors can isolate the pattern.' },
+      { title: 'Choose Level H When Adding Logos', advice: 'If you plan to place a logo in the center of the QR code, select Error Correction Level H (30%) to prevent scan failure.' }
+    ],
+    extendedFaqs: [
+      { q: 'Do these QR codes ever expire or require subscription renewal?', a: 'No! These are 100% static QR codes. The encoded data is directly embedded inside the black-and-white grid. They will work indefinitely as long as your destination link exists.' },
+      { q: 'Can iPhone and Android cameras scan this natively without an app?', a: 'Yes. All generated codes follow ISO/IEC 18004 standards and are recognized immediately by the standard Camera app on both iOS and Android.' },
+      { q: 'What is the ideal print size for a QR code?', a: 'For handheld materials (business cards, flyers), a minimum size of 2cm x 2cm (0.8in x 0.8in) is recommended. For posters, scale up based on scanning distance.' }
+    ]
+  },
+  'sitemap-generator': {
+    technicalOverview:
+      'The Toolzaro XML Sitemap Generator creates standardized Sitemaps.org Protocol 0.9 XML documents for search engine bots. It automates `<loc>`, `<lastmod>`, `<changefreq>`, and `<priority>` tagging while ensuring all URLs are strictly absolute, canonicalized, and UTF-8 encoded to satisfy Google Search Console and Bing Webmaster guidelines.',
+    features: [
+      { title: 'Sitemaps.org 0.9 Specification', description: 'Outputs schema-compliant XML that search crawlers parse without schema validation warnings.' },
+      { title: 'Automated Canonical Normalization', description: 'Forces HTTPS protocol, trims trailing slashes, and formats ISO 8601 timestamps (YYYY-MM-DD).' },
+      { title: 'Priority & Frequency Mapping', description: 'Assign logical crawl frequencies and priority weights (0.1 to 1.0) to highlight core landing pages.' },
+      { title: 'One-Click Copy & Download', description: 'Instantly download sitemap.xml or copy to clipboard for immediate upload to web hosting root.' }
+    ],
+    useCases: [
+      { audience: 'SEO Specialists & Webmasters', title: 'Full Indexation Acceleration', scenario: 'Generate clean XML sitemaps to submit via Google Search Console and Bing Webmaster Tools for rapid crawling.' },
+      { audience: 'Developers & Agency Teams', title: 'Client Site Launches', scenario: 'Build complete XML sitemaps during staging audits to ensure zero orphan pages before going live.' },
+      { audience: 'Bloggers & Publishers', title: 'Content Discovery', scenario: 'Map out new editorial categories and articles to ensure search engine spiders discover updates in minutes.' }
+    ],
+    bestPractices: [
+      { title: 'Submit Sitemap to Search Console', advice: 'After downloading sitemap.xml, place it in your website root and submit the URL in Google Search Console under Indexing > Sitemaps.' },
+      { title: 'Keep URLs Strictly Canonical', advice: 'Never include redirecting URLs (301/302) or parameterized duplicate URLs in your sitemap; include only status 200 final canonical links.' },
+      { title: 'Reference in robots.txt', advice: 'Add `Sitemap: https://yourdomain.com/sitemap.xml` at the bottom of your robots.txt file to guide all search crawlers automatically.' }
+    ],
+    extendedFaqs: [
+      { q: 'Why is an XML sitemap essential for SEO?', a: 'An XML sitemap tells search engines which pages exist, when they were last modified, and their relative priority, preventing deep pages from being missed.' },
+      { q: 'How many URLs can a single XML sitemap contain?', a: 'Search engines permit up to 50,000 URLs or 50MB uncompressed per sitemap file. Larger sites can use a Sitemap Index file to link multiple sitemaps.' },
+      { q: 'How frequently should I update my sitemap?', a: 'Whenever new pages, tools, or articles are added, or when existing content receives a major overhaul, update the sitemap and lastmod date.' }
+    ]
   }
 };
 

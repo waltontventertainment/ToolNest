@@ -85,7 +85,16 @@ export const ToolPage: React.FC<{ forcedSlug?: string }> = ({ forcedSlug }) => {
   const seoDescription = buildToolSeoDescription(tool, siteName);
   const seoKeywords = buildToolSeoKeywords(tool, siteName);
 
-  // Rich Schema.org structured data (WebApplication, BreadcrumbList, FAQPage, HowTo)
+  // Semantic related tools for internal link equity (Same category first, then cross-category popular tools)
+  const relatedCategoryTools = tools
+    .filter(t => t.category === tool.category && t.slug !== tool.slug)
+    .slice(0, 8);
+  const crossCategoryTools = tools
+    .filter(t => t.category !== tool.category)
+    .slice(0, 4);
+  const internalLinkSet = [...relatedCategoryTools, ...crossCategoryTools];
+
+  // Rich Schema.org structured data (WebApplication, BreadcrumbList, FAQPage, HowTo, ItemList internal discovery graph)
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "WebApplication",
@@ -108,7 +117,21 @@ export const ToolPage: React.FC<{ forcedSlug?: string }> = ({ forcedSlug }) => {
       "@type": "Offer",
       "price": "0",
       "priceCurrency": "USD"
-    }
+    },
+    // Background internal links graph for search engine crawlers
+    "relatedLink": internalLinkSet.map(t => `${baseUrl}/${t.slug}`),
+    "hasPart": [
+      {
+        "@type": "WebPage",
+        "name": `${tool.category} Tools Directory`,
+        "url": `${baseUrl}/${catSlug}`
+      },
+      ...relatedCategoryTools.slice(0, 5).map(t => ({
+        "@type": "WebPage",
+        "name": t.name,
+        "url": `${baseUrl}/${t.slug}`
+      }))
+    ]
   };
 
   const breadcrumbLd = {
@@ -161,6 +184,18 @@ export const ToolPage: React.FC<{ forcedSlug?: string }> = ({ forcedSlug }) => {
     }))
   };
 
+  const relatedToolsLd = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": `Related ${tool.category} Utilities`,
+    "itemListElement": internalLinkSet.map((t, idx) => ({
+      "@type": "ListItem",
+      "position": idx + 1,
+      "name": t.name,
+      "url": `${baseUrl}/${t.slug}`
+    }))
+  };
+
   return (
     <>
       <Seo 
@@ -168,7 +203,7 @@ export const ToolPage: React.FC<{ forcedSlug?: string }> = ({ forcedSlug }) => {
         description={seoDescription} 
         keywords={seoKeywords}
         url={toolCanonicalUrl}
-        jsonLd={[jsonLd, breadcrumbLd, faqLd, howToLd]}
+        jsonLd={[jsonLd, breadcrumbLd, faqLd, howToLd, relatedToolsLd]}
       />
       
       {/* Breadcrumbs & Navigation Header */}
@@ -483,6 +518,50 @@ export const ToolPage: React.FC<{ forcedSlug?: string }> = ({ forcedSlug }) => {
           <AdSlot slot="tool-sidebar" format="rectangle" />
         </aside>
       </div>
+
+      {/* Full Semantic Related Tools & Ecosystem Navigation Grid */}
+      <section className="mt-12 pt-8 border-t border-border/80 space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div>
+            <h2 className="text-base sm:text-lg font-bold font-display text-foreground flex items-center gap-2">
+              <Zap className="w-4 h-4 text-primary" />
+              <span>Related {tool.category} &amp; Recommended Utilities</span>
+            </h2>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Explore specialized tools built for fast, 100% private in-browser processing with zero server uploads.
+            </p>
+          </div>
+          <Link
+            to={getCategoryUrl(catSlug)}
+            className="text-xs font-bold text-primary hover:underline flex items-center gap-1 self-start sm:self-auto"
+          >
+            <span>Browse All {tool.category} ({tools.filter(t => t.category === tool.category).length})</span>
+            <ChevronRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+          {internalLinkSet.slice(0, 12).map((item) => (
+            <Link
+              key={item.slug}
+              to={getToolUrl(item.slug)}
+              onMouseEnter={() => preloadToolBySlug(item.slug)}
+              onTouchStart={() => preloadToolBySlug(item.slug)}
+              className="group flex flex-col p-3 rounded-xl bg-card border border-border/70 hover:border-primary/40 hover:bg-secondary/40 transition-all shadow-2xs hover:shadow-xs"
+            >
+              <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
+                <item.icon className="w-4 h-4" />
+              </div>
+              <span className="text-xs font-bold text-foreground line-clamp-1 group-hover:text-primary transition-colors">
+                {item.name}
+              </span>
+              <span className="text-[10px] text-muted-foreground line-clamp-1 mt-0.5">
+                {item.category}
+              </span>
+            </Link>
+          ))}
+        </div>
+      </section>
     </>
   );
 };

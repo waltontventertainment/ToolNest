@@ -176,6 +176,9 @@ jobs:
           # Copy all built files (including dotfiles like .well-known) from dist/ to DEPLOY_DIR
           cp -r dist/. "$DEPLOY_DIR/"
 
+          # Ensure standalone Worker scripts or sensitive dev files are excluded from pages deployment
+          rm -f "$DEPLOY_DIR/cloudflare-indexing-worker.js"
+
           # Add root-level wrangler.jsonc for the pre-built Toolzaro repository
           cat << 'EOF' > "$DEPLOY_DIR/wrangler.jsonc"
           {
