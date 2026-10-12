@@ -1,6 +1,36 @@
 import React, { useEffect, useState } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { Moon, Sun, Wrench, Star, ArrowRight, BookOpen, Cloud, Bug, MessageSquarePlus, Sparkles, X, ArrowUp } from 'lucide-react';
+import {
+  Moon,
+  Sun,
+  Wrench,
+  Star,
+  ArrowRight,
+  BookOpen,
+  Cloud,
+  Bug,
+  MessageSquarePlus,
+  Sparkles,
+  X,
+  ArrowUp,
+  ChevronDown,
+  FileText,
+  Code,
+  Image as ImageIcon,
+  Type,
+  ArrowLeftRight,
+  Calculator,
+  QrCode,
+  Search,
+  Database,
+  Sliders,
+  Info,
+  ShieldCheck,
+  Scale,
+  ShieldAlert,
+  Mail,
+  Layers,
+} from 'lucide-react';
 import { useLocalStorage } from '../lib/toolkit';
 import { categories, tools } from '../lib/registry';
 import { getEffectiveTools } from '../lib/toolOverrides';
@@ -10,6 +40,54 @@ import { useFavorites } from '../context/FavoritesContext';
 import { useGoogleDrive } from '../context/GoogleDriveContext';
 import { getBlogUrl, getCategoryUrl, getStaticPageUrl, getToolsHubUrl, getBookmarksUrl } from '../lib/appUrls';
 import { useSiteSettings } from '../context/SiteSettingsContext';
+
+const HEADER_CATEGORIES = [
+  { name: 'PDF Suite', categoryName: 'PDF', slug: 'pdf', icon: FileText },
+  { name: 'Developer', categoryName: 'Developer', slug: 'developer', icon: Code },
+  { name: 'Color & Image', categoryName: 'Color & Image', slug: 'color-image', icon: ImageIcon },
+  { name: 'Text Utilities', categoryName: 'Text', slug: 'text', icon: Type },
+  { name: 'Converters', categoryName: 'Converters', slug: 'converters', icon: ArrowLeftRight },
+  { name: 'Generators', categoryName: 'Generators', slug: 'generators', icon: Sparkles },
+  { name: 'Calculators', categoryName: 'Calculators', slug: 'calculators', icon: Calculator },
+  { name: 'QR & Barcode', categoryName: 'QR & Barcode', slug: 'qr-barcode', icon: QrCode },
+  { name: 'SEO Tools', categoryName: 'SEO', slug: 'seo', icon: Search },
+  { name: 'Universal Data', categoryName: 'Universal Data Suite', slug: 'universal-data-suite', icon: Database },
+  { name: 'Utility Suite', categoryName: 'Utility', slug: 'utility', icon: Sliders },
+  { name: 'Wikipedia', categoryName: 'Wikipedia', slug: 'wikipedia', icon: BookOpen },
+];
+
+const HEADER_PAGES = [
+  {
+    name: 'About Us',
+    path: '/about',
+    icon: Info,
+    desc: 'Mission, local architecture & privacy sandbox',
+  },
+  {
+    name: 'Privacy Policy',
+    path: '/privacy-policy',
+    icon: ShieldCheck,
+    desc: '100% Client-side sandbox & zero data logging',
+  },
+  {
+    name: 'Terms of Service',
+    path: '/terms',
+    icon: Scale,
+    desc: 'Free utilities licensing & acceptable use terms',
+  },
+  {
+    name: 'Disclaimer',
+    path: '/disclaimer',
+    icon: ShieldAlert,
+    desc: 'Local browser sandbox & security boundaries',
+  },
+  {
+    name: 'Contact Us',
+    path: '/contact',
+    icon: Mail,
+    desc: 'Feedback, bug reports & feature requests',
+  },
+];
 
 const GoogleDriveModal = React.lazy(() => import('./GoogleDriveModal').then(m => ({ default: m.GoogleDriveModal })));
 const FeedbackModal = React.lazy(() => import('./FeedbackModal').then(m => ({ default: m.FeedbackModal })));
@@ -80,6 +158,62 @@ export const SiteLayout: React.FC = () => {
   const bannerLinkText = settings.announcement.linkText || 'Explore All Tools';
   const bannerLinkUrl = settings.announcement.linkUrl || '/';
 
+  const [openDropdown, setOpenDropdown] = useState<'categories' | 'pages' | null>(null);
+  const categoriesDropdownRef = React.useRef<HTMLDivElement>(null);
+  const pagesDropdownRef = React.useRef<HTMLDivElement>(null);
+
+  // Close dropdown on outside click or Escape key
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
+      if (
+        openDropdown === 'categories' &&
+        categoriesDropdownRef.current &&
+        !categoriesDropdownRef.current.contains(target)
+      ) {
+        setOpenDropdown(null);
+      }
+      if (
+        openDropdown === 'pages' &&
+        pagesDropdownRef.current &&
+        !pagesDropdownRef.current.contains(target)
+      ) {
+        setOpenDropdown(null);
+      }
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setOpenDropdown(null);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [openDropdown]);
+
+  // Close dropdown whenever route changes
+  useEffect(() => {
+    setOpenDropdown(null);
+  }, [pathname]);
+
+  const categoryCounts = React.useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const t of tools) {
+      counts[t.category] = (counts[t.category] || 0) + 1;
+    }
+    return counts;
+  }, []);
+
+  const isHomeActive = pathname === '/' && !location.search.includes('favorites=true');
+  const isDirectoryActive = pathname === '/tools' || pathname === '/all-tools' || pathname === '/directory';
+  const isCategoriesActive = HEADER_CATEGORIES.some(cat => pathname === `/${cat.slug}`);
+  const isPagesActive = HEADER_PAGES.some(p => pathname === p.path);
+
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground">
       {/* Premium Top Announcement Banner for Desktop / PC View */}
@@ -143,64 +277,184 @@ export const SiteLayout: React.FC = () => {
             </div>
           </Link>
 
-          {/* Desktop Center Navigation Links (True PC App Header) */}
-          <nav className="hidden xl:flex items-center gap-6 text-xs font-semibold text-muted-foreground" aria-label="Primary Desktop Navigation">
+          {/* Desktop Center Navigation: Home | Directory | Categories ▾ | Pages ▾ */}
+          <nav className="hidden lg:flex items-center gap-1.5 sm:gap-2 text-xs font-semibold text-muted-foreground" aria-label="Primary Desktop Navigation">
+            {/* 1. Home */}
             <Link
               to="/"
-              className={`hover:text-foreground transition-colors whitespace-nowrap py-1 border-b-2 ${
-                pathname === '/' ? 'text-primary font-bold border-primary' : 'border-transparent'
+              className={`px-3 py-1.5 rounded-xl transition-all duration-150 whitespace-nowrap border ${
+                isHomeActive
+                  ? 'text-primary font-bold bg-primary/10 border-primary/30 shadow-xs'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-secondary/60 border-transparent'
               }`}
             >
-              Workspace
+              Home
             </Link>
+
+            {/* 2. Directory */}
             <Link
               to={getToolsHubUrl()}
-              className={`hover:text-foreground transition-colors whitespace-nowrap py-1 border-b-2 ${
-                pathname === '/tools' ? 'text-primary font-bold border-primary' : 'border-transparent'
+              className={`px-3 py-1.5 rounded-xl transition-all duration-150 whitespace-nowrap border ${
+                isDirectoryActive
+                  ? 'text-primary font-bold bg-primary/10 border-primary/30 shadow-xs'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-secondary/60 border-transparent'
               }`}
             >
-              All Tools ({liveCount})
+              Directory
             </Link>
-            <Link
-              to={getCategoryUrl('pdf')}
-              className={`hover:text-foreground transition-colors whitespace-nowrap py-1 border-b-2 ${
-                pathname === '/pdf' ? 'text-primary font-bold border-primary' : 'border-transparent'
-              }`}
-            >
-              PDF Suite
-            </Link>
-            <Link
-              to={getCategoryUrl('color-image')}
-              className={`hover:text-foreground transition-colors whitespace-nowrap py-1 border-b-2 ${
-                pathname === '/color-image' ? 'text-primary font-bold border-primary' : 'border-transparent'
-              }`}
-            >
-              Image &amp; Color
-            </Link>
-            <Link
-              to={getCategoryUrl('developer')}
-              className={`hover:text-foreground transition-colors whitespace-nowrap py-1 border-b-2 ${
-                pathname === '/developer' ? 'text-primary font-bold border-primary' : 'border-transparent'
-              }`}
-            >
-              Developer
-            </Link>
-            <Link
-              to={getBlogUrl()}
-              className={`hover:text-foreground transition-colors whitespace-nowrap py-1 border-b-2 ${
-                pathname.startsWith('/blog') ? 'text-primary font-bold border-primary' : 'border-transparent'
-              }`}
-            >
-              Guides &amp; Blog
-            </Link>
+
+            {/* 3. Categories ▾ Dropdown */}
+            <div className="relative" ref={categoriesDropdownRef}>
+              <button
+                type="button"
+                onClick={() => setOpenDropdown(prev => prev === 'categories' ? null : 'categories')}
+                className={`px-3 py-1.5 rounded-xl transition-all duration-150 whitespace-nowrap border flex items-center gap-1.5 cursor-pointer ${
+                  isCategoriesActive || openDropdown === 'categories'
+                    ? 'text-primary font-bold bg-primary/10 border-primary/30 shadow-xs'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-secondary/60 border-transparent'
+                }`}
+                aria-expanded={openDropdown === 'categories'}
+                aria-haspopup="true"
+              >
+                <span>Categories</span>
+                <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${openDropdown === 'categories' ? 'rotate-180 text-primary' : 'text-muted-foreground'}`} />
+              </button>
+
+              {openDropdown === 'categories' && (
+                <div className="absolute top-full left-0 mt-2 w-[430px] max-w-[92vw] p-3 rounded-2xl bg-card/95 backdrop-blur-xl border border-border shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-150">
+                  <div className="px-2.5 py-1.5 mb-2 border-b border-border/60 flex items-center justify-between">
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                      Tool Suites &amp; Categories
+                    </span>
+                    <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-primary/10 text-primary border border-primary/20">
+                      {liveCount} Utilities
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-1.5 max-h-[360px] overflow-y-auto pr-1">
+                    {HEADER_CATEGORIES.map(cat => {
+                      const Icon = cat.icon;
+                      const count = categoryCounts[cat.categoryName] || 0;
+                      const isCatActive = pathname === `/${cat.slug}`;
+                      return (
+                        <Link
+                          key={cat.slug}
+                          to={getCategoryUrl(cat.slug)}
+                          onClick={() => setOpenDropdown(null)}
+                          className={`p-2 rounded-xl flex items-center gap-2.5 transition-all duration-150 group border ${
+                            isCatActive
+                              ? 'bg-primary/10 border-primary/40 text-primary font-bold'
+                              : 'border-transparent hover:border-border hover:bg-secondary/70 text-foreground'
+                          }`}
+                        >
+                          <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
+                            isCatActive
+                              ? 'bg-primary text-white'
+                              : 'bg-muted group-hover:bg-primary/15 text-muted-foreground group-hover:text-primary'
+                          }`}>
+                            <Icon className="w-3.5 h-3.5" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <div className="text-xs font-bold truncate group-hover:text-primary transition-colors">
+                              {cat.name}
+                            </div>
+                            <div className="text-[10px] text-muted-foreground truncate">
+                              {count} {count === 1 ? 'tool' : 'tools'}
+                            </div>
+                          </div>
+                        </Link>
+                      );
+                    })}
+                  </div>
+
+                  <div className="mt-2.5 pt-2 border-t border-border/60 flex items-center justify-between px-2">
+                    <Link
+                      to={getToolsHubUrl()}
+                      onClick={() => setOpenDropdown(null)}
+                      className="text-xs font-bold text-primary hover:underline flex items-center gap-1.5"
+                    >
+                      <Layers className="w-3.5 h-3.5" />
+                      <span>Browse All {liveCount} Tools Directory</span>
+                      <ArrowRight className="w-3 h-3" />
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* 4. Pages ▾ Dropdown (About Us, Privacy Policy, Terms, Disclaimer, Contact) */}
+            <div className="relative" ref={pagesDropdownRef}>
+              <button
+                type="button"
+                onClick={() => setOpenDropdown(prev => prev === 'pages' ? null : 'pages')}
+                className={`px-3 py-1.5 rounded-xl transition-all duration-150 whitespace-nowrap border flex items-center gap-1.5 cursor-pointer ${
+                  isPagesActive || openDropdown === 'pages'
+                    ? 'text-primary font-bold bg-primary/10 border-primary/30 shadow-xs'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-secondary/60 border-transparent'
+                }`}
+                aria-expanded={openDropdown === 'pages'}
+                aria-haspopup="true"
+              >
+                <span>Pages</span>
+                <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${openDropdown === 'pages' ? 'rotate-180 text-primary' : 'text-muted-foreground'}`} />
+              </button>
+
+              {openDropdown === 'pages' && (
+                <div className="absolute top-full left-0 mt-2 w-72 sm:w-80 p-2.5 rounded-2xl bg-card/95 backdrop-blur-xl border border-border shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-150">
+                  <div className="px-2.5 py-1.5 mb-2 border-b border-border/60 flex items-center justify-between">
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                      Company &amp; Legal
+                    </span>
+                    <span className="text-[10px] font-mono text-muted-foreground">
+                      Information
+                    </span>
+                  </div>
+
+                  <div className="space-y-1">
+                    {HEADER_PAGES.map(item => {
+                      const Icon = item.icon;
+                      const isPageActive = pathname === item.path;
+                      return (
+                        <Link
+                          key={item.path}
+                          to={item.path}
+                          onClick={() => setOpenDropdown(null)}
+                          className={`p-2.5 rounded-xl flex items-center gap-3 transition-all duration-150 group border ${
+                            isPageActive
+                              ? 'bg-primary/10 border-primary/40 text-primary font-bold'
+                              : 'border-transparent hover:border-border hover:bg-secondary/70 text-foreground'
+                          }`}
+                        >
+                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
+                            isPageActive
+                              ? 'bg-primary text-white'
+                              : 'bg-muted group-hover:bg-primary/15 text-muted-foreground group-hover:text-primary'
+                          }`}>
+                            <Icon className="w-4 h-4" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <div className="text-xs font-bold group-hover:text-primary transition-colors">
+                              {item.name}
+                            </div>
+                            <div className="text-[10px] text-muted-foreground truncate">
+                              {item.desc}
+                            </div>
+                          </div>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
           </nav>
 
-          {/* Right-side toolbar: Blog (below xl), Search, Saved, Drive Sync, Report Bug, Dark Mode */}
+          {/* Right-side toolbar: Blog (visible across all screens), Search, Saved, Drive Sync, Report Bug, Dark Mode */}
           <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
-            {/* Blog Hub Link (Visible below xl; xl uses Center Nav) */}
+            {/* Blog Hub Button (Tactile 3D Keycap style - visible across all desktop and mobile views) */}
             <Link
               to={getBlogUrl()}
-              className={`xl:hidden btn-signature-header px-2.5 sm:px-3.5 gap-1.5 text-xs font-bold ${
+              className={`btn-signature-header px-2.5 sm:px-3.5 gap-1.5 text-xs font-bold ${
                 pathname.startsWith('/blog') || (typeof window !== 'undefined' && window.location.search.includes('page=blog'))
                   ? 'bg-primary/15 text-primary border-primary/40 shadow-xs'
                   : 'text-muted-foreground hover:text-foreground'
