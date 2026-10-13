@@ -219,7 +219,7 @@ export const SiteLayout: React.FC = () => {
   const isPagesActive = HEADER_PAGES.some(p => pathname === p.path);
 
   return (
-    <div className="min-h-screen flex flex-col bg-background text-foreground">
+    <div className="min-h-screen flex flex-col bg-background text-foreground max-w-full overflow-x-hidden">
       {/* Premium Top Announcement Banner for Desktop / PC View */}
       {isAnnouncementActive && (
         <div className="hidden md:block w-full bg-gradient-to-r from-indigo-950 via-purple-950 to-slate-950 border-b border-primary/30 text-white text-xs relative overflow-hidden shadow-xs">
@@ -263,13 +263,13 @@ export const SiteLayout: React.FC = () => {
         </div>
       )}
 
-      <header className="sticky top-0 z-50 w-full backdrop-blur-md bg-background/95 border-b border-border/80 shadow-2xs">
-        <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+      <header className="sticky top-0 z-50 w-full backdrop-blur-md bg-background/95 border-b border-border/80 shadow-2xs max-w-full overflow-x-clip">
+        <div className="w-full max-w-[1400px] mx-auto px-3 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2 sm:gap-4">
           {/* 3D Extruded Logo on the left */}
-          <Link to="/" className="flex items-center gap-3 group shrink-0" aria-label="Toolzaro Home">
-            <div className="logo-3d w-10 h-10 flex items-center justify-center text-white shrink-0">
+          <Link to="/" className="flex items-center gap-2 sm:gap-3 group shrink-0" aria-label="Toolzaro Home">
+            <div className="logo-3d w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center text-white shrink-0">
               <div className="absolute inset-0 rounded-2xl bg-gradient-to-t from-transparent via-white/10 to-white/35 pointer-events-none" />
-              <Wrench className="w-5 h-5 transition-transform duration-200 group-hover:rotate-12 group-hover:scale-110 drop-shadow-[0_2px_4px_rgba(0,0,0,0.4)] text-white" />
+              <Wrench className="w-4.5 h-4.5 sm:w-5 sm:h-5 transition-transform duration-200 group-hover:rotate-12 group-hover:scale-110 drop-shadow-[0_2px_4px_rgba(0,0,0,0.4)] text-white" />
             </div>
             <div className="flex flex-col">
               <span className="text-brand-gradient font-display font-black text-xl sm:text-2xl tracking-[-0.035em] leading-none">
@@ -474,89 +474,97 @@ export const SiteLayout: React.FC = () => {
             </div>
           </nav>
 
-          {/* Right-side toolbar: Blog (visible across screens), Search, Saved, Drive Sync, Report Bug, Dark Mode & Mobile Menu */}
+          {/* Right-side toolbar: Blog, Search, Saved, Drive Sync, Report Bug, Theme & Mobile Menu */}
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-            {/* Blog Hub Button (Tactile 3D Keycap style - kept on right side with toolbar buttons) */}
-            <Link
-              to={getBlogUrl()}
-              className={`btn-signature-header px-2.5 sm:px-3 gap-1.5 text-xs font-bold ${
-                pathname.startsWith('/blog') || (typeof window !== 'undefined' && window.location.search.includes('page=blog'))
-                  ? 'bg-primary/15 text-primary border-primary/40 shadow-xs'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-              title="Toolzaro Pulse & Tech Insights"
-            >
-              <BookOpen className="w-3.5 h-3.5 text-primary shrink-0" />
-              <span>Blog</span>
-            </Link>
+            {/* Blog Hub Button (Tactile 3D Keycap style - Desktop only, on mobile it's in the mobile menu) */}
+            <div className="hidden md:flex">
+              <Link
+                to={getBlogUrl()}
+                className={`btn-signature-header px-2.5 sm:px-3 gap-1.5 text-xs font-bold ${
+                  pathname.startsWith('/blog') || (typeof window !== 'undefined' && window.location.search.includes('page=blog'))
+                    ? 'bg-primary/15 text-primary border-primary/40 shadow-xs'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+                title="Toolzaro Pulse & Tech Insights"
+              >
+                <BookOpen className="w-3.5 h-3.5 text-primary shrink-0" />
+                <span>Blog</span>
+              </Link>
+            </div>
 
-            {/* 1. Search Trigger Button */}
+            {/* 1. Search Trigger Button (Always visible on mobile & desktop) */}
             <HeaderSearch />
 
-            {/* 2. Favorites / Saved Button -> /bookmarks */}
-            <Link
-              to={pathname === '/bookmarks' || pathname === '/saved' || pathname === '/favorites' ? '/' : getBookmarksUrl()}
-              className={`btn-signature-header px-2 sm:px-3 gap-1.5 text-xs font-bold ${
-                pathname === '/bookmarks' || pathname === '/saved' || pathname === '/favorites' || location.search.includes('favorites=true')
-                  ? 'bg-amber-500/15 text-amber-800 dark:text-amber-300 border-amber-400 dark:border-amber-600 shadow-amber-500/20'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-              title="View Bookmarked Tools (/bookmarks)"
-            >
-              <Star 
-                className={`w-4 h-4 transition-transform group-hover:scale-115 shrink-0 ${
-                  favorites.length > 0 ? 'text-amber-500 fill-amber-500 filter drop-shadow-[0_0_6px_rgba(245,158,11,0.5)]' : 'text-amber-600 dark:text-amber-400'
-                }`} 
-              />
-              <span className="hidden sm:inline">Saved</span>
-              {favorites.length > 0 && (
-                <span className="text-[10px] font-bold text-amber-950 dark:text-amber-200 bg-amber-200/90 dark:bg-amber-950/90 px-1.5 py-0.2 rounded-md border border-amber-300/80 dark:border-amber-700/80 tabular-nums shadow-2xs">
-                  {favorites.length}
-                </span>
-              )}
-            </Link>
+            {/* 2. Favorites / Saved Button -> /bookmarks (Desktop only, on mobile it's in the mobile menu) */}
+            <div className="hidden md:flex">
+              <Link
+                to={pathname === '/bookmarks' || pathname === '/saved' || pathname === '/favorites' ? '/' : getBookmarksUrl()}
+                className={`btn-signature-header px-2 sm:px-3 gap-1.5 text-xs font-bold ${
+                  pathname === '/bookmarks' || pathname === '/saved' || pathname === '/favorites' || location.search.includes('favorites=true')
+                    ? 'bg-amber-500/15 text-amber-800 dark:text-amber-300 border-amber-400 dark:border-amber-600 shadow-amber-500/20'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+                title="View Bookmarked Tools (/bookmarks)"
+              >
+                <Star 
+                  className={`w-4 h-4 transition-transform group-hover:scale-115 shrink-0 ${
+                    favorites.length > 0 ? 'text-amber-500 fill-amber-500 filter drop-shadow-[0_0_6px_rgba(245,158,11,0.5)]' : 'text-amber-600 dark:text-amber-400'
+                  }`} 
+                />
+                <span className="hidden sm:inline">Saved</span>
+                {favorites.length > 0 && (
+                  <span className="text-[10px] font-bold text-amber-950 dark:text-amber-200 bg-amber-200/90 dark:bg-amber-950/90 px-1.5 py-0.2 rounded-md border border-amber-300/80 dark:border-amber-700/80 tabular-nums shadow-2xs">
+                    {favorites.length}
+                  </span>
+                )}
+              </Link>
+            </div>
 
-            {/* 3. Google Drive Sync Button */}
-            <button
-              type="button"
-              onClick={() => setIsDriveModalOpen(true)}
-              className={`btn-signature-header px-2 sm:px-2.5 gap-1.5 text-xs font-bold cursor-pointer relative ${
-                accessToken
-                  ? 'bg-blue-500/10 text-blue-700 dark:text-blue-300 border-blue-400/50 shadow-blue-500/10'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-              title={accessToken ? `Connected as ${user?.displayName || user?.email}` : 'Connect Google Drive Cloud Sync'}
-            >
-              <Cloud className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" />
-              <span className="hidden lg:inline">Drive</span>
-              {accessToken && (
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-              )}
-            </button>
+            {/* 3. Google Drive Sync Button (Desktop only, on mobile it's in the mobile menu) */}
+            <div className="hidden md:flex">
+              <button
+                type="button"
+                onClick={() => setIsDriveModalOpen(true)}
+                className={`btn-signature-header px-2 sm:px-2.5 gap-1.5 text-xs font-bold cursor-pointer relative ${
+                  accessToken
+                    ? 'bg-blue-500/10 text-blue-700 dark:text-blue-300 border-blue-400/50 shadow-blue-500/10'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+                title={accessToken ? `Connected as ${user?.displayName || user?.email}` : 'Connect Google Drive Cloud Sync'}
+              >
+                <Cloud className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" />
+                <span className="hidden lg:inline">Drive</span>
+                {accessToken && (
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+                )}
+              </button>
+            </div>
 
-            {/* 4. Report Bug Button (AdSense Safe Header Placement) */}
-            <button
-              type="button"
-              onClick={() => setIsFeedbackModalOpen(true)}
-              className="btn-signature-header px-2 sm:px-2.5 gap-1.5 text-xs font-bold text-rose-700 dark:text-rose-300 bg-rose-500/10 hover:bg-rose-500/20 border-rose-500/30 cursor-pointer hidden xl:flex"
-              title="Report a Bug or Send Feedback"
-            >
-              <Bug className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400 shrink-0" />
-              <span>Report Bug</span>
-            </button>
+            {/* 4. Report Bug Button (Desktop XL only) */}
+            <div className="hidden xl:flex">
+              <button
+                type="button"
+                onClick={() => setIsFeedbackModalOpen(true)}
+                className="btn-signature-header px-2 sm:px-2.5 gap-1.5 text-xs font-bold text-rose-700 dark:text-rose-300 bg-rose-500/10 hover:bg-rose-500/20 border-rose-500/30 cursor-pointer"
+                title="Report a Bug or Send Feedback"
+              >
+                <Bug className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400 shrink-0" />
+                <span>Report Bug</span>
+              </button>
+            </div>
 
-            {/* 5. 3D Theme Toggle Button & Wave Animation */}
+            {/* 5. 3D Theme Toggle Button & Wave Animation (Always visible on mobile & desktop) */}
             <ThemeToggle3D theme={theme} setTheme={setTheme} />
 
-            {/* 6. Mobile Menu Hamburger Toggle (Visible on md:hidden) */}
+            {/* 6. Mobile Menu Hamburger Toggle (Visible ONLY on md:hidden) */}
             <button
               type="button"
               onClick={() => setIsMobileMenuOpen(prev => !prev)}
-              className="md:hidden btn-signature-header p-2 text-foreground cursor-pointer"
+              className="md:hidden btn-signature-header w-10 h-10 p-0 flex items-center justify-center text-foreground cursor-pointer shrink-0"
               aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
               title="Toggle mobile menu"
             >
-              {isMobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+              {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
           </div>
         </div>
@@ -722,13 +730,13 @@ export const SiteLayout: React.FC = () => {
         </React.Suspense>
       )}
 
-      <main className="flex-1 w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-3 sm:pt-4 md:pt-6 pb-12 sm:pb-16 md:pb-20">
+      <main className="flex-1 w-full max-w-[1400px] mx-auto px-3 sm:px-6 lg:px-8 pt-3 sm:pt-4 md:pt-6 pb-12 sm:pb-16 md:pb-20 overflow-x-clip">
         <React.Suspense fallback={null}>
           <Outlet />
         </React.Suspense>
       </main>
 
-      <footer className="border-t border-border bg-card/60 py-10 sm:py-14 mt-12 sm:mt-16 md:mt-20">
+      <footer className="border-t border-border bg-card/60 py-10 sm:py-14 mt-12 sm:mt-16 md:mt-20 max-w-full overflow-x-hidden">
         {/* Inline Safe Header with Back to Top */}
         <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pb-8 mb-8 border-b border-border/60 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2.5 text-xs text-muted-foreground">

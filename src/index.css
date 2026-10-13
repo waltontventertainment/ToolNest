@@ -119,6 +119,12 @@
     @apply border-border;
   }
   
+  html,
+  body {
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+  
   body {
     @apply bg-background text-foreground font-sans text-base antialiased;
     font-variant-numeric: tabular-nums;
@@ -302,6 +308,11 @@
       0 4px 10px rgba(0, 0, 0, 0.04),
       inset 0 1px 0 rgba(255, 255, 255, 0.9);
     transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .btn-signature-header.hidden,
+  .hidden.btn-signature-header {
+    display: none !important;
   }
 
   .btn-signature-header:hover {
