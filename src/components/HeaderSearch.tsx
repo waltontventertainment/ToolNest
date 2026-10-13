@@ -155,17 +155,11 @@ export const HeaderSearch: React.FC = () => {
       <button
         type="button"
         onClick={() => setIsOpen(true)}
-        className="btn-signature-header px-2.5 sm:px-3.5 gap-1.5 sm:gap-2 text-foreground/80 hover:text-foreground text-xs font-bold group cursor-pointer"
+        className="btn-signature-header w-9 h-9 sm:w-10 sm:h-10 p-0 flex items-center justify-center shrink-0 text-foreground/80 hover:text-foreground group cursor-pointer"
         title="Search tools (⌘K or /)"
         aria-label="Search tools"
       >
-        <div className="w-5 h-5 rounded-lg flex items-center justify-center transition-transform group-hover:scale-115 text-primary">
-          <Search className="w-4 h-4 transition-transform group-hover:rotate-6 drop-shadow-[0_1px_2px_rgba(99,102,241,0.3)]" />
-        </div>
-        <span className="hidden sm:inline font-bold">Search</span>
-        <kbd className="hidden md:inline-flex items-center gap-0.5 text-[10px] font-mono font-bold text-muted-foreground bg-secondary/80 px-1.5 py-0.5 rounded-md border border-border shadow-2xs group-hover:border-primary/50 group-hover:text-primary transition-all">
-          <span className="text-[11px]">⌘</span>K
-        </kbd>
+        <Search className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-primary transition-transform group-hover:scale-115 group-hover:rotate-6 drop-shadow-[0_1px_2px_rgba(99,102,241,0.3)]" />
       </button>
 
       {/* Spotlight Command Palette Modal */}

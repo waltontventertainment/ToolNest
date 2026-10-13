@@ -455,79 +455,79 @@ export const SiteLayout: React.FC = () => {
 
           {/* Right-side toolbar: Blog, Saved, Drive Sync, Report Bug, Search, Theme & Mobile Drawer Toggle */}
           <div className="flex items-center gap-1 sm:gap-1.5 md:gap-2 shrink-0">
-            {/* 1. Blog Button - Visible directly on header on all devices */}
+            {/* 1. Blog Button */}
             <Link
               to={getBlogUrl()}
-              className={`btn-signature-header h-9 px-2 sm:px-2.5 gap-1 sm:gap-1.5 text-xs font-bold ${
+              className={`btn-signature-header w-9 h-9 sm:w-10 sm:h-10 p-0 flex items-center justify-center shrink-0 ${
                 pathname.startsWith('/blog') || (typeof window !== 'undefined' && window.location.search.includes('page=blog'))
                   ? 'bg-primary/15 text-primary border-primary/40 shadow-xs'
                   : 'text-muted-foreground hover:text-foreground'
               }`}
               title="Blog & Guides"
+              aria-label="Blog & Guides"
             >
-              <BookOpen className="w-3.5 h-3.5 text-primary shrink-0" />
-              <span className="hidden xl:inline">Blog</span>
+              <BookOpen className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-primary" />
             </Link>
 
-            {/* 2. Favorites / Saved Button -> /bookmarks - Visible directly on header on all devices */}
+            {/* 2. Favorites / Saved Button -> /bookmarks */}
             <Link
               to={pathname === '/bookmarks' || pathname === '/saved' || pathname === '/favorites' ? '/' : getBookmarksUrl()}
-              className={`btn-signature-header h-9 px-2 sm:px-2.5 gap-1 sm:gap-1.5 text-xs font-bold ${
+              className={`btn-signature-header w-9 h-9 sm:w-10 sm:h-10 p-0 flex items-center justify-center shrink-0 relative ${
                 pathname === '/bookmarks' || pathname === '/saved' || pathname === '/favorites' || location.search.includes('favorites=true')
                   ? 'bg-amber-500/15 text-amber-800 dark:text-amber-300 border-amber-400 dark:border-amber-600 shadow-amber-500/20'
                   : 'text-muted-foreground hover:text-foreground'
               }`}
               title="View Bookmarked Tools (/bookmarks)"
+              aria-label="Bookmarked tools"
             >
               <Star 
-                className={`w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform group-hover:scale-115 shrink-0 ${
+                className={`w-4 h-4 sm:w-4.5 sm:h-4.5 transition-transform group-hover:scale-115 ${
                   favorites.length > 0 ? 'text-amber-500 fill-amber-500 filter drop-shadow-[0_0_6px_rgba(245,158,11,0.5)]' : 'text-amber-600 dark:text-amber-400'
                 }`} 
               />
-              <span className="hidden xl:inline">Saved</span>
               {favorites.length > 0 && (
-                <span className="text-[10px] font-bold text-amber-950 dark:text-amber-200 bg-amber-200/90 dark:bg-amber-950/90 px-1 sm:px-1.5 py-0.2 rounded-md border border-amber-300/80 dark:border-amber-700/80 tabular-nums shadow-2xs">
-                  {favorites.length}
+                <span className="absolute -top-1 -right-1 text-[9px] font-bold text-amber-950 dark:text-amber-200 bg-amber-300 dark:bg-amber-900 min-w-[16px] h-4 px-1 rounded-full border border-amber-400 dark:border-amber-700 flex items-center justify-center tabular-nums shadow-xs">
+                  {favorites.length > 99 ? '99+' : favorites.length}
                 </span>
               )}
             </Link>
 
-            {/* 3. Google Drive Sync Button - Visible directly on header on all devices */}
+            {/* 3. Google Drive Sync Button */}
             <button
               type="button"
               onClick={() => setIsDriveModalOpen(true)}
-              className={`btn-signature-header h-9 px-2 sm:px-2.5 gap-1 sm:gap-1.5 text-xs font-bold cursor-pointer relative ${
+              className={`btn-signature-header w-9 h-9 sm:w-10 sm:h-10 p-0 flex items-center justify-center shrink-0 cursor-pointer relative ${
                 accessToken
                   ? 'bg-blue-500/10 text-blue-700 dark:text-blue-300 border-blue-400/50 shadow-blue-500/10'
                   : 'text-muted-foreground hover:text-foreground'
               }`}
               title={accessToken ? `Connected as ${user?.displayName || user?.email}` : 'Google Drive Cloud Sync'}
+              aria-label="Google Drive Cloud Sync"
             >
-              <Cloud className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-600 dark:text-blue-400 shrink-0" />
-              <span className="hidden xl:inline">Drive</span>
+              <Cloud className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-blue-600 dark:text-blue-400" />
               {accessToken && (
-                <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+                <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-emerald-500 ring-1 ring-background animate-pulse" />
               )}
             </button>
 
-            {/* 4. Report Bug Button - Visible directly on header on all devices */}
+            {/* 4. Report Bug Button */}
             <button
               type="button"
               onClick={() => setIsFeedbackModalOpen(true)}
-              className="btn-signature-header h-9 px-2 sm:px-2.5 gap-1 sm:gap-1.5 text-xs font-bold text-rose-700 dark:text-rose-300 bg-rose-500/10 hover:bg-rose-500/20 border-rose-500/30 cursor-pointer"
-              title="Report a Bug"
+              className="btn-signature-header w-9 h-9 sm:w-10 sm:h-10 p-0 flex items-center justify-center shrink-0 text-rose-700 dark:text-rose-300 bg-rose-500/10 hover:bg-rose-500/20 border-rose-500/30 cursor-pointer"
+              title="Report a Bug & Feedback"
+              aria-label="Report a bug"
             >
-              <Bug className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400 shrink-0" />
-              <span className="hidden xl:inline">Report</span>
+              <Bug className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-rose-600 dark:text-rose-400" />
             </button>
 
-            {/* 5. Search Trigger Button (Always visible) */}
+            {/* 5. Search Trigger Button (Equal square keycap) */}
             <HeaderSearch />
 
-            {/* 6. 3D Theme Toggle Button (Always visible) */}
+            {/* 6. 3D Theme Toggle Button (Equal square keycap) */}
             <ThemeToggle3D theme={theme} setTheme={setTheme} />
 
-            {/* 7. Mobile Menu Hamburger Toggle (Visible ONLY on md:hidden for navigation drawer) */}
+            {/* 7. Mobile Menu Hamburger Toggle (Equal square keycap, visible on mobile) */}
             <button
               type="button"
               onClick={() => setIsMobileMenuOpen(prev => !prev)}

@@ -102,7 +102,7 @@ export const ThemeToggle3D: React.FC<ThemeToggle3DProps> = ({ theme, setTheme })
       ref={buttonRef}
       type="button"
       onClick={handleToggle}
-      className={`btn-signature-header btn-theme-3d w-10 h-10 p-0 text-muted-foreground hover:text-foreground cursor-pointer group relative overflow-hidden transition-all duration-300 active:scale-90 ${
+      className={`btn-signature-header btn-theme-3d w-9 h-9 sm:w-10 sm:h-10 p-0 flex items-center justify-center shrink-0 text-muted-foreground hover:text-foreground cursor-pointer group relative overflow-hidden transition-all duration-300 active:scale-90 ${
         isRotating ? 'animating' : ''
       }`}
       aria-label="Toggle Theme Mode"
