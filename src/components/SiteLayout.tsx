@@ -447,124 +447,95 @@ export const SiteLayout: React.FC = () => {
                         </Link>
                       );
                     })}
-
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setOpenDropdown(null);
-                        setIsFeedbackModalOpen(true);
-                      }}
-                      className="w-full p-2.5 rounded-xl flex items-center gap-3 transition-all duration-150 group border border-transparent hover:border-rose-500/30 hover:bg-rose-500/10 text-foreground cursor-pointer text-left"
-                    >
-                      <div className="w-8 h-8 rounded-lg bg-rose-500/10 group-hover:bg-rose-500/20 text-rose-500 flex items-center justify-center shrink-0 transition-colors">
-                        <Bug className="w-4 h-4" />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <div className="text-xs font-bold text-rose-600 dark:text-rose-400">
-                          Report Bug &amp; Feedback
-                        </div>
-                        <div className="text-[10px] text-muted-foreground truncate">
-                          Direct engineering help &amp; suggestions
-                        </div>
-                      </div>
-                    </button>
                   </div>
                 </div>
               )}
             </div>
           </nav>
 
-          {/* Right-side toolbar: Blog, Search, Saved, Drive Sync, Report Bug, Theme & Mobile Menu */}
-          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-            {/* Blog Hub Button (Tactile 3D Keycap style - Desktop only, on mobile it's in the mobile menu) */}
-            <div className="hidden md:flex">
-              <Link
-                to={getBlogUrl()}
-                className={`btn-signature-header px-2.5 sm:px-3 gap-1.5 text-xs font-bold ${
-                  pathname.startsWith('/blog') || (typeof window !== 'undefined' && window.location.search.includes('page=blog'))
-                    ? 'bg-primary/15 text-primary border-primary/40 shadow-xs'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
-                title="Toolzaro Pulse & Tech Insights"
-              >
-                <BookOpen className="w-3.5 h-3.5 text-primary shrink-0" />
-                <span>Blog</span>
-              </Link>
-            </div>
+          {/* Right-side toolbar: Blog, Saved, Drive Sync, Report Bug, Search, Theme & Mobile Drawer Toggle */}
+          <div className="flex items-center gap-1 sm:gap-1.5 md:gap-2 shrink-0">
+            {/* 1. Blog Button - Visible directly on header on all devices */}
+            <Link
+              to={getBlogUrl()}
+              className={`btn-signature-header h-9 px-2 sm:px-2.5 gap-1 sm:gap-1.5 text-xs font-bold ${
+                pathname.startsWith('/blog') || (typeof window !== 'undefined' && window.location.search.includes('page=blog'))
+                  ? 'bg-primary/15 text-primary border-primary/40 shadow-xs'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+              title="Blog & Guides"
+            >
+              <BookOpen className="w-3.5 h-3.5 text-primary shrink-0" />
+              <span className="hidden xl:inline">Blog</span>
+            </Link>
 
-            {/* 1. Search Trigger Button (Always visible on mobile & desktop) */}
+            {/* 2. Favorites / Saved Button -> /bookmarks - Visible directly on header on all devices */}
+            <Link
+              to={pathname === '/bookmarks' || pathname === '/saved' || pathname === '/favorites' ? '/' : getBookmarksUrl()}
+              className={`btn-signature-header h-9 px-2 sm:px-2.5 gap-1 sm:gap-1.5 text-xs font-bold ${
+                pathname === '/bookmarks' || pathname === '/saved' || pathname === '/favorites' || location.search.includes('favorites=true')
+                  ? 'bg-amber-500/15 text-amber-800 dark:text-amber-300 border-amber-400 dark:border-amber-600 shadow-amber-500/20'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+              title="View Bookmarked Tools (/bookmarks)"
+            >
+              <Star 
+                className={`w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform group-hover:scale-115 shrink-0 ${
+                  favorites.length > 0 ? 'text-amber-500 fill-amber-500 filter drop-shadow-[0_0_6px_rgba(245,158,11,0.5)]' : 'text-amber-600 dark:text-amber-400'
+                }`} 
+              />
+              <span className="hidden xl:inline">Saved</span>
+              {favorites.length > 0 && (
+                <span className="text-[10px] font-bold text-amber-950 dark:text-amber-200 bg-amber-200/90 dark:bg-amber-950/90 px-1 sm:px-1.5 py-0.2 rounded-md border border-amber-300/80 dark:border-amber-700/80 tabular-nums shadow-2xs">
+                  {favorites.length}
+                </span>
+              )}
+            </Link>
+
+            {/* 3. Google Drive Sync Button - Visible directly on header on all devices */}
+            <button
+              type="button"
+              onClick={() => setIsDriveModalOpen(true)}
+              className={`btn-signature-header h-9 px-2 sm:px-2.5 gap-1 sm:gap-1.5 text-xs font-bold cursor-pointer relative ${
+                accessToken
+                  ? 'bg-blue-500/10 text-blue-700 dark:text-blue-300 border-blue-400/50 shadow-blue-500/10'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+              title={accessToken ? `Connected as ${user?.displayName || user?.email}` : 'Google Drive Cloud Sync'}
+            >
+              <Cloud className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-600 dark:text-blue-400 shrink-0" />
+              <span className="hidden xl:inline">Drive</span>
+              {accessToken && (
+                <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+              )}
+            </button>
+
+            {/* 4. Report Bug Button - Visible directly on header on all devices */}
+            <button
+              type="button"
+              onClick={() => setIsFeedbackModalOpen(true)}
+              className="btn-signature-header h-9 px-2 sm:px-2.5 gap-1 sm:gap-1.5 text-xs font-bold text-rose-700 dark:text-rose-300 bg-rose-500/10 hover:bg-rose-500/20 border-rose-500/30 cursor-pointer"
+              title="Report a Bug"
+            >
+              <Bug className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400 shrink-0" />
+              <span className="hidden xl:inline">Report</span>
+            </button>
+
+            {/* 5. Search Trigger Button (Always visible) */}
             <HeaderSearch />
 
-            {/* 2. Favorites / Saved Button -> /bookmarks (Desktop only, on mobile it's in the mobile menu) */}
-            <div className="hidden md:flex">
-              <Link
-                to={pathname === '/bookmarks' || pathname === '/saved' || pathname === '/favorites' ? '/' : getBookmarksUrl()}
-                className={`btn-signature-header px-2 sm:px-3 gap-1.5 text-xs font-bold ${
-                  pathname === '/bookmarks' || pathname === '/saved' || pathname === '/favorites' || location.search.includes('favorites=true')
-                    ? 'bg-amber-500/15 text-amber-800 dark:text-amber-300 border-amber-400 dark:border-amber-600 shadow-amber-500/20'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
-                title="View Bookmarked Tools (/bookmarks)"
-              >
-                <Star 
-                  className={`w-4 h-4 transition-transform group-hover:scale-115 shrink-0 ${
-                    favorites.length > 0 ? 'text-amber-500 fill-amber-500 filter drop-shadow-[0_0_6px_rgba(245,158,11,0.5)]' : 'text-amber-600 dark:text-amber-400'
-                  }`} 
-                />
-                <span className="hidden sm:inline">Saved</span>
-                {favorites.length > 0 && (
-                  <span className="text-[10px] font-bold text-amber-950 dark:text-amber-200 bg-amber-200/90 dark:bg-amber-950/90 px-1.5 py-0.2 rounded-md border border-amber-300/80 dark:border-amber-700/80 tabular-nums shadow-2xs">
-                    {favorites.length}
-                  </span>
-                )}
-              </Link>
-            </div>
-
-            {/* 3. Google Drive Sync Button (Desktop only, on mobile it's in the mobile menu) */}
-            <div className="hidden md:flex">
-              <button
-                type="button"
-                onClick={() => setIsDriveModalOpen(true)}
-                className={`btn-signature-header px-2 sm:px-2.5 gap-1.5 text-xs font-bold cursor-pointer relative ${
-                  accessToken
-                    ? 'bg-blue-500/10 text-blue-700 dark:text-blue-300 border-blue-400/50 shadow-blue-500/10'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
-                title={accessToken ? `Connected as ${user?.displayName || user?.email}` : 'Connect Google Drive Cloud Sync'}
-              >
-                <Cloud className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" />
-                <span className="hidden lg:inline">Drive</span>
-                {accessToken && (
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-                )}
-              </button>
-            </div>
-
-            {/* 4. Report Bug Button (Desktop XL only) */}
-            <div className="hidden xl:flex">
-              <button
-                type="button"
-                onClick={() => setIsFeedbackModalOpen(true)}
-                className="btn-signature-header px-2 sm:px-2.5 gap-1.5 text-xs font-bold text-rose-700 dark:text-rose-300 bg-rose-500/10 hover:bg-rose-500/20 border-rose-500/30 cursor-pointer"
-                title="Report a Bug or Send Feedback"
-              >
-                <Bug className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400 shrink-0" />
-                <span>Report Bug</span>
-              </button>
-            </div>
-
-            {/* 5. 3D Theme Toggle Button & Wave Animation (Always visible on mobile & desktop) */}
+            {/* 6. 3D Theme Toggle Button (Always visible) */}
             <ThemeToggle3D theme={theme} setTheme={setTheme} />
 
-            {/* 6. Mobile Menu Hamburger Toggle (Visible ONLY on md:hidden) */}
+            {/* 7. Mobile Menu Hamburger Toggle (Visible ONLY on md:hidden for navigation drawer) */}
             <button
               type="button"
               onClick={() => setIsMobileMenuOpen(prev => !prev)}
-              className="md:hidden btn-signature-header w-10 h-10 p-0 flex items-center justify-center text-foreground cursor-pointer shrink-0"
+              className="md:hidden btn-signature-header w-9 h-9 sm:w-10 sm:h-10 p-0 flex items-center justify-center text-foreground cursor-pointer shrink-0"
               aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
-              title="Toggle mobile menu"
+              title="Navigation Menu"
             >
-              {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              {isMobileMenuOpen ? <X className="w-4 h-4 sm:w-5 sm:h-5" /> : <Menu className="w-4 h-4 sm:w-5 sm:h-5" />}
             </button>
           </div>
         </div>
@@ -597,32 +568,6 @@ export const SiteLayout: React.FC = () => {
               >
                 <Layers className="w-4 h-4 text-primary" />
                 <span>All Directory</span>
-              </Link>
-
-              <Link
-                to={getBlogUrl()}
-                onClick={() => setIsMobileMenuOpen(false)}
-                className={`p-2.5 rounded-xl text-xs font-bold flex items-center gap-2 border ${
-                  pathname.startsWith('/blog')
-                    ? 'bg-primary/10 border-primary/40 text-primary'
-                    : 'bg-card border-border/70 text-foreground hover:bg-secondary'
-                }`}
-              >
-                <BookOpen className="w-4 h-4 text-primary" />
-                <span>Blog Articles</span>
-              </Link>
-
-              <Link
-                to={getBookmarksUrl()}
-                onClick={() => setIsMobileMenuOpen(false)}
-                className={`p-2.5 rounded-xl text-xs font-bold flex items-center gap-2 border ${
-                  pathname === '/bookmarks'
-                    ? 'bg-amber-500/15 border-amber-500/40 text-amber-500'
-                    : 'bg-card border-border/70 text-foreground hover:bg-secondary'
-                }`}
-              >
-                <Star className="w-4 h-4 text-amber-500" />
-                <span>Saved ({favorites.length})</span>
               </Link>
             </div>
 
@@ -684,33 +629,6 @@ export const SiteLayout: React.FC = () => {
                   );
                 })}
               </div>
-            </div>
-
-            {/* Quick Action Buttons in Mobile Drawer */}
-            <div className="pt-2 border-t border-border/60 flex items-center justify-between gap-2">
-              <button
-                type="button"
-                onClick={() => {
-                  setIsMobileMenuOpen(false);
-                  setIsDriveModalOpen(true);
-                }}
-                className="btn-signature-header flex-1 py-2 text-xs font-bold justify-center gap-2 cursor-pointer"
-              >
-                <Cloud className="w-4 h-4 text-blue-500" />
-                <span>Drive Sync</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setIsMobileMenuOpen(false);
-                  setIsFeedbackModalOpen(true);
-                }}
-                className="btn-signature-header flex-1 py-2 text-xs font-bold justify-center gap-2 text-rose-500 cursor-pointer"
-              >
-                <Bug className="w-4 h-4 text-rose-500" />
-                <span>Report Bug</span>
-              </button>
             </div>
           </div>
         )}
