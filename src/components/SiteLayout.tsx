@@ -30,6 +30,7 @@ import {
   ShieldAlert,
   Mail,
   Layers,
+  Menu,
 } from 'lucide-react';
 import { useLocalStorage } from '../lib/toolkit';
 import { categories, tools } from '../lib/registry';
@@ -159,6 +160,7 @@ export const SiteLayout: React.FC = () => {
   const bannerLinkUrl = settings.announcement.linkUrl || '/';
 
   const [openDropdown, setOpenDropdown] = useState<'categories' | 'pages' | null>(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const categoriesDropdownRef = React.useRef<HTMLDivElement>(null);
   const pagesDropdownRef = React.useRef<HTMLDivElement>(null);
 
@@ -185,6 +187,7 @@ export const SiteLayout: React.FC = () => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         setOpenDropdown(null);
+        setIsMobileMenuOpen(false);
       }
     };
 
@@ -199,6 +202,7 @@ export const SiteLayout: React.FC = () => {
   // Close dropdown whenever route changes
   useEffect(() => {
     setOpenDropdown(null);
+    setIsMobileMenuOpen(false);
   }, [pathname]);
 
   const categoryCounts = React.useMemo(() => {
@@ -277,14 +281,14 @@ export const SiteLayout: React.FC = () => {
             </div>
           </Link>
 
-          {/* Desktop Center Navigation: Home | Directory | Categories ▾ | Pages ▾ */}
-          <nav className="hidden lg:flex items-center gap-1.5 sm:gap-2 text-xs font-semibold text-muted-foreground" aria-label="Primary Desktop Navigation">
+          {/* Desktop Center Navigation: Home | Directory | Categories ▾ | Company ▾ (Visible on all PC and tablet screens >= 768px) */}
+          <nav className="hidden md:flex items-center gap-1 sm:gap-1.5 lg:gap-2 text-xs font-semibold text-muted-foreground" aria-label="Primary Desktop Navigation">
             {/* 1. Home */}
             <Link
               to="/"
-              className={`px-3 py-1.5 rounded-xl transition-all duration-150 whitespace-nowrap border ${
+              className={`px-3 py-1.5 rounded-xl transition-all duration-150 whitespace-nowrap border flex items-center gap-1.5 cursor-pointer font-bold ${
                 isHomeActive
-                  ? 'text-primary font-bold bg-primary/10 border-primary/30 shadow-xs'
+                  ? 'text-primary bg-primary/10 border-primary/30 shadow-xs'
                   : 'text-muted-foreground hover:text-foreground hover:bg-secondary/60 border-transparent'
               }`}
             >
@@ -294,9 +298,9 @@ export const SiteLayout: React.FC = () => {
             {/* 2. Directory */}
             <Link
               to={getToolsHubUrl()}
-              className={`px-3 py-1.5 rounded-xl transition-all duration-150 whitespace-nowrap border ${
+              className={`px-3 py-1.5 rounded-xl transition-all duration-150 whitespace-nowrap border flex items-center gap-1.5 cursor-pointer font-bold ${
                 isDirectoryActive
-                  ? 'text-primary font-bold bg-primary/10 border-primary/30 shadow-xs'
+                  ? 'text-primary bg-primary/10 border-primary/30 shadow-xs'
                   : 'text-muted-foreground hover:text-foreground hover:bg-secondary/60 border-transparent'
               }`}
             >
@@ -308,9 +312,9 @@ export const SiteLayout: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setOpenDropdown(prev => prev === 'categories' ? null : 'categories')}
-                className={`px-3 py-1.5 rounded-xl transition-all duration-150 whitespace-nowrap border flex items-center gap-1.5 cursor-pointer ${
+                className={`px-3 py-1.5 rounded-xl transition-all duration-150 whitespace-nowrap border flex items-center gap-1.5 cursor-pointer font-bold select-none ${
                   isCategoriesActive || openDropdown === 'categories'
-                    ? 'text-primary font-bold bg-primary/10 border-primary/30 shadow-xs'
+                    ? 'text-primary bg-primary/10 border-primary/30 shadow-xs'
                     : 'text-muted-foreground hover:text-foreground hover:bg-secondary/60 border-transparent'
                 }`}
                 aria-expanded={openDropdown === 'categories'}
@@ -321,7 +325,7 @@ export const SiteLayout: React.FC = () => {
               </button>
 
               {openDropdown === 'categories' && (
-                <div className="absolute top-full left-0 mt-2 w-[430px] max-w-[92vw] p-3 rounded-2xl bg-card/95 backdrop-blur-xl border border-border shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-150">
+                <div className="absolute top-full left-0 mt-2 w-[430px] max-w-[92vw] p-3 rounded-2xl bg-card/98 backdrop-blur-xl border border-border shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-150">
                   <div className="px-2.5 py-1.5 mb-2 border-b border-border/60 flex items-center justify-between">
                     <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                       Tool Suites &amp; Categories
@@ -382,25 +386,25 @@ export const SiteLayout: React.FC = () => {
               )}
             </div>
 
-            {/* 4. Pages ▾ Dropdown (About Us, Privacy Policy, Terms, Disclaimer, Contact) */}
+            {/* 4. Company ▾ Dropdown (About Us, Privacy Policy, Terms, Disclaimer, Contact) */}
             <div className="relative" ref={pagesDropdownRef}>
               <button
                 type="button"
                 onClick={() => setOpenDropdown(prev => prev === 'pages' ? null : 'pages')}
-                className={`px-3 py-1.5 rounded-xl transition-all duration-150 whitespace-nowrap border flex items-center gap-1.5 cursor-pointer ${
+                className={`px-3 py-1.5 rounded-xl transition-all duration-150 whitespace-nowrap border flex items-center gap-1.5 cursor-pointer font-bold select-none ${
                   isPagesActive || openDropdown === 'pages'
-                    ? 'text-primary font-bold bg-primary/10 border-primary/30 shadow-xs'
+                    ? 'text-primary bg-primary/10 border-primary/30 shadow-xs'
                     : 'text-muted-foreground hover:text-foreground hover:bg-secondary/60 border-transparent'
                 }`}
                 aria-expanded={openDropdown === 'pages'}
                 aria-haspopup="true"
               >
-                <span>Pages</span>
+                <span>Company</span>
                 <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${openDropdown === 'pages' ? 'rotate-180 text-primary' : 'text-muted-foreground'}`} />
               </button>
 
               {openDropdown === 'pages' && (
-                <div className="absolute top-full left-0 mt-2 w-72 sm:w-80 p-2.5 rounded-2xl bg-card/95 backdrop-blur-xl border border-border shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-150">
+                <div className="absolute top-full left-0 mt-2 w-72 sm:w-80 p-2.5 rounded-2xl bg-card/98 backdrop-blur-xl border border-border shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-150">
                   <div className="px-2.5 py-1.5 mb-2 border-b border-border/60 flex items-center justify-between">
                     <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                       Company &amp; Legal
@@ -443,26 +447,47 @@ export const SiteLayout: React.FC = () => {
                         </Link>
                       );
                     })}
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setOpenDropdown(null);
+                        setIsFeedbackModalOpen(true);
+                      }}
+                      className="w-full p-2.5 rounded-xl flex items-center gap-3 transition-all duration-150 group border border-transparent hover:border-rose-500/30 hover:bg-rose-500/10 text-foreground cursor-pointer text-left"
+                    >
+                      <div className="w-8 h-8 rounded-lg bg-rose-500/10 group-hover:bg-rose-500/20 text-rose-500 flex items-center justify-center shrink-0 transition-colors">
+                        <Bug className="w-4 h-4" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="text-xs font-bold text-rose-600 dark:text-rose-400">
+                          Report Bug &amp; Feedback
+                        </div>
+                        <div className="text-[10px] text-muted-foreground truncate">
+                          Direct engineering help &amp; suggestions
+                        </div>
+                      </div>
+                    </button>
                   </div>
                 </div>
               )}
             </div>
           </nav>
 
-          {/* Right-side toolbar: Blog (visible across all screens), Search, Saved, Drive Sync, Report Bug, Dark Mode */}
-          <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
-            {/* Blog Hub Button (Tactile 3D Keycap style - visible across all desktop and mobile views) */}
+          {/* Right-side toolbar: Blog (visible across screens), Search, Saved, Drive Sync, Report Bug, Dark Mode & Mobile Menu */}
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            {/* Blog Hub Button (Tactile 3D Keycap style - kept on right side with toolbar buttons) */}
             <Link
               to={getBlogUrl()}
-              className={`btn-signature-header px-2.5 sm:px-3.5 gap-1.5 text-xs font-bold ${
+              className={`btn-signature-header px-2.5 sm:px-3 gap-1.5 text-xs font-bold ${
                 pathname.startsWith('/blog') || (typeof window !== 'undefined' && window.location.search.includes('page=blog'))
                   ? 'bg-primary/15 text-primary border-primary/40 shadow-xs'
                   : 'text-muted-foreground hover:text-foreground'
               }`}
-              title="Toolzaro Pulse & Insights"
+              title="Toolzaro Pulse & Tech Insights"
             >
               <BookOpen className="w-3.5 h-3.5 text-primary shrink-0" />
-              <span className="hidden sm:inline">Blog</span>
+              <span>Blog</span>
             </Link>
 
             {/* 1. Search Trigger Button */}
@@ -471,7 +496,7 @@ export const SiteLayout: React.FC = () => {
             {/* 2. Favorites / Saved Button -> /bookmarks */}
             <Link
               to={pathname === '/bookmarks' || pathname === '/saved' || pathname === '/favorites' ? '/' : getBookmarksUrl()}
-              className={`btn-signature-header px-2.5 sm:px-3.5 gap-1.5 sm:gap-2 text-xs font-bold ${
+              className={`btn-signature-header px-2 sm:px-3 gap-1.5 text-xs font-bold ${
                 pathname === '/bookmarks' || pathname === '/saved' || pathname === '/favorites' || location.search.includes('favorites=true')
                   ? 'bg-amber-500/15 text-amber-800 dark:text-amber-300 border-amber-400 dark:border-amber-600 shadow-amber-500/20'
                   : 'text-muted-foreground hover:text-foreground'
@@ -495,7 +520,7 @@ export const SiteLayout: React.FC = () => {
             <button
               type="button"
               onClick={() => setIsDriveModalOpen(true)}
-              className={`btn-signature-header px-2.5 sm:px-3.5 gap-1.5 sm:gap-2 text-xs font-bold cursor-pointer relative ${
+              className={`btn-signature-header px-2 sm:px-2.5 gap-1.5 text-xs font-bold cursor-pointer relative ${
                 accessToken
                   ? 'bg-blue-500/10 text-blue-700 dark:text-blue-300 border-blue-400/50 shadow-blue-500/10'
                   : 'text-muted-foreground hover:text-foreground'
@@ -503,7 +528,7 @@ export const SiteLayout: React.FC = () => {
               title={accessToken ? `Connected as ${user?.displayName || user?.email}` : 'Connect Google Drive Cloud Sync'}
             >
               <Cloud className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" />
-              <span className="hidden sm:inline">Drive Sync</span>
+              <span className="hidden lg:inline">Drive</span>
               {accessToken && (
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
               )}
@@ -513,17 +538,174 @@ export const SiteLayout: React.FC = () => {
             <button
               type="button"
               onClick={() => setIsFeedbackModalOpen(true)}
-              className="btn-signature-header px-2 sm:px-2.5 gap-1.5 text-xs font-bold text-rose-700 dark:text-rose-300 bg-rose-500/10 hover:bg-rose-500/20 border-rose-500/30 cursor-pointer"
+              className="btn-signature-header px-2 sm:px-2.5 gap-1.5 text-xs font-bold text-rose-700 dark:text-rose-300 bg-rose-500/10 hover:bg-rose-500/20 border-rose-500/30 cursor-pointer hidden xl:flex"
               title="Report a Bug or Send Feedback"
             >
               <Bug className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400 shrink-0" />
-              <span className="hidden lg:inline">Report Bug</span>
+              <span>Report Bug</span>
             </button>
 
             {/* 5. 3D Theme Toggle Button & Wave Animation */}
             <ThemeToggle3D theme={theme} setTheme={setTheme} />
+
+            {/* 6. Mobile Menu Hamburger Toggle (Visible on md:hidden) */}
+            <button
+              type="button"
+              onClick={() => setIsMobileMenuOpen(prev => !prev)}
+              className="md:hidden btn-signature-header p-2 text-foreground cursor-pointer"
+              aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
+              title="Toggle mobile menu"
+            >
+              {isMobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+            </button>
           </div>
         </div>
+
+        {/* Mobile Navigation Drawer / Menu (Rendered on md:hidden) */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden border-t border-border/80 bg-background/98 backdrop-blur-xl px-4 py-4 space-y-4 animate-in slide-in-from-top-2 duration-150 shadow-xl max-h-[85vh] overflow-y-auto">
+            <div className="grid grid-cols-2 gap-2">
+              <Link
+                to="/"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className={`p-2.5 rounded-xl text-xs font-bold flex items-center gap-2 border ${
+                  isHomeActive
+                    ? 'bg-primary/10 border-primary/40 text-primary'
+                    : 'bg-card border-border/70 text-foreground hover:bg-secondary'
+                }`}
+              >
+                <Wrench className="w-4 h-4 text-primary" />
+                <span>Home</span>
+              </Link>
+
+              <Link
+                to={getToolsHubUrl()}
+                onClick={() => setIsMobileMenuOpen(false)}
+                className={`p-2.5 rounded-xl text-xs font-bold flex items-center gap-2 border ${
+                  isDirectoryActive
+                    ? 'bg-primary/10 border-primary/40 text-primary'
+                    : 'bg-card border-border/70 text-foreground hover:bg-secondary'
+                }`}
+              >
+                <Layers className="w-4 h-4 text-primary" />
+                <span>All Directory</span>
+              </Link>
+
+              <Link
+                to={getBlogUrl()}
+                onClick={() => setIsMobileMenuOpen(false)}
+                className={`p-2.5 rounded-xl text-xs font-bold flex items-center gap-2 border ${
+                  pathname.startsWith('/blog')
+                    ? 'bg-primary/10 border-primary/40 text-primary'
+                    : 'bg-card border-border/70 text-foreground hover:bg-secondary'
+                }`}
+              >
+                <BookOpen className="w-4 h-4 text-primary" />
+                <span>Blog Articles</span>
+              </Link>
+
+              <Link
+                to={getBookmarksUrl()}
+                onClick={() => setIsMobileMenuOpen(false)}
+                className={`p-2.5 rounded-xl text-xs font-bold flex items-center gap-2 border ${
+                  pathname === '/bookmarks'
+                    ? 'bg-amber-500/15 border-amber-500/40 text-amber-500'
+                    : 'bg-card border-border/70 text-foreground hover:bg-secondary'
+                }`}
+              >
+                <Star className="w-4 h-4 text-amber-500" />
+                <span>Saved ({favorites.length})</span>
+              </Link>
+            </div>
+
+            {/* Categories in Mobile Drawer */}
+            <div>
+              <div className="px-1 py-1 mb-2 text-[11px] font-bold uppercase tracking-wider text-muted-foreground flex items-center justify-between">
+                <span>Tool Suites &amp; Categories</span>
+                <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-primary/10 text-primary">
+                  {liveCount} Tools
+                </span>
+              </div>
+              <div className="grid grid-cols-2 gap-1.5">
+                {HEADER_CATEGORIES.map(cat => {
+                  const Icon = cat.icon;
+                  const count = categoryCounts[cat.categoryName] || 0;
+                  const isCatActive = pathname === `/${cat.slug}`;
+                  return (
+                    <Link
+                      key={cat.slug}
+                      to={getCategoryUrl(cat.slug)}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className={`p-2 rounded-xl flex items-center gap-2 text-xs transition-colors border ${
+                        isCatActive
+                          ? 'bg-primary/10 border-primary/40 text-primary font-bold'
+                          : 'bg-card/70 border-border/60 hover:bg-secondary text-foreground'
+                      }`}
+                    >
+                      <Icon className="w-3.5 h-3.5 text-primary shrink-0" />
+                      <span className="truncate">{cat.name}</span>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Company & Legal in Mobile Drawer */}
+            <div>
+              <div className="px-1 py-1 mb-2 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                <span>Company &amp; Legal</span>
+              </div>
+              <div className="grid grid-cols-2 gap-1.5">
+                {HEADER_PAGES.map(item => {
+                  const Icon = item.icon;
+                  const isPageActive = pathname === item.path;
+                  return (
+                    <Link
+                      key={item.path}
+                      to={item.path}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className={`p-2 rounded-xl flex items-center gap-2 text-xs transition-colors border ${
+                        isPageActive
+                          ? 'bg-primary/10 border-primary/40 text-primary font-bold'
+                          : 'bg-card/70 border-border/60 hover:bg-secondary text-foreground'
+                      }`}
+                    >
+                      <Icon className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                      <span className="truncate">{item.name}</span>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Quick Action Buttons in Mobile Drawer */}
+            <div className="pt-2 border-t border-border/60 flex items-center justify-between gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  setIsDriveModalOpen(true);
+                }}
+                className="btn-signature-header flex-1 py-2 text-xs font-bold justify-center gap-2 cursor-pointer"
+              >
+                <Cloud className="w-4 h-4 text-blue-500" />
+                <span>Drive Sync</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  setIsFeedbackModalOpen(true);
+                }}
+                className="btn-signature-header flex-1 py-2 text-xs font-bold justify-center gap-2 text-rose-500 cursor-pointer"
+              >
+                <Bug className="w-4 h-4 text-rose-500" />
+                <span>Report Bug</span>
+              </button>
+            </div>
+          </div>
+        )}
       </header>
 
       {/* Google Drive Modal (Lazy-loaded on demand) */}

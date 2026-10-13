@@ -647,7 +647,7 @@ export const Index: React.FC<{ forcedBookmarks?: boolean }> = ({ forcedBookmarks
                   >
                     <span className="flex items-center gap-2.5 truncate">
                       <Layers className={`w-4 h-4 shrink-0 ${activeCategory === 'All' ? 'text-white' : 'text-primary'}`} />
-                      <span className="truncate">All Utilities</span>
+                      <span className="truncate">All Tools</span>
                     </span>
                     <span
                       className={`text-[11px] font-mono font-bold px-1.5 py-0.2 rounded-md shrink-0 ${

@@ -8,47 +8,26 @@ import { categories, tools } from './registry';
 export function buildToolSeoTitle(tool: ToolDefinition, siteName = 'Toolzaro'): string {
   const baseTitle = (tool.metaTitle || tool.name).trim();
   const lowerTitle = baseTitle.toLowerCase();
-  const lowerName = tool.name.toLowerCase();
 
   // If the user/admin already wrote a full branded title via Tool Overrides
   if (lowerTitle.includes(siteName.toLowerCase())) {
     return baseTitle;
   }
 
-  // Combine tool name + metaTitle if distinct so both high-volume search phrases rank
-  let corePhrase = baseTitle;
-  if (!lowerTitle.includes(lowerName) && `${tool.name} - ${baseTitle}`.length <= 46) {
-    corePhrase = `${tool.name} – ${baseTitle}`;
-  } else if (!lowerTitle.includes('online') && !lowerTitle.includes('free')) {
-    corePhrase = `${baseTitle} – Free Online ${tool.category} Tool`;
-  }
-
-  return `${corePhrase} | ${siteName}`;
+  // Clean, high-ranking, 100% unique title for every tool
+  return `${baseTitle} | ${siteName}`;
 }
 
 /**
- * Generates a compelling, keyword-rich Meta Description (135–160 chars ideal) for any Tool.
- * Google Search snippets truncate around 155–160 characters; short descriptions (<110 chars)
- * miss valuable long-tail keyword impressions.
+ * Generates a compelling, keyword-rich Meta Description for any Tool.
+ * Preserves each tool's unique description without appending repetitive programmatic boilerplate.
  */
 export function buildToolSeoDescription(tool: ToolDefinition, siteName = 'Toolzaro'): string {
   const rawDesc = (tool.metaDescription || tool.intro || '').trim().replace(/\.+$/, '');
-  if (rawDesc.length >= 125 && rawDesc.length <= 165) {
-    return `${rawDesc}.`;
+  if (!rawDesc) {
+    return `Use ${tool.name} free online on ${siteName} — fast, private client-side browser utility.`;
   }
-
-  const keywordHint = tool.keywords?.slice(0, 2).join(', ');
-  const suffix = keywordHint
-    ? `. Free online ${tool.name.toLowerCase()} (${keywordHint}) on ${siteName} — fast, 100% private client-side browser tool with no signup.`
-    : `. Use ${tool.name} free online on ${siteName} — instant, 100% private client-side browser processing with zero uploads.`;
-
-  const combined = `${rawDesc}${suffix}`;
-  if (combined.length <= 165) {
-    return combined;
-  }
-
-  const shortSuffix = `. Free, fast & 100% private online ${tool.name} tool on ${siteName} — no signup required.`;
-  return `${rawDesc}${shortSuffix}`.slice(0, 162).trim();
+  return `${rawDesc}.`;
 }
 
 /**

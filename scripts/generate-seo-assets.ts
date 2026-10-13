@@ -237,7 +237,7 @@ function generateAllSitemapsAndSeoFiles() {
       <title>${escapeXml(`${tool.name} - ${tool.metaTitle} | Toolzaro`)}</title>
       <link>${escapeXml(`${BASE_URL}/${tool.slug}`)}</link>
       <guid isPermaLink="true">${escapeXml(`${BASE_URL}/${tool.slug}`)}</guid>
-      <description>${escapeXml(`${tool.metaDescription} Free online ${tool.category.toLowerCase()} utility on Toolzaro.`)}</description>
+      <description>${escapeXml(tool.metaDescription || `${tool.name} online utility on Toolzaro.`)}</description>
       <category>${escapeXml(tool.category)}</category>
       <pubDate>${NOW_RFC822}</pubDate>
     </item>`
