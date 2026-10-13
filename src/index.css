@@ -315,6 +315,20 @@
     display: none !important;
   }
 
+  @media (min-width: 768px) {
+    .btn-signature-header.md\:hidden,
+    .md\:hidden.btn-signature-header {
+      display: none !important;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .btn-signature-header.lg\:hidden,
+    .lg\:hidden.btn-signature-header {
+      display: none !important;
+    }
+  }
+
   .btn-signature-header:hover {
     border-color: hsl(var(--primary) / 0.5);
     background: #ffffff;

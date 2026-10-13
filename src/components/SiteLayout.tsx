@@ -527,11 +527,11 @@ export const SiteLayout: React.FC = () => {
             {/* 6. 3D Theme Toggle Button (Equal square keycap) */}
             <ThemeToggle3D theme={theme} setTheme={setTheme} />
 
-            {/* 7. Mobile Menu Hamburger Toggle (Equal square keycap, visible on mobile) */}
+            {/* 7. Mobile Menu Hamburger Toggle (Visible ONLY on mobile devices < 768px, completely hidden on PC) */}
             <button
               type="button"
               onClick={() => setIsMobileMenuOpen(prev => !prev)}
-              className="md:hidden btn-signature-header w-9 h-9 sm:w-10 sm:h-10 p-0 flex items-center justify-center text-foreground cursor-pointer shrink-0"
+              className="inline-flex md:!hidden btn-signature-header w-9 h-9 sm:w-10 sm:h-10 p-0 items-center justify-center text-foreground cursor-pointer shrink-0"
               aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
               title="Navigation Menu"
             >
