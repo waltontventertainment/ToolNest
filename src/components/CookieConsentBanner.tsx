@@ -11,16 +11,16 @@ export const CookieConsentBanner: React.FC = () => {
     try {
       const consent = localStorage.getItem(STORAGE_KEY);
       if (!consent) {
-        // Small delay so it smoothly slides in without blocking initial paint
-        const timer = setTimeout(() => setIsVisible(true), 1200);
+        // Small delay so page loads smoothly without sudden shift
+        const timer = setTimeout(() => setIsVisible(true), 1000);
         return () => clearTimeout(timer);
       }
     } catch {
-      // If localStorage is disabled or throws, do nothing
+      // If localStorage is unavailable, fail silently
     }
   }, []);
 
-  // Listen for custom trigger to re-open cookie settings from footer
+  // Allow re-opening cookie preferences anytime from the footer link
   useEffect(() => {
     const handleOpen = () => setIsVisible(true);
     window.addEventListener('open_cookie_settings', handleOpen);
@@ -33,7 +33,7 @@ export const CookieConsentBanner: React.FC = () => {
       localStorage.setItem(`${STORAGE_KEY}_timestamp`, new Date().toISOString());
       window.dispatchEvent(new CustomEvent('cookie_consent_updated', { detail: decision }));
     } catch (e) {
-      console.warn('Failed to persist cookie consent preference:', e);
+      console.warn('Failed to save cookie consent preference:', e);
     }
     setIsVisible(false);
   };
@@ -41,66 +41,70 @@ export const CookieConsentBanner: React.FC = () => {
   if (!isVisible) return null;
 
   return (
-    <div 
-      role="region" 
-      aria-label="Cookie and Privacy Consent"
-      className="fixed bottom-3 left-3 right-3 sm:bottom-5 sm:left-6 sm:right-auto sm:max-w-lg z-50 animate-in fade-in slide-in-from-bottom-4 duration-300"
+    /* 
+      Accidental Click Prevention for Google AdSense:
+      1. Fixed to bottom-right corner (never spans full bottom width where anchor ads sit).
+      2. Isolated card with strong border, 100% solid background (no bleed/transparency), and heavy shadow.
+      3. pointer-events-auto on the card only; zero invisible touch traps to avoid invalid clicks.
+    */
+    <aside
+      aria-label="Privacy & Cookie Preferences"
+      className="fixed bottom-3 right-3 left-3 sm:left-auto sm:right-4 sm:bottom-4 z-50 sm:max-w-xs md:max-w-sm pointer-events-auto animate-in fade-in slide-in-from-bottom-2 duration-200"
     >
-      <div className="bg-background/95 dark:bg-slate-900/95 backdrop-blur-md border border-border shadow-2xl rounded-xl p-4 sm:p-5 text-foreground transition-all">
-        <div className="flex items-start gap-3">
-          <div className="w-9 h-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0 mt-0.5">
-            <Cookie className="w-5 h-5" />
+      <div className="bg-white dark:bg-slate-900 border-2 border-slate-300 dark:border-slate-700 shadow-2xl rounded-xl p-3 text-slate-900 dark:text-slate-100 ring-1 ring-black/10 dark:ring-white/10">
+        {/* Header: Title + Close Button */}
+        <div className="flex items-center justify-between gap-2 pb-1.5 border-b border-slate-200 dark:border-slate-800">
+          <div className="flex items-center gap-1.5 min-w-0">
+            <span className="p-1 rounded-md bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 shrink-0">
+              <Cookie className="w-3.5 h-3.5" />
+            </span>
+            <span className="font-bold text-xs text-slate-900 dark:text-white truncate">
+              Cookie &amp; Ad Consent
+            </span>
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
           </div>
 
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center justify-between gap-2 mb-1.5">
-              <h3 className="font-semibold text-sm tracking-tight flex items-center gap-1.5 text-foreground">
-                <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-                Cookie &amp; Privacy Choices
-              </h3>
-              <button
-                type="button"
-                onClick={() => handleChoice('declined')}
-                className="text-muted-foreground hover:text-foreground transition-colors p-1 rounded-md -mr-1"
-                aria-label="Close cookie consent banner"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
+          <button
+            type="button"
+            onClick={() => handleChoice('declined')}
+            className="p-1 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md transition-colors cursor-pointer"
+            title="Dismiss"
+            aria-label="Dismiss banner"
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
+        </div>
 
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              We use essential cookies and browser storage to ensure private local processing, remember your preferences, and serve relevant Google AdSense ads in compliance with GDPR.
-            </p>
+        {/* Ultra-compact high-contrast description */}
+        <p className="mt-1.5 text-[11px] leading-relaxed text-slate-700 dark:text-slate-300 font-medium">
+          We use cookies &amp; browser storage for tool processing and Google AdSense compliance.{' '}
+          <Link
+            to="/privacy-policy"
+            className="text-indigo-600 dark:text-indigo-400 hover:underline font-semibold"
+          >
+            Privacy Policy
+          </Link>
+        </p>
 
-            <div className="mt-2 text-xs">
-              <Link 
-                to="/privacy-policy" 
-                className="text-primary hover:underline font-medium inline-flex items-center gap-1"
-              >
-                Read our Privacy Policy &amp; Ad Disclosure &rarr;
-              </Link>
-            </div>
-
-            <div className="mt-3.5 flex flex-wrap items-center gap-2 pt-2 border-t border-border/50">
-              <button
-                type="button"
-                onClick={() => handleChoice('accepted')}
-                className="px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90 text-xs font-semibold rounded-lg shadow-sm transition-colors whitespace-nowrap cursor-pointer"
-              >
-                Accept All
-              </button>
-              <button
-                type="button"
-                onClick={() => handleChoice('declined')}
-                className="px-3.5 py-2 bg-secondary text-secondary-foreground hover:bg-secondary/80 text-xs font-medium rounded-lg transition-colors whitespace-nowrap cursor-pointer border border-border"
-              >
-                Decline Non-Essential
-              </button>
-            </div>
-          </div>
+        {/* Clear, well-separated action buttons preventing accidental clicks */}
+        <div className="mt-2.5 flex items-center justify-end gap-2 pt-1.5">
+          <button
+            type="button"
+            onClick={() => handleChoice('declined')}
+            className="px-2.5 py-1 text-[11px] font-semibold text-slate-700 dark:text-slate-300 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-md transition-colors cursor-pointer"
+          >
+            Decline
+          </button>
+          <button
+            type="button"
+            onClick={() => handleChoice('accepted')}
+            className="px-3 py-1 text-[11px] font-semibold text-white bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 rounded-md shadow-sm transition-colors cursor-pointer"
+          >
+            Accept
+          </button>
         </div>
       </div>
-    </div>
+    </aside>
   );
 };
 
