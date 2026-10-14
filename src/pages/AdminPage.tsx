@@ -43,7 +43,8 @@ import {
   ChevronRight,
   ShieldCheck,
   Zap,
-  Info
+  Info,
+  Cookie
 } from 'lucide-react';
 import { useSiteSettings } from '../context/SiteSettingsContext';
 import { getFirestoreSyncStatus, FirestoreSyncStatus, ToolOverride, AdminRole, AdminTeamMember } from '../lib/siteSettings';
@@ -123,6 +124,7 @@ export const AdminPage: React.FC = () => {
   const [announcementForm, setAnnouncementForm] = useState(settings.announcement);
   const [brandingForm, setBrandingForm] = useState(settings.branding);
   const [adsForm, setAdsForm] = useState(settings.ads);
+  const [cookieConsentForm, setCookieConsentForm] = useState(settings.cookieConsent || { enabled: true });
   const [seoForm, setSeoForm] = useState(settings.seo);
   const [imgbbKeyInput, setImgbbKeyInput] = useState(settings.admin.imgbbApiKey);
   const [newAllowedEmail, setNewAllowedEmail] = useState('');
@@ -153,9 +155,27 @@ export const AdminPage: React.FC = () => {
     setAnnouncementForm(settings.announcement);
     setBrandingForm(settings.branding);
     setAdsForm(settings.ads);
+    setCookieConsentForm(settings.cookieConsent || { enabled: true });
     setSeoForm(settings.seo);
     setImgbbKeyInput(settings.admin.imgbbApiKey);
   }, [settings]);
+
+  // Handler to toggle Cookie Consent banner ON/OFF with instant feedback
+  const handleToggleCookieConsent = async (explicitVal?: boolean) => {
+    const nextVal = explicitVal !== undefined ? explicitVal : !cookieConsentForm.enabled;
+    const updated = { enabled: nextVal };
+    setCookieConsentForm(updated);
+    try {
+      await updateSettings({ cookieConsent: updated });
+      toast.success(
+        nextVal
+          ? 'Cookie Consent Banner enabled! (Banner and footer preferences button are now visible)'
+          : 'Cookie Consent Banner disabled! (Banner and footer preferences button are now hidden)'
+      );
+    } catch (err: any) {
+      toast.error('Failed to update cookie banner setting: ' + err?.message);
+    }
+  };
 
   // Listen to sync status changes
   useEffect(() => {
@@ -1065,6 +1085,24 @@ export const AdminPage: React.FC = () => {
                         <span>Update Top Announcement Banner & Tool Count</span>
                       </div>
                       <ChevronRight className="w-4 h-4 text-slate-500" />
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setActiveTab('ads')}
+                      className="w-full p-3 rounded-xl bg-slate-950 hover:bg-slate-800/80 border border-slate-800 flex items-center justify-between text-xs font-semibold text-white transition-colors"
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <Cookie className="w-4 h-4 text-emerald-400" />
+                        <span>Cookie Consent Banner: {cookieConsentForm.enabled ? 'Active (ON)' : 'Hidden (OFF)'}</span>
+                      </div>
+                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                        cookieConsentForm.enabled 
+                          ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30' 
+                          : 'bg-rose-500/15 text-rose-400 border border-rose-500/30'
+                      }`}>
+                        {cookieConsentForm.enabled ? 'Enabled' : 'Disabled'}
+                      </span>
                     </button>
                   </div>
                 </div>
@@ -2036,8 +2074,8 @@ CREATE INDEX IF NOT EXISTS idx_posts_status ON posts(status);`;
                     onClick={async () => {
                       setSavingSettings(true);
                       try {
-                        await updateSettings({ ads: adsForm });
-                        toast.success('AdSense settings saved!');
+                        await updateSettings({ ads: adsForm, cookieConsent: cookieConsentForm });
+                        toast.success('AdSense & Consent settings saved!');
                       } catch (err: any) {
                         toast.error('Failed to save: ' + err?.message);
                       } finally {
@@ -2048,6 +2086,103 @@ CREATE INDEX IF NOT EXISTS idx_posts_status ON posts(status);`;
                   >
                     <Save className="w-4 h-4" />
                     <span>{savingSettings ? 'Saving...' : 'Save Ad Settings'}</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* GDPR & AdSense Cookie Consent Banner Controller */}
+              <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <Cookie className="w-5 h-5 text-amber-400" />
+                      <h4 className="text-base font-bold text-white">
+                        GDPR &amp; AdSense Cookie Consent Banner
+                      </h4>
+                      <span
+                        className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wide uppercase ${
+                          cookieConsentForm.enabled
+                            ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
+                            : 'bg-rose-500/15 text-rose-400 border border-rose-500/30'
+                        }`}
+                      >
+                        {cookieConsentForm.enabled ? 'Active (ON)' : 'Disabled (OFF)'}
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-400 max-w-xl leading-relaxed">
+                      Controls whether the privacy &amp; cookie consent banner and the footer <code className="px-1.5 py-0.5 rounded bg-slate-950 text-indigo-300 font-mono text-[11px]">Cookie Preferences</code> button are active on your site.
+                    </p>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => handleToggleCookieConsent()}
+                    className={`shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all shadow-md cursor-pointer ${
+                      cookieConsentForm.enabled
+                        ? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-600/20'
+                        : 'bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700'
+                    }`}
+                  >
+                    <span
+                      className={`w-2.5 h-2.5 rounded-full ${
+                        cookieConsentForm.enabled ? 'bg-emerald-200 animate-pulse' : 'bg-slate-500'
+                      }`}
+                    />
+                    <span>{cookieConsentForm.enabled ? 'Turn OFF Banner' : 'Turn ON Banner'}</span>
+                  </button>
+                </div>
+
+                {/* Workflow Guidance for Google AdSense Approval & Post-Approval */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                  <div
+                    className={`p-4 rounded-xl border transition-all ${
+                      cookieConsentForm.enabled
+                        ? 'bg-emerald-950/20 border-emerald-800/50 text-slate-300 shadow-sm'
+                        : 'bg-slate-950/60 border-slate-800/80 text-slate-500 opacity-70'
+                    }`}
+                  >
+                    <div className="flex items-center gap-1.5 font-bold text-white mb-2">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                      <span>1. Currently ON (Recommended Before AdSense Approval)</span>
+                    </div>
+                    <ul className="space-y-1.5 text-[11px] leading-relaxed">
+                      <li>• <strong>Visitor Banner:</strong> Displays the bottom-right cookie consent notice with clear Accept/Decline buttons.</li>
+                      <li>• <strong>Footer Link:</strong> Displays the <em>Cookie Preferences</em> button in the footer for visitor access.</li>
+                      <li>• <strong>AdSense Safety:</strong> Safe from accidental clicks (isolated bottom-right corner, solid opaque background).</li>
+                      <li>• <strong>Compliance:</strong> Satisfies Google's EU User Consent Policy review requirement.</li>
+                    </ul>
+                  </div>
+
+                  <div
+                    className={`p-4 rounded-xl border transition-all ${
+                      !cookieConsentForm.enabled
+                        ? 'bg-indigo-950/30 border-indigo-700/60 text-slate-300 shadow-sm'
+                        : 'bg-slate-950/60 border-slate-800/80 text-slate-500 opacity-70'
+                    }`}
+                  >
+                    <div className="flex items-center gap-1.5 font-bold text-white mb-2">
+                      <Sparkles className="w-4 h-4 text-indigo-400 shrink-0" />
+                      <span>2. Turn OFF (After Receiving AdSense Approval)</span>
+                    </div>
+                    <ul className="space-y-1.5 text-[11px] leading-relaxed">
+                      <li>• <strong>Instant Clean Site:</strong> Both the banner and the footer <em>Cookie Preferences</em> link are 100% hidden.</li>
+                      <li>• <strong>Zero Code Editing:</strong> No need to modify code or delete files when AdSense is approved.</li>
+                      <li>• <strong>Official Google CMP:</strong> Easily switch to Google AdSense's official automated Privacy &amp; Messaging (GDPR/CPRA CMP) without banner collisions!</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between text-xs text-slate-400">
+                  <div className="flex items-center gap-2">
+                    <Info className="w-4 h-4 text-indigo-400 shrink-0" />
+                    <span>Current Status: <strong className="text-white">{cookieConsentForm.enabled ? 'Banner & Footer Link are LIVE' : 'Banner & Footer Link are HIDDEN'}</strong></span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleToggleCookieConsent()}
+                    className="text-[11px] font-bold text-indigo-400 hover:text-indigo-300 hover:underline cursor-pointer"
+                  >
+                    {cookieConsentForm.enabled ? 'Click to Disable' : 'Click to Enable'}
                   </button>
                 </div>
               </div>

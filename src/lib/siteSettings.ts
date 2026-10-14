@@ -72,6 +72,10 @@ export interface SiteSettings {
     inContentSlotId: string;
     bottomSlotId: string;
   };
+  // Cookie Consent & GDPR Banner (AdSense compliance)
+  cookieConsent: {
+    enabled: boolean;
+  };
   // SEO & Cloudflare
   seo: {
     defaultTitle: string;
@@ -121,6 +125,9 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
     sidebarSlotId: '',
     inContentSlotId: '',
     bottomSlotId: ''
+  },
+  cookieConsent: {
+    enabled: true
   },
   seo: {
     defaultTitle: `Toolzaro – ${tools.length}+ Free Online Developer, PDF, Image & Utility Tools`,
@@ -218,6 +225,7 @@ export function getCachedSiteSettings(): SiteSettings {
         announcement: { ...DEFAULT_SITE_SETTINGS.announcement, ...(parsed.announcement || {}) },
         branding,
         ads: { ...DEFAULT_SITE_SETTINGS.ads, ...(parsed.ads || {}) },
+        cookieConsent: { ...DEFAULT_SITE_SETTINGS.cookieConsent, ...(parsed.cookieConsent || {}) },
         seo,
         toolOverrides: { ...DEFAULT_SITE_SETTINGS.toolOverrides, ...(parsed.toolOverrides || {}) },
         admin: adminData
@@ -270,6 +278,7 @@ export async function fetchSiteSettings(): Promise<SiteSettings> {
         announcement: { ...DEFAULT_SITE_SETTINGS.announcement, ...(data.announcement || {}) },
         branding,
         ads: { ...DEFAULT_SITE_SETTINGS.ads, ...(data.ads || {}) },
+        cookieConsent: { ...DEFAULT_SITE_SETTINGS.cookieConsent, ...(data.cookieConsent || {}) },
         seo,
         toolOverrides: { ...DEFAULT_SITE_SETTINGS.toolOverrides, ...(data.toolOverrides || {}) },
         admin: { ...DEFAULT_SITE_SETTINGS.admin, ...(data.admin || {}) }
@@ -305,6 +314,7 @@ export async function saveSiteSettings(newSettings: Partial<SiteSettings>): Prom
     announcement: { ...current.announcement, ...(newSettings.announcement || {}) },
     branding: { ...current.branding, ...(newSettings.branding || {}) },
     ads: { ...current.ads, ...(newSettings.ads || {}) },
+    cookieConsent: { ...current.cookieConsent, ...(newSettings.cookieConsent || {}) },
     seo: { ...current.seo, ...(newSettings.seo || {}) },
     admin: { ...current.admin, ...(newSettings.admin || {}) }
   };

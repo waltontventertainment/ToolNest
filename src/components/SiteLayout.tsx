@@ -746,16 +746,18 @@ export const SiteLayout: React.FC = () => {
               <li><Link to={getStaticPageUrl('privacy-policy')} className="hover:text-primary transition-colors">Privacy Policy</Link></li>
               <li><Link to={getStaticPageUrl('terms')} className="hover:text-primary transition-colors">Terms of Service</Link></li>
               <li><Link to={getStaticPageUrl('disclaimer')} className="hover:text-primary transition-colors">Disclaimer</Link></li>
-              <li>
-                <button
-                  type="button"
-                  onClick={openCookieSettings}
-                  className="hover:text-primary transition-colors flex items-center gap-1.5 cursor-pointer text-left text-xs font-medium text-muted-foreground"
-                >
-                  <ShieldCheck className="w-3.5 h-3.5 text-primary shrink-0" />
-                  <span>Cookie Preferences</span>
-                </button>
-              </li>
+              {settings.cookieConsent?.enabled !== false && (
+                <li>
+                  <button
+                    type="button"
+                    onClick={openCookieSettings}
+                    className="hover:text-primary transition-colors flex items-center gap-1.5 cursor-pointer text-left text-xs font-medium text-muted-foreground"
+                  >
+                    <ShieldCheck className="w-3.5 h-3.5 text-primary shrink-0" />
+                    <span>Cookie Preferences</span>
+                  </button>
+                </li>
+              )}
               <li>
                 <button
                   type="button"
@@ -778,8 +780,8 @@ export const SiteLayout: React.FC = () => {
         </div>
       </footer>
 
-      {/* GDPR & Google AdSense Cookie Consent Banner */}
-      <CookieConsentBanner />
+      {/* GDPR & Google AdSense Cookie Consent Banner (toggled via Admin Panel) */}
+      {settings.cookieConsent?.enabled !== false && <CookieConsentBanner />}
     </div>
   );
 };

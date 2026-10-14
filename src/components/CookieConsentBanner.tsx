@@ -1,13 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { ShieldCheck, Cookie, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useSiteSettings } from '../context/SiteSettingsContext';
 
 const STORAGE_KEY = 'toolzaro_cookie_consent';
 
 export const CookieConsentBanner: React.FC = () => {
+  const { settings } = useSiteSettings();
+  const isEnabled = settings.cookieConsent?.enabled !== false;
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
+    if (!isEnabled) {
+      setIsVisible(false);
+      return;
+    }
     try {
       const consent = localStorage.getItem(STORAGE_KEY);
       if (!consent) {
@@ -18,14 +25,18 @@ export const CookieConsentBanner: React.FC = () => {
     } catch {
       // If localStorage is unavailable, fail silently
     }
-  }, []);
+  }, [isEnabled]);
 
   // Allow re-opening cookie preferences anytime from the footer link
   useEffect(() => {
-    const handleOpen = () => setIsVisible(true);
+    const handleOpen = () => {
+      if (settings.cookieConsent?.enabled !== false) {
+        setIsVisible(true);
+      }
+    };
     window.addEventListener('open_cookie_settings', handleOpen);
     return () => window.removeEventListener('open_cookie_settings', handleOpen);
-  }, []);
+  }, [settings.cookieConsent?.enabled]);
 
   const handleChoice = (decision: 'accepted' | 'declined') => {
     try {
