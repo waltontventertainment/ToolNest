@@ -32,6 +32,15 @@ export interface ToolOverride {
   updatedAt?: string;
 }
 
+export type AdminRole = 'admin' | 'editor' | 'manager';
+
+export interface AdminTeamMember {
+  email: string;
+  role: AdminRole;
+  addedAt?: string;
+  addedBy?: string;
+}
+
 export interface SiteSettings {
   // Announcement Bar
   announcement: {
@@ -77,6 +86,7 @@ export interface SiteSettings {
   // Admin & Integrations
   admin: {
     allowedEmails: string[];
+    teamMembers?: AdminTeamMember[];
     masterAdminUid?: string;
     masterAdminEmail?: string;
     imgbbApiKey: string;
@@ -122,8 +132,15 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
   },
   toolOverrides: {},
   admin: {
-    allowedEmails: [],
-    masterAdminEmail: '',
+    allowedEmails: ['waltontventertainment1@gmail.com'],
+    teamMembers: [
+      {
+        email: 'waltontventertainment1@gmail.com',
+        role: 'admin',
+        addedAt: '2026-10-14'
+      }
+    ],
+    masterAdminEmail: 'waltontventertainment1@gmail.com',
     imgbbApiKey: '1ba7e3014ff726df236cef13ca1a79f3',
     passwordHash: 'admin123'
   }

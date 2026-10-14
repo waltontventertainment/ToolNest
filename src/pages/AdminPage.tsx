@@ -46,7 +46,7 @@ import {
   Info
 } from 'lucide-react';
 import { useSiteSettings } from '../context/SiteSettingsContext';
-import { getFirestoreSyncStatus, FirestoreSyncStatus, ToolOverride } from '../lib/siteSettings';
+import { getFirestoreSyncStatus, FirestoreSyncStatus, ToolOverride, AdminRole, AdminTeamMember } from '../lib/siteSettings';
 import { BlogAuthorBadge } from '../components/BlogAuthorBadge';
 import { 
   FirestoreBlog, 
@@ -87,11 +87,13 @@ export const AdminPage: React.FC = () => {
   const [currentUser, setCurrentUser] = useState<FirebaseUser | null>(auth.currentUser);
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState<boolean>(false);
   const [adminEmail, setAdminEmail] = useState<string>('');
+  const [userRole, setUserRole] = useState<AdminRole>('admin');
   const [authChecking, setAuthChecking] = useState<boolean>(true);
   const [authLoading, setAuthLoading] = useState(false);
   const [loginError, setLoginError] = useState('');
   const [unauthorizedDomainError, setUnauthorizedDomainError] = useState(false);
-  const [adminEmailInput, setAdminEmailInput] = useState('waltontventertainment1@gmail.com');
+  const [newTeamEmail, setNewTeamEmail] = useState('');
+  const [newTeamRole, setNewTeamRole] = useState<AdminRole>('editor');
 
   // Active admin tab
   const [activeTab, setActiveTab] = useState<
@@ -250,28 +252,43 @@ export const AdminPage: React.FC = () => {
    */
   const verifyAndAuthorizeAdmin = async (email: string, uid?: string) => {
     const cleanEmail = email.trim().toLowerCase();
+    const team = settings.admin?.teamMembers || [];
     const allowed = (settings.admin?.allowedEmails || []).map(e => e.trim().toLowerCase());
     const masterEmail = (settings.admin?.masterAdminEmail || '').trim().toLowerCase();
 
-    // Check if user is the first user, the project owner, or already in allowed list
+    // Check if user is the first user, the project owner, master, or in team
     const isFirstUser = !masterEmail && allowed.length === 0;
     const isOwnerEmail = cleanEmail === 'waltontventertainment1@gmail.com';
-    const isAuthorized = 
-      isFirstUser || 
-      isOwnerEmail ||
-      (masterEmail !== '' && cleanEmail === masterEmail) || 
-      allowed.includes(cleanEmail);
+    const isMaster = masterEmail !== '' && cleanEmail === masterEmail;
+    const teamMember = team.find(m => m.email.trim().toLowerCase() === cleanEmail);
+    const isAllowed = allowed.includes(cleanEmail);
+
+    const isAuthorized = isFirstUser || isOwnerEmail || isMaster || !!teamMember || isAllowed;
 
     if (isAuthorized) {
+      let assignedRole: AdminRole = 'admin';
+      if (isOwnerEmail || isMaster || isFirstUser) {
+        assignedRole = 'admin';
+      } else if (teamMember) {
+        assignedRole = teamMember.role;
+      }
+
+      setUserRole(assignedRole);
+
       // Crown as master admin if first user or owner
       if (isFirstUser || !masterEmail) {
         const updatedAllowed = Array.from(new Set([...allowed, cleanEmail]));
+        const updatedTeam: AdminTeamMember[] = [
+          ...team.filter(m => m.email.toLowerCase() !== cleanEmail),
+          { email: cleanEmail, role: 'admin', addedAt: new Date().toISOString() }
+        ];
         await updateSettings({
           admin: {
             ...settings.admin,
             masterAdminEmail: cleanEmail,
             masterAdminUid: uid || settings.admin?.masterAdminUid || '',
-            allowedEmails: updatedAllowed
+            allowedEmails: updatedAllowed,
+            teamMembers: updatedTeam
           }
         });
       }
@@ -280,11 +297,11 @@ export const AdminPage: React.FC = () => {
       setAdminEmail(cleanEmail);
       localStorage.setItem(ADMIN_SESSION_KEY, cleanEmail);
       setLoginError('');
-      toast.success(`Welcome, Admin (${cleanEmail})!`);
+      toast.success(`Welcome, ${assignedRole.toUpperCase()} (${cleanEmail})!`);
     } else {
       setIsAdminAuthenticated(false);
-      setLoginError(`Access Denied: ${cleanEmail} is not authorized. The administrator role has already been claimed.`);
-      toast.error('Unauthorized account. Only designated administrators can enter.');
+      setLoginError(`Access Denied: ${cleanEmail} is not authorized. Ask the Master Administrator to add your Gmail.`);
+      toast.error('Unauthorized account. Only designated team members can enter.');
     }
   };
 
@@ -370,50 +387,64 @@ export const AdminPage: React.FC = () => {
     }
   };
 
-  // Add Allowed Admin Email
-  const handleAddAdminEmail = async () => {
-    if (!newAllowedEmail.trim() || !newAllowedEmail.includes('@')) {
-      toast.error('Please enter a valid email address');
+  // Add Team Member with Role (Admin, Editor, Manager)
+  const handleAddTeamMember = async () => {
+    if (!newTeamEmail.trim() || !newTeamEmail.includes('@')) {
+      toast.error('Please enter a valid Gmail address');
       return;
     }
-    const current = settings.admin.allowedEmails || [];
-    if (current.includes(newAllowedEmail.trim())) {
-      toast.error('Email is already in the authorized list');
+    const cleanEmail = newTeamEmail.trim().toLowerCase();
+    const currentTeam = settings.admin?.teamMembers || [];
+    if (currentTeam.some(m => m.email.toLowerCase() === cleanEmail)) {
+      toast.error('This email is already registered in the team');
       return;
     }
-    const updated = [...current, newAllowedEmail.trim()];
+    const newMember: AdminTeamMember = {
+      email: cleanEmail,
+      role: newTeamRole,
+      addedAt: new Date().toISOString().split('T')[0],
+      addedBy: adminEmail || 'Master Admin'
+    };
+    const updatedTeam = [...currentTeam, newMember];
+    const updatedAllowed = Array.from(new Set([...(settings.admin?.allowedEmails || []), cleanEmail]));
+
     try {
       await updateSettings({
         admin: {
           ...settings.admin,
-          allowedEmails: updated
+          teamMembers: updatedTeam,
+          allowedEmails: updatedAllowed
         }
       });
-      setNewAllowedEmail('');
-      toast.success(`Added ${newAllowedEmail.trim()} as authorized administrator!`);
+      setNewTeamEmail('');
+      toast.success(`Added ${cleanEmail} as ${newTeamRole.toUpperCase()}!`);
     } catch (err: any) {
-      toast.error('Failed to update admin list: ' + err?.message);
+      toast.error('Failed to add team member: ' + err?.message);
     }
   };
 
-  // Remove Admin Email
-  const handleRemoveAdminEmail = async (emailToRemove: string) => {
-    const current = settings.admin.allowedEmails || [];
-    if (current.length <= 1) {
-      toast.error('Cannot remove the last remaining admin email');
+  // Remove Team Member
+  const handleRemoveTeamMember = async (emailToRemove: string) => {
+    const master = (settings.admin?.masterAdminEmail || 'waltontventertainment1@gmail.com').toLowerCase();
+    if (emailToRemove.toLowerCase() === master) {
+      toast.error('Cannot remove the Master Administrator');
       return;
     }
-    const updated = current.filter(e => e !== emailToRemove);
+    const currentTeam = settings.admin?.teamMembers || [];
+    const updatedTeam = currentTeam.filter(m => m.email.toLowerCase() !== emailToRemove.toLowerCase());
+    const updatedAllowed = (settings.admin?.allowedEmails || []).filter(e => e.toLowerCase() !== emailToRemove.toLowerCase());
+
     try {
       await updateSettings({
         admin: {
           ...settings.admin,
-          allowedEmails: updated
+          teamMembers: updatedTeam,
+          allowedEmails: updatedAllowed
         }
       });
-      toast.success(`Removed ${emailToRemove} from administrators`);
+      toast.success(`Removed ${emailToRemove} from team`);
     } catch (err: any) {
-      toast.error('Failed to remove admin: ' + err?.message);
+      toast.error('Failed to remove member: ' + err?.message);
     }
   };
 
@@ -585,36 +616,6 @@ export const AdminPage: React.FC = () => {
                   </div>
                 </div>
               )}
-
-              {/* Direct Authorized Admin Email Login */}
-              <div className="pt-2 border-t border-slate-800 space-y-2.5">
-                <p className="text-[11px] text-slate-400 font-semibold flex items-center gap-1.5">
-                  <Key className="w-3.5 h-3.5 text-indigo-400" />
-                  <span>Or Sign In via Master Admin Email</span>
-                </p>
-                <div className="flex gap-2">
-                  <input
-                    type="email"
-                    value={adminEmailInput}
-                    onChange={e => setAdminEmailInput(e.target.value)}
-                    placeholder="waltontventertainment1@gmail.com"
-                    className="flex-1 px-3 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white placeholder:text-slate-500 focus:outline-hidden focus:border-indigo-500"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (!adminEmailInput.trim() || !adminEmailInput.includes('@')) {
-                        toast.error('Please enter a valid email address');
-                        return;
-                      }
-                      verifyAndAuthorizeAdmin(adminEmailInput.trim());
-                    }}
-                    className="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs transition-colors shrink-0 cursor-pointer"
-                  >
-                    Enter
-                  </button>
-                </div>
-              </div>
             </div>
 
             <div className="pt-4 border-t border-slate-800 flex justify-between items-center text-xs text-slate-500">
@@ -854,41 +855,68 @@ export const AdminPage: React.FC = () => {
 
             <button
               type="button"
-              onClick={() => setActiveTab('announcement')}
-              className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-bold transition-all ${
+              onClick={() => {
+                if (userRole === 'editor') {
+                  toast.error('Announcement Bar requires Manager or Admin permissions.');
+                  return;
+                }
+                setActiveTab('announcement');
+              }}
+              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition-all ${
                 activeTab === 'announcement'
                   ? 'bg-indigo-600 text-white shadow-md'
                   : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
               }`}
             >
-              <Megaphone className="w-4 h-4" />
-              <span>Announcement Bar</span>
+              <div className="flex items-center gap-2.5">
+                <Megaphone className="w-4 h-4" />
+                <span>Announcement Bar</span>
+              </div>
+              {userRole === 'editor' && <Lock className="w-3 h-3 text-slate-500" />}
             </button>
 
             <button
               type="button"
-              onClick={() => setActiveTab('branding')}
-              className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-bold transition-all ${
+              onClick={() => {
+                if (userRole !== 'admin') {
+                  toast.error('Site Branding settings require Admin permissions.');
+                  return;
+                }
+                setActiveTab('branding');
+              }}
+              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition-all ${
                 activeTab === 'branding'
                   ? 'bg-indigo-600 text-white shadow-md'
                   : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
               }`}
             >
-              <Sparkles className="w-4 h-4" />
-              <span>Site Branding</span>
+              <div className="flex items-center gap-2.5">
+                <Sparkles className="w-4 h-4" />
+                <span>Site Branding</span>
+              </div>
+              {userRole !== 'admin' && <Lock className="w-3 h-3 text-slate-500" />}
             </button>
 
             <button
               type="button"
-              onClick={() => setActiveTab('ads')}
-              className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-bold transition-all ${
+              onClick={() => {
+                if (userRole === 'editor') {
+                  toast.error('Ads & Monetization requires Manager or Admin permissions.');
+                  return;
+                }
+                setActiveTab('ads');
+              }}
+              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition-all ${
                 activeTab === 'ads'
                   ? 'bg-indigo-600 text-white shadow-md'
                   : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
               }`}
             >
-              <DollarSign className="w-4 h-4" />
-              <span>Ads & Monetization</span>
+              <div className="flex items-center gap-2.5">
+                <DollarSign className="w-4 h-4" />
+                <span>Ads & Monetization</span>
+              </div>
+              {userRole === 'editor' && <Lock className="w-3 h-3 text-slate-500" />}
             </button>
 
             <button
@@ -906,15 +934,24 @@ export const AdminPage: React.FC = () => {
 
             <button
               type="button"
-              onClick={() => setActiveTab('security')}
-              className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-bold transition-all ${
+              onClick={() => {
+                if (userRole !== 'admin') {
+                  toast.error('Security & Team settings require Admin permissions.');
+                  return;
+                }
+                setActiveTab('security');
+              }}
+              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition-all ${
                 activeTab === 'security'
                   ? 'bg-indigo-600 text-white shadow-md'
                   : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
               }`}
             >
-              <Shield className="w-4 h-4" />
-              <span>Security & Admins</span>
+              <div className="flex items-center gap-2.5">
+                <Shield className="w-4 h-4" />
+                <span>Security & Team</span>
+              </div>
+              {userRole !== 'admin' && <Lock className="w-3 h-3 text-slate-500" />}
             </button>
           </div>
 
@@ -926,11 +963,11 @@ export const AdminPage: React.FC = () => {
             </div>
             <div className="flex items-center justify-between text-[11px] font-bold text-slate-400">
               <span>Auth Method</span>
-              <span className="text-indigo-400">Firebase Auth</span>
+              <span className="text-indigo-400">Google Auth</span>
             </div>
             <div className="flex items-center justify-between text-[11px] font-bold text-slate-400">
               <span>ImgBB API</span>
-              <span className="text-sky-400 font-mono">1ba7e...9f3</span>
+              <span className="text-sky-400 font-mono">.env Active</span>
             </div>
           </div>
         </aside>
@@ -2352,63 +2389,139 @@ CREATE INDEX IF NOT EXISTS idx_posts_status ON posts(status);`;
                 </div>
               </div>
 
-              {/* Authorized Admin Emails */}
-              <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-4">
-                <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                  <Lock className="w-4 h-4 text-indigo-400" /> Authorized Admin Google Accounts
-                </h3>
-                <p className="text-xs text-slate-400">
-                  Any Google account listed below can log into <code className="text-indigo-300">/sabbir</code>.
-                </p>
-
-                <div className="space-y-2">
-                  {(settings.admin.allowedEmails || []).length === 0 ? (
-                    <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-500">
-                      No additional admin registered. The first user to log in via Google is recorded here as Master Admin.
-                    </div>
-                  ) : (
-                    (settings.admin.allowedEmails || []).map(email => (
-                      <div
-                        key={email}
-                        className="p-3 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between text-xs"
-                      >
-                        <div className="flex items-center gap-2">
-                          <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                          <span className="font-mono font-semibold text-white">{email}</span>
-                          {email === settings.admin.masterAdminEmail && (
-                            <span className="px-2 py-0.5 rounded text-[10px] font-extrabold bg-indigo-500/20 text-indigo-300">
-                              MASTER
-                            </span>
-                          )}
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveAdminEmail(email)}
-                          className="p-1 text-slate-500 hover:text-rose-400 transition-colors"
-                          title="Remove admin"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                    ))
-                  )}
+              {/* Team Members & Role Access Control (Admin, Editor, Manager) */}
+              <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-5">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-800">
+                  <div>
+                    <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                      <Lock className="w-4 h-4 text-indigo-400" /> Team Access & Role Management
+                    </h3>
+                    <p className="text-xs text-slate-400 mt-0.5">
+                      Authorize Gmail accounts with specific permission roles: <span className="text-indigo-400 font-bold">Admin</span> (Full), <span className="text-emerald-400 font-bold">Editor</span> (Blogs & Content), or <span className="text-amber-400 font-bold">Manager</span> (Tools & Ads).
+                    </p>
+                  </div>
+                  <span className="text-xs font-mono font-bold text-slate-400">
+                    {((settings.admin?.teamMembers || []).length)} Members
+                  </span>
                 </div>
 
-                <div className="flex gap-2 pt-2">
-                  <input
-                    type="email"
-                    value={newAllowedEmail}
-                    onChange={e => setNewAllowedEmail(e.target.value)}
-                    placeholder="Add new admin email (e.g. user@gmail.com)..."
-                    className="flex-1 px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white focus:outline-hidden focus:border-indigo-500"
-                  />
-                  <button
-                    type="button"
-                    onClick={handleAddAdminEmail}
-                    className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs transition-colors shrink-0"
-                  >
-                    Add Admin
-                  </button>
+                {/* Team Members List */}
+                <div className="space-y-2">
+                  {/* Master Admin Always Shown */}
+                  <div className="p-3.5 rounded-xl bg-slate-950 border border-indigo-500/30 flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-3">
+                      <div className="w-7 h-7 rounded-lg bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 flex items-center justify-center font-bold text-xs">
+                        ★
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="font-mono font-bold text-white">
+                            {settings.admin?.masterAdminEmail || 'waltontventertainment1@gmail.com'}
+                          </span>
+                          <span className="px-2 py-0.5 rounded text-[10px] font-extrabold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                            MASTER ADMIN
+                          </span>
+                        </div>
+                        <p className="text-[10px] text-slate-400 mt-0.5">Full unrestricted ownership & permissions</p>
+                      </div>
+                    </div>
+                    <span className="text-[10px] text-emerald-400 font-semibold">Protected</span>
+                  </div>
+
+                  {/* Other Team Members */}
+                  {(settings.admin?.teamMembers || [])
+                    .filter(m => m.email.toLowerCase() !== (settings.admin?.masterAdminEmail || 'waltontventertainment1@gmail.com').toLowerCase())
+                    .map(member => (
+                      <div
+                        key={member.email}
+                        className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 hover:border-slate-700 flex items-center justify-between text-xs transition-colors"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className={`w-7 h-7 rounded-lg flex items-center justify-center font-bold text-xs ${
+                            member.role === 'admin'
+                              ? 'bg-indigo-600/20 text-indigo-400 border border-indigo-500/30'
+                              : member.role === 'editor'
+                              ? 'bg-emerald-600/20 text-emerald-400 border border-emerald-500/30'
+                              : 'bg-amber-600/20 text-amber-400 border border-amber-500/30'
+                          }`}>
+                            {member.role.charAt(0).toUpperCase()}
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <span className="font-mono font-bold text-white">{member.email}</span>
+                              <span className={`px-2 py-0.5 rounded text-[10px] font-extrabold uppercase tracking-wider border ${
+                                member.role === 'admin'
+                                  ? 'bg-indigo-500/10 text-indigo-300 border-indigo-500/30'
+                                  : member.role === 'editor'
+                                  ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30'
+                                  : 'bg-amber-500/10 text-amber-300 border-amber-500/30'
+                              }`}>
+                                {member.role}
+                              </span>
+                            </div>
+                            <p className="text-[10px] text-slate-400 mt-0.5">
+                              {member.role === 'admin'
+                                ? 'Full administrative access'
+                                : member.role === 'editor'
+                                ? 'Can write, edit, and publish blogs & custom docs'
+                                : 'Can manage tools customization, ads, and announcement bar'}
+                              {member.addedAt && ` • Added ${member.addedAt}`}
+                            </p>
+                          </div>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveTeamMember(member.email)}
+                          className="p-2 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer"
+                          title="Remove team member"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ))}
+                </div>
+
+                {/* Add Team Member Form */}
+                <div className="pt-3 border-t border-slate-800 space-y-3">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
+                    <Plus className="w-3.5 h-3.5 text-indigo-400" /> Add Team Member (Gmail)
+                  </h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-12 gap-2.5">
+                    <div className="sm:col-span-7">
+                      <input
+                        type="email"
+                        value={newTeamEmail}
+                        onChange={e => setNewTeamEmail(e.target.value)}
+                        placeholder="collaborator@gmail.com"
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white placeholder:text-slate-500 focus:outline-hidden focus:border-indigo-500"
+                      />
+                    </div>
+                    <div className="sm:col-span-3">
+                      <select
+                        value={newTeamRole}
+                        onChange={e => setNewTeamRole(e.target.value as AdminRole)}
+                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white focus:outline-hidden focus:border-indigo-500 cursor-pointer"
+                      >
+                        <option value="editor">Editor (Blogs & Content)</option>
+                        <option value="manager">Manager (Tools & Ads)</option>
+                        <option value="admin">Admin (Full Control)</option>
+                      </select>
+                    </div>
+                    <div className="sm:col-span-2">
+                      <button
+                        type="button"
+                        onClick={handleAddTeamMember}
+                        className="w-full py-2.5 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer shadow-md"
+                      >
+                        <UserCheck className="w-3.5 h-3.5" />
+                        <span>Add</span>
+                      </button>
+                    </div>
+                  </div>
+                  <p className="text-[11px] text-slate-400">
+                    When this Gmail account signs in via Google, their role and permissions will be applied automatically.
+                  </p>
                 </div>
               </div>
 
