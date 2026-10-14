@@ -132,15 +132,15 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
   },
   toolOverrides: {},
   admin: {
-    allowedEmails: ['waltontventertainment1@gmail.com'],
+    allowedEmails: ['sabbirhasansh321@gmail.com'],
     teamMembers: [
       {
-        email: 'waltontventertainment1@gmail.com',
+        email: 'sabbirhasansh321@gmail.com',
         role: 'admin',
         addedAt: '2026-10-14'
       }
     ],
-    masterAdminEmail: 'waltontventertainment1@gmail.com',
+    masterAdminEmail: 'sabbirhasansh321@gmail.com',
     imgbbApiKey: '1ba7e3014ff726df236cef13ca1a79f3',
     passwordHash: 'admin123'
   }
@@ -162,6 +162,8 @@ export function formatDynamicToolCount(text?: string, count: number = tools.leng
     .replace(/\b(?:156|168|268)\s*(?:tools?|utilities?)\b/gi, `${count} utilities`);
 }
 
+export const MASTER_ADMIN_EMAIL = 'sabbirhasansh321@gmail.com';
+
 /**
  * Get current site settings with synchronous local fallback
  */
@@ -170,13 +172,32 @@ export function getCachedSiteSettings(): SiteSettings {
     const raw = localStorage.getItem(LOCAL_STORAGE_KEY);
     if (raw) {
       const parsed = JSON.parse(raw);
-      // If settings don't have a verified master admin UID or are uninitialized, allow first user to claim
       const adminData = { ...DEFAULT_SITE_SETTINGS.admin, ...(parsed.admin || {}) };
-      if (adminData.masterAdminEmail && !adminData.masterAdminUid) {
-        // Unverified legacy placeholder - clear so genuine first Google login claims admin
-        adminData.masterAdminEmail = '';
-        adminData.allowedEmails = [];
+      
+      // Clean up previous placeholder or old email
+      if (!adminData.masterAdminEmail || adminData.masterAdminEmail === 'waltontventertainment1@gmail.com') {
+        adminData.masterAdminEmail = MASTER_ADMIN_EMAIL;
       }
+      
+      // Filter out old email if cached and ensure real master admin is present
+      const allowedClean = (adminData.allowedEmails || [])
+        .map((e: string) => e.trim().toLowerCase())
+        .filter((e: string) => e !== 'waltontventertainment1@gmail.com');
+      const allowedSet = new Set(allowedClean);
+      allowedSet.add(MASTER_ADMIN_EMAIL.toLowerCase());
+      adminData.allowedEmails = Array.from(allowedSet);
+
+      const teamClean = (adminData.teamMembers || [])
+        .filter((m: AdminTeamMember) => m.email.toLowerCase() !== 'waltontventertainment1@gmail.com');
+
+      if (!teamClean.some((m: AdminTeamMember) => m.email.toLowerCase() === MASTER_ADMIN_EMAIL.toLowerCase())) {
+        teamClean.unshift({
+          email: MASTER_ADMIN_EMAIL,
+          role: 'admin',
+          addedAt: '2026-10-14'
+        });
+      }
+      adminData.teamMembers = teamClean;
 
       const branding = {
         ...DEFAULT_SITE_SETTINGS.branding,

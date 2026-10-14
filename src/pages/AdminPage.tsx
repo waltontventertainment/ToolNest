@@ -247,61 +247,55 @@ export const AdminPage: React.FC = () => {
   };
 
   /**
-   * Verify if email has admin privileges
-   * Pure first-login claims the Master Admin: Whichever Gmail logs in first becomes the admin!
+   * Strictly verify if the signed-in Gmail account has admin/team permissions.
+   * Only the Master Administrator (sabbirhasansh321@gmail.com) and team members
+   * explicitly added in settings.admin.teamMembers (with roles Admin, Editor, or Manager)
+   * can access the Admin Portal.
+   * Any unauthorized account is strictly rejected, locked out, and immediately signed out.
    */
   const verifyAndAuthorizeAdmin = async (email: string, uid?: string) => {
     const cleanEmail = email.trim().toLowerCase();
+    const masterEmail = (settings.admin?.masterAdminEmail || 'sabbirhasansh321@gmail.com').trim().toLowerCase();
     const team = settings.admin?.teamMembers || [];
     const allowed = (settings.admin?.allowedEmails || []).map(e => e.trim().toLowerCase());
-    const masterEmail = (settings.admin?.masterAdminEmail || '').trim().toLowerCase();
 
-    // Check if user is the first user, the project owner, master, or in team
-    const isFirstUser = !masterEmail && allowed.length === 0;
-    const isOwnerEmail = cleanEmail === 'waltontventertainment1@gmail.com';
-    const isMaster = masterEmail !== '' && cleanEmail === masterEmail;
+    // 1. Is user the master admin?
+    const isMaster = cleanEmail === masterEmail || cleanEmail === 'sabbirhasansh321@gmail.com';
+    
+    // 2. Is user an authorized team member?
     const teamMember = team.find(m => m.email.trim().toLowerCase() === cleanEmail);
     const isAllowed = allowed.includes(cleanEmail);
 
-    const isAuthorized = isFirstUser || isOwnerEmail || isMaster || !!teamMember || isAllowed;
+    const isAuthorized = isMaster || !!teamMember || isAllowed;
 
     if (isAuthorized) {
-      let assignedRole: AdminRole = 'admin';
-      if (isOwnerEmail || isMaster || isFirstUser) {
+      let assignedRole: AdminRole = 'editor';
+      if (isMaster) {
         assignedRole = 'admin';
       } else if (teamMember) {
         assignedRole = teamMember.role;
+      } else if (isAllowed) {
+        assignedRole = 'admin';
       }
 
       setUserRole(assignedRole);
-
-      // Crown as master admin if first user or owner
-      if (isFirstUser || !masterEmail) {
-        const updatedAllowed = Array.from(new Set([...allowed, cleanEmail]));
-        const updatedTeam: AdminTeamMember[] = [
-          ...team.filter(m => m.email.toLowerCase() !== cleanEmail),
-          { email: cleanEmail, role: 'admin', addedAt: new Date().toISOString() }
-        ];
-        await updateSettings({
-          admin: {
-            ...settings.admin,
-            masterAdminEmail: cleanEmail,
-            masterAdminUid: uid || settings.admin?.masterAdminUid || '',
-            allowedEmails: updatedAllowed,
-            teamMembers: updatedTeam
-          }
-        });
-      }
-
       setIsAdminAuthenticated(true);
       setAdminEmail(cleanEmail);
       localStorage.setItem(ADMIN_SESSION_KEY, cleanEmail);
       setLoginError('');
       toast.success(`Welcome, ${assignedRole.toUpperCase()} (${cleanEmail})!`);
     } else {
+      // STRICT BLOCK: Immediately revoke session and sign out unauthorized Google account
       setIsAdminAuthenticated(false);
-      setLoginError(`Access Denied: ${cleanEmail} is not authorized. Ask the Master Administrator to add your Gmail.`);
-      toast.error('Unauthorized account. Only designated team members can enter.');
+      setAdminEmail('');
+      setCurrentUser(null);
+      localStorage.removeItem(ADMIN_SESSION_KEY);
+      try {
+        await signOut(auth);
+      } catch {}
+      const errMsg = `Access Denied: ${cleanEmail} is not authorized. Only approved team Gmail accounts can access the Admin Portal. Ask the Master Administrator (${masterEmail}) to add your Gmail address from the Admin Panel.`;
+      setLoginError(errMsg);
+      toast.error(`Unauthorized account (${cleanEmail}). Access denied.`);
     }
   };
 
@@ -321,7 +315,7 @@ export const AdminPage: React.FC = () => {
       if (err?.code === 'auth/unauthorized-domain') {
         console.warn('Firebase domain authorization note: Domain requires authorization in Firebase Console:', typeof window !== 'undefined' ? window.location.hostname : '');
         setUnauthorizedDomainError(true);
-        setLoginError('This domain is not yet added to Firebase Console Authorized Domains. You can sign in instantly using the Preview Admin Sign-In below or authorize this domain in Firebase Console.');
+        setLoginError('Domain not authorized in Firebase. Please add this domain to Firebase Console -> Authentication -> Settings -> Authorized domains.');
       } else if (err?.code === 'auth/popup-blocked') {
         setLoginError('Google Sign-In popup was blocked by your browser. Please allow popups.');
       } else {
@@ -342,6 +336,7 @@ export const AdminPage: React.FC = () => {
     setIsAdminAuthenticated(false);
     setCurrentUser(null);
     setAdminEmail('');
+    setLoginError('');
     toast.info('Signed out of Admin Portal successfully.');
   };
 
@@ -425,7 +420,7 @@ export const AdminPage: React.FC = () => {
 
   // Remove Team Member
   const handleRemoveTeamMember = async (emailToRemove: string) => {
-    const master = (settings.admin?.masterAdminEmail || 'waltontventertainment1@gmail.com').toLowerCase();
+    const master = (settings.admin?.masterAdminEmail || 'sabbirhasansh321@gmail.com').toLowerCase();
     if (emailToRemove.toLowerCase() === master) {
       toast.error('Cannot remove the Master Administrator');
       return;
@@ -583,23 +578,14 @@ export const AdminPage: React.FC = () => {
                   <div className="flex items-start gap-2">
                     <AlertCircle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
                     <div>
-                      <p className="font-bold text-amber-300">Firebase Authorized Domain Notice</p>
+                      <p className="font-bold text-amber-300">Firebase Authorized Domain Required</p>
                       <p className="text-[11px] text-slate-300 mt-1 leading-relaxed">
-                        This preview domain is not yet in your Firebase Console's authorized domains list. You can click below to sign in directly without Google OAuth popup, or copy the domain to authorize it.
+                        To enable Google Sign-In on this domain, add it to your Firebase Console: <strong>Firebase Console → Authentication → Settings → Authorized domains</strong>.
                       </p>
                     </div>
                   </div>
 
-                  <div className="pt-1 space-y-2">
-                    <button
-                      type="button"
-                      onClick={() => verifyAndAuthorizeAdmin('waltontventertainment1@gmail.com')}
-                      className="w-full py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer shadow-lg"
-                    >
-                      <ShieldCheck className="w-4 h-4" />
-                      <span>One-Click Sign In (waltontventertainment1@gmail.com)</span>
-                    </button>
-
+                  <div className="pt-1">
                     <button
                       type="button"
                       onClick={() => {
@@ -608,10 +594,10 @@ export const AdminPage: React.FC = () => {
                           toast.success('Domain copied to clipboard!');
                         }
                       }}
-                      className="w-full py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                      className="w-full py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer border border-slate-700"
                     >
                       <Copy className="w-3.5 h-3.5" />
-                      <span>Copy Domain for Firebase Console</span>
+                      <span>Copy Domain ({typeof window !== 'undefined' ? window.location.hostname : 'Hostname'})</span>
                     </button>
                   </div>
                 </div>
@@ -2416,7 +2402,7 @@ CREATE INDEX IF NOT EXISTS idx_posts_status ON posts(status);`;
                       <div>
                         <div className="flex items-center gap-2">
                           <span className="font-mono font-bold text-white">
-                            {settings.admin?.masterAdminEmail || 'waltontventertainment1@gmail.com'}
+                            {settings.admin?.masterAdminEmail || 'sabbirhasansh321@gmail.com'}
                           </span>
                           <span className="px-2 py-0.5 rounded text-[10px] font-extrabold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
                             MASTER ADMIN
@@ -2430,7 +2416,7 @@ CREATE INDEX IF NOT EXISTS idx_posts_status ON posts(status);`;
 
                   {/* Other Team Members */}
                   {(settings.admin?.teamMembers || [])
-                    .filter(m => m.email.toLowerCase() !== (settings.admin?.masterAdminEmail || 'waltontventertainment1@gmail.com').toLowerCase())
+                    .filter(m => m.email.toLowerCase() !== (settings.admin?.masterAdminEmail || 'sabbirhasansh321@gmail.com').toLowerCase())
                     .map(member => (
                       <div
                         key={member.email}
