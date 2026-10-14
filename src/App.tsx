@@ -10,6 +10,7 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import { Index } from './pages/Index';
 import { isBloggerHost, extractSlugFromBloggerPath } from './lib/appUrls';
 import { tools, categories } from './lib/registry';
+import { CookieConsentBanner } from './components/CookieConsentBanner';
 
 // Direct static imports for instant 0ms first-paint, zero unmount, and zero reload flicker
 import { ToolPage } from './pages/ToolPage';
@@ -590,6 +591,8 @@ export default function App() {
                   </Route>
                 </Routes>
 
+                {/* Global GDPR & AdSense Cookie Consent Banner */}
+                <CookieConsentBanner />
               </RouterComponent>
               <Toaster position="bottom-right" richColors />
             </GoogleDriveProvider>

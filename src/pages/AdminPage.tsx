@@ -173,6 +173,8 @@ export const AdminPage: React.FC = () => {
         try {
           localStorage.removeItem(COOKIE_STORAGE_KEY);
           localStorage.removeItem('toolzaro_cookie_consent');
+          localStorage.removeItem('toolzaro_cookie_consent_v2');
+          localStorage.removeItem('toolzaro_cookie_consent_v3');
         } catch {}
       }
       toast.success(
@@ -190,6 +192,8 @@ export const AdminPage: React.FC = () => {
     try {
       localStorage.removeItem(COOKIE_STORAGE_KEY);
       localStorage.removeItem('toolzaro_cookie_consent');
+      localStorage.removeItem('toolzaro_cookie_consent_v2');
+      localStorage.removeItem('toolzaro_cookie_consent_v3');
     } catch {}
     openCookieSettings();
     toast.success('Cookie consent banner opened! You can now preview and test it live on your screen.');

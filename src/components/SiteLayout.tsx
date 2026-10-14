@@ -779,9 +779,6 @@ export const SiteLayout: React.FC = () => {
           </div>
         </div>
       </footer>
-
-      {/* GDPR & Google AdSense Cookie Consent Banner (toggled via Admin Panel) */}
-      {settings.cookieConsent?.enabled !== false && <CookieConsentBanner />}
     </div>
   );
 };
