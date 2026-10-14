@@ -94,13 +94,14 @@ const GoogleDriveModal = React.lazy(() => import('./GoogleDriveModal').then(m =>
 const FeedbackModal = React.lazy(() => import('./FeedbackModal').then(m => ({ default: m.FeedbackModal })));
 
 function getDefaultTheme(): 'light' | 'dark' {
-  if (typeof window === 'undefined') return 'dark';
+  if (typeof window === 'undefined') return 'light';
   try {
-    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
-      return 'light';
+    const saved = localStorage.getItem('toolnest-theme');
+    if (saved === '"dark"' || saved === 'dark') {
+      return 'dark';
     }
   } catch {}
-  return 'dark';
+  return 'light';
 }
 
 export const SiteLayout: React.FC = () => {
@@ -263,6 +264,7 @@ export const SiteLayout: React.FC = () => {
         </div>
       )}
 
+      {/* Permanently locked sticky header: stays firmly at top-0 on all devices (mobile & PC) without hiding */}
       <header className="sticky top-0 z-50 w-full backdrop-blur-md bg-background/95 border-b border-border/80 shadow-2xs max-w-full overflow-x-clip">
         <div className="w-full max-w-[1400px] mx-auto px-3 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2 sm:gap-4">
           {/* 3D Extruded Logo on the left */}

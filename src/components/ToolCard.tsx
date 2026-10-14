@@ -6,59 +6,60 @@ import { cn } from '../lib/utils';
 import { useFavorites } from '../context/FavoritesContext';
 import { getToolUrl } from '../lib/appUrls';
 import { preloadToolBySlug } from '../lib/registry';
+import { buildToolSeoDescription } from '../lib/seoHelper';
 
 const CATEGORY_VISUAL_THEMES: Record<string, { iconBox: string; categoryText: string }> = {
   'PDF': {
-    iconBox: 'bg-rose-500/12 text-rose-700 dark:text-rose-300 border-rose-500/25',
-    categoryText: 'text-rose-700 dark:text-rose-300',
+    iconBox: 'bg-gradient-to-br from-rose-500 via-rose-600 to-red-600 text-white shadow-md shadow-rose-500/30 border border-white/25',
+    categoryText: 'text-rose-700 dark:text-rose-400 font-extrabold',
   },
   'Color & Image': {
-    iconBox: 'bg-cyan-500/12 text-cyan-800 dark:text-cyan-300 border-cyan-500/25',
-    categoryText: 'text-cyan-800 dark:text-cyan-300',
+    iconBox: 'bg-gradient-to-br from-cyan-500 via-sky-600 to-blue-600 text-white shadow-md shadow-cyan-500/30 border border-white/25',
+    categoryText: 'text-cyan-800 dark:text-cyan-400 font-extrabold',
   },
   'Developer': {
-    iconBox: 'bg-indigo-500/12 text-indigo-700 dark:text-indigo-300 border-indigo-500/25',
-    categoryText: 'text-indigo-700 dark:text-indigo-300',
+    iconBox: 'bg-gradient-to-br from-indigo-500 via-indigo-600 to-purple-600 text-white shadow-md shadow-indigo-500/30 border border-white/25',
+    categoryText: 'text-indigo-800 dark:text-indigo-400 font-extrabold',
   },
   'QR & Barcode': {
-    iconBox: 'bg-amber-500/12 text-amber-800 dark:text-amber-300 border-amber-500/25',
-    categoryText: 'text-amber-800 dark:text-amber-300',
+    iconBox: 'bg-gradient-to-br from-amber-500 via-orange-500 to-amber-600 text-white shadow-md shadow-amber-500/30 border border-white/25',
+    categoryText: 'text-amber-800 dark:text-amber-400 font-extrabold',
   },
   'Text': {
-    iconBox: 'bg-violet-500/12 text-violet-700 dark:text-violet-300 border-violet-500/25',
-    categoryText: 'text-violet-700 dark:text-violet-300',
+    iconBox: 'bg-gradient-to-br from-violet-500 via-purple-600 to-fuchsia-600 text-white shadow-md shadow-violet-500/30 border border-white/25',
+    categoryText: 'text-violet-800 dark:text-violet-400 font-extrabold',
   },
   'Generators': {
-    iconBox: 'bg-purple-500/12 text-purple-700 dark:text-purple-300 border-purple-500/25',
-    categoryText: 'text-purple-700 dark:text-purple-300',
+    iconBox: 'bg-gradient-to-br from-purple-500 via-pink-600 to-rose-600 text-white shadow-md shadow-purple-500/30 border border-white/25',
+    categoryText: 'text-purple-800 dark:text-purple-400 font-extrabold',
   },
   'Converters': {
-    iconBox: 'bg-emerald-500/12 text-emerald-800 dark:text-emerald-300 border-emerald-500/25',
-    categoryText: 'text-emerald-800 dark:text-emerald-300',
+    iconBox: 'bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-600 text-white shadow-md shadow-emerald-500/30 border border-white/25',
+    categoryText: 'text-emerald-800 dark:text-emerald-400 font-extrabold',
   },
   'Calculators': {
-    iconBox: 'bg-blue-500/12 text-blue-700 dark:text-blue-300 border-blue-500/25',
-    categoryText: 'text-blue-700 dark:text-blue-300',
+    iconBox: 'bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 text-white shadow-md shadow-blue-500/30 border border-white/25',
+    categoryText: 'text-blue-800 dark:text-blue-400 font-extrabold',
   },
   'SEO': {
-    iconBox: 'bg-teal-500/12 text-teal-800 dark:text-teal-300 border-teal-500/25',
-    categoryText: 'text-teal-800 dark:text-teal-300',
+    iconBox: 'bg-gradient-to-br from-teal-500 via-emerald-600 to-cyan-600 text-white shadow-md shadow-teal-500/30 border border-white/25',
+    categoryText: 'text-teal-800 dark:text-teal-400 font-extrabold',
   },
   'Utility': {
-    iconBox: 'bg-fuchsia-500/12 text-fuchsia-700 dark:text-fuchsia-300 border-fuchsia-500/25',
-    categoryText: 'text-fuchsia-700 dark:text-fuchsia-300',
+    iconBox: 'bg-gradient-to-br from-fuchsia-500 via-pink-600 to-rose-600 text-white shadow-md shadow-fuchsia-500/30 border border-white/25',
+    categoryText: 'text-fuchsia-800 dark:text-fuchsia-400 font-extrabold',
   },
   'Universal Data Suite': {
-    iconBox: 'bg-sky-500/12 text-sky-800 dark:text-sky-300 border-sky-500/25',
-    categoryText: 'text-sky-800 dark:text-sky-300',
+    iconBox: 'bg-gradient-to-br from-sky-500 via-blue-600 to-indigo-600 text-white shadow-md shadow-sky-500/30 border border-white/25',
+    categoryText: 'text-sky-800 dark:text-sky-400 font-extrabold',
   },
   'Wikipedia': {
-    iconBox: 'bg-orange-500/12 text-orange-800 dark:text-orange-300 border-orange-500/25',
-    categoryText: 'text-orange-800 dark:text-orange-300',
+    iconBox: 'bg-gradient-to-br from-orange-500 via-amber-600 to-yellow-600 text-white shadow-md shadow-orange-500/30 border border-white/25',
+    categoryText: 'text-orange-800 dark:text-orange-400 font-extrabold',
   },
   'Fun & Viral': {
-    iconBox: 'bg-pink-500/12 text-pink-700 dark:text-pink-300 border-pink-500/25',
-    categoryText: 'text-pink-700 dark:text-pink-300',
+    iconBox: 'bg-gradient-to-br from-pink-500 via-rose-600 to-red-600 text-white shadow-md shadow-pink-500/30 border border-white/25',
+    categoryText: 'text-pink-800 dark:text-pink-400 font-extrabold',
   },
 };
 
@@ -80,9 +81,11 @@ export const ToolCard: React.FC<{ tool: ToolDefinition; compact?: boolean }> = R
 
   const Icon = tool.icon;
   const theme = CATEGORY_VISUAL_THEMES[tool.category] || {
-    iconBox: 'bg-primary/12 text-primary border-primary/25',
-    categoryText: 'text-primary',
+    iconBox: 'bg-gradient-to-br from-indigo-500 via-indigo-600 to-purple-600 text-white shadow-md shadow-indigo-500/25 border border-white/25',
+    categoryText: 'text-indigo-800 dark:text-indigo-400 font-extrabold',
   };
+
+  const displayDescription = buildToolSeoDescription(tool);
 
   if (compact) {
     return (
@@ -94,7 +97,7 @@ export const ToolCard: React.FC<{ tool: ToolDefinition; compact?: boolean }> = R
       >
         <div className="flex items-center gap-3 min-w-0 flex-1">
           <div className={cn("w-10 h-10 rounded-xl border flex items-center justify-center shrink-0 transition-transform duration-200 group-hover:scale-105", theme.iconBox)}>
-            <Icon className="w-4 h-4" />
+            <Icon className="w-4 h-4 text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.35)]" />
           </div>
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-1.5">
@@ -106,7 +109,7 @@ export const ToolCard: React.FC<{ tool: ToolDefinition; compact?: boolean }> = R
               </span>
             </div>
             <p className="text-[11px] text-muted-foreground truncate mt-0.5">
-              {tool.metaDescription}
+              {displayDescription}
             </p>
           </div>
         </div>
@@ -142,7 +145,7 @@ export const ToolCard: React.FC<{ tool: ToolDefinition; compact?: boolean }> = R
       <div className="flex items-start justify-between mb-3.5">
         {/* Category-Themed Icon Squircle */}
         <div className={cn("w-11 h-11 rounded-2xl border flex items-center justify-center shrink-0 shadow-2xs transition-transform duration-200 group-hover:scale-105", theme.iconBox)}>
-          <Icon className="w-5 h-5" />
+          <Icon className="w-5 h-5 text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.35)]" />
         </div>
         
         <div className="flex items-center gap-1.5">
@@ -189,7 +192,7 @@ export const ToolCard: React.FC<{ tool: ToolDefinition; compact?: boolean }> = R
       </div>
       
       <p className="text-xs text-muted-foreground line-clamp-2 mt-auto leading-relaxed">
-        {tool.metaDescription}
+        {displayDescription}
       </p>
     </Link>
   );

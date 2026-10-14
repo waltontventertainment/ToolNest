@@ -379,7 +379,7 @@ export const tools: ToolDefinition[] = [
     previewIcons: [Wifi, ShieldCheck, Globe],
     keywords: ['ip', 'public ip address', 'my ip', 'ip lookup'],
     metaTitle: 'Public IP Address Inspector',
-    metaDescription: 'Instantly inspect your public IP address.',
+    metaDescription: 'Instantly inspect your public IP address, ISP network details, and geographical location in real-time.',
     intro: '',
     howTo: [],
     faq: [],

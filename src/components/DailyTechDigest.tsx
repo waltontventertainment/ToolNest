@@ -165,18 +165,18 @@ export const DailyTechDigest: React.FC = () => {
       : getInstantTechDigest().highlights;
 
   return (
-    <div className="w-full bg-card border border-amber-500/30 dark:border-amber-500/20 hover:border-amber-500/50 rounded-2xl px-3.5 py-2.5 sm:px-4 sm:py-3 shadow-2xs transition-colors duration-150 relative overflow-hidden">
+    <div className="w-full bg-card border border-amber-500/40 dark:border-amber-500/20 hover:border-amber-500/60 rounded-2xl px-3.5 py-2.5 sm:px-4 sm:py-3 shadow-2xs transition-colors duration-150 relative overflow-hidden">
       {/* Compact Box: 1 Sleek Horizontal Row on PC (lg+), Clean Stacked on Mobile */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-2.5 lg:gap-4 relative z-10">
         {/* Left: Badge & Date */}
         <div className="flex items-center justify-between lg:justify-start gap-2 text-xs shrink-0">
           <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[11px] font-black bg-amber-700 text-white dark:bg-amber-500 dark:text-slate-950">
+            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[11px] font-black bg-gradient-to-r from-amber-600 to-orange-600 text-white shadow-xs">
               <Flame className="w-3 h-3 fill-current" />
               <span>Daily Tech Digest</span>
             </span>
-            <span className="text-[11px] font-semibold text-muted-foreground flex items-center gap-1">
-              <Calendar className="w-3 h-3 text-amber-700 dark:text-amber-400" />
+            <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1">
+              <Calendar className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
               <span>{digest.dateFormatted}</span>
             </span>
           </div>
@@ -191,13 +191,13 @@ export const DailyTechDigest: React.FC = () => {
               title="Sync latest live Hacker News & tech news"
               aria-label="Sync latest live tech news"
             >
-              <RefreshCw className={`w-3.5 h-3.5 text-amber-700 dark:text-amber-400 ${refreshing ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`w-3.5 h-3.5 text-amber-600 dark:text-amber-400 ${refreshing ? 'animate-spin' : ''}`} />
             </button>
 
             <button
               type="button"
               onClick={() => setExpanded(!expanded)}
-              className="min-h-[36px] px-3 py-1.5 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 text-amber-800 dark:text-amber-300 text-xs font-extrabold transition-colors cursor-pointer flex items-center gap-1 border border-amber-500/30"
+              className="min-h-[36px] px-3 py-1.5 rounded-lg bg-amber-100 hover:bg-amber-200 text-amber-950 dark:bg-amber-500/20 dark:hover:bg-amber-500/30 dark:text-amber-200 text-xs font-extrabold transition-colors cursor-pointer flex items-center gap-1 border border-amber-400 dark:border-amber-500/40 shadow-xs"
               aria-label={expanded ? 'Hide details' : 'View details'}
             >
               <span>{expanded ? 'Hide' : 'Details'}</span>
@@ -330,14 +330,14 @@ export const DailyTechDigest: React.FC = () => {
             className="px-2.5 py-1 rounded-lg bg-secondary hover:bg-secondary/80 text-foreground text-[11px] font-bold transition-colors cursor-pointer border border-border/70 flex items-center gap-1 disabled:opacity-50"
             title="Sync latest live Hacker News & tech news"
           >
-            <RefreshCw className={`w-3 h-3 text-amber-500 ${refreshing ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`w-3 h-3 text-amber-600 dark:text-amber-400 ${refreshing ? 'animate-spin' : ''}`} />
             <span>{refreshing ? 'Syncing...' : 'Sync Live'}</span>
           </button>
 
           <button
             type="button"
             onClick={() => setExpanded(!expanded)}
-            className="px-2.5 py-1 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 text-amber-800 dark:text-amber-300 text-[11px] font-extrabold transition-colors cursor-pointer flex items-center gap-1 border border-amber-500/30"
+            className="px-2.5 py-1 rounded-lg bg-amber-100 hover:bg-amber-200 text-amber-950 dark:bg-amber-500/20 dark:hover:bg-amber-500/30 dark:text-amber-200 text-[11px] font-extrabold transition-colors cursor-pointer flex items-center gap-1 border border-amber-400 dark:border-amber-500/40 shadow-xs"
           >
             <span>{expanded ? 'Collapse' : 'Read Full'}</span>
             {expanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}

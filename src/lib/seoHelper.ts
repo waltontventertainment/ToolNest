@@ -25,9 +25,38 @@ export function buildToolSeoTitle(tool: ToolDefinition, siteName = 'Toolzaro'): 
 export function buildToolSeoDescription(tool: ToolDefinition, siteName = 'Toolzaro'): string {
   const rawDesc = (tool.metaDescription || tool.intro || '').trim().replace(/\.+$/, '');
   if (!rawDesc) {
-    return `Use ${tool.name} free online on ${siteName} — fast, private client-side browser utility.`;
+    return `Use ${tool.name} free online on ${siteName}. Fast, private client-side browser utility with zero server uploads and instant processing.`;
   }
-  return `${rawDesc}.`;
+
+  // If already at ideal descriptive length, return cleanly
+  if (rawDesc.length >= 115) {
+    return `${rawDesc}.`;
+  }
+
+  // Expand short descriptions to 120-158 characters for optimal Google Search snippet visibility
+  const categoryBenefits: Record<string, string> = {
+    'PDF': 'Process documents locally in your browser with zero server uploads.',
+    'Color & Image': 'Fast in-browser processing with zero cloud uploads and full privacy.',
+    'Developer': 'Free, private developer utility that executes 100% locally in your browser.',
+    'Text': 'Fast, private text transformation utility that executes 100% locally in your browser.',
+    'Converters': 'Instant client-side converter with real-time bidirectional calculations and zero cloud uploads.',
+    'Calculators': 'Fast, accurate calculations with instant real-time browser preview and zero tracking.',
+    'Generators': 'Generate values securely and locally with zero tracking or server logs.',
+    'QR & Barcode': 'Download high-resolution codes instantly with complete privacy.',
+    'SEO': 'Inspect and optimize web metrics in real-time with zero data collection.',
+    'Universal Data Suite': 'Access open data and live intelligence with instant in-browser lookup.',
+    'Wikipedia': 'Explore curated knowledge and summaries with fast in-browser reading.',
+    'Fun & Viral': 'Enjoy creative, entertaining utilities with zero registration required.',
+    'Utility': 'Reliable browser-based utility that works offline with zero data uploads.',
+  };
+
+  const benefit = categoryBenefits[tool.category] || '100% free, private browser utility with zero cloud uploads.';
+  const enriched = `${rawDesc}. ${benefit}`;
+
+  if (enriched.length <= 170) {
+    return enriched;
+  }
+  return `${rawDesc}. 100% free & private in your browser.`;
 }
 
 /**

@@ -137,7 +137,7 @@
     <meta name="google-site-verification" content="" />
     <meta name="msvalidate.01" content="A27AB2145819FE7BD9BDA6BFF6D20F18" />
 
-    <!-- Instant Theme Bootstrap (Zero Flash) -->
+    <!-- Instant Theme Bootstrap (Zero Flash - Default Light Mode, User Can Toggle Dark) -->
     <script>
       (function() {
         try {
@@ -147,11 +147,11 @@
             return;
           }
           var saved = localStorage.getItem('toolnest-theme');
-          var isLight = saved === '"light"' || saved === 'light' || (!saved && window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches);
-          if (isLight) {
-            document.documentElement.classList.remove('dark');
-          } else {
+          var isDark = saved === '"dark"' || saved === 'dark';
+          if (isDark) {
             document.documentElement.classList.add('dark');
+          } else {
+            document.documentElement.classList.remove('dark');
           }
         } catch (e) {}
       })();
