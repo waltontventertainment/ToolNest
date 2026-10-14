@@ -47,6 +47,7 @@ import {
   Cookie
 } from 'lucide-react';
 import { useSiteSettings } from '../context/SiteSettingsContext';
+import { openCookieSettings, COOKIE_STORAGE_KEY } from '../components/CookieConsentBanner';
 import { getFirestoreSyncStatus, FirestoreSyncStatus, ToolOverride, AdminRole, AdminTeamMember } from '../lib/siteSettings';
 import { BlogAuthorBadge } from '../components/BlogAuthorBadge';
 import { 
@@ -167,14 +168,31 @@ export const AdminPage: React.FC = () => {
     setCookieConsentForm(updated);
     try {
       await updateSettings({ cookieConsent: updated });
+      if (nextVal) {
+        // Clear cached consent so admin can immediately see the banner on their desktop screen
+        try {
+          localStorage.removeItem(COOKIE_STORAGE_KEY);
+          localStorage.removeItem('toolzaro_cookie_consent');
+        } catch {}
+      }
       toast.success(
         nextVal
-          ? 'Cookie Consent Banner enabled! (Banner and footer preferences button are now visible)'
+          ? 'Cookie Consent Banner enabled! (Banner and footer preferences button are now live on desktop & mobile)'
           : 'Cookie Consent Banner disabled! (Banner and footer preferences button are now hidden)'
       );
     } catch (err: any) {
       toast.error('Failed to update cookie banner setting: ' + err?.message);
     }
+  };
+
+  // Preview or test the cookie banner immediately on this device (desktop or mobile)
+  const handlePreviewCookieBanner = () => {
+    try {
+      localStorage.removeItem(COOKIE_STORAGE_KEY);
+      localStorage.removeItem('toolzaro_cookie_consent');
+    } catch {}
+    openCookieSettings();
+    toast.success('Cookie consent banner opened! You can now preview and test it live on your screen.');
   };
 
   // Listen to sync status changes
@@ -2172,18 +2190,33 @@ CREATE INDEX IF NOT EXISTS idx_posts_status ON posts(status);`;
                   </div>
                 </div>
 
-                <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between text-xs text-slate-400">
+                <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-slate-400">
                   <div className="flex items-center gap-2">
                     <Info className="w-4 h-4 text-indigo-400 shrink-0" />
-                    <span>Current Status: <strong className="text-white">{cookieConsentForm.enabled ? 'Banner & Footer Link are LIVE' : 'Banner & Footer Link are HIDDEN'}</strong></span>
+                    <span>
+                      Current Status: <strong className="text-white">{cookieConsentForm.enabled ? 'Banner & Footer Link are LIVE (Desktop & Mobile)' : 'Banner & Footer Link are HIDDEN'}</strong>
+                    </span>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => handleToggleCookieConsent()}
-                    className="text-[11px] font-bold text-indigo-400 hover:text-indigo-300 hover:underline cursor-pointer"
-                  >
-                    {cookieConsentForm.enabled ? 'Click to Disable' : 'Click to Enable'}
-                  </button>
+                  <div className="flex items-center gap-3 self-end sm:self-auto">
+                    {cookieConsentForm.enabled && (
+                      <button
+                        type="button"
+                        onClick={handlePreviewCookieBanner}
+                        className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-indigo-950/70 hover:bg-indigo-900 border border-indigo-700/60 text-[11px] font-bold text-indigo-300 hover:text-white transition-all shadow-xs cursor-pointer"
+                        title="Reset cached consent and open the cookie banner right now on this screen"
+                      >
+                        <Cookie className="w-3.5 h-3.5 text-indigo-400" />
+                        <span>Preview Banner on this Screen</span>
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => handleToggleCookieConsent()}
+                      className="text-[11px] font-bold text-indigo-400 hover:text-indigo-300 hover:underline cursor-pointer"
+                    >
+                      {cookieConsentForm.enabled ? 'Click to Disable' : 'Click to Enable'}
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
