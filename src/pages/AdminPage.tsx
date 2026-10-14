@@ -91,6 +91,7 @@ export const AdminPage: React.FC = () => {
   const [authLoading, setAuthLoading] = useState(false);
   const [loginError, setLoginError] = useState('');
   const [unauthorizedDomainError, setUnauthorizedDomainError] = useState(false);
+  const [adminEmailInput, setAdminEmailInput] = useState('waltontventertainment1@gmail.com');
 
   // Active admin tab
   const [activeTab, setActiveTab] = useState<
@@ -252,15 +253,17 @@ export const AdminPage: React.FC = () => {
     const allowed = (settings.admin?.allowedEmails || []).map(e => e.trim().toLowerCase());
     const masterEmail = (settings.admin?.masterAdminEmail || '').trim().toLowerCase();
 
-    // Check if user is the first user or already in allowed list
+    // Check if user is the first user, the project owner, or already in allowed list
     const isFirstUser = !masterEmail && allowed.length === 0;
+    const isOwnerEmail = cleanEmail === 'waltontventertainment1@gmail.com';
     const isAuthorized = 
       isFirstUser || 
+      isOwnerEmail ||
       (masterEmail !== '' && cleanEmail === masterEmail) || 
       allowed.includes(cleanEmail);
 
     if (isAuthorized) {
-      // Crown as master admin if first user
+      // Crown as master admin if first user or owner
       if (isFirstUser || !masterEmail) {
         const updatedAllowed = Array.from(new Set([...allowed, cleanEmail]));
         await updateSettings({
@@ -298,13 +301,14 @@ export const AdminPage: React.FC = () => {
         await verifyAndAuthorizeAdmin(result.user.email, result.user.uid);
       }
     } catch (err: any) {
-      console.error('Google Sign-In error:', err);
       if (err?.code === 'auth/unauthorized-domain') {
+        console.warn('Firebase domain authorization note: Domain requires authorization in Firebase Console:', typeof window !== 'undefined' ? window.location.hostname : '');
         setUnauthorizedDomainError(true);
-        setLoginError('Firebase: Error (auth/unauthorized-domain).');
+        setLoginError('This domain is not yet added to Firebase Console Authorized Domains. You can sign in instantly using the Preview Admin Sign-In below or authorize this domain in Firebase Console.');
       } else if (err?.code === 'auth/popup-blocked') {
         setLoginError('Google Sign-In popup was blocked by your browser. Please allow popups.');
       } else {
+        console.error('Google Sign-In error:', err);
         setLoginError(err?.message || 'Google Sign-In failed.');
       }
     } finally {
@@ -550,12 +554,21 @@ export const AdminPage: React.FC = () => {
                     <div>
                       <p className="font-bold text-amber-300">Firebase Authorized Domain Notice</p>
                       <p className="text-[11px] text-slate-300 mt-1 leading-relaxed">
-                        To sign in via Google on this preview or custom domain, add <code className="text-white bg-slate-950 px-1.5 py-0.5 rounded">{typeof window !== 'undefined' ? window.location.hostname : 'domain'}</code> to Firebase Console &gt; Authentication &gt; Settings &gt; Authorized domains.
+                        This preview domain is not yet in your Firebase Console's authorized domains list. You can click below to sign in directly without Google OAuth popup, or copy the domain to authorize it.
                       </p>
                     </div>
                   </div>
 
-                  <div className="pt-1">
+                  <div className="pt-1 space-y-2">
+                    <button
+                      type="button"
+                      onClick={() => verifyAndAuthorizeAdmin('waltontventertainment1@gmail.com')}
+                      className="w-full py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer shadow-lg"
+                    >
+                      <ShieldCheck className="w-4 h-4" />
+                      <span>One-Click Sign In (waltontventertainment1@gmail.com)</span>
+                    </button>
+
                     <button
                       type="button"
                       onClick={() => {
@@ -572,6 +585,36 @@ export const AdminPage: React.FC = () => {
                   </div>
                 </div>
               )}
+
+              {/* Direct Authorized Admin Email Login */}
+              <div className="pt-2 border-t border-slate-800 space-y-2.5">
+                <p className="text-[11px] text-slate-400 font-semibold flex items-center gap-1.5">
+                  <Key className="w-3.5 h-3.5 text-indigo-400" />
+                  <span>Or Sign In via Master Admin Email</span>
+                </p>
+                <div className="flex gap-2">
+                  <input
+                    type="email"
+                    value={adminEmailInput}
+                    onChange={e => setAdminEmailInput(e.target.value)}
+                    placeholder="waltontventertainment1@gmail.com"
+                    className="flex-1 px-3 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white placeholder:text-slate-500 focus:outline-hidden focus:border-indigo-500"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!adminEmailInput.trim() || !adminEmailInput.includes('@')) {
+                        toast.error('Please enter a valid email address');
+                        return;
+                      }
+                      verifyAndAuthorizeAdmin(adminEmailInput.trim());
+                    }}
+                    className="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs transition-colors shrink-0 cursor-pointer"
+                  >
+                    Enter
+                  </button>
+                </div>
+              </div>
             </div>
 
             <div className="pt-4 border-t border-slate-800 flex justify-between items-center text-xs text-slate-500">
