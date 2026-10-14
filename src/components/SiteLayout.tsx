@@ -41,6 +41,7 @@ import { useFavorites } from '../context/FavoritesContext';
 import { useGoogleDrive } from '../context/GoogleDriveContext';
 import { getBlogUrl, getCategoryUrl, getStaticPageUrl, getToolsHubUrl, getBookmarksUrl } from '../lib/appUrls';
 import { useSiteSettings } from '../context/SiteSettingsContext';
+import { CookieConsentBanner, openCookieSettings } from './CookieConsentBanner';
 
 const HEADER_CATEGORIES = [
   { name: 'PDF Suite', categoryName: 'PDF', slug: 'pdf', icon: FileText },
@@ -748,6 +749,16 @@ export const SiteLayout: React.FC = () => {
               <li>
                 <button
                   type="button"
+                  onClick={openCookieSettings}
+                  className="hover:text-primary transition-colors flex items-center gap-1.5 cursor-pointer text-left text-xs font-medium text-muted-foreground"
+                >
+                  <ShieldCheck className="w-3.5 h-3.5 text-primary shrink-0" />
+                  <span>Cookie Preferences</span>
+                </button>
+              </li>
+              <li>
+                <button
+                  type="button"
                   onClick={() => setIsFeedbackModalOpen(true)}
                   className="hover:text-primary transition-colors flex items-center gap-1.5 cursor-pointer text-left font-semibold text-rose-700 dark:text-rose-300"
                 >
@@ -766,6 +777,9 @@ export const SiteLayout: React.FC = () => {
           </div>
         </div>
       </footer>
+
+      {/* GDPR & Google AdSense Cookie Consent Banner */}
+      <CookieConsentBanner />
     </div>
   );
 };
