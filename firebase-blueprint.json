@@ -13,12 +13,51 @@
         "generatedAt": { "type": "string", "description": "Timestamp string" }
       },
       "required": ["id", "date", "headline", "summary"]
+    },
+    "BlogPost": {
+      "title": "Blog Post",
+      "description": "Dynamic Toolzaro CMS blog posts managed by authorized administrators and editors",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique blog post ID" },
+        "slug": { "type": "string", "description": "SEO URL-friendly slug" },
+        "title": { "type": "string", "description": "Blog post title" },
+        "excerpt": { "type": "string", "description": "Short excerpt summary" },
+        "content": { "type": "string", "description": "Full blog body in markdown or HTML" },
+        "coverImage": { "type": "string", "description": "Cover image URL" },
+        "category": { "type": "string", "description": "Blog category" },
+        "tags": { "type": "array", "description": "Tags list" },
+        "publishedAt": { "type": "string", "description": "Publication date" },
+        "readTimeMinutes": { "type": "number", "description": "Estimated read time in minutes" },
+        "status": { "type": "string", "description": "Status: published, draft, or deleted", "enum": ["published", "draft", "deleted"] }
+      },
+      "required": ["id", "slug", "title", "content"]
+    },
+    "SiteSettings": {
+      "title": "Site Settings",
+      "description": "Global CMS configuration, announcements, branding, ads, SEO, and team permissions",
+      "type": "object",
+      "properties": {
+        "announcement": { "type": "object", "description": "Announcement bar configuration" },
+        "branding": { "type": "object", "description": "Branding, site title, logo, copyright" },
+        "ads": { "type": "object", "description": "AdSense slots and publisher settings" },
+        "seo": { "type": "object", "description": "Meta tags and search engine verification" },
+        "admin": { "type": "object", "description": "Admin email lists, team members, and API keys" }
+      }
     }
   },
   "firestore": {
     "/tech_digests/{digestId}": {
       "schema": "TechDigest",
       "description": "Daily tech digest cached document by YYYY-MM-DD"
+    },
+    "/blogs/{blogId}": {
+      "schema": "BlogPost",
+      "description": "Toolzaro CMS blog posts created and updated by authenticated team members"
+    },
+    "/site_settings/{settingId}": {
+      "schema": "SiteSettings",
+      "description": "Site-wide configuration and admin settings managed exclusively by the Master Admin"
     }
   }
 }

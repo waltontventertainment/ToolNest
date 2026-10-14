@@ -1,23 +1,55 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Public real-time cached Daily Tech Digest
-    match /tech_digests/{digestId} {
-      allow read, write: if true;
+
+    // Helper: is the user logged in via Firebase Auth?
+    function isSignedIn() {
+      return request.auth != null;
     }
 
-    // Dynamic Blog Posts collection for Toolzaro CMS
-    match /blogs/{blogId} {
-      allow read, write: if true;
+    // Helper: is their email cryptographically verified by Google?
+    function isEmailVerified() {
+      return isSignedIn() && request.auth.token.email_verified == true;
     }
 
-    // Site settings & CMS customization (Announcement bar, Branding, Ads, SEO)
-    match /site_settings/{settingId} {
-      allow read, write: if true;
+    // Helper: is this user the real Master Administrator?
+    function isMasterAdmin() {
+      return isEmailVerified() && request.auth.token.email.lower() == 'sabbirhasansh321@gmail.com';
     }
 
+    // Helper: is this user in the allowed team members list?
+    function isAuthorizedTeamMember() {
+      return isMasterAdmin() || (
+        isEmailVerified() &&
+        exists(/databases/$(database)/documents/site_settings/general) &&
+        (request.auth.token.email.lower() in get(/databases/$(database)/documents/site_settings/general).data.admin.allowedEmails)
+      );
+    }
+
+    // Default deny all unknown collections
     match /{document=**} {
-      allow read, write: if true;
+      allow read, write: if false;
+    }
+
+    // 1. Tech Digests — cached daily news
+    match /tech_digests/{digestId} {
+      allow read: if true;
+      allow write: if isAuthorizedTeamMember();
+    }
+
+    // 2. Dynamic Blog Posts
+    match /blogs/{blogId} {
+      // Public visitors can read published posts; authorized staff can read drafts
+      allow read: if resource.data.status == 'published' || isAuthorizedTeamMember();
+      allow create, update, delete: if isAuthorizedTeamMember();
+    }
+
+    // 3. Site Settings & Permissions
+    match /site_settings/{settingId} {
+      // Public visitors need read access for announcement banner, branding, ads & SEO
+      allow read: if true;
+      // Only the real Master Admin (sabbirhasansh321@gmail.com) can update settings and team permissions
+      allow write: if isMasterAdmin();
     }
   }
 }

@@ -384,6 +384,13 @@ export const AdminPage: React.FC = () => {
 
   // Add Team Member with Role (Admin, Editor, Manager)
   const handleAddTeamMember = async () => {
+    const currentGoogleEmail = (auth.currentUser?.email || '').toLowerCase().trim();
+    const masterEmail = (settings.admin?.masterAdminEmail || 'sabbirhasansh321@gmail.com').toLowerCase().trim();
+    if (currentGoogleEmail !== masterEmail && userRole !== 'admin') {
+      toast.error('Security alert: Only the Master Administrator can add team members.');
+      return;
+    }
+
     if (!newTeamEmail.trim() || !newTeamEmail.includes('@')) {
       toast.error('Please enter a valid Gmail address');
       return;
@@ -420,8 +427,14 @@ export const AdminPage: React.FC = () => {
 
   // Remove Team Member
   const handleRemoveTeamMember = async (emailToRemove: string) => {
-    const master = (settings.admin?.masterAdminEmail || 'sabbirhasansh321@gmail.com').toLowerCase();
-    if (emailToRemove.toLowerCase() === master) {
+    const currentGoogleEmail = (auth.currentUser?.email || '').toLowerCase().trim();
+    const masterEmail = (settings.admin?.masterAdminEmail || 'sabbirhasansh321@gmail.com').toLowerCase().trim();
+    if (currentGoogleEmail !== masterEmail && userRole !== 'admin') {
+      toast.error('Security alert: Only the Master Administrator can remove team members.');
+      return;
+    }
+
+    if (emailToRemove.toLowerCase() === masterEmail) {
       toast.error('Cannot remove the Master Administrator');
       return;
     }
