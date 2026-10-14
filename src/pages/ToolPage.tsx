@@ -267,8 +267,8 @@ export const ToolPage: React.FC<{ forcedSlug?: string }> = ({ forcedSlug }) => {
         </div>
 
         {/* Desktop Trust Indicator Pill */}
-        <div className="hidden lg:flex items-center gap-2 shrink-0 text-xs font-semibold text-muted-foreground bg-secondary/50 border border-border/60 px-3 py-2 rounded-xl">
-          <ShieldCheck className="w-4 h-4 text-emerald-500 shrink-0" />
+        <div className="hidden lg:flex items-center gap-2 shrink-0 text-xs font-bold text-foreground bg-secondary/80 border border-border px-3 py-2 rounded-xl shadow-xs">
+          <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
           <span>100% Client-Side Sandbox</span>
         </div>
       </div>

@@ -24,42 +24,42 @@ const QUICK_LAUNCH_TOOLS = [
     name: 'Merge PDF',
     category: 'PDF Suite',
     icon: FileText,
-    accent: 'text-rose-700 dark:text-rose-300 bg-rose-500/10 border-rose-500/20',
+    accent: 'bg-gradient-to-br from-rose-500 via-rose-600 to-red-600 text-white shadow-sm shadow-rose-500/25 border border-white/25',
   },
   {
     slug: 'image-compressor',
     name: 'Image Compressor',
     category: 'Image & Color',
     icon: ImageIcon,
-    accent: 'text-indigo-700 dark:text-indigo-300 bg-indigo-500/10 border-indigo-500/20',
+    accent: 'bg-gradient-to-br from-cyan-500 via-sky-600 to-blue-600 text-white shadow-sm shadow-cyan-500/25 border border-white/25',
   },
   {
     slug: 'json-formatter',
     name: 'JSON Formatter',
     category: 'Developer',
     icon: Code,
-    accent: 'text-emerald-800 dark:text-emerald-300 bg-emerald-500/10 border-emerald-500/20',
+    accent: 'bg-gradient-to-br from-indigo-500 via-indigo-600 to-purple-600 text-white shadow-sm shadow-indigo-500/25 border border-white/25',
   },
   {
     slug: 'qr-code-generator',
     name: 'QR Code Generator',
     category: 'QR & Barcode',
     icon: QrCode,
-    accent: 'text-amber-800 dark:text-amber-300 bg-amber-500/10 border-amber-500/20',
+    accent: 'bg-gradient-to-br from-amber-500 via-orange-500 to-amber-600 text-white shadow-sm shadow-amber-500/25 border border-white/25',
   },
   {
     slug: 'password-generator',
     name: 'Password Gen',
     category: 'Security',
     icon: KeyRound,
-    accent: 'text-purple-700 dark:text-purple-300 bg-purple-500/10 border-purple-500/20',
+    accent: 'bg-gradient-to-br from-purple-500 via-pink-600 to-rose-600 text-white shadow-sm shadow-purple-500/25 border border-white/25',
   },
   {
     slug: 'open-meteo-live-weather',
     name: 'Live Weather',
     category: 'Global Data',
     icon: CloudSun,
-    accent: 'text-cyan-800 dark:text-cyan-300 bg-cyan-500/10 border-cyan-500/20',
+    accent: 'bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-600 text-white shadow-sm shadow-emerald-500/25 border border-white/25',
   },
 ];
 
@@ -124,9 +124,9 @@ export const HeroShowcase: React.FC = () => {
               >
                 <div className="flex items-center justify-between">
                   <div
-                    className={`w-8 h-8 rounded-lg border flex items-center justify-center ${item.accent}`}
+                    className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${item.accent}`}
                   >
-                    <Icon className="w-4 h-4" />
+                    <Icon className="w-4 h-4 text-white" />
                   </div>
                   <ArrowUpRight className="w-3.5 h-3.5 text-muted-foreground/40 group-hover:text-primary group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                 </div>
@@ -144,22 +144,21 @@ export const HeroShowcase: React.FC = () => {
         </div>
 
         {/* Console Bottom Status Strip */}
-        <div className="px-4 py-2.5 bg-muted/40 border-t border-border flex items-center justify-between gap-3 text-[11px]">
-          <div className="flex items-center gap-3 text-muted-foreground font-medium">
-            <span className="inline-flex items-center gap-1 text-emerald-950 dark:text-emerald-200 font-extrabold">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+        <div className="px-3.5 py-2.5 bg-muted/70 dark:bg-muted/40 border-t border-border flex items-center justify-between gap-2 text-[11px]">
+          <div className="flex items-center gap-2">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-100/90 dark:bg-emerald-950/80 text-emerald-950 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-700/60 font-black shadow-2xs">
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-700 dark:text-emerald-400 shrink-0" />
               <span>100% Local Sandbox</span>
             </span>
-            <span aria-hidden="true">·</span>
-            <span className="inline-flex items-center gap-1 text-amber-950 dark:text-amber-200 font-extrabold">
-              <Zap className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-amber-100/90 dark:bg-amber-950/80 text-amber-950 dark:text-amber-200 border border-amber-300 dark:border-amber-700/60 font-black shadow-2xs">
+              <Zap className="w-3.5 h-3.5 text-amber-700 dark:text-amber-400 shrink-0" />
               <span>Zero Cloud Upload</span>
             </span>
           </div>
 
           <Link
             to={getToolsHubUrl()}
-            className="inline-flex items-center gap-1 font-bold text-primary hover:underline whitespace-nowrap"
+            className="inline-flex items-center gap-1 font-black text-xs text-primary hover:text-primary/80 transition-colors whitespace-nowrap"
           >
             <Layers className="w-3 h-3" />
             <span>All {activeCount} Tools →</span>

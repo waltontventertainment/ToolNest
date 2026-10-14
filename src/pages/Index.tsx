@@ -504,19 +504,19 @@ export const Index: React.FC<{ forcedBookmarks?: boolean }> = ({ forcedBookmarks
               </div>
               
               {/* Clean Unboxed Trust Metrics */}
-              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-x-4 gap-y-1.5 text-xs font-semibold text-muted-foreground">
+              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-x-4 gap-y-1.5 text-xs font-bold text-foreground/90">
                 <span className="inline-flex items-center gap-1.5">
-                  <Zap className="w-3.5 h-3.5 text-amber-500" />
+                  <Zap className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
                   <span>Instant Execution</span>
                 </span>
-                <span aria-hidden="true">·</span>
+                <span aria-hidden="true" className="text-muted-foreground/50">·</span>
                 <span className="inline-flex items-center gap-1.5">
-                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
                   <span>100% Private Sandbox</span>
                 </span>
-                <span aria-hidden="true">·</span>
+                <span aria-hidden="true" className="text-muted-foreground/50">·</span>
                 <span className="inline-flex items-center gap-1.5">
-                  <Layers className="w-3.5 h-3.5 text-indigo-500" />
+                  <Layers className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
                   <span>{activeToolsList.length} Free Utilities</span>
                 </span>
               </div>
