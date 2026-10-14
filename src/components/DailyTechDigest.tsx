@@ -197,11 +197,11 @@ export const DailyTechDigest: React.FC = () => {
             <button
               type="button"
               onClick={() => setExpanded(!expanded)}
-              className="min-h-[36px] px-3 py-1.5 rounded-lg bg-amber-100 hover:bg-amber-200 text-amber-950 dark:bg-amber-500/20 dark:hover:bg-amber-500/30 dark:text-amber-200 text-xs font-extrabold transition-colors cursor-pointer flex items-center gap-1 border border-amber-400 dark:border-amber-500/40 shadow-xs"
+              className="min-h-[36px] px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-amber-600 via-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white text-xs font-black transition-all cursor-pointer flex items-center gap-1.5 border border-amber-600 shadow-xs"
               aria-label={expanded ? 'Hide details' : 'View details'}
             >
               <span>{expanded ? 'Hide' : 'Details'}</span>
-              {expanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+              {expanded ? <ChevronUp className="w-3.5 h-3.5 stroke-[2.5]" /> : <ChevronDown className="w-3.5 h-3.5 stroke-[2.5]" />}
             </button>
           </div>
         </div>
@@ -337,10 +337,11 @@ export const DailyTechDigest: React.FC = () => {
           <button
             type="button"
             onClick={() => setExpanded(!expanded)}
-            className="px-2.5 py-1 rounded-lg bg-amber-100 hover:bg-amber-200 text-amber-950 dark:bg-amber-500/20 dark:hover:bg-amber-500/30 dark:text-amber-200 text-[11px] font-extrabold transition-colors cursor-pointer flex items-center gap-1 border border-amber-400 dark:border-amber-500/40 shadow-xs"
+            className="px-3 py-1.5 rounded-lg bg-gradient-to-r from-amber-600 via-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white text-[11px] font-black transition-all cursor-pointer flex items-center gap-1.5 border border-amber-600 shadow-xs"
+            aria-label={expanded ? 'Hide details' : 'View details'}
           >
-            <span>{expanded ? 'Collapse' : 'Read Full'}</span>
-            {expanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+            <span>{expanded ? 'Hide' : 'Details'}</span>
+            {expanded ? <ChevronUp className="w-3.5 h-3.5 stroke-[2.5]" /> : <ChevronDown className="w-3.5 h-3.5 stroke-[2.5]" />}
           </button>
         </div>
       </div>
@@ -437,7 +438,7 @@ export const DailyTechDigest: React.FC = () => {
           <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-start gap-2.5">
             <Lightbulb className="w-4 h-4 text-amber-500 shrink-0 mt-0.5 fill-amber-500/20" />
             <div className="space-y-0.5 min-w-0 flex-1">
-              <span className="text-[10px] font-extrabold text-amber-800 dark:text-amber-300 uppercase tracking-wider block">
+              <span className="text-[10px] font-extrabold text-amber-700 dark:text-amber-400 uppercase tracking-wider block">
                 Developer Key Takeaway
               </span>
               <p className="text-xs font-medium text-foreground leading-relaxed">
@@ -477,7 +478,7 @@ export const DailyTechDigest: React.FC = () => {
                 type="button"
                 onClick={handleSaveToDrive}
                 disabled={savingDrive}
-                className="px-2.5 py-1 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 text-amber-700 dark:text-amber-300 text-xs font-extrabold transition-all cursor-pointer flex items-center gap-1 border border-amber-500/30 shadow-2xs disabled:opacity-50"
+                className="px-2.5 py-1 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold transition-all cursor-pointer flex items-center gap-1 border border-amber-600 shadow-2xs disabled:opacity-50"
               >
                 <CloudUpload className={`w-3.5 h-3.5 ${savingDrive ? 'animate-bounce' : ''}`} />
                 <span>{savingDrive ? 'Saving...' : 'Drive'}</span>

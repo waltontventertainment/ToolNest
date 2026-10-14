@@ -220,59 +220,61 @@ export const SiteLayout: React.FC = () => {
   const isPagesActive = HEADER_PAGES.some(p => pathname === p.path);
 
   return (
-    <div className="min-h-screen flex flex-col bg-background text-foreground max-w-full overflow-x-hidden">
-      {/* Premium Top Announcement Banner for Desktop / PC View */}
-      {isAnnouncementActive && (
-        <div className="hidden md:block w-full bg-gradient-to-r from-indigo-950 via-purple-950 to-slate-950 border-b border-primary/30 text-white text-xs relative overflow-hidden shadow-xs">
-          <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-2 flex items-center justify-between gap-4 relative z-10">
-            <div className="flex items-center gap-3">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-primary/30 border border-primary/40 text-[10px] font-black uppercase tracking-wider text-white">
-                <Sparkles className="w-3 h-3 text-amber-400" />
-                <span>{bannerBadge}</span>
-              </span>
-              <p className="font-semibold text-slate-200 text-xs">
-                {bannerText}
-              </p>
-            </div>
+    <div className="min-h-screen flex flex-col bg-background text-foreground max-w-full overflow-x-clip">
+      {/* 100% Permanently Viewport-Fixed Top Navigation Bar (Never scrolls off on any device or page) */}
+      <div className="fixed top-0 inset-x-0 z-50 w-full shadow-2xs">
+        {/* Premium Top Announcement Banner for Desktop / PC View */}
+        {isAnnouncementActive && (
+          <div className="hidden md:block w-full bg-gradient-to-r from-indigo-950 via-purple-950 to-slate-950 border-b border-primary/30 text-white text-xs relative overflow-hidden shadow-xs">
+            <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-2 flex items-center justify-between gap-4 relative z-10">
+              <div className="flex items-center gap-3">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-primary/30 border border-primary/40 text-[10px] font-black uppercase tracking-wider text-white">
+                  <Sparkles className="w-3 h-3 text-amber-400" />
+                  <span>{bannerBadge}</span>
+                </span>
+                <p className="font-semibold text-slate-200 text-xs">
+                  {bannerText}
+                </p>
+              </div>
 
-            <div className="flex items-center gap-3">
-              <Link 
-                to={bannerLinkUrl} 
-                onClick={() => {
-                  if (bannerLinkUrl === '/') {
-                    setTimeout(() => {
-                      document.getElementById('tools-grid')?.scrollIntoView({ behavior: 'smooth' });
-                    }, 60);
-                  }
-                }}
-                className="inline-flex items-center gap-1 text-[11px] font-bold text-white hover:text-white bg-primary/40 hover:bg-primary/70 px-3 py-1 rounded-lg border border-primary/50 transition-all shadow-2xs hover:scale-105"
-              >
-                <span>{bannerLinkText}</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
+              <div className="flex items-center gap-3">
+                <Link 
+                  to={bannerLinkUrl} 
+                  onClick={() => {
+                    if (bannerLinkUrl === '/') {
+                      setTimeout(() => {
+                        document.getElementById('tools-grid')?.scrollIntoView({ behavior: 'smooth' });
+                      }, 60);
+                    }
+                  }}
+                  className="inline-flex items-center gap-1 text-[11px] font-bold text-white hover:text-white bg-primary/40 hover:bg-primary/70 px-3 py-1 rounded-lg border border-primary/50 transition-all shadow-2xs hover:scale-105"
+                >
+                  <span>{bannerLinkText}</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
 
-              <button
-                type="button"
-                onClick={() => setIsBannerDismissed(true)}
-                className="p-1 text-slate-400 hover:text-white rounded-lg hover:bg-white/10 transition-colors cursor-pointer"
-                title="Close top banner"
-              >
-                <X className="w-3.5 h-3.5" />
-              </button>
+                <button
+                  type="button"
+                  onClick={() => setIsBannerDismissed(true)}
+                  className="p-1 text-slate-400 hover:text-white rounded-lg hover:bg-white/10 transition-colors cursor-pointer"
+                  title="Close top banner"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Permanently locked sticky header: stays firmly at top-0 on all devices (mobile & PC) without hiding */}
-      <header className="sticky top-0 z-50 w-full backdrop-blur-md bg-background/95 border-b border-border/80 shadow-2xs max-w-full overflow-x-clip">
-        <div className="w-full max-w-[1400px] mx-auto px-3 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2 sm:gap-4">
-          {/* 3D Extruded Logo on the left */}
-          <Link to="/" className="flex items-center gap-2 sm:gap-3 group shrink-0" aria-label="Toolzaro Home">
-            <div className="logo-3d w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center text-white shrink-0">
-              <div className="absolute inset-0 rounded-2xl bg-gradient-to-t from-transparent via-white/10 to-white/35 pointer-events-none" />
-              <Wrench className="w-4.5 h-4.5 sm:w-5 sm:h-5 transition-transform duration-200 group-hover:rotate-12 group-hover:scale-110 drop-shadow-[0_2px_4px_rgba(0,0,0,0.4)] text-white" />
-            </div>
+        {/* Permanently locked header: Stays firmly at top-0 across all devices (mobile & PC) */}
+        <header className="w-full backdrop-blur-md bg-background/95 border-b border-border/80 max-w-full">
+          <div className="w-full max-w-[1400px] mx-auto px-3 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2 sm:gap-4">
+            {/* 3D Extruded Logo on the left */}
+            <Link to="/" className="flex items-center gap-2 sm:gap-3 group shrink-0" aria-label="Toolzaro Home">
+              <div className="logo-3d w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center text-white shrink-0">
+                <div className="absolute inset-0 rounded-2xl bg-gradient-to-t from-transparent via-white/10 to-white/35 pointer-events-none" />
+                <Wrench className="w-4.5 h-4.5 sm:w-5 sm:h-5 transition-transform duration-200 group-hover:rotate-12 group-hover:scale-110 drop-shadow-[0_2px_4px_rgba(0,0,0,0.4)] text-white" />
+              </div>
             <div className="flex flex-col">
               <span className="text-brand-gradient font-display font-black text-xl sm:text-2xl tracking-[-0.035em] leading-none">
                 Toolzaro
@@ -488,7 +490,7 @@ export const SiteLayout: React.FC = () => {
                 }`} 
               />
               {favorites.length > 0 && (
-                <span className="absolute -top-1 -right-1 text-[9px] font-bold text-amber-950 dark:text-amber-200 bg-amber-300 dark:bg-amber-900 min-w-[16px] h-4 px-1 rounded-full border border-amber-400 dark:border-amber-700 flex items-center justify-center tabular-nums shadow-xs">
+                <span className="absolute -top-1 -right-1 text-[9px] font-black text-white bg-amber-600 dark:bg-amber-500 min-w-[16px] h-4 px-1 rounded-full border border-white/60 dark:border-stone-900 flex items-center justify-center tabular-nums shadow-xs">
                   {favorites.length > 99 ? '99+' : favorites.length}
                 </span>
               )}
@@ -635,6 +637,13 @@ export const SiteLayout: React.FC = () => {
           </div>
         )}
       </header>
+      </div>
+
+      {/* Viewport-fixed Header Layout Spacer: guarantees page content never gets covered by fixed header */}
+      <div 
+        className={`${isAnnouncementActive ? 'h-16 md:h-[98px]' : 'h-16'} shrink-0 w-full pointer-events-none`} 
+        aria-hidden="true" 
+      />
 
       {/* Google Drive Modal (Lazy-loaded on demand) */}
       {isDriveModalOpen && (

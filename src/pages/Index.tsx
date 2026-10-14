@@ -348,7 +348,7 @@ export const Index: React.FC<{ forcedBookmarks?: boolean }> = ({ forcedBookmarks
                       onClick={() => setActiveCategory('All')}
                       className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-colors border cursor-pointer shrink-0 ${
                         activeCategory === 'All'
-                          ? 'bg-amber-500 text-white border-amber-600'
+                          ? 'bg-amber-600 text-white border-amber-700 shadow-xs'
                           : 'bg-card text-muted-foreground border-border hover:border-amber-400 hover:text-foreground'
                       }`}
                     >
@@ -364,7 +364,7 @@ export const Index: React.FC<{ forcedBookmarks?: boolean }> = ({ forcedBookmarks
                           onClick={() => setActiveCategory(cat)}
                           className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-colors border cursor-pointer shrink-0 ${
                             isActive
-                              ? 'bg-amber-500 text-white border-amber-600'
+                              ? 'bg-amber-600 text-white border-amber-700 shadow-xs'
                               : 'bg-card text-muted-foreground border-border hover:border-amber-400 hover:text-foreground'
                           }`}
                         >
@@ -670,7 +670,7 @@ export const Index: React.FC<{ forcedBookmarks?: boolean }> = ({ forcedBookmarks
                       <Star className="w-4 h-4 shrink-0 text-amber-600 dark:text-amber-400 fill-amber-500/30" />
                       <span className="truncate">Saved Bookmarks</span>
                     </span>
-                    <span className="text-[11px] font-mono font-bold px-1.5 py-0.2 rounded-md bg-amber-500/15 text-amber-900 dark:text-amber-200 shrink-0">
+                    <span className="text-[11px] font-mono font-bold px-1.5 py-0.2 rounded-md bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-700/60 shrink-0">
                       {favorites.length}
                     </span>
                   </button>
