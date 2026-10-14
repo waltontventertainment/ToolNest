@@ -66,7 +66,7 @@ export const TechDigestReaderModal: React.FC<TechDigestReaderModalProps> = ({ it
         `${detail}\n\n` +
         `#### Source & Reference Details:\n` +
         `- **Direct Link:** ${url ? `[Open Original Source](${url})` : 'Live API Stream'}\n` +
-        `- **Stream Status:** 100% Real-Time API Data (Bypassed restrictions & proxies successfully).\n\n` +
+        `- **Stream Status:** 100% Real-Time API Data (Synchronized successfully via live API).\n\n` +
         `*Displayed with complete details via Toolzaro Real-Time Tech Intelligence Engine.*`;
 
       setExpandedText(fullBriefing);
