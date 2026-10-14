@@ -448,6 +448,85 @@ async function startServer() {
     }
   });
 
+  // --- Cloudflare D1 Local Dev & Preview Blog Store ---
+  let localD1Posts: any[] = [
+    {
+      id: 'guide-1',
+      slug: 'definitive-guide-client-side-privacy-web-utilities',
+      title: 'The Definitive Guide to Client-Side Web Privacy: How WebAssembly & Web Crypto Eliminate Cloud Leaks',
+      excerpt: 'An architectural deep-dive into zero-knowledge browser utilities. Learn how Web Cryptography, Canvas APIs, and WebAssembly enable military-grade encryption, PDF manipulation, and image processing without transmitting a single byte to remote servers.',
+      category: 'Security & Privacy',
+      tags: ['Client-Side Privacy', 'Web Cryptography', 'WebAssembly', 'Zero Trust'],
+      author: { name: 'Toolzaro', role: 'Admin', avatar: '' },
+      readTimeMinutes: 12,
+      coverImage: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?w=800&auto=format&fit=crop&q=75&fm=webp',
+      status: 'published',
+      contentType: 'text',
+      content: 'Zero-knowledge client-side processing represents the pinnacle of modern web security...',
+      createdAt: new Date('2026-10-04').toISOString()
+    },
+    {
+      id: 'guide-2',
+      slug: 'technical-seo-blueprint-2026-schema-meta-opengraph',
+      title: 'Technical SEO in 2026: The Complete Blueprint for Schema Markup, OpenGraph, and Rich Snippets',
+      excerpt: 'A comprehensive, step-by-step masterclass on technical search optimization. Learn how to construct multi-type Schema.org JSON-LD trees, prevent canonical cannibalization, optimize social cards, and satisfy Google Search Essentials.',
+      category: 'SEO & Growth',
+      tags: ['SEO', 'Structured Data', 'Schema.org', 'OpenGraph'],
+      author: { name: 'Toolzaro', role: 'Admin', avatar: '' },
+      readTimeMinutes: 14,
+      coverImage: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=75&fm=webp',
+      status: 'published',
+      contentType: 'text',
+      content: 'Search engines in 2026 evaluate websites on semantic understanding and speed...',
+      createdAt: new Date('2026-10-03').toISOString()
+    }
+  ];
+
+  app.get('/api/blog/posts', (req, res) => {
+    return res.json(localD1Posts.filter(p => p.status === 'published'));
+  });
+
+  app.get('/api/blog/posts/:slug', (req, res) => {
+    const slug = req.params.slug.toLowerCase();
+    const post = localD1Posts.find(p => p.slug.toLowerCase() === slug || p.id === slug);
+    if (!post) {
+      return res.status(404).json({ error: 'Post not found' });
+    }
+    return res.json(post);
+  });
+
+  app.post('/api/blog/posts', (req, res) => {
+    const payload = req.body;
+    if (!payload.title || !payload.slug) {
+      return res.status(400).json({ error: 'Missing title or slug' });
+    }
+    const slug = String(payload.slug).trim().toLowerCase();
+    const existingIndex = localD1Posts.findIndex(p => p.slug.toLowerCase() === slug);
+    const post = {
+      ...payload,
+      id: payload.id || `post-${Date.now()}`,
+      slug,
+      createdAt: payload.createdAt || new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    if (existingIndex >= 0) {
+      localD1Posts[existingIndex] = post;
+    } else {
+      localD1Posts.unshift(post);
+    }
+    return res.json({ success: true, slug, id: post.id });
+  });
+
+  app.delete('/api/blog/posts/:slug', (req, res) => {
+    const slug = req.params.slug.toLowerCase();
+    localD1Posts = localD1Posts.filter(p => p.slug.toLowerCase() !== slug && p.id !== slug);
+    return res.json({ success: true, deletedSlug: slug });
+  });
+
+  app.all('/api/blog/init', (req, res) => {
+    return res.json({ success: true, message: 'D1 schema initialized and seeded.' });
+  });
+
   // Mount Vite development middlewares in non-production environments
   if (process.env.NODE_ENV !== 'production') {
     const { createServer: createViteServer } = await import('vite');

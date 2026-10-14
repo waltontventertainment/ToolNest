@@ -202,6 +202,26 @@ export async function getPublishedBlogs(forceRefresh = false): Promise<Firestore
   }
 
   inflightFetchPromise = (async () => {
+    // 1. Attempt Cloudflare D1 Edge Query first (/api/blog/posts)
+    try {
+      const d1Res = await fetch('/api/blog/posts', {
+        headers: { Accept: 'application/json' },
+        signal: AbortSignal.timeout(4000),
+      });
+      if (d1Res.ok) {
+        const d1Data = await d1Res.json();
+        if (Array.isArray(d1Data) && d1Data.length > 0) {
+          const merged = mergeWithBuiltinBlogs(d1Data);
+          memoryBlogsCache = merged;
+          lastFirestoreSyncTime = Date.now();
+          setLocalCache(merged);
+          return merged.filter(b => b.status === 'published');
+        }
+      }
+    } catch {
+      // D1 query fallback to Firestore
+    }
+
     try {
       const { collection, getDocs, db } = await loadFirestoreDeps();
       const blogsRef = collection(db, COLLECTION_NAME);
@@ -273,6 +293,25 @@ export async function getBlogBySlug(slugOrId: string): Promise<FirestoreBlog | n
   const instant = getInstantBlogBySlug(clean);
   if (instant && Date.now() - lastFirestoreSyncTime < CACHE_FRESH_TTL_MS) {
     return instant;
+  }
+
+  // 0. Try Cloudflare D1 query (/api/blog/posts/:slug)
+  try {
+    const d1Res = await fetch(`/api/blog/posts/${encodeURIComponent(clean)}`, {
+      headers: { Accept: 'application/json' },
+      signal: AbortSignal.timeout(3000),
+    });
+    if (d1Res.ok) {
+      const d1Post = await d1Res.json();
+      if (d1Post && d1Post.slug) {
+        const updated = mergeWithBuiltinBlogs([d1Post, ...getLocalCache()]);
+        memoryBlogsCache = updated;
+        setLocalCache(updated);
+        return d1Post;
+      }
+    }
+  } catch {
+    // D1 fallback to Firestore
   }
 
   try {
@@ -357,6 +396,13 @@ export async function saveBlogToFirestore(blog: Partial<FirestoreBlog>): Promise
     console.warn('Firestore blog save note (safely stored in local cache):', error?.message || error);
   }
 
+  // Also sync to Cloudflare D1 edge database
+  fetch('/api/blog/posts', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(completeBlog),
+  }).catch(() => {});
+
   return completeBlog;
 }
 
@@ -366,6 +412,11 @@ export async function saveBlogToFirestore(blog: Partial<FirestoreBlog>): Promise
 export async function deleteBlogFromFirestore(id: string): Promise<boolean> {
   const isBuiltin = BUILTIN_BLOG_POSTS.some(b => b.id.toLowerCase() === id.toLowerCase());
   const existing = getLocalCache().find(b => b.id === id) || getBuiltinAsFirestoreBlogs().find(b => b.id === id);
+
+  // Also sync deletion with Cloudflare D1
+  fetch(`/api/blog/posts/${encodeURIComponent(existing?.slug || id)}`, {
+    method: 'DELETE',
+  }).catch(() => {});
 
   if (isBuiltin && existing) {
     const tombstone: FirestoreBlog = {

@@ -2,7 +2,7 @@
 // Direct client-side image uploader via ImgBB API
 import { getCachedSiteSettings } from './siteSettings';
 
-export const IMGBB_API_KEY = '1ba7e3014ff726df236cef13ca1a79f3';
+export const IMGBB_API_KEY = (import.meta as any).env?.VITE_IMGBB_API_KEY || '';
 export const IMGBB_UPLOAD_ENDPOINT = 'https://api.imgbb.com/1/upload';
 
 export interface ImgBBUploadResponse {
@@ -16,10 +16,13 @@ export interface ImgBBUploadResponse {
 }
 
 /**
- * Resolves the active ImgBB API Key from Admin Site Settings (Firestore/Cache) or falls back to default key.
+ * Resolves the active ImgBB API Key from environment variables, Admin Site Settings (Firestore/Cache),
+ * or falls back to custom parameter.
  */
 export function getActiveImgBBApiKey(customApiKey?: string): string {
   if (customApiKey && customApiKey.trim()) return customApiKey.trim();
+  const envKey = (import.meta as any).env?.VITE_IMGBB_API_KEY?.trim();
+  if (envKey) return envKey;
   try {
     const cachedKey = getCachedSiteSettings()?.admin?.imgbbApiKey?.trim();
     if (cachedKey) return cachedKey;

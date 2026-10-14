@@ -54,6 +54,7 @@ import {
   deleteBlogFromFirestore, 
   seedStarterPostIfEmpty 
 } from '../lib/firestoreBlogService';
+import { checkD1Status, initializeD1Schema, saveBlogToD1 } from '../lib/d1BlogService';
 import { BlogEditorModal } from '../components/admin/BlogEditorModal';
 import { ToolEditorModal } from '../components/admin/ToolEditorModal';
 import { ImgBBUploader } from '../components/admin/ImgBBUploader';
@@ -110,6 +111,11 @@ export const AdminPage: React.FC = () => {
   const [isBlogEditorOpen, setIsBlogEditorOpen] = useState(false);
   const [blogSearch, setBlogSearch] = useState('');
 
+  // Cloudflare D1 Edge state
+  const [d1Status, setD1Status] = useState<{ isBound: boolean; postsCount: number; message?: string } | null>(null);
+  const [d1Loading, setD1Loading] = useState(false);
+  const [d1Syncing, setD1Syncing] = useState(false);
+
   // Form states for settings
   const [announcementForm, setAnnouncementForm] = useState(settings.announcement);
   const [brandingForm, setBrandingForm] = useState(settings.branding);
@@ -160,10 +166,61 @@ export const AdminPage: React.FC = () => {
     return () => window.removeEventListener('toolzaro_sync_status', handleStatusUpdate);
   }, []);
 
-  // Load blogs when authenticated
+  const checkD1StatusCall = async () => {
+    setD1Loading(true);
+    try {
+      const res = await checkD1Status();
+      setD1Status(res);
+    } catch (err: any) {
+      setD1Status({ isBound: false, postsCount: 0, message: err?.message || 'Error checking D1' });
+    } finally {
+      setD1Loading(false);
+    }
+  };
+
+  const handleInitD1Table = async () => {
+    setD1Loading(true);
+    try {
+      const res = await initializeD1Schema();
+      if (res.success) {
+        toast.success(res.message);
+        await checkD1StatusCall();
+      } else {
+        toast.error(res.message);
+      }
+    } catch (err: any) {
+      toast.error('Init failed: ' + err?.message);
+    } finally {
+      setD1Loading(false);
+    }
+  };
+
+  const handleSyncBlogsToD1 = async () => {
+    if (blogs.length === 0) {
+      toast.info('No blogs to sync.');
+      return;
+    }
+    setD1Syncing(true);
+    let successCount = 0;
+    try {
+      for (const b of blogs) {
+        const res = await saveBlogToD1(b);
+        if (res.success) successCount++;
+      }
+      toast.success(`Synced ${successCount} / ${blogs.length} posts to Cloudflare D1!`);
+      await checkD1StatusCall();
+    } catch (err: any) {
+      toast.error('Sync failed: ' + err?.message);
+    } finally {
+      setD1Syncing(false);
+    }
+  };
+
+  // Load blogs and check D1 when authenticated
   useEffect(() => {
     if (isAdminAuthenticated) {
       loadBlogs();
+      checkD1StatusCall();
     }
   }, [isAdminAuthenticated]);
 
@@ -1281,6 +1338,112 @@ export const AdminPage: React.FC = () => {
                 </div>
               </div>
 
+              {/* Cloudflare D1 Edge SQLite Blog Storage Manager */}
+              <div className="p-5 rounded-2xl bg-slate-900 border border-slate-800 space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800">
+                  <div className="flex items-center gap-2.5">
+                    <Database className="w-5 h-5 text-sky-400" />
+                    <div>
+                      <h4 className="text-sm font-bold text-white flex items-center gap-2">
+                        Cloudflare D1 Edge SQLite Blog
+                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                          d1Status?.isBound 
+                            ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' 
+                            : 'bg-amber-500/10 text-amber-400 border border-amber-500/30'
+                        }`}>
+                          {d1Status?.isBound ? `Active (${d1Status.postsCount} posts)` : 'Binding Pending'}
+                        </span>
+                      </h4>
+                      <p className="text-[11px] text-slate-400">
+                        {d1Status?.message || 'High-performance edge SQLite storage (5M free reads/day).'}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <button
+                      type="button"
+                      disabled={d1Loading}
+                      onClick={checkD1StatusCall}
+                      className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50"
+                      title="Test D1 edge API"
+                    >
+                      <RefreshCw className={`w-3.5 h-3.5 ${d1Loading ? 'animate-spin text-sky-400' : ''}`} />
+                      <span>{d1Loading ? 'Checking...' : 'Check Status'}</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      disabled={d1Loading}
+                      onClick={handleInitD1Table}
+                      className="px-3 py-1.5 rounded-xl bg-sky-600/20 hover:bg-sky-600/30 border border-sky-500/30 text-sky-300 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50"
+                      title="Create posts table in Cloudflare D1"
+                    >
+                      <Sparkles className="w-3.5 h-3.5 text-sky-400" />
+                      <span>Initialize D1 Schema</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      disabled={d1Syncing}
+                      onClick={handleSyncBlogsToD1}
+                      className="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50"
+                      title="Push all current posts into Cloudflare D1"
+                    >
+                      <Upload className={`w-3.5 h-3.5 ${d1Syncing ? 'animate-spin' : ''}`} />
+                      <span>{d1Syncing ? 'Syncing...' : 'Sync All to D1'}</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const sql = `CREATE TABLE IF NOT EXISTS posts (
+  id TEXT PRIMARY KEY,
+  slug TEXT UNIQUE NOT NULL,
+  title TEXT NOT NULL,
+  excerpt TEXT,
+  content TEXT NOT NULL,
+  cover_image TEXT,
+  category TEXT DEFAULT 'General',
+  tags TEXT,
+  author_name TEXT DEFAULT 'Toolzaro Team',
+  author_role TEXT DEFAULT 'Admin',
+  author_avatar TEXT DEFAULT '',
+  read_time_minutes INTEGER DEFAULT 5,
+  status TEXT DEFAULT 'published',
+  content_type TEXT DEFAULT 'text',
+  custom_html TEXT,
+  custom_css TEXT,
+  custom_js TEXT,
+  created_at INTEGER,
+  updated_at INTEGER
+);
+CREATE INDEX IF NOT EXISTS idx_posts_slug ON posts(slug);
+CREATE INDEX IF NOT EXISTS idx_posts_status ON posts(status);`;
+                        navigator.clipboard.writeText(sql);
+                        toast.success('D1 SQL Schema copied to clipboard!');
+                      }}
+                      className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-mono flex items-center gap-1.5 transition-colors cursor-pointer"
+                      title="Copy SQL table migration"
+                    >
+                      <Copy className="w-3.5 h-3.5" />
+                      <span>Copy SQL</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-slate-400">
+                  <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between">
+                    <span>Wrangler D1 Binding:</span>
+                    <code className="text-sky-300 font-mono font-bold">DB (toolzaro-blog-d1)</code>
+                  </div>
+                  <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between">
+                    <span>API Endpoint:</span>
+                    <code className="text-emerald-400 font-mono font-bold">/api/blog/posts</code>
+                  </div>
+                </div>
+              </div>
+
               {/* ImgBB Quick Image Uploader Widget */}
               <div className="p-5 rounded-2xl bg-slate-900 border border-slate-800 space-y-3">
                 <div className="flex items-center justify-between">
@@ -1291,7 +1454,7 @@ export const AdminPage: React.FC = () => {
                     </span>
                   </div>
                   <span className="text-[11px] font-mono text-slate-400">
-                    API Key: 1ba7e...9f3
+                    Source: Environment (.env) / Settings
                   </span>
                 </div>
                 <ImgBBUploader 

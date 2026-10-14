@@ -1,6 +1,6 @@
 {
   "name": "Toolzaro",
-  "description": "Premium Online Utility Suite - 168+ browser-based tools for developers, designers and creators.",
+  "description": "Access 168+ free, fast, and 100% private browser tools on Toolzaro. Merge PDFs, compress & resize images, format JSON, generate QR codes, and convert files with zero uploads.",
   "requestFramePermissions": ["camera"],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
