@@ -2,7 +2,6 @@ import { LucideIcon } from 'lucide-react';
 import React from 'react';
 
 export type ToolCategory = 
-  | 'AI Video Downloaders'
   | 'Universal Data Suite'
   | 'Wikipedia'
   | 'Text' 
@@ -15,7 +14,8 @@ export type ToolCategory =
   | 'SEO' 
   | 'Utility'
   | 'PDF'
-  | 'Fun & Viral';
+  | 'Fun & Viral'
+  | 'AI Video Downloaders';
 
 export interface ToolDefinition {
   slug: string; 

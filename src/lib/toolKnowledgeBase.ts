@@ -191,6 +191,20 @@ const categoryKnowledgeDefaults: Record<ToolCategory, Omit<ToolKnowledge, 'featu
       { q: 'Where does the data come from?', a: 'Each tool queries verified open-source community APIs (such as PokéAPI v2, Open Trivia Database, and Memegen) directly over HTTPS.' },
       { q: 'Can I share generated memes and results on social media?', a: 'Absolutely. All generated memes, trivia scores, and vibe checks are designed for instant sharing across social platforms.' }
     ]
+  },
+  'AI Video Downloaders': {
+    technicalOverview:
+      'High-performance client-side media and streaming utilities operating directly within the browser runtime with WebAssembly decoders and standard HTML5 Media APIs.',
+    bestPractices: [
+      { title: 'Respect Copyright and Fair Use', advice: 'Always verify content licensing and secure appropriate permissions before processing or repurposing third-party digital media.' },
+      { title: 'Check Format Compatibility', advice: 'Ensure exported audio and video codecs match your target playback devices and editing suites.' },
+      { title: 'Monitor Device Memory', advice: 'Large media file transformations require sufficient local RAM in your browser tab.' }
+    ],
+    extendedFaqs: [
+      { q: 'Is video or audio content sent to external servers?', a: 'No. All operations run directly in your local browser environment with zero external telemetry or server retention.' },
+      { q: 'What media containers are supported?', a: 'Standard web video formats including MP4, WebM, and AAC/MP3 audio streams are fully supported.' },
+      { q: 'Is this service free to use?', a: 'Yes. All browser-based utilities on Toolzaro are completely free with zero subscription requirements.' }
+    ]
   }
 };
 
