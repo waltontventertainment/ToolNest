@@ -108,6 +108,8 @@ function ensureFaviconsInPublic() {
       'android-chrome-maskable-512x512.png',
       'logo.png',
       'og-banner.jpg',
+      '_redirects',
+      '_headers',
     ];
     for (const f of requiredFiles) {
       const src = path.join(PUBLIC_DIR, f);

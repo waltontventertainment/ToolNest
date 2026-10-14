@@ -136,7 +136,6 @@ const ColorBlindnessSimulator = lazyTool(loadColorImageToolsBatch, 'ColorBlindne
 const ImageAnonymizerBlur = lazyTool(loadColorImageToolsBatch, 'ImageAnonymizerBlur');
 
 // 9. Standalone Media & Wikipedia Tools
-const YoutubeTranscriptTool = lazyTool(() => import('../tools/YoutubeTranscriptTool'), 'YoutubeTranscriptTool');
 const WikipediaSummarizer = lazyTool(() => import('../tools/WikipediaSummarizer'), 'WikipediaSummarizer');
 const WikipediaHistory = lazyTool(() => import('../tools/WikipediaHistory'), 'WikipediaHistory');
 const WikipediaNearby = lazyTool(() => import('../tools/WikipediaNearby'), 'WikipediaNearby');
@@ -465,19 +464,6 @@ export const tools: ToolDefinition[] = [
     howTo: [],
     faq: [],
     Component: WikipediaNearby
-  },
-  {
-    slug: 'youtube-transcript-extractor',
-    name: 'YouTube Transcript Extractor',
-    category: 'Universal Data Suite',
-    icon: Video,
-    keywords: ['youtube transcript', 'youtube subtitles extractor', 'extract youtube text', 'youtube video to text', 'youtube captions'],
-    metaTitle: 'YouTube Transcript & Subtitle Extractor - Video Captions to Text',
-    metaDescription: 'Extract, read, copy, and export public subtitles and video transcripts from YouTube videos for study, notes, and accessibility.',
-    intro: '',
-    howTo: [],
-    faq: [],
-    Component: YoutubeTranscriptTool
   },
   {
     slug: 'pdf-merge',

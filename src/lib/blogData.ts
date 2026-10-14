@@ -83,25 +83,6 @@ export const BUILTIN_BLOG_POSTS: BlogPost[] = [
     content: ""
   },
   {
-    id: 'guide-4',
-    slug: 'youtube-transcript-intelligence-content-repurposing',
-    title: 'YouTube Transcript Intelligence: How to Transform Video Dialogue into High-Ranking SEO Content',
-    excerpt: 'The ultimate content strategy playbook for creators, educators, and marketers. Learn how to extract clean video transcripts, clean automated speech recognition (ASR) errors, format timestamped guides, and repurpose video content.',
-    category: 'SEO & Growth',
-    author: {
-      name: 'Toolzaro',
-      role: 'Admin',
-      avatar: ''
-    },
-    publishedAt: '2026-10-01',
-    readTimeMinutes: 11,
-    coverImage: 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=800&auto=format&fit=crop&q=75&fm=webp',
-    tags: ['YouTube Transcripts', 'Content Repurposing', 'Subtitles', 'SRT Formatting', 'Video SEO', 'Speech-to-Text'],
-    relatedToolSlugs: ['youtube-transcript-extractor', 'text-cleaner-pro', 'word-counter', 'markdown-to-html-converter', 'serp-snippet-optimizer'],
-    source: 'builtin',
-    content: ""
-  },
-  {
     id: 'guide-5',
     slug: 'developer-cryptography-cheatsheet-hashes-jwt-base64',
     title: 'The Production Web Security & Cryptography Cheatsheet: Hashes, JSON Web Tokens (JWT), and Base64 Encoding',

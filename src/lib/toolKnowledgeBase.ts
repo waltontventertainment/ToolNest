@@ -191,54 +191,11 @@ const categoryKnowledgeDefaults: Record<ToolCategory, Omit<ToolKnowledge, 'featu
       { q: 'Where does the data come from?', a: 'Each tool queries verified open-source community APIs (such as PokéAPI v2, Open Trivia Database, and Memegen) directly over HTTPS.' },
       { q: 'Can I share generated memes and results on social media?', a: 'Absolutely. All generated memes, trivia scores, and vibe checks are designed for instant sharing across social platforms.' }
     ]
-  },
-  'AI Video Downloaders': {
-    technicalOverview:
-      'High-performance client-side media and streaming utilities operating directly within the browser runtime with WebAssembly decoders and standard HTML5 Media APIs.',
-    bestPractices: [
-      { title: 'Respect Copyright and Fair Use', advice: 'Always verify content licensing and secure appropriate permissions before processing or repurposing third-party digital media.' },
-      { title: 'Check Format Compatibility', advice: 'Ensure exported audio and video codecs match your target playback devices and editing suites.' },
-      { title: 'Monitor Device Memory', advice: 'Large media file transformations require sufficient local RAM in your browser tab.' }
-    ],
-    extendedFaqs: [
-      { q: 'Is video or audio content sent to external servers?', a: 'No. All operations run directly in your local browser environment with zero external telemetry or server retention.' },
-      { q: 'What media containers are supported?', a: 'Standard web video formats including MP4, WebM, and AAC/MP3 audio streams are fully supported.' },
-      { q: 'Is this service free to use?', a: 'Yes. All browser-based utilities on Toolzaro are completely free with zero subscription requirements.' }
-    ]
   }
 };
 
 // Bespoke in-depth knowledge for key high-traffic tools
 const bespokeToolKnowledge: Record<string, Partial<ToolKnowledge>> = {
-  'youtube-transcript-extractor': {
-    technicalOverview:
-      'The YouTube Transcript & Subtitles Extractor uses an advanced multi-provider retrieval pipeline that resolves video caption metadata directly from YouTube’s timedtext infrastructure. It bypasses datacenter IP blocks using resilient provider cascades and handles both standard timedtext XML and modern Format 3 `<p t="..." d="...">` payloads. Subtitle timecodes are computed with millisecond precision, decoded from HTML/XML entities, and formatted into clean paragraphs, SubRip (.srt), WebVTT (.vtt), and Markdown (.md) documents.',
-    features: [
-      { title: 'Multi-Provider Failover Pipeline', description: 'Combines multiple resilient scraping engines to guarantee 99.9% uptime, even when YouTube applies strict datacenter rate limits.' },
-      { title: 'Multilingual Track Detection', description: 'Automatically discovers all available caption tracks (human subtitles and automated ASR speech-to-text) with an instant language switcher.' },
-      { title: 'Synchronized Video Player', description: 'Embedded player with clickable timestamps allowing users to seek the video to any exact second while reading along.' },
-      { title: 'Real-Time Keyword Search', description: 'Instantly filters transcript lines and highlights search terms with luminous badges and matching counters.' },
-      { title: 'Multi-Format Export Suite', description: 'Download transcripts as plain text (.txt), SubRip subtitles (.srt), WebVTT (.vtt), Markdown (.md), or backup directly to Google Drive.' },
-      { title: 'Manual Subtitle & Video Uploader', description: 'Emergency fallback allowing users to upload local .srt/.vtt files or local .mp4/.webm videos for synchronized playback.' }
-    ],
-    useCases: [
-      { audience: 'Content Creators & Copywriters', title: 'Video-to-Article Repurposing', scenario: 'Extract speech from YouTube videos and transform tutorials into comprehensive, SEO-optimized blog posts, newsletters, and social threads in minutes.' },
-      { audience: 'Students & Academic Researchers', title: 'Lecture Study & Citation', scenario: 'Search through 2-hour university lectures for key concepts, grab timestamped citations, and export clean summaries for study guides.' },
-      { audience: 'Video Editors & Translators', title: 'Subtitle Generation & Localization', scenario: 'Download verified .srt files to import directly into Premiere Pro, DaVinci Resolve, or Final Cut Pro for multi-language captioning.' },
-      { audience: 'Developers & Data Scientists', title: 'NLP Dataset Harvesting', scenario: 'Extract clean conversational transcripts for training specialized LLMs, building semantic search indices, or analyzing sentiment.' }
-    ],
-    bestPractices: [
-      { title: 'Verify Auto-Generated Accuracy', advice: 'Auto-generated captions (ASR) may occasionally mishear technical terminology or proper nouns; review critical lines before publishing.' },
-      { title: 'Use SRT for Video Editing', advice: 'When importing subtitles into Adobe Premiere or DaVinci Resolve, export in SubRip (.srt) format for native timeline recognition.' },
-      { title: 'Quick Direct Watch Link', advice: 'If a YouTube video has third-party embedding disabled by the creator (showing TV graphics), click "Watch on YouTube at [time]" to jump straight to that moment.' }
-    ],
-    extendedFaqs: [
-      { q: 'Can this tool extract transcripts from videos without captions?', a: 'No. The tool extracts existing caption tracks (both human-authored subtitles and YouTube’s automated speech recognition). If a video has no CC enabled, you can use our manual upload tab to load external subtitle files.' },
-      { q: 'Is there any limit on video duration?', a: 'No. You can extract transcripts from 1-minute shorts or 4-hour podcasts. The pipeline processes the entire transcript stream efficiently.' },
-      { q: 'Can I download subtitles in languages other than English?', a: 'Yes. If the video creator uploaded multiple language subtitles or if YouTube generated multilingual tracks, simply select the language from the dropdown menu to reload the transcript in that language.' },
-      { q: 'Does this violate YouTube terms?', a: 'The tool accesses publicly available timedtext captions published by video creators for accessibility and educational fair use.' }
-    ]
-  },
   'image-compressor': {
     technicalOverview:
       'The Toolzaro Image Compressor executes entirely within your browser using HTML5 Canvas pixel manipulation and native image encoding APIs. By converting source image bitstreams into customizable canvas contexts, it applies variable lossy compression algorithms without sending your sensitive photographs or company graphics to an external server.',

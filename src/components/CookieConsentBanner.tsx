@@ -4,8 +4,13 @@ import { ShieldCheck, Cookie, X, Check } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useSiteSettings } from '../context/SiteSettingsContext';
 
-export const COOKIE_STORAGE_KEY = 'toolzaro_cookie_consent_v3';
-export const LEGACY_STORAGE_KEYS = ['toolzaro_cookie_consent', 'toolzaro_cookie_consent_v2'];
+// Bumped to v4 to ensure existing desktop sessions that answered previous prompts can see the fresh notice
+export const COOKIE_STORAGE_KEY = 'toolzaro_cookie_consent_v4';
+export const LEGACY_STORAGE_KEYS = [
+  'toolzaro_cookie_consent',
+  'toolzaro_cookie_consent_v2',
+  'toolzaro_cookie_consent_v3',
+];
 
 export const CookieConsentBanner: React.FC = () => {
   const { settings } = useSiteSettings();
@@ -25,9 +30,19 @@ export const CookieConsentBanner: React.FC = () => {
     }
 
     try {
-      const consentV3 = localStorage.getItem(COOKIE_STORAGE_KEY);
-      if (!consentV3) {
-        // First visit or reset: show banner immediately without arbitrary delays
+      // Support URL debug flag (?preview_cookies or ?reset_cookies) for instant testing on any PC or mobile
+      if (
+        typeof window !== 'undefined' &&
+        (window.location.search.includes('preview_cookies') ||
+          window.location.search.includes('reset_cookies'))
+      ) {
+        localStorage.removeItem(COOKIE_STORAGE_KEY);
+        setIsVisible(true);
+        return;
+      }
+
+      const consentV4 = localStorage.getItem(COOKIE_STORAGE_KEY);
+      if (!consentV4) {
         setIsVisible(true);
       }
     } catch {
@@ -68,25 +83,24 @@ export const CookieConsentBanner: React.FC = () => {
   }
 
   /*
-    Responsive, AdSense-Safe & Anti-Filter Layout for both PC Desktop and Mobile:
+    Responsive, AdSense-Safe & Anti-Adblock Layout for PC Desktop and Mobile:
     1. Rendered via document.body Portal to guarantee zero container clipping or transform stacking issues.
-    2. PC Desktop: Fixed at bottom-right (bottom: 24px, right: 24px, width: 420px) with explicit coordinates.
+    2. PC Desktop: Fixed at bottom-right (bottom: 24px, right: 24px, width: 400px) with explicit coordinates.
     3. Mobile Phone: Fixed at bottom (bottom: 12px, left: 12px, right: 12px) with safe margins.
-    4. Inline styles applied alongside Tailwind classes to guarantee positioning even if external CSS or extensions intervene.
-    5. No full-page backdrop or click blockers; 100% AdSense compliant (avoids invalid traffic / accidental clicks).
-    6. High contrast in both light mode and dark mode.
+    4. AdSense Compliant: No full-screen backdrop or click interceptors to eliminate false/accidental ad clicks.
+    5. Anti-Filter: Neutral DOM IDs and standard container hierarchy to avoid aggressive PC adblock false-positives.
+    6. High contrast in both light mode and dark mode with accessible buttons.
   */
   const bannerContent = (
     <div
-      role="dialog"
-      aria-modal="false"
+      role="region"
       aria-label="Privacy and storage preferences"
-      id="tz-compliance-consent-notice"
+      id="tz-privacy-pref-dock"
+      className="fixed z-[999999] bottom-3 left-3 right-3 sm:bottom-6 sm:right-6 sm:left-auto sm:w-[400px] max-w-[calc(100vw-1.5rem)] pointer-events-auto transition-all duration-300 ease-out"
       style={{
         position: 'fixed',
         zIndex: 999999,
       }}
-      className="fixed z-[999999] bottom-3 left-3 right-3 sm:bottom-6 sm:right-6 sm:left-auto sm:w-[420px] max-w-[calc(100vw-1.5rem)] pointer-events-auto transition-all duration-300 ease-out"
     >
       <div className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 border-2 border-slate-300 dark:border-slate-700 shadow-2xl rounded-2xl p-4 sm:p-5 ring-1 ring-black/10 dark:ring-white/10">
         {/* Header */}

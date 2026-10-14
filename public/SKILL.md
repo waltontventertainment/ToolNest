@@ -1,15 +1,15 @@
 ---
 name: toolzaro-llms-index
-description: Toolzaro (https://toolzaro.cyou) is a privacy-first online utility platform offering 168+ browser-native developer, PDF, image, calculator, converter, and SEO tools.
+description: Toolzaro (https://toolzaro.cyou) is a privacy-first online utility platform offering 167+ browser-native developer, PDF, image, calculator, converter, and SEO tools.
 version: 1.0.0
 ---
 
 # Toolzaro - Free Online Developer, PDF, Image & Utility Suite
-> Toolzaro (https://toolzaro.cyou) is a privacy-first online utility platform offering 168+ browser-native tools across 13 categories. All tools run 100% client-side with zero cloud uploads and flat root-level URLs.
+> Toolzaro (https://toolzaro.cyou) is a privacy-first online utility platform offering 167+ browser-native tools across 13 categories. All tools run 100% client-side with zero cloud uploads and flat root-level URLs.
 
 ## Core Pages
-- [Home](https://toolzaro.cyou/): Main hub with instant search across 168+ utilities.
-- [All Tools Directory](https://toolzaro.cyou/tools): Complete A-Z categorized directory of all 168 tools.
+- [Home](https://toolzaro.cyou/): Main hub with instant search across 167+ utilities.
+- [All Tools Directory](https://toolzaro.cyou/tools): Complete A-Z categorized directory of all 167 tools.
 - [Saved Bookmarks](https://toolzaro.cyou/bookmarks): Personal workspace for saved browser tools.
 - [HTML Sitemap](https://toolzaro.cyou/sitemap): Full index of all tools, categories, and guides.
 - [Engineering Blog](https://toolzaro.cyou/blog): Technical tutorials, privacy architecture guides, and developer articles.
@@ -20,7 +20,7 @@ version: 1.0.0
 - [Disclaimer](https://toolzaro.cyou/disclaimer): Accuracy and verification disclosures.
 
 ## Tool Categories (13)
-- [Universal Data Suite Tools (12)](https://toolzaro.cyou/universal-data-suite)
+- [Universal Data Suite Tools (11)](https://toolzaro.cyou/universal-data-suite)
 - [Wikipedia Tools (3)](https://toolzaro.cyou/wikipedia)
 - [PDF Tools (7)](https://toolzaro.cyou/pdf)
 - [Text Tools (23)](https://toolzaro.cyou/text)
@@ -34,7 +34,7 @@ version: 1.0.0
 - [Utility Tools (11)](https://toolzaro.cyou/utility)
 - [Fun & Viral Tools (12)](https://toolzaro.cyou/fun-viral)
 
-## Complete Directory of 168 Tools (Flat Root-Level URLs)
+## Complete Directory of 167 Tools (Flat Root-Level URLs)
 - [Global Country Directory](https://toolzaro.cyou/rest-countries-explorer): Instantly lookup details, flags, capitals, and currencies of 200+ countries. (Category: Universal Data Suite)
 - [Lexicon Word Definitions](https://toolzaro.cyou/free-dictionary-lookup): Lookup English word definitions, phonetic spellings, synonyms, and audio pronunciation. (Category: Universal Data Suite)
 - [Universal Library Explorer](https://toolzaro.cyou/open-library-book-search): Search millions of books, authors, and cover art seamlessly. (Category: Universal Data Suite)
@@ -49,7 +49,6 @@ version: 1.0.0
 - [Wikipedia Article & Summary Explorer](https://toolzaro.cyou/wikipedia-summarizer): Search any Wikipedia article globally, extract high-precision summaries, and read full articles in English or Bengali. (Category: Wikipedia)
 - ["On This Day" History Timeline](https://toolzaro.cyou/wikipedia-on-this-day-history): Explore historically logged events, notable births, and deaths for any date of the year. Completely free timeline search. (Category: Wikipedia)
 - [Wikipedia Landmark Geo-Search](https://toolzaro.cyou/wikipedia-landmark-geosearch): Locate historical buildings, landmark coordinates, and registered monuments near your GPS coordinates or preset global cities. (Category: Wikipedia)
-- [YouTube Transcript Extractor](https://toolzaro.cyou/youtube-transcript-extractor): Extract, read, copy, and export public subtitles and video transcripts from YouTube videos for study, notes, and accessibility. (Category: Universal Data Suite)
 - [PDF Merger](https://toolzaro.cyou/pdf-merge): Combine multiple PDF files into a single organized PDF document quickly and securely in your browser. (Category: PDF)
 - [PDF Splitter & Page Extractor](https://toolzaro.cyou/pdf-split): Split a PDF document into separate page files or extract specific page ranges quickly and securely. (Category: PDF)
 - [PDF to Text Extractor](https://toolzaro.cyou/pdf-to-text): Extract raw text and string contents from any PDF file quickly and convert it to readable text or .txt file. (Category: PDF)
@@ -204,9 +203,8 @@ version: 1.0.0
 - [Multiverse Character Scanner](https://toolzaro.cyou/rick-and-morty-character-explorer): Search and explore hundreds of multiverse characters, origins, species, and avatars instantly. (Category: Fun & Viral)
 - [Funny Dialect Translator](https://toolzaro.cyou/pirate-shakespeare-translator): Convert ordinary English sentences into Pirate talk, Shakespearean English, Cute UwU, or 1337 Hacker speak. (Category: Fun & Viral)
 
-## Technical Guides & Articles (5)
+## Technical Guides & Articles (4)
 - [The Definitive Guide to Client-Side Web Privacy: How WebAssembly & Web Crypto Eliminate Cloud Leaks](https://toolzaro.cyou/definitive-guide-client-side-privacy-web-utilities): An architectural deep-dive into zero-knowledge browser utilities. Learn how Web Cryptography, Canvas APIs, and WebAssembly enable military-grade encryption, PDF manipulation, and image processing without transmitting a single byte to remote servers.
 - [Technical SEO in 2026: The Complete Blueprint for Schema Markup, OpenGraph, and Rich Snippets](https://toolzaro.cyou/technical-seo-blueprint-2026-schema-meta-opengraph): A comprehensive, step-by-step masterclass on technical search optimization. Learn how to construct multi-type Schema.org JSON-LD trees, prevent canonical cannibalization, optimize social cards, and satisfy Google Search Essentials.
 - [The Modern Web Asset Optimization Blueprint: Lossless Image Compression, Next-Gen Formats, and Core Web Vitals](https://toolzaro.cyou/modern-web-asset-optimization-webp-avif-performance): A practical, engineering-focused manual on image and asset optimization. Master the trade-offs between WebP, AVIF, and SVG, eliminate Largest Contentful Paint (LCP) bottlenecks, and optimize digital assets for peak web performance.
-- [YouTube Transcript Intelligence: How to Transform Video Dialogue into High-Ranking SEO Content](https://toolzaro.cyou/youtube-transcript-intelligence-content-repurposing): The ultimate content strategy playbook for creators, educators, and marketers. Learn how to extract clean video transcripts, clean automated speech recognition (ASR) errors, format timestamped guides, and repurpose video content.
 - [The Production Web Security & Cryptography Cheatsheet: Hashes, JSON Web Tokens (JWT), and Base64 Encoding](https://toolzaro.cyou/developer-cryptography-cheatsheet-hashes-jwt-base64): An authoritative reference guide for software engineers and security practitioners. Clarify the critical differences between encoding, hashing, and encryption, avoid JWT validation pitfalls, and implement secure data workflows.

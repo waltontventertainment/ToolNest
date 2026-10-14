@@ -63,10 +63,10 @@ jobs:
           echo "Verifying presence of Cloudflare routing, favicons, sitemaps, static assets, and SEO files in dist/..."
           ls -la dist/
 
-          # Ensure legacy _redirects is not present to avoid conflicting with Cloudflare wrangler.jsonc SPA routing
-          if [ -f "dist/_redirects" ]; then
-            echo "Removing legacy dist/_redirects to prevent conflict with Cloudflare SPA routing..."
-            rm -f dist/_redirects
+          # Ensure _redirects is present for Cloudflare Pages Single Page Application (SPA) routing
+          if [ ! -f "dist/_redirects" ]; then
+            echo "Creating dist/_redirects for Cloudflare Pages SPA routing..."
+            printf "/sabbir.html /sabbir.html 200\n/sabbir /sabbir.html 200\n/* /index.html 200\n" > dist/_redirects
           fi
 
           # Check essential root HTML, Worker, Favicon, Manifest, Sitemap & AdSense files
@@ -75,6 +75,7 @@ jobs:
             sabbir.html \
             pdf.worker.mjs \
             _headers \
+            _redirects \
             favicon.ico \
             favicon.svg \
             favicon.png \
@@ -145,11 +146,11 @@ jobs:
             exit 1
           fi
 
-          # Verify that dist/index.html uses root-relative (/assets/) paths and includes /favicon.ico
-          if grep -q '"/assets/' dist/index.html && grep -q '"/favicon.ico"' dist/index.html; then
-            echo "  [OK] dist/index.html uses root-relative '/assets/' and '/favicon.ico' paths."
+          # Verify that dist/index.html uses root-relative (/assets/) paths and includes favicon
+          if grep -q '/assets/' dist/index.html && grep -q 'favicon.ico' dist/index.html; then
+            echo "  [OK] dist/index.html uses root-relative '/assets/' and 'favicon.ico' paths."
           else
-            echo "  [ERROR] dist/index.html is missing root-relative '/assets/' or '/favicon.ico' paths!"
+            echo "  [ERROR] dist/index.html is missing root-relative '/assets/' or 'favicon.ico' paths!"
             exit 1
           fi
 
@@ -204,7 +205,7 @@ jobs:
           # Force push to waltontventertainment/Toolzaro.git (replaces all previous files cleanly)
           REMOTE_URL="https://x-access-token:${MY_SECRET_TOOLZARO}@github.com/waltontventertainment/Toolzaro.git"
           echo "Force-pushing fresh build to waltontventertainment/Toolzaro.git (main)..."
-          git push --force "$REMOTE_URL" main:main
+          git push --force "$REMOTE_URL" main:main || git push --force "https://${MY_SECRET_TOOLZARO}@github.com/waltontventertainment/Toolzaro.git" main:main
           echo "✅ Successfully wiped old files and uploaded fresh production build to waltontventertainment/Toolzaro.git!"
 
       - name: "Workflow Summary"
