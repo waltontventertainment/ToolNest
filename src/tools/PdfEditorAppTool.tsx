@@ -228,14 +228,25 @@ export const PdfEditorAppTool: React.FC = () => {
     setIsLoading(true);
     try {
       const safeData = new Uint8Array(bytes.slice(0));
-      const loadingTask = pdfjsLib.getDocument({
-        data: safeData,
-        cMapUrl: '/cmaps/',
-        cMapPacked: true,
-        enableXfa: true,
-      });
+      let doc;
+      try {
+        const loadingTask = pdfjsLib.getDocument({
+          data: safeData,
+          cMapUrl: '/cmaps/',
+          cMapPacked: true,
+          enableXfa: true,
+        });
+        doc = await loadingTask.promise;
+      } catch {
+        const fallbackTask = pdfjsLib.getDocument({
+          data: safeData,
+          cMapUrl: `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjsLib.version || '6.4.299'}/cmaps/`,
+          cMapPacked: true,
+          enableXfa: true,
+        });
+        doc = await fallbackTask.promise;
+      }
 
-      const doc = await loadingTask.promise;
       setPdfJsDoc(doc);
       setFile({ name: fileName, bytes, size: bytes.byteLength });
 
