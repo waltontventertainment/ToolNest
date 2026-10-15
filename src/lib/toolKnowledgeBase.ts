@@ -191,11 +191,51 @@ const categoryKnowledgeDefaults: Record<ToolCategory, Omit<ToolKnowledge, 'featu
       { q: 'Where does the data come from?', a: 'Each tool queries verified open-source community APIs (such as PokéAPI v2, Open Trivia Database, and Memegen) directly over HTTPS.' },
       { q: 'Can I share generated memes and results on social media?', a: 'Absolutely. All generated memes, trivia scores, and vibe checks are designed for instant sharing across social platforms.' }
     ]
+  },
+  'App': {
+    technicalOverview:
+      'The App category delivers standalone, full-featured web applications directly inside your browser. Built entirely on client-side web standards (HTML5 Canvas, WebAssembly, and modern JavaScript APIs), every application operates 100% offline-ready in your device’s memory (RAM) with zero telemetry, zero server-side file uploads, and complete user sovereignty.',
+    bestPractices: [
+      { title: 'Local Device Backups', advice: 'Always keep local copies of original documents before making extensive redactions or modifications.' },
+      { title: 'Use Full-Screen Focus Mode', advice: 'Toggle full-screen focus mode on desktop screens for an immersive, distraction-free document editing experience.' },
+      { title: 'Hardware Acceleration', advice: 'Ensure browser hardware acceleration is enabled for smooth multi-page canvas rendering and instantaneous stroke response.' }
+    ],
+    extendedFaqs: [
+      { q: 'Do these apps send my files or data to an external server?', a: 'Never. Every document, annotation, drawing, and digital signature is processed 100% locally on your computer or phone using client-side WebAssembly.' },
+      { q: 'Can I use these apps offline?', a: 'Yes. Once loaded in your browser tab, the web applications execute completely within your local browser sandbox even without an active internet connection.' },
+      { q: 'Are there any usage limits or paywalls?', a: 'No. All applications under the App suite are completely free, open-source inspired, and unlimited with zero subscriptions.' }
+    ]
   }
 };
 
 // Bespoke in-depth knowledge for key high-traffic tools
 const bespokeToolKnowledge: Record<string, Partial<ToolKnowledge>> = {
+  'pdf-editor': {
+    technicalOverview:
+      'The PDF Editor Suite is a full-featured browser-native document workstation inspired by open-source desktop software. Utilizing PDF.js for canvas rendering and pdf-lib for binary document manipulation, users can visually inspect, annotate, draw, insert text, append digital signatures, apply verification stamps, and reorder pages in real time—all with zero cloud uploads or third-party servers.',
+    features: [
+      { title: 'Multi-Page Visual Canvas', description: 'Interactive canvas rendering each PDF page with zooming, page thumbnails, and seamless navigation.' },
+      { title: 'Vector Markup & Freehand Pen', description: 'Annotate documents with smooth freehand pen strokes, translucent highlighters, geometric shapes, and arrows.' },
+      { title: 'Typography & Text Insertion', description: 'Add customizable text boxes with font sizing, color palette selection, and precise positioning.' },
+      { title: 'Digital Signatures & Stamps', description: 'Draw handwritten signatures on an interactive signature pad, type stylized script names, or apply official verification stamps.' },
+      { title: 'Page Organization & Rotation', description: 'Rotate individual pages 90° clockwise/counter-clockwise, delete unwanted pages, and reorder document sequences.' },
+      { title: '100% Private Client-Side Export', description: 'Generates a flattened, pristine PDF file directly in your browser memory for immediate local download.' }
+    ],
+    useCases: [
+      { audience: 'Professionals & Remote Workers', title: 'Contract Signing & Form Completion', scenario: 'Fill out agreements, add signature fields, and return completed PDF contracts in seconds without printing or scanning.' },
+      { audience: 'Students & Educators', title: 'Lecture & Assignment Annotation', scenario: 'Highlight reading materials, add margin notes, and annotate study guides directly on the PDF canvas.' },
+      { audience: 'Legal & Accounting Teams', title: 'Document Stamping & Redaction', scenario: 'Mark sensitive paperwork with Confidential or Approved verification stamps and blackout private records.' }
+    ],
+    bestPractices: [
+      { title: 'Preview Before Final Export', advice: 'Review all pages and annotations in the filmstrip view before clicking Download PDF.' },
+      { title: 'Use High-Contrast Ink', advice: 'Select bold primary colors for annotations to ensure clarity when documents are printed or shared.' }
+    ],
+    extendedFaqs: [
+      { q: 'Is my uploaded PDF stored anywhere online?', a: 'No. The PDF never leaves your device. It is parsed and rendered entirely inside your browser’s JavaScript engine.' },
+      { q: 'Can I edit multiple pages in one session?', a: 'Yes. You can navigate between pages, add annotations on each, and export all pages in a single combined PDF.' },
+      { q: 'What is the maximum file size supported?', a: 'Since processing occurs in client memory, files up to 100MB work smoothly on standard laptops and modern mobile phones.' }
+    ]
+  },
   'image-compressor': {
     technicalOverview:
       'The Toolzaro Image Compressor executes entirely within your browser using HTML5 Canvas pixel manipulation and native image encoding APIs. By converting source image bitstreams into customizable canvas contexts, it applies variable lossy compression algorithms without sending your sensitive photographs or company graphics to an external server.',

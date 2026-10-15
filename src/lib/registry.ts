@@ -1,5 +1,5 @@
 import React from 'react';
-import { Type, QrCode, Image as ImageIcon, KeyRound, Search, FileText, Binary, Code, Barcode, FileSearch, Timer, Scissors, ArrowDownAZ, Space, Filter, ArrowLeftRight, WrapText, SplitSquareHorizontal, Mail, Link, Hash, FileDiff, Replace, ListPlus, ShieldX, Calculator, Superscript, Clock, Palette, Database, Fingerprint, Scan, Crop, Globe, Heart, Activity, FileCode, Box, Share2, BarChart2, Tag, Zap, BookOpen, Layers as Hierarchy, Volume2, Keyboard, Monitor, Shuffle, Maximize2, Sliders, Stamp, Eye, EyeOff, Sparkles, Merge, RotateCw, ShieldAlert, CheckCircle2, Video, Briefcase, ShoppingBag, Users, GraduationCap, Globe2, Utensils, Scale, Calendar, MapPin, CloudSun, Cloud, Smile, Wifi, Download, User, Info, Map, Wind, Thermometer, ShieldCheck, Bookmark, RefreshCw } from 'lucide-react';
+import { Type, QrCode, Image as ImageIcon, KeyRound, Search, FileText, Binary, Code, Barcode, FileSearch, Timer, Scissors, ArrowDownAZ, Space, Filter, ArrowLeftRight, WrapText, SplitSquareHorizontal, Mail, Link, Hash, FileDiff, Replace, ListPlus, ShieldX, Calculator, Superscript, Clock, Palette, Database, Fingerprint, Scan, Crop, Globe, Heart, Activity, FileCode, Box, Share2, BarChart2, Tag, Zap, BookOpen, Layers as Hierarchy, Volume2, Keyboard, Monitor, Shuffle, Maximize2, Sliders, Stamp, Eye, EyeOff, Sparkles, Merge, RotateCw, ShieldAlert, CheckCircle2, Video, Briefcase, ShoppingBag, Users, GraduationCap, Globe2, Utensils, Scale, Calendar, MapPin, CloudSun, Cloud, Smile, Wifi, Download, User, Info, Map, Wind, Thermometer, ShieldCheck, Bookmark, RefreshCw, AppWindow, PenTool } from 'lucide-react';
 import { ToolDefinition, ToolCategory } from './types';
 
 /**
@@ -139,6 +139,7 @@ const ImageAnonymizerBlur = lazyTool(loadColorImageToolsBatch, 'ImageAnonymizerB
 const WikipediaSummarizer = lazyTool(() => import('../tools/WikipediaSummarizer'), 'WikipediaSummarizer');
 const WikipediaHistory = lazyTool(() => import('../tools/WikipediaHistory'), 'WikipediaHistory');
 const WikipediaNearby = lazyTool(() => import('../tools/WikipediaNearby'), 'WikipediaNearby');
+const PdfEditorAppTool = lazyTool(() => import('../tools/PdfEditorAppTool'), 'PdfEditorAppTool');
 
 // 10. FreeApiToolsBatch
 const loadFreeApiToolsBatch = () => import('../tools/FreeApiToolsBatch');
@@ -268,7 +269,7 @@ const RickMortyMultiverseScannerTool = lazyTool(loadFunViralToolsBatch, 'RickMor
 const PirateShakespeareTranslatorTool = lazyTool(loadFunViralToolsBatch, 'PirateShakespeareTranslatorTool');
 
 export const categories: ToolCategory[] = [
-  'Universal Data Suite', 'Wikipedia', 'PDF', 'Text', 'Developer', 'Converters', 'Generators', 'QR & Barcode', 'Color & Image', 'Calculators', 'SEO', 'Utility', 'Fun & Viral'
+  'App', 'PDF', 'Universal Data Suite', 'Wikipedia', 'Text', 'Developer', 'Converters', 'Generators', 'QR & Barcode', 'Color & Image', 'Calculators', 'SEO', 'Utility', 'Fun & Viral'
 ];
 
 export const tools: ToolDefinition[] = [
@@ -464,6 +465,31 @@ export const tools: ToolDefinition[] = [
     howTo: [],
     faq: [],
     Component: WikipediaNearby
+  },
+  {
+    slug: 'pdf-editor',
+    name: 'PDF Editor Suite',
+    category: 'App',
+    icon: AppWindow,
+    previewIcons: [FileText, PenTool, Stamp],
+    keywords: ['pdf editor', 'edit pdf online', 'annotate pdf', 'sign pdf', 'draw on pdf', 'rotate pdf pages', 'pdf app', 'free pdf editor'],
+    metaTitle: 'Free Online PDF Editor Suite - Edit, Annotate, Sign & Organize PDFs',
+    metaDescription: 'Visual, privacy-first PDF editor running 100% locally in your browser. Add text, draw, highlight, stamp, sign contracts, and rearrange pages with zero uploads.',
+    intro: 'The PDF Editor Suite is a comprehensive, client-side web application for editing, annotating, and managing PDF documents directly in your browser. Add custom text, freehand sketches, highlighters, digital signatures, and verification stamps with instantaneous local rendering.',
+    howTo: [
+      'Upload any PDF file by dragging it into the drop zone or clicking Choose PDF File.',
+      'Navigate between pages using the thumbnail sidebar or top page controls.',
+      'Select an annotation tool from the toolbar: Text, Pen, Highlighter, Shapes, Signature, or Stamp.',
+      'Click or drag on the canvas to place annotations, resize elements, or customize colors.',
+      'Click Download PDF to export the flattened, annotated document to your device.'
+    ],
+    faq: [
+      { q: 'Is my PDF uploaded to any server or cloud?', a: 'No. Every page rendering, annotation, drawing stroke, and signature is processed 100% locally in your browser memory via WebAssembly and HTML5 Canvas.' },
+      { q: 'Can I add handwritten or typed signatures?', a: 'Yes. Use the Digital Signature tool to draw your signature with a mouse or touchscreen, type your name in script font, or upload an image.' },
+      { q: 'Can I rotate or reorganize pages?', a: 'Yes. You can rotate individual pages 90 degrees clockwise or counter-clockwise, delete unnecessary pages, and reorganize your document before export.' },
+      { q: 'Is there any watermark added to my exported PDF?', a: 'Never. The PDF Editor Suite produces completely clean, full-resolution PDF files with zero watermarks or branding.' }
+    ],
+    Component: PdfEditorAppTool
   },
   {
     slug: 'pdf-merge',

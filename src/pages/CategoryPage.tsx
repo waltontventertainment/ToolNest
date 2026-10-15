@@ -46,6 +46,7 @@ export const CategoryPage: React.FC<{ forcedSlug?: string }> = ({ forcedSlug }) 
 
   const orderedCategories = useMemo(() => {
     const desiredOrder = [
+      'App',
       'PDF', 'Text',
       'Developer', 'Converters', 'Generators',
       'Calculators', 'Color & Image', 'QR & Barcode',

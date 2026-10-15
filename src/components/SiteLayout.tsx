@@ -31,6 +31,7 @@ import {
   Mail,
   Layers,
   Menu,
+  AppWindow,
 } from 'lucide-react';
 import { useLocalStorage } from '../lib/toolkit';
 import { categories, tools } from '../lib/registry';
@@ -44,6 +45,7 @@ import { useSiteSettings } from '../context/SiteSettingsContext';
 import { CookieConsentBanner, openCookieSettings } from './CookieConsentBanner';
 
 const HEADER_CATEGORIES = [
+  { name: 'Apps', categoryName: 'App', slug: 'app', icon: AppWindow },
   { name: 'PDF Suite', categoryName: 'PDF', slug: 'pdf', icon: FileText },
   { name: 'Developer', categoryName: 'Developer', slug: 'developer', icon: Code },
   { name: 'Color & Image', categoryName: 'Color & Image', slug: 'color-image', icon: ImageIcon },

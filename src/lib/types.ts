@@ -14,7 +14,8 @@ export type ToolCategory =
   | 'SEO' 
   | 'Utility'
   | 'PDF'
-  | 'Fun & Viral';
+  | 'Fun & Viral'
+  | 'App';
 
 export interface ToolDefinition {
   slug: string; 

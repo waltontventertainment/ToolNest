@@ -48,6 +48,7 @@ export function buildToolSeoDescription(tool: ToolDefinition, siteName = 'Toolza
     'Wikipedia': 'Explore curated knowledge and summaries with fast in-browser reading.',
     'Fun & Viral': 'Enjoy creative, entertaining utilities with zero registration required.',
     'Utility': 'Reliable browser-based utility that works offline with zero data uploads.',
+    'App': 'Desktop-grade browser application that executes 100% locally with zero cloud uploads.',
   };
 
   const benefit = categoryBenefits[tool.category] || '100% free, private browser utility with zero cloud uploads.';
@@ -192,6 +193,14 @@ export const CATEGORY_SEO_DATA: Record<
     keywords: ['fun online tools', 'viral meme generator', 'name age predictor', 'online trivia quiz', 'pokemon battle simulator', 'dad joke generator', 'yes no oracle gif', 'random excuse generator'],
     editorialSummary:
       'Powered by free, open-source public APIs (Memegen, Agify, Nationalize, Open Trivia DB, PokéAPI, YesNo.wtf, TheMealDB, and RickAndMortyAPI) for instant entertainment and viral social sharing.',
+  },
+  'App': {
+    title: 'Free Web Apps – PDF Editor Suite & Browser Applications | Toolzaro',
+    description:
+      'Explore powerful, free, full-featured web applications running 100% locally in your browser. Edit and annotate PDFs, fill forms, and organize documents with zero server uploads.',
+    keywords: ['free web apps', 'pdf editor online', 'browser apps', 'open source web apps', 'offline web tools', 'private client side apps'],
+    editorialSummary:
+      'Standalone, desktop-grade web applications rebuilt with open-source technologies, delivering private in-browser document editing and productivity workflows.',
   },
 };
 

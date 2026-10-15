@@ -1,15 +1,15 @@
 ---
 name: toolzaro-llms-index
-description: Toolzaro (https://toolzaro.cyou) is a privacy-first online utility platform offering 167+ browser-native developer, PDF, image, calculator, converter, and SEO tools.
+description: Toolzaro (https://toolzaro.cyou) is a privacy-first online utility platform offering 168+ browser-native developer, PDF, image, calculator, converter, and SEO tools.
 version: 1.0.0
 ---
 
 # Toolzaro - Free Online Developer, PDF, Image & Utility Suite
-> Toolzaro (https://toolzaro.cyou) is a privacy-first online utility platform offering 167+ browser-native tools across 13 categories. All tools run 100% client-side with zero cloud uploads and flat root-level URLs.
+> Toolzaro (https://toolzaro.cyou) is a privacy-first online utility platform offering 168+ browser-native tools across 14 categories. All tools run 100% client-side with zero cloud uploads and flat root-level URLs.
 
 ## Core Pages
-- [Home](https://toolzaro.cyou/): Main hub with instant search across 167+ utilities.
-- [All Tools Directory](https://toolzaro.cyou/tools): Complete A-Z categorized directory of all 167 tools.
+- [Home](https://toolzaro.cyou/): Main hub with instant search across 168+ utilities.
+- [All Tools Directory](https://toolzaro.cyou/tools): Complete A-Z categorized directory of all 168 tools.
 - [Saved Bookmarks](https://toolzaro.cyou/bookmarks): Personal workspace for saved browser tools.
 - [HTML Sitemap](https://toolzaro.cyou/sitemap): Full index of all tools, categories, and guides.
 - [Engineering Blog](https://toolzaro.cyou/blog): Technical tutorials, privacy architecture guides, and developer articles.
@@ -19,10 +19,11 @@ version: 1.0.0
 - [Terms of Service](https://toolzaro.cyou/terms): Fair use terms and conditions.
 - [Disclaimer](https://toolzaro.cyou/disclaimer): Accuracy and verification disclosures.
 
-## Tool Categories (13)
+## Tool Categories (14)
+- [App Tools (1)](https://toolzaro.cyou/app)
+- [PDF Tools (7)](https://toolzaro.cyou/pdf)
 - [Universal Data Suite Tools (11)](https://toolzaro.cyou/universal-data-suite)
 - [Wikipedia Tools (3)](https://toolzaro.cyou/wikipedia)
-- [PDF Tools (7)](https://toolzaro.cyou/pdf)
 - [Text Tools (23)](https://toolzaro.cyou/text)
 - [Developer Tools (46)](https://toolzaro.cyou/developer)
 - [Converters Tools (11)](https://toolzaro.cyou/converters)
@@ -34,7 +35,7 @@ version: 1.0.0
 - [Utility Tools (11)](https://toolzaro.cyou/utility)
 - [Fun & Viral Tools (12)](https://toolzaro.cyou/fun-viral)
 
-## Complete Directory of 167 Tools (Flat Root-Level URLs)
+## Complete Directory of 168 Tools (Flat Root-Level URLs)
 - [Global Country Directory](https://toolzaro.cyou/rest-countries-explorer): Instantly lookup details, flags, capitals, and currencies of 200+ countries. (Category: Universal Data Suite)
 - [Lexicon Word Definitions](https://toolzaro.cyou/free-dictionary-lookup): Lookup English word definitions, phonetic spellings, synonyms, and audio pronunciation. (Category: Universal Data Suite)
 - [Universal Library Explorer](https://toolzaro.cyou/open-library-book-search): Search millions of books, authors, and cover art seamlessly. (Category: Universal Data Suite)
@@ -49,6 +50,7 @@ version: 1.0.0
 - [Wikipedia Article & Summary Explorer](https://toolzaro.cyou/wikipedia-summarizer): Search any Wikipedia article globally, extract high-precision summaries, and read full articles in English or Bengali. (Category: Wikipedia)
 - ["On This Day" History Timeline](https://toolzaro.cyou/wikipedia-on-this-day-history): Explore historically logged events, notable births, and deaths for any date of the year. Completely free timeline search. (Category: Wikipedia)
 - [Wikipedia Landmark Geo-Search](https://toolzaro.cyou/wikipedia-landmark-geosearch): Locate historical buildings, landmark coordinates, and registered monuments near your GPS coordinates or preset global cities. (Category: Wikipedia)
+- [PDF Editor Suite](https://toolzaro.cyou/pdf-editor): Visual, privacy-first PDF editor running 100% locally in your browser. Add text, draw, highlight, stamp, sign contracts, and rearrange pages with zero uploads. (Category: App)
 - [PDF Merger](https://toolzaro.cyou/pdf-merge): Combine multiple PDF files into a single organized PDF document quickly and securely in your browser. (Category: PDF)
 - [PDF Splitter & Page Extractor](https://toolzaro.cyou/pdf-split): Split a PDF document into separate page files or extract specific page ranges quickly and securely. (Category: PDF)
 - [PDF to Text Extractor](https://toolzaro.cyou/pdf-to-text): Extract raw text and string contents from any PDF file quickly and convert it to readable text or .txt file. (Category: PDF)

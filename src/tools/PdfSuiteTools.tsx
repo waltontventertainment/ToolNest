@@ -85,14 +85,10 @@ import { toast } from 'sonner';
 import { downloadBlob, downloadDataUrl, downloadFilesAsZip, copyDataUrlToClipboard } from '../lib/downloadHelper';
 import { PdfDocumentViewerModal, DownloadReadyCard, formatBytes } from '../components/PdfSharedComponents';
 
-// Bulletproof PDF.js worker setup: prefer self-contained local worker with polyfills
-if (typeof window !== 'undefined') {
-  try {
-    pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.mjs';
-  } catch {
-    pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjsLib.version || '6.2.108'}/legacy/build/pdf.worker.min.mjs`;
-  }
-}
+import { initPdfWorker } from '../lib/pdfWorkerSetup';
+
+// Bulletproof PDF.js worker setup
+initPdfWorker();
 
 // ----------------------------------------------------
 // SHARED ROBUST PDF HELPER FUNCTIONS

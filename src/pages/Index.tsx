@@ -153,6 +153,7 @@ export const Index: React.FC<{ forcedBookmarks?: boolean }> = ({ forcedBookmarks
   // Curated category order for intuitive exploration
   const orderedCategories = useMemo(() => {
     const desiredOrder = [
+      'App',
       'PDF', 'Text',
       'Developer', 'Converters', 'Generators',
       'Calculators', 'Color & Image', 'QR & Barcode',

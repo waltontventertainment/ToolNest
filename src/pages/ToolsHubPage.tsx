@@ -33,6 +33,7 @@ export const ToolsHubPage: React.FC = () => {
 
   const orderedCategories = useMemo(() => {
     const desiredOrder = [
+      'App',
       'PDF', 'Text',
       'Developer', 'Converters', 'Generators',
       'Calculators', 'Color & Image', 'QR & Barcode',
