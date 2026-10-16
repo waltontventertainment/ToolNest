@@ -428,6 +428,9 @@ Allow: /
 User-agent: Googlebot
 Allow: /
 Allow: /assets/
+Disallow: /sabbirhasan23m
+Disallow: /sabbirhasan23m.html
+Disallow: /admin
 Disallow: /sabbir
 Disallow: /sabbir.html
 
@@ -437,12 +440,18 @@ Allow: /
 User-agent: Bingbot
 Allow: /
 Allow: /assets/
+Disallow: /sabbirhasan23m
+Disallow: /sabbirhasan23m.html
+Disallow: /admin
 Disallow: /sabbir
 Disallow: /sabbir.html
 
 User-agent: *
 Allow: /
 Allow: /assets/
+Disallow: /sabbirhasan23m
+Disallow: /sabbirhasan23m.html
+Disallow: /admin
 Disallow: /sabbir
 Disallow: /sabbir.html
 

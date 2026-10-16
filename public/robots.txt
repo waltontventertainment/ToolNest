@@ -11,6 +11,7 @@ Disallow: /sabbirhasan23m
 Disallow: /sabbirhasan23m.html
 Disallow: /admin
 Disallow: /sabbir
+Disallow: /sabbir.html
 
 User-agent: Googlebot-Image
 Allow: /
@@ -22,6 +23,7 @@ Disallow: /sabbirhasan23m
 Disallow: /sabbirhasan23m.html
 Disallow: /admin
 Disallow: /sabbir
+Disallow: /sabbir.html
 
 User-agent: *
 Allow: /
