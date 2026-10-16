@@ -1,15 +1,15 @@
 ---
 name: toolzaro-llms-index
-description: Toolzaro (https://toolzaro.cyou) is a privacy-first online utility platform offering 170+ browser-native developer, PDF, image, calculator, converter, and SEO tools.
+description: Toolzaro (https://toolzaro.cyou) is a privacy-first online utility platform offering 176+ browser-native developer, PDF, image, calculator, converter, and SEO tools.
 version: 1.0.0
 ---
 
 # Toolzaro - Free Online Developer, PDF, Image & Utility Suite
-> Toolzaro (https://toolzaro.cyou) is a privacy-first online utility platform offering 170+ browser-native tools across 14 categories. All tools run 100% client-side with zero cloud uploads and flat root-level URLs.
+> Toolzaro (https://toolzaro.cyou) is a privacy-first online utility platform offering 176+ browser-native tools across 14 categories. All tools run 100% client-side with zero cloud uploads and flat root-level URLs.
 
 ## Core Pages
-- [Home](https://toolzaro.cyou/): Main hub with instant search across 170+ utilities.
-- [All Tools Directory](https://toolzaro.cyou/tools): Complete A-Z categorized directory of all 170 tools.
+- [Home](https://toolzaro.cyou/): Main hub with instant search across 176+ utilities.
+- [All Tools Directory](https://toolzaro.cyou/tools): Complete A-Z categorized directory of all 176 tools.
 - [Saved Bookmarks](https://toolzaro.cyou/bookmarks): Personal workspace for saved browser tools.
 - [HTML Sitemap](https://toolzaro.cyou/sitemap): Full index of all tools, categories, and guides.
 - [Engineering Blog](https://toolzaro.cyou/blog): Technical tutorials, privacy architecture guides, and developer articles.
@@ -20,7 +20,7 @@ version: 1.0.0
 - [Disclaimer](https://toolzaro.cyou/disclaimer): Accuracy and verification disclosures.
 
 ## Tool Categories (14)
-- [App Tools (3)](https://toolzaro.cyou/app)
+- [App Tools (9)](https://toolzaro.cyou/app)
 - [PDF Tools (7)](https://toolzaro.cyou/pdf)
 - [Universal Data Suite Tools (11)](https://toolzaro.cyou/universal-data-suite)
 - [Wikipedia Tools (3)](https://toolzaro.cyou/wikipedia)
@@ -35,7 +35,7 @@ version: 1.0.0
 - [Utility Tools (11)](https://toolzaro.cyou/utility)
 - [Fun & Viral Tools (12)](https://toolzaro.cyou/fun-viral)
 
-## Complete Directory of 170 Tools (Flat Root-Level URLs)
+## Complete Directory of 176 Tools (Flat Root-Level URLs)
 - [Global Country Directory](https://toolzaro.cyou/rest-countries-explorer): Instantly lookup details, flags, capitals, and currencies of 200+ countries. (Category: Universal Data Suite)
 - [Lexicon Word Definitions](https://toolzaro.cyou/free-dictionary-lookup): Lookup English word definitions, phonetic spellings, synonyms, and audio pronunciation. (Category: Universal Data Suite)
 - [Universal Library Explorer](https://toolzaro.cyou/open-library-book-search): Search millions of books, authors, and cover art seamlessly. (Category: Universal Data Suite)
@@ -53,6 +53,12 @@ version: 1.0.0
 - [PDF Editor Suite](https://toolzaro.cyou/pdf-editor): Visual, privacy-first PDF editor running 100% locally in your browser. Add text, draw, highlight, stamp, sign contracts, and rearrange pages with zero uploads. (Category: App)
 - [Markdown Studio](https://toolzaro.cyou/markdown-studio): Feature-rich, privacy-first Markdown Editor running 100% in your browser. Real-time split preview, syntax toolbar, word counter, and export to .md and .html. (Category: App)
 - [Live Code Playground](https://toolzaro.cyou/code-playground): Interactive frontend web sandbox and code playground running directly in your browser. Live compile HTML, CSS, and JS with instant sandboxed iframe execution and export. (Category: App)
+- [Spreadsheet Studio](https://toolzaro.cyou/spreadsheet-app): Feature-rich, privacy-first online spreadsheet running 100% in your browser. Calculate SUM, math formulas, organize tabular data, and export clean CSV files. (Category: App)
+- [Photo Studio](https://toolzaro.cyou/photo-studio-app): Powerful client-side photo editor and visual canvas running 100% locally in your browser. Adjust brightness, contrast, saturation, blur, rotate, and export with zero uploads. (Category: App)
+- [Whiteboard Studio](https://toolzaro.cyou/whiteboard-app): Interactive digital whiteboard running directly in your browser. Draw, sketch, erase, brainstorm ideas, and export your artwork to PNG with zero lag. (Category: App)
+- [Vector Studio](https://toolzaro.cyou/vector-studio-app): Intuitive SVG vector graphic studio running 100% in your browser. Create geometric shapes, customize fill and stroke colors, and export clean SVG code with zero server uploads. (Category: App)
+- [Chess Master](https://toolzaro.cyou/chess-app): Classic, distraction-free Chess application running 100% in your browser. Play locally with two-player pass-and-play, move tracking, and beautiful responsive boards. (Category: App)
+- [Sudoku Master](https://toolzaro.cyou/sudoku-app): Engaging, responsive 9x9 Sudoku puzzle app running 100% in your browser. Input digits with fast on-screen number pad, test your logic, and enjoy distraction-free play. (Category: App)
 - [PDF Merger](https://toolzaro.cyou/pdf-merge): Combine multiple PDF files into a single organized PDF document quickly and securely in your browser. (Category: PDF)
 - [PDF Splitter & Page Extractor](https://toolzaro.cyou/pdf-split): Split a PDF document into separate page files or extract specific page ranges quickly and securely. (Category: PDF)
 - [PDF to Text Extractor](https://toolzaro.cyou/pdf-to-text): Extract raw text and string contents from any PDF file quickly and convert it to readable text or .txt file. (Category: PDF)

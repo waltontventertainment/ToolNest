@@ -23,7 +23,84 @@ const APP_ICON_PALETTES: Record<string, { bg: string; shadow: string; glow: stri
     shadow: 'shadow-lg shadow-indigo-500/25 dark:shadow-indigo-900/30',
     glow: 'from-indigo-400/20 to-transparent',
   },
+  'spreadsheet-app': {
+    bg: 'bg-gradient-to-br from-emerald-600 via-green-600 to-teal-700',
+    shadow: 'shadow-lg shadow-emerald-500/25 dark:shadow-emerald-900/30',
+    glow: 'from-emerald-400/20 to-transparent',
+  },
+  'photo-studio-app': {
+    bg: 'bg-gradient-to-br from-pink-500 via-rose-600 to-purple-700',
+    shadow: 'shadow-lg shadow-pink-500/25 dark:shadow-pink-900/30',
+    glow: 'from-pink-400/20 to-transparent',
+  },
+  'whiteboard-app': {
+    bg: 'bg-gradient-to-br from-cyan-500 via-blue-600 to-indigo-700',
+    shadow: 'shadow-lg shadow-cyan-500/25 dark:shadow-cyan-900/30',
+    glow: 'from-cyan-400/20 to-transparent',
+  },
+  'vector-studio-app': {
+    bg: 'bg-gradient-to-br from-amber-500 via-orange-600 to-red-600',
+    shadow: 'shadow-lg shadow-amber-500/25 dark:shadow-amber-900/30',
+    glow: 'from-amber-400/20 to-transparent',
+  },
+  'chess-app': {
+    bg: 'bg-gradient-to-br from-slate-700 via-amber-800 to-stone-900',
+    shadow: 'shadow-lg shadow-amber-900/30 dark:shadow-stone-900/40',
+    glow: 'from-amber-400/20 to-transparent',
+  },
+  'sudoku-app': {
+    bg: 'bg-gradient-to-br from-violet-500 via-purple-600 to-indigo-800',
+    shadow: 'shadow-lg shadow-purple-500/25 dark:shadow-purple-900/30',
+    glow: 'from-purple-400/20 to-transparent',
+  },
+  'checkers-app': {
+    bg: 'bg-gradient-to-br from-red-600 via-rose-700 to-stone-900',
+    shadow: 'shadow-lg shadow-rose-600/25 dark:shadow-rose-950/40',
+    glow: 'from-rose-400/20 to-transparent',
+  },
+  'game-2048-app': {
+    bg: 'bg-gradient-to-br from-amber-400 via-orange-500 to-yellow-600',
+    shadow: 'shadow-lg shadow-amber-500/25 dark:shadow-amber-900/30',
+    glow: 'from-amber-300/20 to-transparent',
+  },
+  'tic-tac-toe-app': {
+    bg: 'bg-gradient-to-br from-sky-400 via-blue-600 to-indigo-700',
+    shadow: 'shadow-lg shadow-blue-500/25 dark:shadow-blue-900/30',
+    glow: 'from-blue-400/20 to-transparent',
+  },
+  'memory-match-app': {
+    bg: 'bg-gradient-to-br from-fuchsia-500 via-pink-600 to-rose-600',
+    shadow: 'shadow-lg shadow-pink-500/25 dark:shadow-pink-900/30',
+    glow: 'from-pink-400/20 to-transparent',
+  },
+  'piano-music-studio': {
+    bg: 'bg-gradient-to-br from-indigo-600 via-purple-700 to-pink-700',
+    shadow: 'shadow-lg shadow-purple-500/25 dark:shadow-purple-900/30',
+    glow: 'from-purple-400/20 to-transparent',
+  },
+  'api-client-studio': {
+    bg: 'bg-gradient-to-br from-orange-500 via-amber-600 to-red-600',
+    shadow: 'shadow-lg shadow-orange-500/25 dark:shadow-orange-900/30',
+    glow: 'from-orange-400/20 to-transparent',
+  },
+  'invoice-generator-app': {
+    bg: 'bg-gradient-to-br from-teal-500 via-emerald-600 to-green-700',
+    shadow: 'shadow-lg shadow-teal-500/25 dark:shadow-teal-900/30',
+    glow: 'from-teal-400/20 to-transparent',
+  },
+  'pomodoro-time-tracker': {
+    bg: 'bg-gradient-to-br from-rose-500 via-red-600 to-orange-600',
+    shadow: 'shadow-lg shadow-red-500/25 dark:shadow-red-900/30',
+    glow: 'from-red-400/20 to-transparent',
+  },
+  'kanban-task-board': {
+    bg: 'bg-gradient-to-br from-blue-500 via-indigo-600 to-violet-700',
+    shadow: 'shadow-lg shadow-indigo-500/25 dark:shadow-indigo-900/30',
+    glow: 'from-indigo-400/20 to-transparent',
+  },
 };
+
+
 
 const DEFAULT_APP_PALETTE = {
   bg: 'bg-gradient-to-br from-blue-500 via-indigo-600 to-violet-700',

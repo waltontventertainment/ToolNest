@@ -1,5 +1,6 @@
 import React from 'react';
-import { Type, QrCode, Image as ImageIcon, KeyRound, Search, FileText, Binary, Code, Barcode, FileSearch, Timer, Scissors, ArrowDownAZ, Space, Filter, ArrowLeftRight, WrapText, SplitSquareHorizontal, Mail, Link, Hash, FileDiff, Replace, ListPlus, ShieldX, Calculator, Superscript, Clock, Palette, Database, Fingerprint, Scan, Crop, Globe, Heart, Activity, FileCode, Box, Share2, BarChart2, Tag, Zap, BookOpen, Layers as Hierarchy, Volume2, Keyboard, Monitor, Shuffle, Maximize2, Sliders, Stamp, Eye, EyeOff, Sparkles, Merge, RotateCw, ShieldAlert, CheckCircle2, Video, Briefcase, ShoppingBag, Users, GraduationCap, Globe2, Utensils, Scale, Calendar, MapPin, CloudSun, Cloud, Smile, Wifi, Download, User, Info, Map, Wind, Thermometer, ShieldCheck, Bookmark, RefreshCw, AppWindow, PenTool, Play } from 'lucide-react';
+import { Type, QrCode, Image as ImageIcon, KeyRound, Search, FileText, Binary, Code, Barcode, FileSearch, Timer, Scissors, ArrowDownAZ, Space, Filter, ArrowLeftRight, WrapText, SplitSquareHorizontal, Mail, Link, Hash, FileDiff, Replace, ListPlus, ShieldX, Calculator, Superscript, Clock, Palette, Database, Fingerprint, Scan, Crop, Globe, Heart, Activity, FileCode, Box, Share2, BarChart2, Tag, Zap, BookOpen, Layers, Volume2, Keyboard, Monitor, Shuffle, Maximize2, Sliders, Stamp, Eye, EyeOff, Sparkles, Merge, RotateCw, ShieldAlert, CheckCircle2, Video, Briefcase, ShoppingBag, Users, GraduationCap, Globe2, Utensils, Scale, Calendar, MapPin, CloudSun, Cloud, Smile, Wifi, Download, User, Info, Map, Wind, Thermometer, ShieldCheck, Bookmark, RefreshCw, AppWindow, PenTool, Play, Table, Grid, Square, FileSpreadsheet, Award, Circle, Gamepad2, Music, Send, DollarSign, Layout, Trophy, Printer, Check } from 'lucide-react';
+import { Layers as Hierarchy } from 'lucide-react';
 import { ToolDefinition, ToolCategory } from './types';
 
 /**
@@ -144,6 +145,28 @@ const loadAppSuiteTools = () => import('../tools/AppSuiteTools');
 const MarkdownStudio = lazyTool(loadAppSuiteTools, 'MarkdownStudio');
 const CodePlayground = lazyTool(loadAppSuiteTools, 'CodePlayground');
 
+const loadAppSuiteAppsBatch = () => import('../tools/AppSuiteAppsBatch');
+const SpreadsheetApp = lazyTool(loadAppSuiteAppsBatch, 'SpreadsheetApp');
+const PhotoStudioApp = lazyTool(loadAppSuiteAppsBatch, 'PhotoStudioApp');
+const WhiteboardApp = lazyTool(loadAppSuiteAppsBatch, 'WhiteboardApp');
+const VectorStudioApp = lazyTool(loadAppSuiteAppsBatch, 'VectorStudioApp');
+const ChessApp = lazyTool(loadAppSuiteAppsBatch, 'ChessApp');
+const SudokuApp = lazyTool(loadAppSuiteAppsBatch, 'SudokuApp');
+
+const loadGamesSuiteBatch = () => import('../tools/GamesSuiteBatch');
+const CheckersApp = lazyTool(loadGamesSuiteBatch, 'CheckersApp');
+const Game2048App = lazyTool(loadGamesSuiteBatch, 'Game2048App');
+const TicTacToeApp = lazyTool(loadGamesSuiteBatch, 'TicTacToeApp');
+const MemoryMatchApp = lazyTool(loadGamesSuiteBatch, 'MemoryMatchApp');
+
+const loadAppSuiteAppsBatch2 = () => import('../tools/AppSuiteAppsBatch2');
+const PianoMusicStudioApp = lazyTool(loadAppSuiteAppsBatch2, 'PianoMusicStudioApp');
+const ApiClientStudioApp = lazyTool(loadAppSuiteAppsBatch2, 'ApiClientStudioApp');
+const InvoiceGeneratorApp = lazyTool(loadAppSuiteAppsBatch2, 'InvoiceGeneratorApp');
+const PomodoroTrackerApp = lazyTool(loadAppSuiteAppsBatch2, 'PomodoroTrackerApp');
+const KanbanBoardApp = lazyTool(loadAppSuiteAppsBatch2, 'KanbanBoardApp');
+
+
 // 10. FreeApiToolsBatch
 const loadFreeApiToolsBatch = () => import('../tools/FreeApiToolsBatch');
 const RestCountriesTool = lazyTool(loadFreeApiToolsBatch, 'RestCountriesTool');
@@ -272,8 +295,9 @@ const RickMortyMultiverseScannerTool = lazyTool(loadFunViralToolsBatch, 'RickMor
 const PirateShakespeareTranslatorTool = lazyTool(loadFunViralToolsBatch, 'PirateShakespeareTranslatorTool');
 
 export const categories: ToolCategory[] = [
-  'App', 'PDF', 'Universal Data Suite', 'Wikipedia', 'Text', 'Developer', 'Converters', 'Generators', 'QR & Barcode', 'Color & Image', 'Calculators', 'SEO', 'Utility', 'Fun & Viral'
+  'App', 'Games', 'PDF', 'Universal Data Suite', 'Wikipedia', 'Text', 'Developer', 'Converters', 'Generators', 'QR & Barcode', 'Color & Image', 'Calculators', 'SEO', 'Utility', 'Fun & Viral'
 ];
+
 
 export const tools: ToolDefinition[] = [
   {
@@ -539,6 +563,388 @@ export const tools: ToolDefinition[] = [
       { q: 'Can I export my project?', a: 'Yes. You can export a production-ready, self-contained single HTML file incorporating all your HTML, CSS, and JS.' }
     ],
     Component: CodePlayground
+  },
+  {
+    slug: 'spreadsheet-app',
+    name: 'Spreadsheet Studio',
+    category: 'App',
+    icon: FileSpreadsheet,
+    previewIcons: [FileSpreadsheet, Table, Calculator],
+    keywords: ['spreadsheet', 'excel online', 'sheets app', 'csv editor', 'browser spreadsheet', 'free excel alternative', 'formula sheet'],
+    metaTitle: 'Spreadsheet Studio – Free Online Spreadsheet, Tables & Formulas App',
+    metaDescription: 'Feature-rich, privacy-first online spreadsheet running 100% in your browser. Calculate SUM, math formulas, organize tabular data, and export clean CSV files.',
+    intro: 'Spreadsheet Studio is an instant in-browser spreadsheet application designed for financial modeling, data tracking, and quick tabular calculations with zero server tracking and full CSV compatibility.',
+    howTo: [
+      'Click on any cell to input numbers, labels, or mathematical formulas like =SUM(A1:A5) or =B2*C2.',
+      'Use the top formula input bar to edit cell formulas and verify calculations in real time.',
+      'Click Export CSV to download your complete spreadsheet file directly to your computer.'
+    ],
+    faq: [
+      { q: 'Which formulas are supported?', a: 'Spreadsheet Studio supports SUM, arithmetic operators (+, -, *, /), cell referencing, and automated subtotal computations.' },
+      { q: 'Is my data saved automatically?', a: 'Yes. All cell values and formulas are automatically preserved in your browser local storage.' }
+    ],
+    Component: SpreadsheetApp
+  },
+  {
+    slug: 'photo-studio-app',
+    name: 'Photo Studio',
+    category: 'App',
+    icon: ImageIcon,
+    previewIcons: [ImageIcon, Sliders, Crop],
+    keywords: ['photo studio', 'photo editor', 'image filters', 'online photo editor', 'adjust brightness contrast', 'crop rotate photo', 'client side photo editor'],
+    metaTitle: 'Photo Studio – Free Online Image Editor & Creative Canvas',
+    metaDescription: 'Powerful client-side photo editor and visual canvas running 100% locally in your browser. Adjust brightness, contrast, saturation, blur, rotate, and export with zero uploads.',
+    intro: 'Photo Studio is a private, lightweight creative suite for fine-tuning photos, applying custom color filters, and rotating images with instantaneous local canvas rendering.',
+    howTo: [
+      'Click Upload Image or drag-and-drop any picture onto the canvas to begin.',
+      'Use the sidebar adjustment sliders for Brightness, Contrast, Saturation, Blur, Grayscale, Sepia, and Invert.',
+      'Rotate 90 degrees or flip horizontally/vertically using the top action buttons.',
+      'Click Save Image to download your edited photo in pristine resolution.'
+    ],
+    faq: [
+      { q: 'Are my pictures uploaded to a cloud server?', a: 'No. Every filter, transformation, and pixel processing operation executes entirely inside your browser memory.' }
+    ],
+    Component: PhotoStudioApp
+  },
+  {
+    slug: 'whiteboard-app',
+    name: 'Whiteboard Studio',
+    category: 'App',
+    icon: PenTool,
+    previewIcons: [PenTool, Square, Circle],
+    keywords: ['whiteboard', 'online whiteboard', 'drawing canvas', 'sketchboard', 'brainstorming board', 'digital canvas', 'free whiteboard app'],
+    metaTitle: 'Whiteboard Studio – Free Online Drawing & Visual Brainstorming Canvas',
+    metaDescription: 'Interactive digital whiteboard running directly in your browser. Draw, sketch, erase, brainstorm ideas, and export your artwork to PNG with zero lag.',
+    intro: 'Whiteboard Studio provides a distraction-free, fluid drawing canvas for visual thinkers, educators, and teams to sketch diagrams, draft workflows, and export illustrations.',
+    howTo: [
+      'Select between Pen and Eraser tools from the top toolbar.',
+      'Choose your stroke color from the palette presets and draw freely on the whiteboard canvas.',
+      'Click Save PNG to download your digital illustration to your device.'
+    ],
+    faq: [
+      { q: 'Does Whiteboard Studio work with touchscreens?', a: 'Yes. It supports touch gestures on mobile devices and iPads, as well as digital pens and mouse input.' }
+    ],
+    Component: WhiteboardApp
+  },
+  {
+    slug: 'vector-studio-app',
+    name: 'Vector Studio',
+    category: 'App',
+    icon: Square,
+    previewIcons: [Square, Circle, PenTool],
+    keywords: ['vector studio', 'svg editor', 'vector drawing', 'online svg creator', 'shape maker', 'export svg', 'browser vector app'],
+    metaTitle: 'Vector Studio – Free Online SVG Drawing & Shape Creator App',
+    metaDescription: 'Intuitive SVG vector graphic studio running 100% in your browser. Create geometric shapes, customize fill and stroke colors, and export clean SVG code with zero server uploads.',
+    intro: 'Vector Studio makes vector graphic design accessible and fast. Construct SVG illustrations, customize strokes and geometry, and download production-ready SVG code.',
+    howTo: [
+      'Choose a shape (Rectangle or Circle) and pick a fill color from the color picker.',
+      'Click Place Shape to position vector elements onto the canvas.',
+      'Click Save .SVG to download the clean vector markup file.'
+    ],
+    faq: [
+      { q: 'Are exported SVG files scalable?', a: 'Yes. Generated SVG files are infinitely scalable vector graphics compatible with Illustrator, Figma, and web browsers.' }
+    ],
+    Component: VectorStudioApp
+  },
+  {
+    slug: 'piano-music-studio',
+    name: 'Piano Music Studio',
+    category: 'App',
+    icon: Music,
+    previewIcons: [Music, Play, Volume2],
+    keywords: ['piano online', 'virtual piano', 'music studio', 'play piano in browser', 'web audio piano', 'synthesizer app'],
+    metaTitle: 'Piano Music Studio – Free Interactive In-Browser Virtual Piano App',
+    metaDescription: 'Play, practice, and compose with an interactive virtual piano running 100% locally in your browser using the Web Audio API. Supports mouse, touch, and PC keyboard.',
+    intro: 'Piano Music Studio turns your browser into a responsive musical instrument. Tap keys, play chords, and practice melodies using your computer keyboard or touchscreen.',
+    howTo: [
+      'Click on any piano key or press the mapped keyboard keys (A, W, S, E, D, F, G, etc.).',
+      'Experiment with chords and melodies with instant low-latency audio synthesis.',
+      'Practice musical scales and ear training on any device.'
+    ],
+    faq: [
+      { q: 'Does it require any plugin or MIDI driver?', a: 'No. The audio is synthesized natively using the standard Web Audio API built into modern web browsers.' }
+    ],
+    Component: PianoMusicStudioApp
+  },
+  {
+    slug: 'api-client-studio',
+    name: 'API Client Studio',
+    category: 'App',
+    icon: Send,
+    previewIcons: [Send, Code, Globe],
+    keywords: ['api client', 'postman online', 'rest api tester', 'http client', 'browser api tester', 'test endpoints online'],
+    metaTitle: 'API Client Studio – Free Online REST API Tester & HTTP Client',
+    metaDescription: 'Fast, lightweight in-browser API testing studio and Postman alternative. Send GET, POST, PUT, DELETE requests, configure headers, format JSON, and inspect response latency.',
+    intro: 'API Client Studio provides an instant, developer-friendly interface for testing RESTful endpoints and inspecting API payloads directly from your browser without desktop installs.',
+    howTo: [
+      'Select HTTP method (GET, POST, PUT, DELETE) and enter your target API URL.',
+      'Configure custom request headers (one per line) and input JSON payload if applicable.',
+      'Click Send to dispatch the request and inspect the response status, latency, and formatted output.'
+    ],
+    faq: [
+      { q: 'Can I test local or public APIs?', a: 'Yes. You can test public APIs with CORS enabled or local developer endpoints running on your machine.' }
+    ],
+    Component: ApiClientStudioApp
+  },
+  {
+    slug: 'invoice-generator-app',
+    name: 'Invoice Studio',
+    category: 'App',
+    icon: DollarSign,
+    previewIcons: [DollarSign, FileSpreadsheet, Printer],
+    keywords: ['invoice generator', 'free invoice maker', 'create invoice online', 'printable invoice', 'pdf invoice creator', 'billing app'],
+    metaTitle: 'Invoice Studio – Free Online Professional Invoice Generator & PDF Printer',
+    metaDescription: 'Create clean, professional itemized invoices in seconds. Customize sender, client, line items, taxes, and currencies with instant 1-click printing and PDF download.',
+    intro: 'Invoice Studio simplifies client billing for freelancers and small businesses. Generate clean, mathematically verified invoices with automatic tax and total calculation.',
+    howTo: [
+      'Fill in your business name and client billing details.',
+      'Add billable service items with quantity and unit rates.',
+      'Click Print / Save PDF to instantly generate a print-ready billing document.'
+    ],
+    faq: [
+      { q: 'Is my financial data kept private?', a: 'Completely. All invoice computations occur locally in your browser memory with zero tracking or remote storage.' }
+    ],
+    Component: InvoiceGeneratorApp
+  },
+  {
+    slug: 'pomodoro-time-tracker',
+    name: 'Pomodoro Focus Studio',
+    category: 'App',
+    icon: Clock,
+    previewIcons: [Clock, Timer, Sparkles],
+    keywords: ['pomodoro timer', 'focus timer', 'productivity timer', 'work sessions', 'pomodoro app', 'time tracker online'],
+    metaTitle: 'Pomodoro Focus Studio – Free Online Productivity Timer & Session Tracker',
+    metaDescription: 'Boost focus and beat procrastination with an elegant Pomodoro timer. Custom work intervals (25m Focus, 5m Short Break, 15m Long Break), progress ring, and session counter.',
+    intro: 'Pomodoro Focus Studio uses the scientifically proven 25/5 time management technique to help you maintain high cognitive focus and prevent burnout during deep work.',
+    howTo: [
+      'Select Focus (25m), Short Break (5m), or Long Break (15m).',
+      'Click Start to begin your countdown and focus entirely on a single task.',
+      'Track your completed daily sessions with the automatic session counter.'
+    ],
+    faq: [
+      { q: 'Does the timer run when switching tabs?', a: 'Yes. The timer uses browser interval timing to maintain accurate countdowns.' }
+    ],
+    Component: PomodoroTrackerApp
+  },
+  {
+    slug: 'kanban-task-board',
+    name: 'Kanban Task Studio',
+    category: 'App',
+    icon: Layout,
+    previewIcons: [Layout, Layers, Check],
+    keywords: ['kanban board', 'task board', 'project management app', 'trello alternative', 'to do list online', 'agile board'],
+    metaTitle: 'Kanban Task Studio – Free Online Agile Board & Workflow Tracker',
+    metaDescription: 'Lightweight, privacy-first Kanban task board running 100% locally in your browser. Organize workflows across To Do, In Progress, and Done with local auto-save.',
+    intro: 'Kanban Task Studio brings the clarity of visual project management to your browser. Organize sprint tasks, prioritize deliverables, and maintain flow without accounts.',
+    howTo: [
+      'Type your task title and click Add to create a card in the To Do column.',
+      'Use the Next and Prev buttons on each card to transition items across workflow columns.',
+      'All changes are automatically synchronized to your local browser storage.'
+    ],
+    faq: [
+      { q: 'Do I need an account to save tasks?', a: 'No. All task cards and column arrangements persist automatically in your browser local storage.' }
+    ],
+    Component: KanbanBoardApp
+  },
+  {
+    slug: 'chess-app',
+    name: 'Chess Master',
+    category: 'Games',
+    icon: Award,
+    previewIcons: [Award, ShieldCheck, Play],
+    keywords: ['chess', 'play chess online', 'chess app', 'browser chess', 'chess game', 'two player chess', 'free chess master'],
+    metaTitle: 'Chess Master – Free Online Chess Game & Tactical Board',
+    metaDescription: 'Classic, distraction-free Chess application running 100% in your browser. Play locally with two-player pass-and-play, move tracking, and beautiful responsive boards.',
+    intro: 'Chess Master brings the timeless strategy game to your browser with zero advertisements, instant board setup, and responsive touch controls for mobile and desktop.',
+    howTo: [
+      'Click on any piece of your color (White goes first) to select it.',
+      'Click on any target square to execute your move.',
+      'Track move turns with the turn indicator and reset anytime with Reset Game.'
+    ],
+    faq: [
+      { q: 'Can I play offline?', a: 'Yes. Chess Master runs 100% in your browser without requiring an active internet connection after load.' }
+    ],
+    Component: ChessApp
+  },
+  {
+    slug: 'sudoku-app',
+    name: 'Sudoku Master',
+    category: 'Games',
+    icon: Grid,
+    previewIcons: [Grid, Hash, Timer],
+    keywords: ['sudoku', 'play sudoku online', 'sudoku app', 'browser sudoku puzzle', 'number puzzle', 'sudoku solver', 'free sudoku'],
+    metaTitle: 'Sudoku Master – Free Online 9x9 Sudoku Number Puzzle',
+    metaDescription: 'Engaging, responsive 9x9 Sudoku puzzle app running 100% in your browser. Input digits with fast on-screen number pad, test your logic, and enjoy distraction-free play.',
+    intro: 'Sudoku Master is a clean, modern number puzzle app built for logic enthusiasts. Enjoy fast tactile touch inputs on mobile or desktop with instant cell validation.',
+    howTo: [
+      'Click on any empty cell on the 9x9 Sudoku grid to highlight it.',
+      'Tap any number (1-9) on the keypad below or on your keyboard to insert the digit.',
+      'Use the Clear button to erase a number, or Reset Puzzle to start over.'
+    ],
+    faq: [
+      { q: 'Is Sudoku Master responsive on mobile phones?', a: 'Yes. The board and on-screen number keypad are optimized specifically for one-handed mobile play.' }
+    ],
+    Component: SudokuApp
+  },
+  {
+    slug: 'checkers-app',
+    name: 'Checkers Master',
+    category: 'Games',
+    icon: Gamepad2,
+    previewIcons: [Gamepad2, Trophy, Play],
+    keywords: ['checkers', 'play checkers online', 'draughts online', 'browser checkers game', 'two player checkers', 'free board games'],
+    metaTitle: 'Checkers Master – Free Online Classic Checkers & Draughts Board',
+    metaDescription: 'Play classic 8x8 Checkers (Draughts) directly in your browser. Diagonal moves, jumping captures, King promotions, score tracking, and smooth responsive touch.',
+    intro: 'Checkers Master offers the classic board game experience with jump captures, kinging, and turn tracking. Play pass-and-play with a friend on mobile or desktop.',
+    howTo: [
+      'Click on your piece to select it (Red or Black).',
+      'Click on an open diagonal square to move, or jump over an opponent piece to capture it.',
+      'Reach the opposite side of the board to crown your piece as King.'
+    ],
+    faq: [
+      { q: 'Can Kings move backwards?', a: 'Yes. Once a piece is crowned King, it can move and jump diagonally in both forward and backward directions.' }
+    ],
+    Component: CheckersApp
+  },
+  {
+    slug: 'game-2048-app',
+    name: '2048 Legend',
+    category: 'Games',
+    icon: Trophy,
+    previewIcons: [Trophy, Sparkles, Play],
+    keywords: ['2048', 'play 2048 online', '2048 game', 'number puzzle game', 'join the numbers', 'sliding puzzle'],
+    metaTitle: '2048 Legend – Free Online 2048 Sliding Number Tile Game',
+    metaDescription: 'Play the addictive 2048 number puzzle in your browser. Slide tiles with keyboard arrow keys or on-screen buttons, merge matching numbers, and aim for 2048.',
+    intro: '2048 Legend challenges your spatial foresight and arithmetic strategy. Join numbers to reach the legendary 2048 tile with high score saving in local storage.',
+    howTo: [
+      'Use Arrow Keys or the on-screen direction buttons (▲, ◀, ▼, ▶) to shift all tiles.',
+      'When two tiles with the same number touch, they merge into one with double value.',
+      'Keep merging until you create the 2048 tile to win!'
+    ],
+    faq: [
+      { q: 'Does it save my highest score?', a: 'Yes. Your all-time best score is automatically remembered in your browser local storage.' }
+    ],
+    Component: Game2048App
+  },
+  {
+    slug: 'tic-tac-toe-app',
+    name: 'Tic-Tac-Toe AI',
+    category: 'Games',
+    icon: Sparkles,
+    previewIcons: [Sparkles, Gamepad2, Trophy],
+    keywords: ['tic tac toe', 'play tic tac toe online', 'noughts and crosses', 'tic tac toe vs ai', 'browser tic tac toe'],
+    metaTitle: 'Tic-Tac-Toe AI – Free Online Tic-Tac-Toe with Smart Bot & 2-Player',
+    metaDescription: 'Play Tic-Tac-Toe against a smart AI bot or challenge a friend in 2-player pass-and-play mode. Instant game reset, win streaks, and zero ads.',
+    intro: 'Tic-Tac-Toe AI delivers the classic 3x3 strategy game with an AI bot opponent or local 2-player pass-and-play with score keeping.',
+    howTo: [
+      'Select between vs AI Bot or 2 Player modes at the top.',
+      'Take turns placing X and O on the 3x3 grid.',
+      'Get three in a row horizontally, vertically, or diagonally to win.'
+    ],
+    faq: [
+      { q: 'Can I play on smartphones?', a: 'Yes. The oversized touch-friendly buttons are designed specifically for phone and tablet screens.' }
+    ],
+    Component: TicTacToeApp
+  },
+  {
+    slug: 'memory-match-app',
+    name: 'Memory Match Quest',
+    category: 'Games',
+    icon: Award,
+    previewIcons: [Award, Sparkles, Gamepad2],
+    keywords: ['memory game', 'card match online', 'memory cards', 'brain training game', 'card flip puzzle', 'concentration game'],
+    metaTitle: 'Memory Match Quest – Free Online Card Matching Brain Game',
+    metaDescription: 'Sharpen your memory and concentration with an engaging emoji card matching puzzle. Flip cards, match pairs, track moves, and test your brain speed.',
+    intro: 'Memory Match Quest tests your visual recall in a fun card-flipping challenge. Find all matching emoji pairs in the fewest moves possible.',
+    howTo: [
+      'Click on any card to flip it over and reveal its hidden symbol.',
+      'Click a second card to find its matching pair.',
+      'If the cards match, they stay face up; if not, they flip back down. Clear the board to win!'
+    ],
+    faq: [
+      { q: 'Is the card layout randomized each game?', a: 'Yes. Every new game shuffles the 16 cards into a fresh random configuration.' }
+    ],
+    Component: MemoryMatchApp
+  },
+  {
+    slug: 'checkers-app',
+    name: 'Checkers Master',
+    category: 'Games',
+    icon: Gamepad2,
+    previewIcons: [Gamepad2, Trophy, Play],
+    keywords: ['checkers', 'play checkers online', 'draughts online', 'browser checkers game', 'two player checkers', 'free board games'],
+    metaTitle: 'Checkers Master – Free Online Classic Checkers & Draughts Board',
+    metaDescription: 'Play classic 8x8 Checkers (Draughts) directly in your browser. Diagonal moves, jumping captures, King promotions, score tracking, and smooth responsive touch.',
+    intro: 'Checkers Master offers the classic board game experience with jump captures, kinging, and turn tracking. Play pass-and-play with a friend on mobile or desktop.',
+    howTo: [
+      'Click on your piece to select it (Red or Black).',
+      'Click on an open diagonal square to move, or jump over an opponent piece to capture it.',
+      'Reach the opposite side of the board to crown your piece as King.'
+    ],
+    faq: [
+      { q: 'Can Kings move backwards?', a: 'Yes. Once a piece is crowned King, it can move and jump diagonally in both forward and backward directions.' }
+    ],
+    Component: CheckersApp
+  },
+  {
+    slug: 'game-2048-app',
+    name: '2048 Legend',
+    category: 'Games',
+    icon: Trophy,
+    previewIcons: [Trophy, Sparkles, Play],
+    keywords: ['2048', 'play 2048 online', '2048 game', 'number puzzle game', 'join the numbers', 'sliding puzzle'],
+    metaTitle: '2048 Legend – Free Online 2048 Sliding Number Tile Game',
+    metaDescription: 'Play the addictive 2048 number puzzle in your browser. Slide tiles with keyboard arrow keys or on-screen buttons, merge matching numbers, and aim for 2048.',
+    intro: '2048 Legend challenges your spatial foresight and arithmetic strategy. Join numbers to reach the legendary 2048 tile with high score saving in local storage.',
+    howTo: [
+      'Use Arrow Keys or the on-screen direction buttons (▲, ◀, ▼, ▶) to shift all tiles.',
+      'When two tiles with the same number touch, they merge into one with double value.',
+      'Keep merging until you create the 2048 tile to win!'
+    ],
+    faq: [
+      { q: 'Does it save my highest score?', a: 'Yes. Your all-time best score is automatically remembered in your browser local storage.' }
+    ],
+    Component: Game2048App
+  },
+  {
+    slug: 'tic-tac-toe-app',
+    name: 'Tic-Tac-Toe AI',
+    category: 'Games',
+    icon: Sparkles,
+    previewIcons: [Sparkles, Gamepad2, Trophy],
+    keywords: ['tic tac toe', 'play tic tac toe online', 'noughts and crosses', 'tic tac toe vs ai', 'browser tic tac toe'],
+    metaTitle: 'Tic-Tac-Toe AI – Free Online Tic-Tac-Toe with Smart Bot & 2-Player',
+    metaDescription: 'Play Tic-Tac-Toe against a smart AI bot or challenge a friend in 2-player pass-and-play mode. Instant game reset, win streaks, and zero ads.',
+    intro: 'Tic-Tac-Toe AI delivers the classic 3x3 strategy game with an AI bot opponent or local 2-player pass-and-play with score keeping.',
+    howTo: [
+      'Select between vs AI Bot or 2 Player modes at the top.',
+      'Take turns placing X and O on the 3x3 grid.',
+      'Get three in a row horizontally, vertically, or diagonally to win.'
+    ],
+    faq: [
+      { q: 'Can I play on smartphones?', a: 'Yes. The oversized touch-friendly buttons are designed specifically for phone and tablet screens.' }
+    ],
+    Component: TicTacToeApp
+  },
+  {
+    slug: 'memory-match-app',
+    name: 'Memory Match Quest',
+    category: 'Games',
+    icon: Award,
+    previewIcons: [Award, Sparkles, Gamepad2],
+    keywords: ['memory game', 'card match online', 'memory cards', 'brain training game', 'card flip puzzle', 'concentration game'],
+    metaTitle: 'Memory Match Quest – Free Online Card Matching Brain Game',
+    metaDescription: 'Sharpen your memory and concentration with an engaging emoji card matching puzzle. Flip cards, match pairs, track moves, and test your brain speed.',
+    intro: 'Memory Match Quest tests your visual recall in a fun card-flipping challenge. Find all matching emoji pairs in the fewest moves possible.',
+    howTo: [
+      'Click on any card to flip it over and reveal its hidden symbol.',
+      'Click a second card to find its matching pair.',
+      'If the cards match, they stay face up; if not, they flip back down. Clear the board to win!'
+    ],
+    faq: [
+      { q: 'Is the card layout randomized each game?', a: 'Yes. Every new game shuffles the 16 cards into a fresh random configuration.' }
+    ],
+    Component: MemoryMatchApp
   },
   {
     slug: 'pdf-merge',

@@ -155,6 +155,7 @@ export const Index: React.FC<{ forcedBookmarks?: boolean }> = ({ forcedBookmarks
   const orderedCategories = useMemo(() => {
     const desiredOrder = [
       'App',
+      'Games',
       'PDF', 'Text',
       'Developer', 'Converters', 'Generators',
       'Calculators', 'Color & Image', 'QR & Barcode',
@@ -829,7 +830,7 @@ export const Index: React.FC<{ forcedBookmarks?: boolean }> = ({ forcedBookmarks
 
               {filteredTools.length > 0 ? (
                 <div className="flex flex-col items-center w-full">
-                  {activeCategory === 'App' ? (
+                  {activeCategory === 'App' || activeCategory === 'Games' ? (
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4 md:gap-5 w-full">
                       {displayedTools.map(tool => (
                         <AppLauncherCard key={tool.slug} tool={tool} />

@@ -27,3 +27,6 @@ export * from './ColorImageToolsBatch';
 export * from './PdfSuiteTools';
 export * from './FunViralToolsBatch';
 export * from './AppSuiteTools';
+export * from './AppSuiteAppsBatch';
+export * from './AppSuiteAppsBatch2';
+export * from './GamesSuiteBatch';

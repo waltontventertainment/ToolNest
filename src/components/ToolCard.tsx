@@ -65,6 +65,10 @@ const CATEGORY_VISUAL_THEMES: Record<string, { iconBox: string; categoryText: st
     iconBox: 'bg-gradient-to-br from-violet-600 via-indigo-600 to-blue-600 text-white shadow-md shadow-indigo-500/30 border border-white/25',
     categoryText: 'text-violet-800 dark:text-violet-400 font-extrabold',
   },
+  'Games': {
+    iconBox: 'bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-600 text-white shadow-md shadow-emerald-500/30 border border-white/25',
+    categoryText: 'text-emerald-800 dark:text-emerald-400 font-extrabold',
+  },
 };
 
 export const ToolCard: React.FC<{ tool: ToolDefinition; compact?: boolean }> = React.memo(({ tool, compact = false }) => {

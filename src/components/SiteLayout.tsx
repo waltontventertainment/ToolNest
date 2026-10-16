@@ -32,6 +32,7 @@ import {
   Layers,
   Menu,
   AppWindow,
+  Gamepad2,
 } from 'lucide-react';
 import { useLocalStorage } from '../lib/toolkit';
 import { categories, tools } from '../lib/registry';
@@ -46,6 +47,7 @@ import { CookieConsentBanner, openCookieSettings } from './CookieConsentBanner';
 
 const HEADER_CATEGORIES = [
   { name: 'Apps', categoryName: 'App', slug: 'app', icon: AppWindow },
+  { name: 'Games', categoryName: 'Games', slug: 'games', icon: Gamepad2 },
   { name: 'PDF Suite', categoryName: 'PDF', slug: 'pdf', icon: FileText },
   { name: 'Developer', categoryName: 'Developer', slug: 'developer', icon: Code },
   { name: 'Color & Image', categoryName: 'Color & Image', slug: 'color-image', icon: ImageIcon },
