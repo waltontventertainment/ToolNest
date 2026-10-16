@@ -37,17 +37,24 @@ import {
   Check,
   AlertCircle,
   HelpCircle,
-  Maximize2,
-  Minimize2,
-  Sparkles,
+  Clock,
+  Trash2,
+  Copy,
+  Plus,
+  Search,
   ExternalLink,
   Layers,
-  Clock,
-  Menu
+  Sparkles
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { uploadToImgBB } from '../../lib/imgbb';
 import { extractFirstImageFromContent } from '../../lib/pagesService';
+import {
+  getImgBBGallery,
+  addImgBBGalleryItem,
+  removeImgBBGalleryItem,
+  GalleryImage
+} from '../../lib/imgbbGallery';
 
 export interface RichContentEditorProps {
   type: 'post' | 'page';
@@ -55,6 +62,50 @@ export interface RichContentEditorProps {
   imgbbApiKey?: string;
   onSave: (data: any, status: 'published' | 'draft' | 'scheduled') => Promise<void>;
   onClose: () => void;
+}
+
+const DEFAULT_CATEGORIES = [
+  'Security & Privacy',
+  'SEO & Growth',
+  'Developer Workflows',
+  'Design & UX',
+  'Multimedia & Video',
+  'Web Performance',
+  'Technology',
+  'Tutorials',
+  'General',
+];
+
+// Helper to convert markdown to HTML for rich text editor if initial content is markdown
+function normalizeContentToHtml(raw: string): string {
+  if (!raw) return '';
+  const trimmed = raw.trim();
+  if (trimmed.includes('<p>') || trimmed.includes('<div') || trimmed.includes('<h1') || trimmed.includes('<h2')) {
+    return trimmed;
+  }
+
+  // Convert markdown to clean HTML structure
+  return trimmed
+    .split(/\n\n+/)
+    .map(para => {
+      const p = para.trim();
+      if (!p) return '';
+      if (p.startsWith('# ')) return `<h1>${p.slice(2)}</h1>`;
+      if (p.startsWith('## ')) return `<h2>${p.slice(3)}</h2>`;
+      if (p.startsWith('### ')) return `<h3>${p.slice(4)}</h3>`;
+      if (p.startsWith('> ')) return `<blockquote>${p.slice(2)}</blockquote>`;
+      if (p.startsWith('```')) {
+        const codeLines = p.replace(/^```[a-z]*\n?/, '').replace(/```$/, '');
+        return `<pre><code>${codeLines.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</code></pre>`;
+      }
+      if (p.startsWith('- ') || p.startsWith('* ')) {
+        const items = p.split('\n').map(li => `<li>${li.replace(/^[-*]\s*/, '')}</li>`).join('');
+        return `<ul>${items}</ul>`;
+      }
+      if (p.startsWith('---')) return '<hr />';
+      return `<p>${p.replace(/\n/g, '<br/>')}</p>`;
+    })
+    .join('\n');
 }
 
 export const RichContentEditor: React.FC<RichContentEditorProps> = ({
@@ -70,9 +121,9 @@ export const RichContentEditor: React.FC<RichContentEditorProps> = ({
   const [title, setTitle] = useState(initialData?.title || '');
   const [slug, setSlug] = useState(initialData?.slug || '');
   const [isCustomSlug, setIsCustomSlug] = useState(Boolean(initialData?.slug));
-  const [content, setContent] = useState(initialData?.content || '');
+  const [content, setContent] = useState(() => normalizeContentToHtml(initialData?.content || ''));
   const [excerpt, setExcerpt] = useState(initialData?.excerpt || '');
-  const [category, setCategory] = useState(initialData?.category || (isPost ? 'Technology' : 'General'));
+  const [category, setCategory] = useState(initialData?.category || (isPost ? 'Developer Workflows' : 'General'));
   const [tagsInput, setTagsInput] = useState((initialData?.tags || []).join(', '));
   const [status, setStatus] = useState<'published' | 'draft' | 'scheduled'>(initialData?.status || 'published');
   const [publishedAt, setPublishedAt] = useState(
@@ -83,7 +134,19 @@ export const RichContentEditor: React.FC<RichContentEditorProps> = ({
   const [metaTitle, setMetaTitle] = useState(initialData?.metaTitle || '');
   const [metaDescription, setMetaDescription] = useState(initialData?.metaDescription || initialData?.excerpt || '');
   const [placement, setPlacement] = useState<'header' | 'footer' | 'both' | 'custom'>(initialData?.placement || 'custom');
-  
+
+  // Category Manager State
+  const [availableCategories, setAvailableCategories] = useState<string[]>(() => {
+    try {
+      const stored = localStorage.getItem('toolzaro_custom_categories');
+      const custom = stored ? JSON.parse(stored) : [];
+      return Array.from(new Set([...DEFAULT_CATEGORIES, ...custom, initialData?.category].filter(Boolean)));
+    } catch {
+      return DEFAULT_CATEGORIES;
+    }
+  });
+  const [newCatInput, setNewCatInput] = useState('');
+
   // Thumbnail State
   const [manualThumbnail, setManualThumbnail] = useState(initialData?.coverImage || '');
   const [isManualThumbnail, setIsManualThumbnail] = useState(Boolean(initialData?.thumbnailManual));
@@ -96,14 +159,22 @@ export const RichContentEditor: React.FC<RichContentEditorProps> = ({
   const [lastSavedTime, setLastSavedTime] = useState<string | null>(null);
   const [autoSaveStatus, setAutoSaveStatus] = useState<'saved' | 'saving' | 'idle'>('idle');
 
-  // Accordion active sections in Settings Drawer
-  const [openAccordion, setOpenAccordion] = useState<string>('permalink');
+  // Accordion in Settings Drawer
+  const [openAccordion, setOpenAccordion] = useState<string>('categories');
 
-  // Image upload modal state
+  // Caret / Selection Range tracking (CRITICAL for inserting images exactly where clicked)
+  const savedRangeRef = useRef<Range | null>(null);
+  const editorRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Image Modal State & ImgBB Media Gallery
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+  const [imageModalTab, setImageModalTab] = useState<'upload' | 'gallery'>('upload');
   const [imageUrlInput, setImageUrlInput] = useState('');
   const [imageAltInput, setImageAltInput] = useState('');
   const [imageUploading, setImageUploading] = useState(false);
+  const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([]);
+  const [gallerySearch, setGallerySearch] = useState('');
 
   // Link modal state
   const [isLinkModalOpen, setIsLinkModalOpen] = useState(false);
@@ -114,13 +185,16 @@ export const RichContentEditor: React.FC<RichContentEditorProps> = ({
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
   const [videoUrlInput, setVideoUrlInput] = useState('');
 
-  // ContentEditable ref for Compose view
-  const editorRef = useRef<HTMLDivElement>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
   // Derive Auto-Thumbnail from Content
   const autoThumbnail = extractFirstImageFromContent(content);
   const activeThumbnail = isManualThumbnail && manualThumbnail ? manualThumbnail : autoThumbnail;
+
+  // Load gallery images when modal opens
+  useEffect(() => {
+    if (isImageModalOpen) {
+      setGalleryImages(getImgBBGallery());
+    }
+  }, [isImageModalOpen]);
 
   // Auto-generate slug from title if not custom
   useEffect(() => {
@@ -143,10 +217,26 @@ export const RichContentEditor: React.FC<RichContentEditorProps> = ({
     }
   }, [viewMode]);
 
-  // Handle compose input
+  // Track cursor and selection range inside the editor
+  const saveCurrentSelection = () => {
+    if (viewMode !== 'compose') return;
+    try {
+      const sel = window.getSelection();
+      if (sel && sel.rangeCount > 0) {
+        const range = sel.getRangeAt(0);
+        if (editorRef.current && editorRef.current.contains(range.commonAncestorContainer)) {
+          savedRangeRef.current = range.cloneRange();
+        }
+      }
+    } catch (e) {
+      // Ignore selection errors
+    }
+  };
+
   const handleEditorInput = () => {
     if (editorRef.current) {
       setContent(editorRef.current.innerHTML);
+      saveCurrentSelection();
     }
   };
 
@@ -157,24 +247,88 @@ export const RichContentEditor: React.FC<RichContentEditorProps> = ({
       return;
     }
     editorRef.current?.focus();
+    if (savedRangeRef.current && editorRef.current?.contains(savedRangeRef.current.commonAncestorContainer)) {
+      const sel = window.getSelection();
+      if (sel) {
+        sel.removeAllRanges();
+        sel.addRange(savedRangeRef.current);
+      }
+    }
     document.execCommand(command, false, value);
+    saveCurrentSelection();
     handleEditorInput();
   };
 
-  // Image insertion
-  const handleInsertImage = () => {
-    if (!imageUrlInput.trim()) return;
-    const imgHtml = `<p><img src="${imageUrlInput.trim()}" alt="${imageAltInput.trim() || title}" loading="lazy" class="rounded-xl max-w-full my-4 shadow-sm" /></p>`;
-    
-    if (viewMode === 'compose') {
-      execCmd('insertHTML', imgHtml);
+  // Insert image at the EXACT clicked/saved caret location
+  const handleInsertImage = (overrideUrl?: string, overrideAlt?: string) => {
+    const targetUrl = (overrideUrl || imageUrlInput).trim();
+    if (!targetUrl) {
+      toast.error('Please enter an image URL or upload an image');
+      return;
+    }
+    const targetAlt = (overrideAlt !== undefined ? overrideAlt : imageAltInput).trim() || title || 'Toolzaro post image';
+    const imgHtml = `<p><img src="${targetUrl}" alt="${targetAlt}" loading="lazy" class="rounded-2xl max-w-full my-5 shadow-sm border border-border" /></p>`;
+
+    if (viewMode === 'compose' && editorRef.current) {
+      editorRef.current.focus();
+      let inserted = false;
+      if (savedRangeRef.current && editorRef.current.contains(savedRangeRef.current.commonAncestorContainer)) {
+        try {
+          const sel = window.getSelection();
+          if (sel) {
+            sel.removeAllRanges();
+            sel.addRange(savedRangeRef.current);
+            const temp = document.createElement('div');
+            temp.innerHTML = imgHtml;
+            const frag = document.createDocumentFragment();
+            let node: Node | null;
+            let lastNode: Node | null = null;
+            while ((node = temp.firstChild)) {
+              lastNode = frag.appendChild(node);
+            }
+            savedRangeRef.current.deleteContents();
+            savedRangeRef.current.insertNode(frag);
+
+            if (lastNode) {
+              const newRange = document.createRange();
+              newRange.setStartAfter(lastNode);
+              newRange.collapse(true);
+              sel.removeAllRanges();
+              sel.addRange(newRange);
+              savedRangeRef.current = newRange.cloneRange();
+            }
+            inserted = true;
+          }
+        } catch (e) {
+          console.warn('Range insertion fallback:', e);
+        }
+      }
+
+      if (!inserted) {
+        // Fallback: append at end of document rather than jumping to the top
+        const temp = document.createElement('div');
+        temp.innerHTML = imgHtml;
+        while (temp.firstChild) {
+          editorRef.current.appendChild(temp.firstChild);
+        }
+      }
+      handleEditorInput();
     } else {
       setContent(prev => prev + '\n' + imgHtml);
     }
+
+    // Persist to ImgBB media gallery
+    const updatedGallery = addImgBBGalleryItem({
+      url: targetUrl,
+      alt: targetAlt,
+      name: targetAlt,
+    });
+    setGalleryImages(updatedGallery);
+
     setImageUrlInput('');
     setImageAltInput('');
     setIsImageModalOpen(false);
-    toast.success('Image inserted into content');
+    toast.success('Image inserted right at cursor position!');
   };
 
   // Image upload via ImgBB
@@ -183,23 +337,34 @@ export const RichContentEditor: React.FC<RichContentEditorProps> = ({
     if (!file) return;
 
     if (!imgbbApiKey) {
-      toast.error('ImgBB API key not configured in Settings');
+      toast.error('ImgBB API key is not configured in Settings');
       return;
     }
 
     setImageUploading(true);
     try {
-      const result = await uploadToImgBB(file, imgbbApiKey);
+      const result = await uploadToImgBB(file, imgbbApiKey, file.name);
       if (result && result.url) {
         setImageUrlInput(result.url);
-        toast.success('Image uploaded to ImgBB successfully');
+        // Automatically save to media gallery
+        const updated = addImgBBGalleryItem({
+          url: result.url,
+          thumbUrl: result.thumbUrl || result.url,
+          name: file.name,
+          alt: file.name.replace(/\.[^/.]+$/, ''),
+        });
+        setGalleryImages(updated);
+        toast.success('Image uploaded to ImgBB successfully!');
       } else {
-        toast.error('Image upload failed');
+        toast.error(result.error || 'Image upload failed');
       }
     } catch (err: any) {
       toast.error(err.message || 'Image upload failed');
     } finally {
       setImageUploading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     }
   };
 
@@ -210,7 +375,7 @@ export const RichContentEditor: React.FC<RichContentEditorProps> = ({
     const text = linkTextInput.trim() || url;
     const linkHtml = `<a href="${url}" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline font-medium">${text}</a>`;
 
-    if (viewMode === 'compose') {
+    if (viewMode === 'compose' && editorRef.current) {
       execCmd('insertHTML', linkHtml);
     } else {
       setContent(prev => prev + ' ' + linkHtml);
@@ -218,6 +383,7 @@ export const RichContentEditor: React.FC<RichContentEditorProps> = ({
     setLinkUrlInput('');
     setLinkTextInput('');
     setIsLinkModalOpen(false);
+    toast.success('Link inserted');
   };
 
   // Video insertion (YouTube / embed)
@@ -233,7 +399,7 @@ export const RichContentEditor: React.FC<RichContentEditorProps> = ({
     }
 
     const videoHtml = `
-      <div class="my-6 aspect-video rounded-xl overflow-hidden shadow-sm">
+      <div class="my-6 aspect-video rounded-2xl overflow-hidden shadow-sm border border-border">
         <iframe src="${embedUrl}" class="w-full h-full border-0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
       </div>
     `;
@@ -248,27 +414,49 @@ export const RichContentEditor: React.FC<RichContentEditorProps> = ({
     toast.success('Video embedded successfully');
   };
 
-  // Auto-Save Draft Debounce
+  // Handle adding custom category
+  const handleAddCustomCategory = () => {
+    const trimmed = newCatInput.trim();
+    if (!trimmed) return;
+    if (!availableCategories.some(c => c.toLowerCase() === trimmed.toLowerCase())) {
+      const updated = [...availableCategories, trimmed];
+      setAvailableCategories(updated);
+      try {
+        localStorage.setItem('toolzaro_custom_categories', JSON.stringify(updated));
+      } catch {}
+    }
+    setCategory(trimmed);
+    setNewCatInput('');
+    toast.success(`Category "${trimmed}" added and selected!`);
+  };
+
+  // Build Payload Helper
+  const buildPayload = (targetStatus: 'published' | 'draft' | 'scheduled') => {
+    return {
+      ...(initialData || {}),
+      title: title.trim() || 'Untitled Post',
+      slug: slug.trim().toLowerCase() || `post-${Date.now()}`,
+      content,
+      excerpt: excerpt.trim() || content.replace(/<[^>]*>/g, '').slice(0, 160).trim(),
+      category: category.trim() || 'Developer Workflows',
+      tags: tagsInput.split(',').map(t => t.trim()).filter(Boolean),
+      status: targetStatus,
+      publishedAt: new Date(publishedAt).toISOString(),
+      coverImage: activeThumbnail || '',
+      thumbnailManual: isManualThumbnail,
+      metaTitle: metaTitle.trim() || title.trim(),
+      metaDescription: metaDescription.trim() || excerpt.trim(),
+      placement,
+    };
+  };
+
+  // Auto-Save Draft Debounce (Local Storage + Status)
   useEffect(() => {
     if (!title.trim() && !content.trim()) return;
 
     const timer = setTimeout(() => {
       setAutoSaveStatus('saving');
-      const draftPayload = {
-        title,
-        slug,
-        content,
-        excerpt,
-        category,
-        tags: tagsInput.split(',').map(t => t.trim()).filter(Boolean),
-        status: 'draft',
-        publishedAt: new Date(publishedAt).toISOString(),
-        coverImage: activeThumbnail || '',
-        thumbnailManual: isManualThumbnail,
-        metaTitle,
-        metaDescription,
-        placement,
-      };
+      const draftPayload = buildPayload('draft');
 
       try {
         localStorage.setItem(`toolzaro_autosave_${type}_${slug || 'draft'}`, JSON.stringify(draftPayload));
@@ -280,7 +468,7 @@ export const RichContentEditor: React.FC<RichContentEditorProps> = ({
     return () => clearTimeout(timer);
   }, [title, slug, content, excerpt, category, tagsInput, publishedAt, activeThumbnail, isManualThumbnail, metaTitle, metaDescription, placement, type]);
 
-  // Save handler
+  // Save handler (Cloudflare D1 & Firebase)
   const handleSaveAction = async (targetStatus: 'published' | 'draft' | 'scheduled') => {
     if (!title.trim()) {
       toast.error('Please enter a title');
@@ -293,31 +481,23 @@ export const RichContentEditor: React.FC<RichContentEditorProps> = ({
 
     setSaving(true);
     try {
-      const payload = {
-        ...(initialData || {}),
-        title: title.trim(),
-        slug: slug.trim().toLowerCase(),
-        content,
-        excerpt: excerpt.trim() || content.replace(/<[^>]*>/g, '').slice(0, 160).trim(),
-        category,
-        tags: tagsInput.split(',').map(t => t.trim()).filter(Boolean),
-        status: targetStatus,
-        publishedAt: new Date(publishedAt).toISOString(),
-        coverImage: activeThumbnail || '',
-        thumbnailManual: isManualThumbnail,
-        metaTitle: metaTitle.trim() || title.trim(),
-        metaDescription: metaDescription.trim() || excerpt.trim(),
-        placement,
-      };
-
+      const payload = buildPayload(targetStatus);
       await onSave(payload, targetStatus);
       setStatus(targetStatus);
+
+      // Cloudflare D1 Sync
+      fetch('/api/blog/posts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      }).catch(() => {});
+
       toast.success(
         targetStatus === 'published'
-          ? `${isPost ? 'Post' : 'Page'} published successfully!`
+          ? `${isPost ? 'Post' : 'Page'} published to Cloudflare & Firebase!`
           : targetStatus === 'scheduled'
           ? `${isPost ? 'Post' : 'Page'} scheduled successfully!`
-          : 'Draft saved successfully!'
+          : 'Draft saved to Cloudflare & Firebase!'
       );
     } catch (err: any) {
       toast.error(err.message || 'Failed to save');
@@ -326,15 +506,41 @@ export const RichContentEditor: React.FC<RichContentEditorProps> = ({
     }
   };
 
+  // Exit Handler with Automatic Draft Save to Firebase & Cloudflare
+  const handleCloseWithAutoDraft = async () => {
+    if (title.trim() || content.trim()) {
+      try {
+        const payload = buildPayload('draft');
+        await onSave(payload, 'draft');
+        // Cloudflare D1 Sync
+        fetch('/api/blog/posts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        }).catch(() => {});
+        toast.success('Draft automatically saved to Cloudflare & Firebase');
+      } catch (err) {
+        console.warn('Auto draft save note on exit:', err);
+      }
+    }
+    onClose();
+  };
+
+  const filteredGallery = galleryImages.filter(img =>
+    !gallerySearch ||
+    (img.name || '').toLowerCase().includes(gallerySearch.toLowerCase()) ||
+    (img.alt || '').toLowerCase().includes(gallerySearch.toLowerCase())
+  );
+
   return (
     <div className="fixed inset-0 z-50 bg-background flex flex-col overflow-hidden">
       {/* Top Bar (Title + Actions) */}
       <header className="h-16 border-b border-border bg-card/95 backdrop-blur px-3 sm:px-6 flex items-center justify-between gap-3 shrink-0">
         <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
           <button
-            onClick={onClose}
+            onClick={handleCloseWithAutoDraft}
             className="p-2 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
-            title="Back to list"
+            title="Exit & Save Draft"
           >
             <X className="w-5 h-5" />
           </button>
@@ -353,7 +559,7 @@ export const RichContentEditor: React.FC<RichContentEditorProps> = ({
         </div>
 
         {/* Right Actions */}
-        <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
           {autoSaveStatus === 'saved' && (
             <span className="text-xs text-muted-foreground hidden lg:inline-flex items-center gap-1">
               <Check className="w-3.5 h-3.5 text-emerald-500" />
@@ -402,7 +608,7 @@ export const RichContentEditor: React.FC<RichContentEditorProps> = ({
             className={`p-2 sm:px-3 sm:py-1.5 rounded-lg border transition-colors flex items-center gap-1.5 ${
               isSettingsOpen ? 'bg-primary/10 border-primary/30 text-primary' : 'border-border hover:bg-muted text-muted-foreground hover:text-foreground'
             }`}
-            title="Post / Page Settings"
+            title="Settings (Categories, SEO, URL)"
           >
             <SettingsIcon className="w-4 h-4" />
             <span className="hidden md:inline">Settings</span>
@@ -454,44 +660,57 @@ export const RichContentEditor: React.FC<RichContentEditorProps> = ({
 
               <div className="w-px h-5 bg-border mx-1" />
 
-              {/* Headings Dropdown */}
-              <select
-                onChange={e => {
-                  const val = e.target.value;
-                  if (val === 'p') execCmd('formatBlock', '<p>');
-                  else if (val === 'h1') execCmd('formatBlock', '<h1>');
-                  else if (val === 'h2') execCmd('formatBlock', '<h2>');
-                  else if (val === 'h3') execCmd('formatBlock', '<h3>');
-                }}
-                className="bg-transparent border border-border/80 rounded px-2 py-1 text-xs font-medium focus:outline-none focus:ring-1 focus:ring-primary"
-                defaultValue="p"
+              {/* Headings */}
+              <button
+                onClick={() => execCmd('formatBlock', '<h1>')}
+                className="p-1.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground font-bold"
+                title="Heading 1"
               >
-                <option value="p">Paragraph</option>
-                <option value="h1">Heading 1</option>
-                <option value="h2">Heading 2</option>
-                <option value="h3">Heading 3</option>
-              </select>
+                <Heading1 className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => execCmd('formatBlock', '<h2>')}
+                className="p-1.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground font-bold"
+                title="Heading 2"
+              >
+                <Heading2 className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => execCmd('formatBlock', '<h3>')}
+                className="p-1.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground font-bold"
+                title="Heading 3"
+              >
+                <Heading3 className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => execCmd('formatBlock', '<p>')}
+                className="px-2 py-1 rounded hover:bg-muted text-muted-foreground hover:text-foreground font-medium"
+                title="Paragraph"
+              >
+                ¶
+              </button>
 
               <div className="w-px h-5 bg-border mx-1" />
 
+              {/* Basic Styles */}
               <button
                 onClick={() => execCmd('bold')}
                 className="p-1.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground font-bold"
-                title="Bold (Ctrl+B)"
+                title="Bold"
               >
                 <Bold className="w-4 h-4" />
               </button>
               <button
                 onClick={() => execCmd('italic')}
                 className="p-1.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground italic"
-                title="Italic (Ctrl+I)"
+                title="Italic"
               >
                 <Italic className="w-4 h-4" />
               </button>
               <button
                 onClick={() => execCmd('underline')}
                 className="p-1.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground underline"
-                title="Underline (Ctrl+U)"
+                title="Underline"
               >
                 <Underline className="w-4 h-4" />
               </button>
@@ -505,7 +724,7 @@ export const RichContentEditor: React.FC<RichContentEditorProps> = ({
 
               <div className="w-px h-5 bg-border mx-1" />
 
-              {/* Text Color Picker */}
+              {/* Colors */}
               <label className="p-1.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground cursor-pointer flex items-center gap-1" title="Text Color">
                 <span className="font-bold underline text-xs">A</span>
                 <input
@@ -515,7 +734,6 @@ export const RichContentEditor: React.FC<RichContentEditorProps> = ({
                 />
               </label>
 
-              {/* Highlight Color Picker */}
               <label className="p-1.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground cursor-pointer flex items-center gap-1" title="Highlight Color">
                 <span className="bg-yellow-200 dark:bg-yellow-800 px-1 rounded text-xs font-bold">H</span>
                 <input
@@ -529,21 +747,31 @@ export const RichContentEditor: React.FC<RichContentEditorProps> = ({
 
               {/* Link, Image, Video */}
               <button
-                onClick={() => setIsLinkModalOpen(true)}
+                onClick={() => {
+                  saveCurrentSelection();
+                  setIsLinkModalOpen(true);
+                }}
                 className="p-1.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground"
                 title="Insert Link"
               >
                 <LinkIcon className="w-4 h-4" />
               </button>
               <button
-                onClick={() => setIsImageModalOpen(true)}
-                className="p-1.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground flex items-center gap-1"
-                title="Insert Image (Auto-Thumbnail)"
+                onClick={() => {
+                  saveCurrentSelection();
+                  setIsImageModalOpen(true);
+                }}
+                className="p-1.5 rounded hover:bg-muted text-primary hover:text-primary/80 flex items-center gap-1 font-semibold"
+                title="Insert Image (Cursor Precision & ImgBB Gallery)"
               >
-                <ImageIcon className="w-4 h-4 text-primary" />
+                <ImageIcon className="w-4 h-4" />
+                <span className="text-[11px] hidden sm:inline">Image</span>
               </button>
               <button
-                onClick={() => setIsVideoModalOpen(true)}
+                onClick={() => {
+                  saveCurrentSelection();
+                  setIsVideoModalOpen(true);
+                }}
                 className="p-1.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground"
                 title="Embed Video"
               >
@@ -639,8 +867,12 @@ export const RichContentEditor: React.FC<RichContentEditorProps> = ({
                   ref={editorRef}
                   contentEditable
                   onInput={handleEditorInput}
-                  className="w-full min-h-[500px] bg-card rounded-2xl border border-border p-6 sm:p-10 shadow-2xs focus:outline-none prose dark:prose-invert max-w-none text-foreground leading-relaxed"
-                  data-placeholder="Start writing your story or content here..."
+                  onKeyUp={saveCurrentSelection}
+                  onMouseUp={saveCurrentSelection}
+                  onPointerUp={saveCurrentSelection}
+                  onTouchEnd={saveCurrentSelection}
+                  className="w-full min-h-[500px] bg-card rounded-2xl border border-border p-6 sm:p-10 shadow-2xs focus:outline-none prose dark:prose-invert max-w-none text-foreground leading-relaxed selection:bg-primary/20"
+                  data-placeholder="Start writing your story or content here... Click anywhere to place your cursor."
                 />
               ) : (
                 <textarea
@@ -672,8 +904,99 @@ export const RichContentEditor: React.FC<RichContentEditorProps> = ({
               </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto divide-y divide-border/60 text-sm">
-              {/* Accordion 1: Permalink / URL Path */}
+            <div className="flex-1 overflow-y-auto divide-y divide-border text-xs">
+              {/* Accordion 1 (Post Only): Category & Labels */}
+              {isPost && (
+                <div className="p-4">
+                  <button
+                    onClick={() => setOpenAccordion(openAccordion === 'categories' ? '' : 'categories')}
+                    className="w-full flex items-center justify-between font-semibold text-foreground text-left"
+                  >
+                    <span className="flex items-center gap-2">
+                      <Folder className="w-4 h-4 text-primary" />
+                      Category & Labels
+                    </span>
+                    <ChevronDown className={`w-4 h-4 transition-transform ${openAccordion === 'categories' ? 'rotate-180' : ''}`} />
+                  </button>
+
+                  {openAccordion === 'categories' && (
+                    <div className="mt-3 space-y-3 pt-2">
+                      <div>
+                        <label className="text-xs text-muted-foreground font-medium block mb-1.5">
+                          Active Category
+                        </label>
+                        <div className="p-2.5 bg-primary/10 border border-primary/20 rounded-xl flex items-center justify-between">
+                          <span className="font-bold text-primary text-xs">{category}</span>
+                          <span className="text-[10px] text-primary/70">Selected</span>
+                        </div>
+                      </div>
+
+                      {/* Clickable Category Chips */}
+                      <div>
+                        <label className="text-[11px] text-muted-foreground font-medium block mb-1">
+                          Choose from available categories:
+                        </label>
+                        <div className="flex flex-wrap gap-1.5 max-h-32 overflow-y-auto p-1 bg-muted/30 rounded-xl border border-border">
+                          {availableCategories.map(cat => (
+                            <button
+                              key={cat}
+                              type="button"
+                              onClick={() => setCategory(cat)}
+                              className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-colors ${
+                                category === cat
+                                  ? 'bg-primary text-primary-foreground font-bold shadow-2xs'
+                                  : 'bg-card text-muted-foreground hover:text-foreground hover:bg-muted border border-border/60'
+                              }`}
+                            >
+                              {cat}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Add Custom Category */}
+                      <div className="pt-1">
+                        <label className="text-[11px] text-muted-foreground font-medium block mb-1">
+                          + Add custom new category:
+                        </label>
+                        <div className="flex items-center gap-1.5">
+                          <input
+                            type="text"
+                            placeholder="e.g. AI Tools, Cloudflare..."
+                            value={newCatInput}
+                            onChange={e => setNewCatInput(e.target.value)}
+                            onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), handleAddCustomCategory())}
+                            className="flex-1 rounded-lg border border-border bg-background px-2.5 py-1.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                          />
+                          <button
+                            type="button"
+                            onClick={handleAddCustomCategory}
+                            className="px-3 py-1.5 bg-primary text-primary-foreground font-semibold rounded-lg hover:bg-primary/90 shrink-0"
+                          >
+                            Add
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Labels / Tags */}
+                      <div className="pt-2 border-t border-border">
+                        <label className="text-xs text-muted-foreground font-medium block mb-1">
+                          Labels / Tags (comma separated)
+                        </label>
+                        <input
+                          type="text"
+                          value={tagsInput}
+                          onChange={e => setTagsInput(e.target.value)}
+                          placeholder="client-side, privacy, wasm, seo"
+                          className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Accordion 2: Permalink (URL path) */}
               <div className="p-4">
                 <button
                   onClick={() => setOpenAccordion(openAccordion === 'permalink' ? '' : 'permalink')}
@@ -733,7 +1056,7 @@ export const RichContentEditor: React.FC<RichContentEditorProps> = ({
                 )}
               </div>
 
-              {/* Accordion 2: Published on (Date & Schedule) */}
+              {/* Accordion 3: Published on (Date & Schedule) */}
               <div className="p-4">
                 <button
                   onClick={() => setOpenAccordion(openAccordion === 'published' ? '' : 'published')}
@@ -770,7 +1093,7 @@ export const RichContentEditor: React.FC<RichContentEditorProps> = ({
                 )}
               </div>
 
-              {/* Accordion 3: Thumbnail Management (Automatic Detection + Override) */}
+              {/* Accordion 4: Thumbnail Management (Automatic Detection + Override) */}
               <div className="p-4">
                 <button
                   onClick={() => setOpenAccordion(openAccordion === 'thumbnail' ? '' : 'thumbnail')}
@@ -778,7 +1101,7 @@ export const RichContentEditor: React.FC<RichContentEditorProps> = ({
                 >
                   <span className="flex items-center gap-2">
                     <ImageIcon className="w-4 h-4 text-muted-foreground" />
-                    Thumbnail
+                    Thumbnail (Automatic)
                   </span>
                   <ChevronDown className={`w-4 h-4 transition-transform ${openAccordion === 'thumbnail' ? 'rotate-180' : ''}`} />
                 </button>
@@ -841,7 +1164,7 @@ export const RichContentEditor: React.FC<RichContentEditorProps> = ({
                 )}
               </div>
 
-              {/* Accordion 4 (Pages Only): Site Placement */}
+              {/* Accordion 5 (Pages Only): Site Placement */}
               {!isPost && (
                 <div className="p-4">
                   <button
@@ -885,7 +1208,7 @@ export const RichContentEditor: React.FC<RichContentEditorProps> = ({
                 </div>
               )}
 
-              {/* Accordion 5: Search Description & Meta Tags */}
+              {/* Accordion 6: Search Description & SEO Meta */}
               <div className="p-4">
                 <button
                   onClick={() => setOpenAccordion(openAccordion === 'searchDesc' ? '' : 'searchDesc')}
@@ -893,7 +1216,7 @@ export const RichContentEditor: React.FC<RichContentEditorProps> = ({
                 >
                   <span className="flex items-center gap-2">
                     <FileText className="w-4 h-4 text-muted-foreground" />
-                    Search Description
+                    Search Description & SEO
                   </span>
                   <ChevronDown className={`w-4 h-4 transition-transform ${openAccordion === 'searchDesc' ? 'rotate-180' : ''}`} />
                 </button>
@@ -922,32 +1245,6 @@ export const RichContentEditor: React.FC<RichContentEditorProps> = ({
                         className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
                       />
                     </div>
-
-                    {isPost && (
-                      <>
-                        <div className="space-y-1">
-                          <label className="text-xs text-muted-foreground font-medium">Category</label>
-                          <input
-                            type="text"
-                            value={category}
-                            onChange={e => setCategory(e.target.value)}
-                            placeholder="e.g. Technology, Tutorials"
-                            className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
-                          />
-                        </div>
-
-                        <div className="space-y-1">
-                          <label className="text-xs text-muted-foreground font-medium">Labels / Tags (comma separated)</label>
-                          <input
-                            type="text"
-                            value={tagsInput}
-                            onChange={e => setTagsInput(e.target.value)}
-                            placeholder="web, privacy, tools"
-                            className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
-                          />
-                        </div>
-                      </>
-                    )}
                   </div>
                 )}
               </div>
@@ -956,86 +1253,238 @@ export const RichContentEditor: React.FC<RichContentEditorProps> = ({
         )}
       </div>
 
-      {/* Insert Image Modal */}
+      {/* ========================================================= */}
+      {/* ADVANCED IMAGE MODAL (With ImgBB Upload & Media Library) */}
+      {/* ========================================================= */}
       {isImageModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-card w-full max-w-md rounded-2xl border border-border shadow-xl p-5 space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="font-bold text-base text-foreground flex items-center gap-2">
-                <ImageIcon className="w-5 h-5 text-primary" />
-                Insert Image
-              </h3>
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5">
+          <div className="bg-card w-full max-w-2xl max-h-[90vh] rounded-3xl border border-border shadow-2xl flex flex-col overflow-hidden">
+            {/* Header with Tabs */}
+            <div className="p-4 border-b border-border flex items-center justify-between bg-muted/40 shrink-0">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+                  <ImageIcon className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-sm sm:text-base text-foreground">Insert Image at Cursor</h3>
+                  <p className="text-[11px] text-muted-foreground">Image inserts right where your hand/mouse clicked in the text</p>
+                </div>
+              </div>
               <button
                 onClick={() => setIsImageModalOpen(false)}
-                className="p-1 rounded-lg hover:bg-muted text-muted-foreground"
+                className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <p className="text-xs text-muted-foreground">
-              Images placed into your content remain in their exact position. The first image automatically serves as the post thumbnail!
-            </p>
-
-            <div className="space-y-3">
-              <div>
-                <label className="text-xs font-medium text-muted-foreground mb-1 block">Image URL</label>
-                <input
-                  type="text"
-                  placeholder="https://... image link"
-                  value={imageUrlInput}
-                  onChange={e => setImageUrlInput(e.target.value)}
-                  className="w-full rounded-lg border border-border bg-background px-3 py-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
-                />
-              </div>
-
-              {imgbbApiKey && (
-                <div className="pt-1">
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/*"
-                    onChange={handleFileUpload}
-                    className="hidden"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => fileInputRef.current?.click()}
-                    disabled={imageUploading}
-                    className="w-full py-2 px-3 border border-dashed border-primary/40 rounded-xl bg-primary/5 hover:bg-primary/10 text-primary text-xs font-semibold flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
-                  >
-                    <Upload className="w-4 h-4" />
-                    <span>{imageUploading ? 'Uploading to ImgBB...' : 'Upload Image from Device (ImgBB)'}</span>
-                  </button>
-                </div>
-              )}
-
-              <div>
-                <label className="text-xs font-medium text-muted-foreground mb-1 block">Alt text (description)</label>
-                <input
-                  type="text"
-                  placeholder="Describe image for SEO and screen readers..."
-                  value={imageAltInput}
-                  onChange={e => setImageAltInput(e.target.value)}
-                  className="w-full rounded-lg border border-border bg-background px-3 py-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
-                />
-              </div>
+            {/* Modal Navigation Tabs */}
+            <div className="flex border-b border-border bg-card px-4 pt-2 gap-2 shrink-0">
+              <button
+                onClick={() => setImageModalTab('upload')}
+                className={`pb-2 px-3 text-xs font-semibold border-b-2 transition-colors ${
+                  imageModalTab === 'upload'
+                    ? 'border-primary text-primary'
+                    : 'border-transparent text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                Upload / URL
+              </button>
+              <button
+                onClick={() => setImageModalTab('gallery')}
+                className={`pb-2 px-3 text-xs font-semibold border-b-2 transition-colors flex items-center gap-1.5 ${
+                  imageModalTab === 'gallery'
+                    ? 'border-primary text-primary'
+                    : 'border-transparent text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                <span>ImgBB Media Library</span>
+                <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-primary/10 text-primary">
+                  {galleryImages.length}
+                </span>
+              </button>
             </div>
 
-            <div className="flex justify-end gap-2 pt-2">
-              <button
-                onClick={() => setIsImageModalOpen(false)}
-                className="px-3 py-1.5 rounded-lg border border-border hover:bg-muted text-xs font-medium"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleInsertImage}
-                disabled={!imageUrlInput.trim()}
-                className="px-4 py-1.5 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-medium disabled:opacity-50"
-              >
-                Insert into Post
-              </button>
+            {/* Modal Body */}
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
+              {imageModalTab === 'upload' ? (
+                <div className="space-y-4">
+                  {/* ImgBB File Upload Button */}
+                  <div>
+                    <label className="text-xs font-semibold text-foreground mb-1.5 block">
+                      Upload from Device to ImgBB CDN
+                    </label>
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileUpload}
+                      className="hidden"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={imageUploading}
+                      className="w-full py-4 px-4 border-2 border-dashed border-primary/40 rounded-2xl bg-primary/5 hover:bg-primary/10 text-primary text-xs font-bold flex flex-col items-center justify-center gap-2 transition-colors disabled:opacity-50"
+                    >
+                      <Upload className="w-6 h-6 animate-bounce" />
+                      <span>{imageUploading ? 'Uploading to ImgBB CDN...' : 'Click to Browse & Upload Image from Device'}</span>
+                      <span className="text-[10px] text-muted-foreground font-normal">Supports JPG, PNG, WebP, GIF (up to 32MB)</span>
+                    </button>
+                  </div>
+
+                  {/* Direct Image URL input */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-foreground">Or Direct Image URL</label>
+                    <input
+                      type="text"
+                      placeholder="https://i.ibb.co/... or any image link"
+                      value={imageUrlInput}
+                      onChange={e => setImageUrlInput(e.target.value)}
+                      className="w-full rounded-xl border border-border bg-background px-3 py-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary font-mono"
+                    />
+                  </div>
+
+                  {/* Alt text for SEO */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-foreground">Alt Text (Image description for SEO)</label>
+                    <input
+                      type="text"
+                      placeholder="Describe what is in this image..."
+                      value={imageAltInput}
+                      onChange={e => setImageAltInput(e.target.value)}
+                      className="w-full rounded-xl border border-border bg-background px-3 py-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                    />
+                  </div>
+
+                  {/* Preview if URL exists */}
+                  {imageUrlInput && (
+                    <div className="p-3 rounded-2xl border border-border bg-muted/30 flex items-center gap-3">
+                      <img
+                        src={imageUrlInput}
+                        alt="Preview"
+                        className="w-16 h-16 rounded-xl object-cover border border-border shrink-0"
+                      />
+                      <div className="min-w-0 flex-1">
+                        <p className="text-xs font-bold text-foreground truncate">Image Preview Ready</p>
+                        <p className="text-[11px] text-muted-foreground truncate">{imageUrlInput}</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                /* ImgBB Media Library Tab */
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="relative flex-1">
+                      <Search className="w-3.5 h-3.5 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
+                      <input
+                        type="text"
+                        placeholder="Search uploaded images..."
+                        value={gallerySearch}
+                        onChange={e => setGallerySearch(e.target.value)}
+                        className="w-full pl-8 pr-3 py-1.5 rounded-xl border border-border bg-background text-xs text-foreground"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="px-3 py-1.5 bg-primary/10 text-primary hover:bg-primary/20 text-xs font-semibold rounded-xl flex items-center gap-1.5"
+                    >
+                      <Upload className="w-3.5 h-3.5" />
+                      <span>Upload New</span>
+                    </button>
+                  </div>
+
+                  {filteredGallery.length === 0 ? (
+                    <div className="py-12 text-center text-muted-foreground text-xs bg-muted/20 rounded-2xl border border-border space-y-2">
+                      <ImageIcon className="w-8 h-8 mx-auto opacity-50" />
+                      <p>No images found in your ImgBB library.</p>
+                      <button
+                        onClick={() => setImageModalTab('upload')}
+                        className="text-primary hover:underline font-semibold"
+                      >
+                        Upload your first image now
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-[380px] overflow-y-auto p-1">
+                      {filteredGallery.map(img => (
+                        <div
+                          key={img.id || img.url}
+                          className="group relative rounded-2xl border border-border bg-card overflow-hidden hover:border-primary/50 transition-all flex flex-col"
+                        >
+                          <div className="aspect-square bg-muted overflow-hidden relative">
+                            <img
+                              src={img.thumbUrl || img.url}
+                              alt={img.alt || img.name}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                            />
+                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1.5 p-2">
+                              <button
+                                onClick={() => handleInsertImage(img.url, img.alt || img.name)}
+                                className="px-2.5 py-1 bg-primary text-primary-foreground text-[11px] font-bold rounded-lg shadow-sm hover:bg-primary/90"
+                                title="Insert into post at cursor"
+                              >
+                                Insert
+                              </button>
+                              <button
+                                onClick={() => {
+                                  navigator.clipboard.writeText(img.url);
+                                  toast.success('URL copied to clipboard');
+                                }}
+                                className="p-1 bg-white/80 hover:bg-white text-slate-800 rounded-lg"
+                                title="Copy image URL"
+                              >
+                                <Copy className="w-3.5 h-3.5" />
+                              </button>
+                              <button
+                                onClick={() => {
+                                  const next = removeImgBBGalleryItem(img.id || img.url);
+                                  setGalleryImages(next);
+                                  toast.success('Removed from gallery');
+                                }}
+                                className="p-1 bg-red-600/90 hover:bg-red-600 text-white rounded-lg"
+                                title="Delete from gallery"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          </div>
+                          <div className="p-2 text-[11px]">
+                            <p className="font-semibold text-foreground truncate">{img.name || 'Image Asset'}</p>
+                            <p className="text-[10px] text-muted-foreground truncate">{new Date(img.uploadedAt).toLocaleDateString()}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Modal Footer */}
+            <div className="p-4 border-t border-border bg-muted/30 flex items-center justify-between shrink-0">
+              <span className="text-[11px] text-muted-foreground">
+                First image in the content becomes the post thumbnail automatically.
+              </span>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setIsImageModalOpen(false)}
+                  className="px-3 py-1.5 rounded-xl border border-border hover:bg-muted text-xs font-medium"
+                >
+                  Cancel
+                </button>
+                {imageModalTab === 'upload' && (
+                  <button
+                    onClick={() => handleInsertImage()}
+                    disabled={!imageUrlInput.trim()}
+                    className="px-4 py-1.5 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-semibold disabled:opacity-50"
+                  >
+                    Insert at Cursor
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         </div>

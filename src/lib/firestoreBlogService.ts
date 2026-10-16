@@ -1,4 +1,5 @@
 import { BUILTIN_BLOG_POSTS } from './blogData';
+import { BUILTIN_BLOG_CONTENT_BY_ID } from './blogContentData';
 
 let firestoreDepsPromise: Promise<{
   collection: typeof import('firebase/firestore').collection;
@@ -72,6 +73,7 @@ const CACHE_FRESH_TTL_MS = 45_000; // 45s in-memory freshness window to prevent 
 function getBuiltinAsFirestoreBlogs(): FirestoreBlog[] {
   return BUILTIN_BLOG_POSTS.map(p => ({
     ...p,
+    content: BUILTIN_BLOG_CONTENT_BY_ID[p.id] || p.content || '',
     status: 'published' as const,
   }));
 }
@@ -396,12 +398,18 @@ export async function saveBlogToFirestore(blog: Partial<FirestoreBlog>): Promise
     console.warn('Firestore blog save note (safely stored in local cache):', error?.message || error);
   }
 
-  // Also sync to Cloudflare D1 edge database
-  fetch('/api/blog/posts', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(completeBlog),
-  }).catch(() => {});
+  // Cloudflare D1 sync: only published posts go to Cloudflare D1. Drafts stay in Firebase/local cache.
+  if (completeBlog.status === 'published') {
+    fetch('/api/blog/posts', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(completeBlog),
+    }).catch(() => {});
+  } else {
+    fetch(`/api/blog/posts/${encodeURIComponent(completeBlog.slug)}`, {
+      method: 'DELETE',
+    }).catch(() => {});
+  }
 
   return completeBlog;
 }

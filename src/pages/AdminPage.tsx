@@ -56,6 +56,7 @@ import {
   deleteBlogFromFirestore, 
   seedStarterPostIfEmpty 
 } from '../lib/firestoreBlogService';
+import { BUILTIN_BLOG_CONTENT_BY_ID } from '../lib/blogContentData';
 import { 
   DynamicPage, 
   getAllAdminPages, 
@@ -187,6 +188,8 @@ export const AdminPage: React.FC = () => {
   const [activeSettingsAccordion, setActiveSettingsAccordion] = useState<string>('basic');
   const [settingsForm, setSettingsForm] = useState(settings);
   const [savingSettings, setSavingSettings] = useState(false);
+  const [exportScope, setExportScope] = useState<'all' | 'posts' | 'pages'>('all');
+  const [importScope, setImportScope] = useState<'auto' | 'posts' | 'pages' | 'all'>('auto');
 
   // ----------------------------------------------------
   // AUTHENTICATION EFFECT (Google Sign-In with Verified Admin)
@@ -303,13 +306,30 @@ export const AdminPage: React.FC = () => {
   }, [settings]);
 
   // ----------------------------------------------------
-  // POST ACTIONS (Save, Duplicate, Delete)
+  // POST ACTIONS (Save, Open Editor, Duplicate, Delete)
   // ----------------------------------------------------
+  const handleOpenPostEditor = (post: FirestoreBlog) => {
+    const fullContent = post.content || BUILTIN_BLOG_CONTENT_BY_ID[post.id] || '';
+    setEditingPost({
+      ...post,
+      content: fullContent,
+    });
+    setIsPostEditorOpen(true);
+  };
+
   const handleSavePost = async (postData: any, targetStatus: 'published' | 'draft' | 'scheduled') => {
-    await saveBlogToFirestore({
+    const saved = await saveBlogToFirestore({
       ...postData,
       status: targetStatus,
     });
+
+    // Cloudflare D1 Sync
+    fetch('/api/blog/posts', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(saved),
+    }).catch(() => {});
+
     await loadPosts();
     setIsPostEditorOpen(false);
     setEditingPost(null);
@@ -500,28 +520,56 @@ export const AdminPage: React.FC = () => {
     }
   };
 
-  // Export Backup JSON
+  // Export Backup JSON (Scope aware)
   const handleExportBackup = () => {
-    const backupData = {
-      version: '2.0',
-      exportedAt: new Date().toISOString(),
-      siteName: settings.branding.siteName,
-      settings: settingsForm,
-      posts,
-      pages,
-      customTools: customToolsList,
-    };
+    let backupData: any;
+    let filename = '';
+
+    if (exportScope === 'posts') {
+      backupData = {
+        type: 'posts',
+        version: '2.0',
+        exportedAt: new Date().toISOString(),
+        siteName: settings.branding.siteName,
+        total: posts.length,
+        posts,
+      };
+      filename = `Toolzaro_Posts_Backup_${new Date().toISOString().slice(0, 10)}.json`;
+    } else if (exportScope === 'pages') {
+      backupData = {
+        type: 'pages',
+        version: '2.0',
+        exportedAt: new Date().toISOString(),
+        siteName: settings.branding.siteName,
+        total: pages.length,
+        pages,
+      };
+      filename = `Toolzaro_Pages_Backup_${new Date().toISOString().slice(0, 10)}.json`;
+    } else {
+      backupData = {
+        type: 'full',
+        version: '2.0',
+        exportedAt: new Date().toISOString(),
+        siteName: settings.branding.siteName,
+        settings: settingsForm,
+        posts,
+        pages,
+        customTools: customToolsList,
+      };
+      filename = `Toolzaro_Full_Backup_${new Date().toISOString().slice(0, 10)}.json`;
+    }
+
     const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `Toolzaro_Backup_${new Date().toISOString().slice(0, 10)}.json`;
+    a.download = filename;
     a.click();
     URL.revokeObjectURL(url);
-    toast.success('Content backup exported successfully');
+    toast.success(`Exported ${exportScope === 'posts' ? `${posts.length} posts` : exportScope === 'pages' ? `${pages.length} pages` : 'full site backup'} successfully`);
   };
 
-  // Import Backup JSON
+  // Import Backup JSON (Scope aware & Auto-detecting)
   const handleImportBackup = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -530,22 +578,58 @@ export const AdminPage: React.FC = () => {
       try {
         const raw = event.target?.result as string;
         const parsed = JSON.parse(raw);
-        if (parsed.settings) {
+
+        let importedPostsCount = 0;
+        let importedPagesCount = 0;
+
+        // Auto-detect or resolve posts list
+        let postsToImport: any[] = [];
+        if (Array.isArray(parsed)) {
+          if (importScope === 'pages') {
+            // Treat top-level array as pages
+          } else {
+            postsToImport = parsed;
+          }
+        } else if (Array.isArray(parsed.posts)) {
+          postsToImport = parsed.posts;
+        }
+
+        // Auto-detect or resolve pages list
+        let pagesToImport: any[] = [];
+        if (Array.isArray(parsed) && importScope === 'pages') {
+          pagesToImport = parsed;
+        } else if (Array.isArray(parsed.pages)) {
+          pagesToImport = parsed.pages;
+        }
+
+        // Process Posts
+        if (importScope === 'auto' || importScope === 'all' || importScope === 'posts') {
+          for (const p of postsToImport) {
+            if (p && (p.title || p.slug)) {
+              await saveBlogToFirestore(p);
+              importedPostsCount++;
+            }
+          }
+        }
+
+        // Process Pages
+        if (importScope === 'auto' || importScope === 'all' || importScope === 'pages') {
+          for (const pg of pagesToImport) {
+            if (pg && (pg.title || pg.slug)) {
+              await savePageToFirestore(pg);
+              importedPagesCount++;
+            }
+          }
+        }
+
+        // Process Settings if full backup
+        if ((importScope === 'auto' || importScope === 'all') && parsed.settings) {
           await updateSettings(parsed.settings);
         }
-        if (Array.isArray(parsed.posts)) {
-          for (const p of parsed.posts) {
-            await saveBlogToFirestore(p);
-          }
-        }
-        if (Array.isArray(parsed.pages)) {
-          for (const page of parsed.pages) {
-            await savePageToFirestore(page);
-          }
-        }
+
         await loadPosts();
         await loadPages();
-        toast.success('Backup imported successfully!');
+        toast.success(`Import complete! ${importedPostsCount} posts and ${importedPagesCount} pages restored.`);
       } catch (err: any) {
         toast.error('Failed to parse backup JSON: ' + err.message);
       }
@@ -669,15 +753,6 @@ export const AdminPage: React.FC = () => {
       {/* Top Header */}
       <header className="h-16 border-b border-border bg-card/90 backdrop-blur px-4 sm:px-6 flex items-center justify-between sticky top-0 z-30">
         <div className="flex items-center gap-3">
-          {/* Mobile Menu Hamburger */}
-          <button
-            onClick={() => setIsMobileSidebarOpen(true)}
-            className="p-2 rounded-lg hover:bg-muted text-muted-foreground lg:hidden"
-            title="Open Menu"
-          >
-            <Menu className="w-5 h-5" />
-          </button>
-
           <Link to="/" className="flex items-center gap-2 group">
             <span className="font-display font-extrabold text-lg text-foreground tracking-tight">
               Toolzaro
@@ -784,82 +859,6 @@ export const AdminPage: React.FC = () => {
             </a>
           </div>
         </aside>
-
-        {/* Mobile Slide-in Sidebar Drawer */}
-        {isMobileSidebarOpen && (
-          <div className="fixed inset-0 z-50 lg:hidden flex">
-            <div
-              className="fixed inset-0 bg-black/60 backdrop-blur-xs transition-opacity"
-              onClick={() => setIsMobileSidebarOpen(false)}
-            />
-            <div className="relative w-72 max-w-[80vw] bg-card h-full p-4 flex flex-col justify-between shadow-2xl z-10 animate-in slide-in-from-left duration-200">
-              <div>
-                <div className="flex items-center justify-between pb-4 border-b border-border mb-4">
-                  <span className="font-display font-extrabold text-base text-foreground">
-                    Menu
-                  </span>
-                  <button
-                    onClick={() => setIsMobileSidebarOpen(false)}
-                    className="p-1 rounded-lg hover:bg-muted text-muted-foreground"
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
-                </div>
-
-                <nav className="space-y-1">
-                  {[
-                    { id: 'posts', label: 'Posts', icon: FileText, count: posts.length },
-                    { id: 'pages', label: 'Pages', icon: Layers, count: pages.length },
-                    { id: 'tools', label: 'Tools', icon: Wrench, count: tools.length + customToolsList.length },
-                    { id: 'layout', label: 'Layout', icon: Sliders },
-                    { id: 'settings', label: 'Settings', icon: SettingsIcon },
-                  ].map(item => {
-                    const Icon = item.icon;
-                    const active = activeMenu === item.id;
-                    return (
-                      <button
-                        key={item.id}
-                        onClick={() => {
-                          setActiveMenu(item.id as any);
-                          setIsMobileSidebarOpen(false);
-                        }}
-                        className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-medium text-sm transition-colors ${
-                          active
-                            ? 'bg-primary text-primary-foreground font-semibold shadow-xs'
-                            : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-                        }`}
-                      >
-                        <div className="flex items-center gap-3">
-                          <Icon className="w-4 h-4" />
-                          <span>{item.label}</span>
-                        </div>
-                        {item.count !== undefined && (
-                          <span
-                            className={`text-xs px-2 py-0.5 rounded-full ${
-                              active ? 'bg-white/20 text-white' : 'bg-muted text-muted-foreground'
-                            }`}
-                          >
-                            {item.count}
-                          </span>
-                        )}
-                      </button>
-                    );
-                  })}
-                </nav>
-              </div>
-
-              <div className="pt-4 border-t border-border">
-                <a
-                  href="/"
-                  className="flex items-center justify-between text-xs text-muted-foreground hover:text-foreground p-2 rounded-lg hover:bg-muted"
-                >
-                  <span>View live website</span>
-                  <ArrowRight className="w-4 h-4" />
-                </a>
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* Content Viewport */}
         <main className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8 pb-24 lg:pb-8">
