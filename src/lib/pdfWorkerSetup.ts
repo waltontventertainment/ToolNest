@@ -1,19 +1,10 @@
 import * as pdfjsLib from 'pdfjs-dist';
-import pdfWorkerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
+import pdfWorkerUrl from '../workers/pdfWorker.ts?worker&url';
 
 let isWorkerConfigured = false;
 
 export function initPdfWorker() {
   if (isWorkerConfigured || typeof window === 'undefined') return;
-
-  try {
-    // 1. Use the standalone polyfilled worker in public/ (served at /pdf.worker.mjs)
-    pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.mjs';
-    isWorkerConfigured = true;
-    return;
-  } catch (err) {
-    console.warn('Local /pdf.worker.mjs configuration error, checking fallback:', err);
-  }
 
   try {
     if (pdfWorkerUrl) {
@@ -22,7 +13,7 @@ export function initPdfWorker() {
       return;
     }
   } catch (err) {
-    console.warn('Bundled PDF worker URL resolution error, using CDN fallback:', err);
+    console.warn('Vite custom worker URL resolution error, using CDN fallback:', err);
   }
 
   try {

@@ -184,6 +184,7 @@ export const PdfEditorAppTool: React.FC = () => {
   const mainPdfCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const drawingCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const workspaceContainerRef = useRef<HTMLDivElement | null>(null);
+  const currentRenderTaskRef = useRef<any>(null);
 
   // Interactive drawing state
   const [isDrawing, setIsDrawing] = useState<boolean>(false);
@@ -424,46 +425,6 @@ export const PdfEditorAppTool: React.FC = () => {
     reader.readAsArrayBuffer(uploadedFile);
   };
 
-  // Render current PDF page on canvas
-  const renderCurrentPage = useCallback(async () => {
-    if (!pdfJsDoc || pages.length === 0 || currentPageIndex >= pages.length) return;
-
-    const pageMeta = pages[currentPageIndex];
-    const page = await pdfJsDoc.getPage(pageMeta.pageNum);
-    const viewport = page.getViewport({
-      scale: zoomScale,
-      rotation: pageMeta.rotation,
-    });
-
-    const canvas = mainPdfCanvasRef.current;
-    if (!canvas) return;
-
-    canvas.width = Math.floor(viewport.width);
-    canvas.height = Math.floor(viewport.height);
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    await page.render({
-      canvasContext: ctx,
-      viewport,
-    }).promise;
-
-    // Synchronize drawing overlay canvas
-    const drawCanvas = drawingCanvasRef.current;
-    if (drawCanvas) {
-      drawCanvas.width = canvas.width;
-      drawCanvas.height = canvas.height;
-      redrawAnnotations();
-    }
-  }, [pdfJsDoc, pages, currentPageIndex, zoomScale]);
-
-  useEffect(() => {
-    renderCurrentPage();
-  }, [renderCurrentPage]);
-
   // Redraw all annotations for current page
   const redrawAnnotations = useCallback(() => {
     const canvas = drawingCanvasRef.current;
@@ -589,6 +550,86 @@ export const PdfEditorAppTool: React.FC = () => {
       }
     }
   }, [pages, currentPageIndex, pageAnnotations, zoomScale]);
+
+  // Render current PDF page on canvas with strict single-task locking
+  const renderCurrentPage = useCallback(async () => {
+    if (!pdfJsDoc || pages.length === 0 || currentPageIndex >= pages.length) return;
+
+    // 1. Cancel previous in-flight render operation on this canvas
+    if (currentRenderTaskRef.current) {
+      try {
+        currentRenderTaskRef.current.cancel();
+      } catch {}
+      currentRenderTaskRef.current = null;
+    }
+
+    const pageMeta = pages[currentPageIndex];
+    if (!pageMeta) return;
+
+    let page;
+    try {
+      page = await pdfJsDoc.getPage(pageMeta.pageNum);
+    } catch {
+      return;
+    }
+
+    const viewport = page.getViewport({
+      scale: zoomScale,
+      rotation: pageMeta.rotation,
+    });
+
+    const canvas = mainPdfCanvasRef.current;
+    if (!canvas) return;
+
+    canvas.width = Math.floor(viewport.width);
+    canvas.height = Math.floor(viewport.height);
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // 2. Execute render task and track reference
+    try {
+      const renderTask = page.render({
+        canvasContext: ctx,
+        viewport,
+      });
+      currentRenderTaskRef.current = renderTask;
+      await renderTask.promise;
+    } catch (err: any) {
+      // PDF.js throws RenderingCancelledException when cancelled intentionally
+      if (err?.name === 'RenderingCancelledException' || err?.message?.includes('cancelled')) {
+        return;
+      }
+      console.warn('PDF Page Render Notice:', err?.message || err);
+      return;
+    } finally {
+      currentRenderTaskRef.current = null;
+    }
+
+    // 3. Synchronize drawing overlay canvas
+    const drawCanvas = drawingCanvasRef.current;
+    if (drawCanvas) {
+      drawCanvas.width = canvas.width;
+      drawCanvas.height = canvas.height;
+      redrawAnnotations();
+    }
+  }, [pdfJsDoc, pages, currentPageIndex, zoomScale, redrawAnnotations]);
+
+  useEffect(() => {
+    renderCurrentPage();
+
+    return () => {
+      if (currentRenderTaskRef.current) {
+        try {
+          currentRenderTaskRef.current.cancel();
+        } catch {}
+        currentRenderTaskRef.current = null;
+      }
+    };
+  }, [renderCurrentPage]);
+
 
   // Page Operations
   const handleRotatePage = (direction: 'cw' | 'ccw') => {
