@@ -26,6 +26,7 @@ import {
   Contact,
   HtmlSitemap,
 } from './pages/StaticPages';
+import { DynamicPageViewer } from './pages/DynamicPageViewer';
 import { NotFound } from './pages/NotFound';
 
 // Secret Admin workspace kept isolated and lazy-loaded
@@ -213,7 +214,7 @@ function UniversalIndexDispatcher() {
         return <Contact />;
       case 'sitemap':
         return <HtmlSitemap />;
-      case 'sabbir':
+      case 'sabbirhasan23m':
         return <AdminPage />;
       default:
         break;
@@ -373,7 +374,7 @@ function RootSlugDispatcher() {
   if (lower === 'contact' || lower === 'contact-us') return <Contact />;
   if (lower === 'sitemap' || lower === 'site-map') return <HtmlSitemap />;
   if (lower === 'blog' || lower === 'blogs' || lower === 'articles') return <BlogPage />;
-  if (lower === 'sabbir') return <AdminPage />;
+  if (lower === 'sabbirhasan23m') return <AdminPage />;
 
   // 3. Direct flat root-level Tool match (e.g. /open-meteo-live-weather)
   const matchedTool = findMatchingTool(rawSlug);
@@ -387,9 +388,8 @@ function RootSlugDispatcher() {
     return <CategoryPage key={`cat-${matchedCatSlug}`} forcedSlug={matchedCatSlug} />;
   }
 
-  // 5. Direct root-level Blog Post match (e.g. /definitive-guide-client-side-privacy-web-utilities)
-  // BlogPostPage checks built-in & Firestore blog posts, and renders <NotFound /> if none match
-  return <BlogPostPage key={`blog-${lower}`} forcedSlug={rawSlug} />;
+  // 5. Check if it matches a Dynamic Page created in Admin (or fallback to Blog / 404)
+  return <DynamicPageViewer forcedSlug={rawSlug} />;
 }
 
 /**
@@ -527,9 +527,9 @@ export default function App() {
                 <UrlNormalizationEffect />
                 <SmartSpaLinkInterceptor />
                 <Routes>
-                  {/* Secret Admin Portal (/sabbir & /sabbir.html) - completely isolated from public SiteLayout */}
+                  {/* Secret Admin Portal (/sabbirhasan23m & /sabbirhasan23m.html) - completely isolated from public SiteLayout */}
                   <Route
-                    path="sabbir"
+                    path="sabbirhasan23m"
                     element={
                       <Suspense fallback={null}>
                         <AdminPage />
@@ -537,7 +537,7 @@ export default function App() {
                     }
                   />
                   <Route
-                    path="sabbir.html"
+                    path="sabbirhasan23m.html"
                     element={
                       <Suspense fallback={null}>
                         <AdminPage />

@@ -87,6 +87,34 @@ export interface SiteSettings {
   };
   // Tool Overrides (custom titles, badges, disabled state, custom code)
   toolOverrides: Record<string, ToolOverride>;
+  // Layout Customizer (Sections reorder, hide/show, Custom CSS/JS)
+  layout?: {
+    homepageSections: string[];
+    sectionVisibility: Record<string, boolean>;
+    headerNavOrder?: string[];
+    footerLinksOrder?: string[];
+    customHeadScripts?: string;
+    customBodyScripts?: string;
+    customFooterCode?: string;
+  };
+  // Blogger-style granular Settings
+  bloggerSettings?: {
+    postsPerPage?: number;
+    lightboxEnabled?: boolean;
+    lazyLoadImages?: boolean;
+    webpServing?: boolean;
+    timezone?: string;
+    dateFormat?: string;
+    timestampFormat?: string;
+    searchDescriptionEnabled?: boolean;
+    custom404Html?: string;
+    customRedirects?: Array<{ from: string; to: string; code: number }>;
+    customRobotsTxt?: string;
+    robotsHeaderTags?: { home: string; search: string; post: string };
+    adsTxtContent?: string;
+    rssFeedType?: 'full' | 'short' | 'none';
+    readerAccess?: 'public' | 'private';
+  };
   // Admin & Integrations
   admin: {
     allowedEmails: string[];
@@ -138,6 +166,40 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
     bingVerificationCode: ''
   },
   toolOverrides: {},
+  layout: {
+    homepageSections: ['hero', 'categories', 'tech-digest', 'featured-tools', 'all-tools'],
+    sectionVisibility: {
+      hero: true,
+      categories: true,
+      'tech-digest': true,
+      'featured-tools': true,
+      'all-tools': true,
+    },
+    customHeadScripts: '',
+    customBodyScripts: '',
+    customFooterCode: '',
+  },
+  bloggerSettings: {
+    postsPerPage: 10,
+    lightboxEnabled: true,
+    lazyLoadImages: true,
+    webpServing: true,
+    timezone: 'UTC+06:00',
+    dateFormat: 'MMMM D, YYYY',
+    timestampFormat: 'h:mm A',
+    searchDescriptionEnabled: true,
+    custom404Html: '',
+    customRedirects: [],
+    customRobotsTxt: 'User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /sabbir\nSitemap: https://toolzaro.cyou/sitemap-index.xml',
+    robotsHeaderTags: {
+      home: 'all',
+      search: 'noindex, follow',
+      post: 'all',
+    },
+    adsTxtContent: 'google.com, pub-8769496591745522, DIRECT, f08c47fec0942fa0',
+    rssFeedType: 'full',
+    readerAccess: 'public',
+  },
   admin: {
     allowedEmails: ['sabbirhasansh321@gmail.com'],
     teamMembers: [

@@ -51,5 +51,17 @@ service cloud.firestore {
       // Only the real Master Admin (sabbirhasansh321@gmail.com) can update settings and team permissions
       allow write: if isMasterAdmin();
     }
+
+    // 4. Dynamic Standalone Pages (About, Contact, custom landing pages)
+    match /pages/{pageId} {
+      allow read: if resource.data.status == 'published' || isAuthorizedTeamMember();
+      allow create, update, delete: if isAuthorizedTeamMember();
+    }
+
+    // 5. Custom Admin Tools (HTML/CSS/JS tools)
+    match /custom_tools/{toolId} {
+      allow read: if true;
+      allow create, update, delete: if isAuthorizedTeamMember();
+    }
   }
 }

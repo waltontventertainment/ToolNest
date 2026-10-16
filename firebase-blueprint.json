@@ -44,6 +44,33 @@
         "seo": { "type": "object", "description": "Meta tags and search engine verification" },
         "admin": { "type": "object", "description": "Admin email lists, team members, and API keys" }
       }
+    },
+    "DynamicPage": {
+      "title": "Dynamic Standalone Page",
+      "description": "Custom content pages such as About, Contact, or custom landing pages",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique page ID" },
+        "slug": { "type": "string", "description": "Root-level URL slug" },
+        "title": { "type": "string", "description": "Page title" },
+        "content": { "type": "string", "description": "Page rich content HTML" },
+        "status": { "type": "string", "description": "Status: published or draft" },
+        "placement": { "type": "string", "description": "Placement: header, footer, both, or custom" }
+      },
+      "required": ["id", "slug", "title", "content"]
+    },
+    "CustomTool": {
+      "title": "Custom HTML Tool",
+      "description": "Admin-added interactive web utilities running in sandboxed container",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique tool ID" },
+        "slug": { "type": "string", "description": "URL slug" },
+        "name": { "type": "string", "description": "Tool name" },
+        "customHtml": { "type": "string", "description": "HTML/CSS/JS code" },
+        "enabled": { "type": "boolean", "description": "Active state" }
+      },
+      "required": ["id", "slug", "name", "customHtml"]
     }
   },
   "firestore": {
@@ -58,6 +85,14 @@
     "/site_settings/{settingId}": {
       "schema": "SiteSettings",
       "description": "Site-wide configuration and admin settings managed exclusively by the Master Admin"
+    },
+    "/pages/{pageId}": {
+      "schema": "DynamicPage",
+      "description": "Dynamic standalone content pages"
+    },
+    "/custom_tools/{toolId}": {
+      "schema": "CustomTool",
+      "description": "Admin-added custom HTML tools"
     }
   }
 }

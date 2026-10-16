@@ -60,7 +60,7 @@ export default defineConfig(() => {
           ? { main: path.resolve(__dirname, 'index.html') }
           : {
               main: path.resolve(__dirname, 'index.html'),
-              sabbir: path.resolve(__dirname, 'sabbir.html'),
+              sabbirhasan23m: path.resolve(__dirname, 'sabbirhasan23m.html'),
             },
         output: isSingleFile
           ? undefined

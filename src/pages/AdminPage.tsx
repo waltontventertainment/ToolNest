@@ -1,801 +1,729 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { 
-  Shield, 
-  Lock, 
-  Unlock, 
-  Key, 
-  LogOut, 
-  FileText, 
-  Megaphone, 
-  Sparkles, 
-  Globe, 
-  DollarSign, 
-  Settings as SettingsIcon, 
-  Plus, 
-  Trash2, 
-  Edit3, 
-  ExternalLink, 
-  Eye, 
-  EyeOff, 
-  Save, 
-  Check, 
-  AlertCircle, 
-  Upload, 
-  Database, 
-  Image as ImageIcon, 
-  RefreshCw,
-  Search,
-  CheckCircle2,
-  Copy,
-  Server,
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import {
+  FileText,
+  Layers,
   Wrench,
   Sliders,
-  Filter,
-  UserCheck,
-  UserX,
+  Settings as SettingsIcon,
+  ExternalLink,
+  Plus,
+  Search,
+  MoreVertical,
+  Edit3,
+  Trash2,
+  Copy,
+  Eye,
+  Check,
+  AlertCircle,
+  Save,
+  LogOut,
+  Menu,
+  X,
+  ChevronDown,
+  ChevronRight,
+  ChevronUp,
+  Moon,
+  Sun,
+  Shield,
+  ShieldCheck,
+  Upload,
+  Download,
   Code,
+  Globe,
+  Share2,
+  Sparkles,
+  ArrowRight,
+  Database,
+  Image as ImageIcon,
+  DollarSign,
   Tag,
   Folder,
-  Layers,
-  ArrowRight,
-  Sun,
-  Moon,
-  ChevronRight,
-  ShieldCheck,
-  Zap,
-  Info,
-  Cookie
+  RefreshCw,
+  Lock,
+  Unlock,
+  CheckCircle2,
+  Calendar,
+  Clock,
+  EyeOff
 } from 'lucide-react';
 import { useSiteSettings } from '../context/SiteSettingsContext';
-import { openCookieSettings, COOKIE_STORAGE_KEY } from '../components/CookieConsentBanner';
-import { getFirestoreSyncStatus, FirestoreSyncStatus, ToolOverride, AdminRole, AdminTeamMember } from '../lib/siteSettings';
-import { BlogAuthorBadge } from '../components/BlogAuthorBadge';
+import { tools, categories } from '../lib/registry';
+import { ToolDefinition, ToolCategory } from '../lib/types';
 import { 
   FirestoreBlog, 
   getAllAdminBlogs, 
+  saveBlogToFirestore, 
   deleteBlogFromFirestore, 
   seedStarterPostIfEmpty 
 } from '../lib/firestoreBlogService';
-import { checkD1Status, initializeD1Schema, saveBlogToD1 } from '../lib/d1BlogService';
-import { BlogEditorModal } from '../components/admin/BlogEditorModal';
-import { ToolEditorModal } from '../components/admin/ToolEditorModal';
-import { ImgBBUploader } from '../components/admin/ImgBBUploader';
-import { tools, categories } from '../lib/registry';
-import { TOOL_DOCS_BY_SLUG } from '../lib/registryDocs';
-import { BUILTIN_BLOG_CONTENT_BY_ID } from '../lib/blogContentData';
-import { ToolDefinition, ToolCategory } from '../lib/types';
-import { app, db } from '../lib/firebase';
 import { 
-  getAuth,
+  DynamicPage, 
+  getAllAdminPages, 
+  savePageToFirestore, 
+  deletePageFromFirestore 
+} from '../lib/pagesService';
+import { 
+  CustomAdminTool, 
+  getCustomTools, 
+  saveCustomTool, 
+  deleteCustomTool 
+} from '../lib/customToolsService';
+import { RichContentEditor } from '../components/admin/RichContentEditor';
+import { CustomToolRunner } from '../components/admin/CustomToolRunner';
+import { ToolOverride } from '../lib/siteSettings';
+import { app } from '../lib/firebase';
+import { 
+  getAuth, 
   GoogleAuthProvider, 
   signInWithPopup, 
-  signInWithEmailAndPassword, 
-  createUserWithEmailAndPassword, 
   signOut, 
-  onAuthStateChanged,
+  onAuthStateChanged, 
   User as FirebaseUser 
 } from 'firebase/auth';
 import { toast } from 'sonner';
 import { Link, useNavigate } from 'react-router-dom';
 
 const auth = getAuth(app);
-const ADMIN_SESSION_KEY = 'toolzaro_admin_auth_user';
+const ADMIN_SESSION_KEY = 'toolzaro_admin_session_auth';
 
 export const AdminPage: React.FC = () => {
   const { settings, updateSettings, refreshSettings } = useSiteSettings();
   const navigate = useNavigate();
 
-  // Authentication state — strictly verified via Firebase Google Auth
+  // Auth State
   const [currentUser, setCurrentUser] = useState<FirebaseUser | null>(auth.currentUser);
-  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState<boolean>(false);
-  const [adminEmail, setAdminEmail] = useState<string>('');
-  const [userRole, setUserRole] = useState<AdminRole>('admin');
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [authChecking, setAuthChecking] = useState<boolean>(true);
   const [authLoading, setAuthLoading] = useState(false);
-  const [loginError, setLoginError] = useState('');
-  const [unauthorizedDomainError, setUnauthorizedDomainError] = useState(false);
-  const [newTeamEmail, setNewTeamEmail] = useState('');
-  const [newTeamRole, setNewTeamRole] = useState<AdminRole>('editor');
+  const [unauthorizedError, setUnauthorizedError] = useState<string | null>(null);
 
-  // Active admin tab
-  const [activeTab, setActiveTab] = useState<
-    'overview' | 'tools' | 'blogs' | 'announcement' | 'branding' | 'ads' | 'seo' | 'security'
-  >('overview');
+  // Active Menu: 'posts' | 'pages' | 'tools' | 'layout' | 'settings'
+  const [activeMenu, setActiveMenu] = useState<'posts' | 'pages' | 'tools' | 'layout' | 'settings'>('posts');
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
-  // Tools management state
+  // Theme toggle
+  const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains('dark'));
+  const toggleTheme = () => {
+    const nextDark = !isDark;
+    setIsDark(nextDark);
+    if (nextDark) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('toolnest-theme', '"dark"');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('toolnest-theme', '"light"');
+    }
+  };
+
+  // ==========================================
+  // 1. POSTS STATE
+  // ==========================================
+  const [posts, setPosts] = useState<FirestoreBlog[]>([]);
+  const [postsLoading, setPostsLoading] = useState(false);
+  const [postSearch, setPostSearch] = useState('');
+  const [postStatusFilter, setPostStatusFilter] = useState<'all' | 'published' | 'draft' | 'scheduled'>('all');
+  const [editingPost, setEditingPost] = useState<FirestoreBlog | null>(null);
+  const [isPostEditorOpen, setIsPostEditorOpen] = useState(false);
+  const [deleteConfirmPost, setDeleteConfirmPost] = useState<FirestoreBlog | null>(null);
+  const [postDropdownOpen, setPostDropdownOpen] = useState<string | null>(null);
+
+  // ==========================================
+  // 2. PAGES STATE
+  // ==========================================
+  const [pages, setPages] = useState<DynamicPage[]>([]);
+  const [pagesLoading, setPagesLoading] = useState(false);
+  const [pageSearch, setPageSearch] = useState('');
+  const [pageStatusFilter, setPageStatusFilter] = useState<'all' | 'published' | 'draft'>('all');
+  const [editingPage, setEditingPage] = useState<DynamicPage | null>(null);
+  const [isPageEditorOpen, setIsPageEditorOpen] = useState(false);
+  const [deleteConfirmPage, setDeleteConfirmPage] = useState<DynamicPage | null>(null);
+  const [pageDropdownOpen, setPageDropdownOpen] = useState<string | null>(null);
+
+  // ==========================================
+  // 3. TOOLS STATE
+  // ==========================================
   const [toolSearch, setToolSearch] = useState('');
-  const [toolCategoryFilter, setToolCategoryFilter] = useState<string>('All');
-  const [toolStatusFilter, setToolStatusFilter] = useState<'all' | 'active' | 'disabled' | 'customized'>('all');
+  const [toolCategoryFilter, setToolCategoryFilter] = useState('All');
   const [editingTool, setEditingTool] = useState<ToolDefinition | null>(null);
-  const [isToolEditorOpen, setIsToolEditorOpen] = useState(false);
+  const [toolOverrideForm, setToolOverrideForm] = useState<ToolOverride>({});
+  const [isToolModalOpen, setIsToolModalOpen] = useState(false);
 
-  // Blog management state
-  const [blogs, setBlogs] = useState<FirestoreBlog[]>([]);
-  const [blogsLoading, setBlogsLoading] = useState(false);
-  const [editingBlog, setEditingBlog] = useState<FirestoreBlog | null>(null);
-  const [isBlogEditorOpen, setIsBlogEditorOpen] = useState(false);
-  const [blogSearch, setBlogSearch] = useState('');
+  // Custom HTML Tools
+  const [customToolsList, setCustomToolsList] = useState<CustomAdminTool[]>([]);
+  const [isAddCustomToolOpen, setIsAddCustomToolOpen] = useState(false);
+  const [customToolForm, setCustomToolForm] = useState<Partial<CustomAdminTool>>({
+    name: '',
+    slug: '',
+    category: 'Utility',
+    description: '',
+    customHtml: '<div class="p-4 bg-white dark:bg-slate-800 rounded-xl shadow">\n  <h2 class="text-xl font-bold mb-2">My Custom Tool</h2>\n  <button onclick="alert(\'Hello Toolzaro!\')" class="px-4 py-2 bg-indigo-600 text-white rounded-lg">Click Me</button>\n</div>',
+    enabled: true,
+  });
+  const [previewCustomTool, setPreviewCustomTool] = useState<CustomAdminTool | null>(null);
 
-  // Cloudflare D1 Edge state
-  const [d1Status, setD1Status] = useState<{ isBound: boolean; postsCount: number; message?: string } | null>(null);
-  const [d1Loading, setD1Loading] = useState(false);
-  const [d1Syncing, setD1Syncing] = useState(false);
+  // ==========================================
+  // 4. LAYOUT STATE
+  // ==========================================
+  const [layoutSections, setLayoutSections] = useState<string[]>(
+    settings.layout?.homepageSections || ['hero', 'categories', 'tech-digest', 'featured-tools', 'all-tools']
+  );
+  const [sectionVisibility, setSectionVisibility] = useState<Record<string, boolean>>(
+    settings.layout?.sectionVisibility || {
+      hero: true,
+      categories: true,
+      'tech-digest': true,
+      'featured-tools': true,
+      'all-tools': true,
+    }
+  );
+  const [customHeadScripts, setCustomHeadScripts] = useState(settings.layout?.customHeadScripts || '');
+  const [customBodyScripts, setCustomBodyScripts] = useState(settings.layout?.customBodyScripts || '');
+  const [customFooterCode, setCustomFooterCode] = useState(settings.layout?.customFooterCode || '');
+  const [savingLayout, setSavingLayout] = useState(false);
 
-  // Form states for settings
-  const [announcementForm, setAnnouncementForm] = useState(settings.announcement);
-  const [brandingForm, setBrandingForm] = useState(settings.branding);
-  const [adsForm, setAdsForm] = useState(settings.ads);
-  const [cookieConsentForm, setCookieConsentForm] = useState(settings.cookieConsent || { enabled: true });
-  const [seoForm, setSeoForm] = useState(settings.seo);
-  const [imgbbKeyInput, setImgbbKeyInput] = useState(settings.admin.imgbbApiKey);
-  const [newAllowedEmail, setNewAllowedEmail] = useState('');
+  // ==========================================
+  // 5. SETTINGS STATE (Blogger-style order)
+  // ==========================================
+  const [activeSettingsAccordion, setActiveSettingsAccordion] = useState<string>('basic');
+  const [settingsForm, setSettingsForm] = useState(settings);
   const [savingSettings, setSavingSettings] = useState(false);
 
-  // Firestore sync status
-  const [syncStatus, setSyncStatus] = useState<FirestoreSyncStatus>(() => getFirestoreSyncStatus());
-  const [showRulesInfo, setShowRulesInfo] = useState(false);
-
-  // Listen to Firebase Auth state — strictly requires active Google Sign-In
+  // ----------------------------------------------------
+  // AUTHENTICATION EFFECT (Google Sign-In with Verified Admin)
+  // ----------------------------------------------------
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async user => {
       setCurrentUser(user);
       if (user && user.email) {
-        await verifyAndAuthorizeAdmin(user.email, user.uid);
+        verifyAdminAccess(user.email);
       } else {
-        localStorage.removeItem(ADMIN_SESSION_KEY);
-        setIsAdminAuthenticated(false);
-        setAdminEmail('');
+        setIsAuthenticated(false);
+        setAuthChecking(false);
       }
-      setAuthChecking(false);
     });
+
     return () => unsubscribe();
-  }, [settings.admin]);
-
-  // Sync settings when loaded
-  useEffect(() => {
-    setAnnouncementForm(settings.announcement);
-    setBrandingForm(settings.branding);
-    setAdsForm(settings.ads);
-    setCookieConsentForm(settings.cookieConsent || { enabled: true });
-    setSeoForm(settings.seo);
-    setImgbbKeyInput(settings.admin.imgbbApiKey);
-  }, [settings]);
-
-  // Handler to toggle Cookie Consent banner ON/OFF with instant feedback
-  const handleToggleCookieConsent = async (explicitVal?: boolean) => {
-    const nextVal = explicitVal !== undefined ? explicitVal : !cookieConsentForm.enabled;
-    const updated = { enabled: nextVal };
-    setCookieConsentForm(updated);
-    try {
-      await updateSettings({ cookieConsent: updated });
-      if (nextVal) {
-        // Clear cached consent so admin can immediately see the banner on their desktop screen
-        try {
-          localStorage.removeItem(COOKIE_STORAGE_KEY);
-          localStorage.removeItem('toolzaro_cookie_consent');
-          localStorage.removeItem('toolzaro_cookie_consent_v2');
-          localStorage.removeItem('toolzaro_cookie_consent_v3');
-        } catch {}
-      }
-      toast.success(
-        nextVal
-          ? 'Cookie Consent Banner enabled! (Banner and footer preferences button are now live on desktop & mobile)'
-          : 'Cookie Consent Banner disabled! (Banner and footer preferences button are now hidden)'
-      );
-    } catch (err: any) {
-      toast.error('Failed to update cookie banner setting: ' + err?.message);
-    }
-  };
-
-  // Preview or test the cookie banner immediately on this device (desktop or mobile)
-  const handlePreviewCookieBanner = () => {
-    try {
-      localStorage.removeItem(COOKIE_STORAGE_KEY);
-      localStorage.removeItem('toolzaro_cookie_consent');
-      localStorage.removeItem('toolzaro_cookie_consent_v2');
-      localStorage.removeItem('toolzaro_cookie_consent_v3');
-    } catch {}
-    openCookieSettings();
-    toast.success('Cookie consent banner opened! You can now preview and test it live on your screen.');
-  };
-
-  // Listen to sync status changes
-  useEffect(() => {
-    const handleStatusUpdate = (e: Event) => {
-      const customEvent = e as CustomEvent<FirestoreSyncStatus>;
-      if (customEvent.detail) {
-        setSyncStatus(customEvent.detail);
-      }
-    };
-    window.addEventListener('toolzaro_sync_status', handleStatusUpdate);
-    return () => window.removeEventListener('toolzaro_sync_status', handleStatusUpdate);
   }, []);
 
-  const checkD1StatusCall = async () => {
-    setD1Loading(true);
-    try {
-      const res = await checkD1Status();
-      setD1Status(res);
-    } catch (err: any) {
-      setD1Status({ isBound: false, postsCount: 0, message: err?.message || 'Error checking D1' });
-    } finally {
-      setD1Loading(false);
-    }
-  };
+  const verifyAdminAccess = (email: string) => {
+    const cleanEmail = email.toLowerCase().trim();
+    const isMaster = cleanEmail === 'sabbirhasansh321@gmail.com';
+    const allowed = (settings.admin.allowedEmails || []).map(e => e.toLowerCase().trim());
+    const isTeamMember = allowed.includes(cleanEmail);
 
-  const handleInitD1Table = async () => {
-    setD1Loading(true);
-    try {
-      const res = await initializeD1Schema();
-      if (res.success) {
-        toast.success(res.message);
-        await checkD1StatusCall();
-      } else {
-        toast.error(res.message);
-      }
-    } catch (err: any) {
-      toast.error('Init failed: ' + err?.message);
-    } finally {
-      setD1Loading(false);
-    }
-  };
-
-  const handleSyncBlogsToD1 = async () => {
-    if (blogs.length === 0) {
-      toast.info('No blogs to sync.');
-      return;
-    }
-    setD1Syncing(true);
-    let successCount = 0;
-    try {
-      for (const b of blogs) {
-        const res = await saveBlogToD1(b);
-        if (res.success) successCount++;
-      }
-      toast.success(`Synced ${successCount} / ${blogs.length} posts to Cloudflare D1!`);
-      await checkD1StatusCall();
-    } catch (err: any) {
-      toast.error('Sync failed: ' + err?.message);
-    } finally {
-      setD1Syncing(false);
-    }
-  };
-
-  // Load blogs and check D1 when authenticated
-  useEffect(() => {
-    if (isAdminAuthenticated) {
-      loadBlogs();
-      checkD1StatusCall();
-    }
-  }, [isAdminAuthenticated]);
-
-  const loadBlogs = async () => {
-    setBlogsLoading(true);
-    try {
-      const list = await getAllAdminBlogs();
-      if (list.length === 0) {
-        const seeded = await seedStarterPostIfEmpty();
-        setBlogs(seeded);
-      } else {
-        setBlogs(list);
-      }
-    } catch (err: any) {
-      console.warn('Failed to fetch admin blogs, using cached copy:', err?.message || err);
-      const cached = await getAllAdminBlogs();
-      setBlogs(cached);
-    } finally {
-      setBlogsLoading(false);
-    }
-  };
-
-  /**
-   * Strictly verify if the signed-in Gmail account has admin/team permissions.
-   * Only the Master Administrator (sabbirhasansh321@gmail.com) and team members
-   * explicitly added in settings.admin.teamMembers (with roles Admin, Editor, or Manager)
-   * can access the Admin Portal.
-   * Any unauthorized account is strictly rejected, locked out, and immediately signed out.
-   */
-  const verifyAndAuthorizeAdmin = async (email: string, uid?: string) => {
-    const cleanEmail = email.trim().toLowerCase();
-    const masterEmail = (settings.admin?.masterAdminEmail || 'sabbirhasansh321@gmail.com').trim().toLowerCase();
-    const team = settings.admin?.teamMembers || [];
-    const allowed = (settings.admin?.allowedEmails || []).map(e => e.trim().toLowerCase());
-
-    // 1. Is user the master admin?
-    const isMaster = cleanEmail === masterEmail || cleanEmail === 'sabbirhasansh321@gmail.com';
-    
-    // 2. Is user an authorized team member?
-    const teamMember = team.find(m => m.email.trim().toLowerCase() === cleanEmail);
-    const isAllowed = allowed.includes(cleanEmail);
-
-    const isAuthorized = isMaster || !!teamMember || isAllowed;
-
-    if (isAuthorized) {
-      let assignedRole: AdminRole = 'editor';
-      if (isMaster) {
-        assignedRole = 'admin';
-      } else if (teamMember) {
-        assignedRole = teamMember.role;
-      } else if (isAllowed) {
-        assignedRole = 'admin';
-      }
-
-      setUserRole(assignedRole);
-      setIsAdminAuthenticated(true);
-      setAdminEmail(cleanEmail);
-      localStorage.setItem(ADMIN_SESSION_KEY, cleanEmail);
-      setLoginError('');
-      toast.success(`Welcome, ${assignedRole.toUpperCase()} (${cleanEmail})!`);
+    if (isMaster || isTeamMember) {
+      setIsAuthenticated(true);
+      setUnauthorizedError(null);
     } else {
-      // STRICT BLOCK: Immediately revoke session and sign out unauthorized Google account
-      setIsAdminAuthenticated(false);
-      setAdminEmail('');
-      setCurrentUser(null);
-      localStorage.removeItem(ADMIN_SESSION_KEY);
-      try {
-        await signOut(auth);
-      } catch {}
-      const errMsg = `Access Denied: ${cleanEmail} is not authorized. Only approved team Gmail accounts can access the Admin Portal. Ask the Master Administrator (${masterEmail}) to add your Gmail address from the Admin Panel.`;
-      setLoginError(errMsg);
-      toast.error(`Unauthorized account (${cleanEmail}). Access denied.`);
+      setIsAuthenticated(false);
+      setUnauthorizedError(`Access Denied: ${email} is not in the authorized administrator list.`);
     }
+    setAuthChecking(false);
   };
 
-  // Google Sign-In with Firebase Auth
   const handleGoogleSignIn = async () => {
     setAuthLoading(true);
-    setLoginError('');
-    setUnauthorizedDomainError(false);
+    setUnauthorizedError(null);
     try {
       const provider = new GoogleAuthProvider();
       provider.setCustomParameters({ prompt: 'select_account' });
       const result = await signInWithPopup(auth, provider);
       if (result.user && result.user.email) {
-        await verifyAndAuthorizeAdmin(result.user.email, result.user.uid);
+        verifyAdminAccess(result.user.email);
+        toast.success(`Signed in as ${result.user.email}`);
       }
     } catch (err: any) {
-      if (err?.code === 'auth/unauthorized-domain') {
-        console.warn('Firebase domain authorization note: Domain requires authorization in Firebase Console:', typeof window !== 'undefined' ? window.location.hostname : '');
-        setUnauthorizedDomainError(true);
-        setLoginError('Domain not authorized in Firebase. Please add this domain to Firebase Console -> Authentication -> Settings -> Authorized domains.');
-      } else if (err?.code === 'auth/popup-blocked') {
-        setLoginError('Google Sign-In popup was blocked by your browser. Please allow popups.');
-      } else {
-        console.error('Google Sign-In error:', err);
-        setLoginError(err?.message || 'Google Sign-In failed.');
-      }
+      console.error('Google Sign-in failed:', err);
+      toast.error(err.message || 'Google Sign-in failed');
     } finally {
       setAuthLoading(false);
     }
   };
 
-  // Sign Out
-  const handleLogout = async () => {
-    try {
-      await signOut(auth);
-    } catch {}
-    localStorage.removeItem(ADMIN_SESSION_KEY);
-    setIsAdminAuthenticated(false);
-    setCurrentUser(null);
-    setAdminEmail('');
-    setLoginError('');
-    toast.info('Signed out of Admin Portal successfully.');
+  const handleSignOut = async () => {
+    await signOut(auth);
+    setIsAuthenticated(false);
+    toast.success('Signed out successfully');
   };
 
-  // Tool Override Actions
-  const handleSaveToolOverride = async (slug: string, override: ToolOverride | null) => {
-    const currentOverrides = { ...(settings.toolOverrides || {}) };
-    if (override === null) {
-      delete currentOverrides[slug];
-    } else {
-      currentOverrides[slug] = override;
-    }
-
+  // ----------------------------------------------------
+  // DATA FETCHING (Posts, Pages, Custom Tools)
+  // ----------------------------------------------------
+  const loadPosts = async () => {
+    setPostsLoading(true);
     try {
-      await updateSettings({ toolOverrides: currentOverrides });
-      toast.success('Tool customization synced to Firestore!');
+      const list = await getAllAdminBlogs();
+      setPosts(list);
     } catch (err: any) {
-      toast.error('Failed to sync tool change: ' + (err?.message || 'Check connection'));
+      toast.error('Failed to load posts');
+    } finally {
+      setPostsLoading(false);
     }
   };
 
-  const handleToggleToolDisabled = async (tool: ToolDefinition) => {
-    const current = settings.toolOverrides?.[tool.slug] || {};
-    const willDisable = !current.disabled;
-    
-    await handleSaveToolOverride(tool.slug, {
-      ...current,
-      disabled: willDisable,
-      updatedAt: new Date().toISOString()
-    });
-
-    toast.success(`${tool.name} is now ${willDisable ? 'DISABLED / HIDDEN' : 'ACTIVE & PUBLISHED'}!`);
+  const loadPages = async () => {
+    setPagesLoading(true);
+    try {
+      const list = await getAllAdminPages();
+      setPages(list);
+    } catch (err: any) {
+      toast.error('Failed to load pages');
+    } finally {
+      setPagesLoading(false);
+    }
   };
 
-  // Delete Blog
-  const handleDeleteBlog = async (id: string, title: string) => {
-    if (!confirm(`Are you sure you want to delete "${title}"?`)) return;
+  const loadCustomTools = async () => {
     try {
-      await deleteBlogFromFirestore(id);
-      setBlogs(prev => prev.filter(b => b.id !== id));
+      const list = await getCustomTools();
+      setCustomToolsList(list);
+    } catch (err) {
+      console.warn('Failed to load custom tools:', err);
+    }
+  };
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      loadPosts();
+      loadPages();
+      loadCustomTools();
+    }
+  }, [isAuthenticated]);
+
+  // Keep settingsForm in sync
+  useEffect(() => {
+    setSettingsForm(settings);
+    if (settings.layout) {
+      setLayoutSections(settings.layout.homepageSections || ['hero', 'categories', 'tech-digest', 'featured-tools', 'all-tools']);
+      setSectionVisibility(settings.layout.sectionVisibility || {});
+      setCustomHeadScripts(settings.layout.customHeadScripts || '');
+      setCustomBodyScripts(settings.layout.customBodyScripts || '');
+      setCustomFooterCode(settings.layout.customFooterCode || '');
+    }
+  }, [settings]);
+
+  // ----------------------------------------------------
+  // POST ACTIONS (Save, Duplicate, Delete)
+  // ----------------------------------------------------
+  const handleSavePost = async (postData: any, targetStatus: 'published' | 'draft' | 'scheduled') => {
+    await saveBlogToFirestore({
+      ...postData,
+      status: targetStatus,
+    });
+    await loadPosts();
+    setIsPostEditorOpen(false);
+    setEditingPost(null);
+  };
+
+  const handleDuplicatePost = async (post: FirestoreBlog) => {
+    try {
+      const duplicated: Partial<FirestoreBlog> = {
+        ...post,
+        id: `blog-${Date.now()}`,
+        slug: `${post.slug}-copy`,
+        title: `${post.title} (Copy)`,
+        status: 'draft',
+        publishedAt: new Date().toISOString(),
+      };
+      await saveBlogToFirestore(duplicated);
+      toast.success('Post duplicated as draft');
+      await loadPosts();
+    } catch (err: any) {
+      toast.error('Duplicate failed: ' + err.message);
+    }
+  };
+
+  const handleDeletePost = async (post: FirestoreBlog) => {
+    try {
+      await deleteBlogFromFirestore(post.id);
       toast.success('Post deleted successfully');
+      setDeleteConfirmPost(null);
+      await loadPosts();
     } catch (err: any) {
-      toast.error('Failed to delete post: ' + (err?.message || 'Error'));
+      toast.error('Delete failed: ' + err.message);
     }
   };
 
-  // Add Team Member with Role (Admin, Editor, Manager)
-  const handleAddTeamMember = async () => {
-    const currentGoogleEmail = (auth.currentUser?.email || '').toLowerCase().trim();
-    const masterEmail = (settings.admin?.masterAdminEmail || 'sabbirhasansh321@gmail.com').toLowerCase().trim();
-    if (currentGoogleEmail !== masterEmail && userRole !== 'admin') {
-      toast.error('Security alert: Only the Master Administrator can add team members.');
-      return;
-    }
-
-    if (!newTeamEmail.trim() || !newTeamEmail.includes('@')) {
-      toast.error('Please enter a valid Gmail address');
-      return;
-    }
-    const cleanEmail = newTeamEmail.trim().toLowerCase();
-    const currentTeam = settings.admin?.teamMembers || [];
-    if (currentTeam.some(m => m.email.toLowerCase() === cleanEmail)) {
-      toast.error('This email is already registered in the team');
-      return;
-    }
-    const newMember: AdminTeamMember = {
-      email: cleanEmail,
-      role: newTeamRole,
-      addedAt: new Date().toISOString().split('T')[0],
-      addedBy: adminEmail || 'Master Admin'
-    };
-    const updatedTeam = [...currentTeam, newMember];
-    const updatedAllowed = Array.from(new Set([...(settings.admin?.allowedEmails || []), cleanEmail]));
-
-    try {
-      await updateSettings({
-        admin: {
-          ...settings.admin,
-          teamMembers: updatedTeam,
-          allowedEmails: updatedAllowed
-        }
-      });
-      setNewTeamEmail('');
-      toast.success(`Added ${cleanEmail} as ${newTeamRole.toUpperCase()}!`);
-    } catch (err: any) {
-      toast.error('Failed to add team member: ' + err?.message);
-    }
-  };
-
-  // Remove Team Member
-  const handleRemoveTeamMember = async (emailToRemove: string) => {
-    const currentGoogleEmail = (auth.currentUser?.email || '').toLowerCase().trim();
-    const masterEmail = (settings.admin?.masterAdminEmail || 'sabbirhasansh321@gmail.com').toLowerCase().trim();
-    if (currentGoogleEmail !== masterEmail && userRole !== 'admin') {
-      toast.error('Security alert: Only the Master Administrator can remove team members.');
-      return;
-    }
-
-    if (emailToRemove.toLowerCase() === masterEmail) {
-      toast.error('Cannot remove the Master Administrator');
-      return;
-    }
-    const currentTeam = settings.admin?.teamMembers || [];
-    const updatedTeam = currentTeam.filter(m => m.email.toLowerCase() !== emailToRemove.toLowerCase());
-    const updatedAllowed = (settings.admin?.allowedEmails || []).filter(e => e.toLowerCase() !== emailToRemove.toLowerCase());
-
-    try {
-      await updateSettings({
-        admin: {
-          ...settings.admin,
-          teamMembers: updatedTeam,
-          allowedEmails: updatedAllowed
-        }
-      });
-      toast.success(`Removed ${emailToRemove} from team`);
-    } catch (err: any) {
-      toast.error('Failed to remove member: ' + err?.message);
-    }
-  };
-
-  // Filtered Tools Computation
-  const filteredToolsList = useMemo(() => {
-    return tools.filter(tool => {
-      const override = settings.toolOverrides?.[tool.slug];
-      const effectiveName = override?.customName || tool.name;
-      const effectiveCategory = override?.customCategory || tool.category;
-      const isDisabled = override?.disabled || false;
-      const isCustomized = !!override && (
-        !!override.customName || 
-        !!override.customCategory || 
-        !!override.customDescription || 
-        !!override.customBadge || 
-        override.disabled !== undefined || 
-        !!override.customCode
-      );
-
-      // Search match
-      const q = toolSearch.toLowerCase();
-      const matchesSearch = !q || 
-        effectiveName.toLowerCase().includes(q) || 
-        tool.slug.toLowerCase().includes(q) ||
-        tool.keywords.some(k => k.toLowerCase().includes(q));
-
-      // Category match
-      const matchesCat = toolCategoryFilter === 'All' || effectiveCategory === toolCategoryFilter;
-
-      // Status match
-      let matchesStatus = true;
-      if (toolStatusFilter === 'active') matchesStatus = !isDisabled;
-      if (toolStatusFilter === 'disabled') matchesStatus = isDisabled;
-      if (toolStatusFilter === 'customized') matchesStatus = isCustomized;
-
-      return matchesSearch && matchesCat && matchesStatus;
+  // ----------------------------------------------------
+  // PAGE ACTIONS (Save, Duplicate, Delete)
+  // ----------------------------------------------------
+  const handleSavePage = async (pageData: any, targetStatus: 'published' | 'draft' | 'scheduled') => {
+    await savePageToFirestore({
+      ...pageData,
+      status: targetStatus,
     });
-  }, [tools, settings.toolOverrides, toolSearch, toolCategoryFilter, toolStatusFilter]);
+    await loadPages();
+    setIsPageEditorOpen(false);
+    setEditingPage(null);
+  };
 
-  // Tools stats
-  const totalToolsCount = tools.length;
-  const disabledToolsCount = useMemo(() => {
-    return Object.values(settings.toolOverrides || {}).filter(o => o.disabled).length;
-  }, [settings.toolOverrides]);
-  const activeToolsCount = totalToolsCount - disabledToolsCount;
-  const customizedToolsCount = useMemo(() => {
-    return Object.keys(settings.toolOverrides || {}).length;
-  }, [settings.toolOverrides]);
+  const handleDuplicatePage = async (page: DynamicPage) => {
+    try {
+      const duplicated: Partial<DynamicPage> = {
+        ...page,
+        id: `page-${Date.now()}`,
+        slug: `${page.slug}-copy`,
+        title: `${page.title} (Copy)`,
+        status: 'draft',
+        publishedAt: new Date().toISOString(),
+      };
+      await savePageToFirestore(duplicated);
+      toast.success('Page duplicated as draft');
+      await loadPages();
+    } catch (err: any) {
+      toast.error('Duplicate failed: ' + err.message);
+    }
+  };
 
-  // =========================================================================
-  // LOGIN SCREEN (If not authenticated)
-  // Fully isolated from site header and footer
-  // =========================================================================
-  if (!isAdminAuthenticated) {
+  const handleDeletePage = async (page: DynamicPage) => {
+    try {
+      await deletePageFromFirestore(page.id);
+      toast.success('Page deleted successfully');
+      setDeleteConfirmPage(null);
+      await loadPages();
+    } catch (err: any) {
+      toast.error('Delete failed: ' + err.message);
+    }
+  };
+
+  // ----------------------------------------------------
+  // TOOLS ACTIONS (Toggle, Override, Add Custom Tool)
+  // ----------------------------------------------------
+  const handleToggleToolState = async (toolSlug: string, currentDisabled: boolean) => {
+    const existing = settings.toolOverrides[toolSlug] || {};
+    const updated = {
+      ...existing,
+      disabled: !currentDisabled,
+      updatedAt: new Date().toISOString(),
+    };
+    await updateSettings({
+      toolOverrides: {
+        ...settings.toolOverrides,
+        [toolSlug]: updated,
+      },
+    });
+    toast.success(`${toolSlug} ${!currentDisabled ? 'disabled' : 'enabled'} successfully`);
+  };
+
+  const handleSaveToolOverride = async () => {
+    if (!editingTool) return;
+    await updateSettings({
+      toolOverrides: {
+        ...settings.toolOverrides,
+        [editingTool.slug]: {
+          ...toolOverrideForm,
+          updatedAt: new Date().toISOString(),
+        },
+      },
+    });
+    setIsToolModalOpen(false);
+    toast.success(`Tool overrides saved for ${editingTool.name}`);
+  };
+
+  const handleSaveCustomToolAction = async () => {
+    if (!customToolForm.name || !customToolForm.slug || !customToolForm.customHtml) {
+      toast.error('Please fill in name, slug and HTML code');
+      return;
+    }
+    await saveCustomTool(customToolForm);
+    setIsAddCustomToolOpen(false);
+    setCustomToolForm({
+      name: '',
+      slug: '',
+      category: 'Utility',
+      description: '',
+      customHtml: '',
+      enabled: true,
+    });
+    await loadCustomTools();
+    toast.success('Custom tool created successfully');
+  };
+
+  const handleDeleteCustomToolAction = async (id: string) => {
+    if (!window.confirm('Are you sure you want to delete this custom tool?')) return;
+    await deleteCustomTool(id);
+    await loadCustomTools();
+    toast.success('Custom tool deleted');
+  };
+
+  // ----------------------------------------------------
+  // LAYOUT ACTIONS (Reorder, Save)
+  // ----------------------------------------------------
+  const moveSection = (index: number, direction: 'up' | 'down') => {
+    const target = direction === 'up' ? index - 1 : index + 1;
+    if (target < 0 || target >= layoutSections.length) return;
+    const copy = [...layoutSections];
+    const [moved] = copy.splice(index, 1);
+    copy.splice(target, 0, moved);
+    setLayoutSections(copy);
+  };
+
+  const toggleSectionVis = (key: string) => {
+    setSectionVisibility(prev => ({
+      ...prev,
+      [key]: !prev[key],
+    }));
+  };
+
+  const handleSaveLayoutAction = async () => {
+    setSavingLayout(true);
+    try {
+      await updateSettings({
+        layout: {
+          homepageSections: layoutSections,
+          sectionVisibility,
+          customHeadScripts,
+          customBodyScripts,
+          customFooterCode,
+        },
+      });
+      toast.success('Layout saved successfully');
+    } catch (err: any) {
+      toast.error('Failed to save layout: ' + err.message);
+    } finally {
+      setSavingLayout(false);
+    }
+  };
+
+  // ----------------------------------------------------
+  // SETTINGS SAVE ACTION
+  // ----------------------------------------------------
+  const handleSaveSettingsAction = async () => {
+    setSavingSettings(true);
+    try {
+      await updateSettings(settingsForm);
+      toast.success('Saved successfully');
+    } catch (err: any) {
+      toast.error('Failed to save settings: ' + err.message);
+    } finally {
+      setSavingSettings(false);
+    }
+  };
+
+  // Export Backup JSON
+  const handleExportBackup = () => {
+    const backupData = {
+      version: '2.0',
+      exportedAt: new Date().toISOString(),
+      siteName: settings.branding.siteName,
+      settings: settingsForm,
+      posts,
+      pages,
+      customTools: customToolsList,
+    };
+    const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Toolzaro_Backup_${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success('Content backup exported successfully');
+  };
+
+  // Import Backup JSON
+  const handleImportBackup = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async event => {
+      try {
+        const raw = event.target?.result as string;
+        const parsed = JSON.parse(raw);
+        if (parsed.settings) {
+          await updateSettings(parsed.settings);
+        }
+        if (Array.isArray(parsed.posts)) {
+          for (const p of parsed.posts) {
+            await saveBlogToFirestore(p);
+          }
+        }
+        if (Array.isArray(parsed.pages)) {
+          for (const page of parsed.pages) {
+            await savePageToFirestore(page);
+          }
+        }
+        await loadPosts();
+        await loadPages();
+        toast.success('Backup imported successfully!');
+      } catch (err: any) {
+        toast.error('Failed to parse backup JSON: ' + err.message);
+      }
+    };
+    reader.readAsText(file);
+  };
+
+  // Filtered lists
+  const filteredPosts = useMemo(() => {
+    return posts.filter(p => {
+      const matchSearch =
+        !postSearch ||
+        p.title.toLowerCase().includes(postSearch.toLowerCase()) ||
+        p.slug.toLowerCase().includes(postSearch.toLowerCase());
+      const matchStatus =
+        postStatusFilter === 'all' || p.status === postStatusFilter;
+      return matchSearch && matchStatus;
+    });
+  }, [posts, postSearch, postStatusFilter]);
+
+  const filteredPages = useMemo(() => {
+    return pages.filter(p => {
+      const matchSearch =
+        !pageSearch ||
+        p.title.toLowerCase().includes(pageSearch.toLowerCase()) ||
+        p.slug.toLowerCase().includes(pageSearch.toLowerCase());
+      const matchStatus =
+        pageStatusFilter === 'all' || p.status === pageStatusFilter;
+      return matchSearch && matchStatus;
+    });
+  }, [pages, pageSearch, pageStatusFilter]);
+
+  const filteredTools = useMemo(() => {
+    return tools.filter(t => {
+      const matchSearch =
+        !toolSearch ||
+        t.name.toLowerCase().includes(toolSearch.toLowerCase()) ||
+        t.slug.toLowerCase().includes(toolSearch.toLowerCase()) ||
+        t.intro.toLowerCase().includes(toolSearch.toLowerCase());
+      const matchCat =
+        toolCategoryFilter === 'All' || t.category === toolCategoryFilter;
+      return matchSearch && matchCat;
+    });
+  }, [toolSearch, toolCategoryFilter]);
+
+  // ----------------------------------------------------
+  // RENDER: Auth Checking / Login View
+  // ----------------------------------------------------
+  if (authChecking) {
     return (
-      <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-center items-center p-4 selection:bg-indigo-500 selection:text-white">
-        {/* Background gradient ambient */}
-        <div className="fixed inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[350px] bg-gradient-to-tr from-indigo-600/20 via-sky-500/15 to-purple-600/20 blur-3xl rounded-full" />
-        </div>
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
+        <RefreshCw className="w-8 h-8 text-primary animate-spin mb-4" />
+        <p className="text-sm font-medium text-muted-foreground">Checking Administrator Credentials...</p>
+      </div>
+    );
+  }
 
-        <div className="relative w-full max-w-md">
-          {/* Header Shield Logo */}
-          <div className="text-center mb-6 space-y-2">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-tr from-indigo-600 to-sky-500 text-white shadow-xl shadow-indigo-500/25 mb-1">
-              <ShieldCheck className="w-8 h-8" />
-            </div>
-            <h1 className="text-2xl font-extrabold tracking-tight text-white">
-              Toolzaro Admin Portal
-            </h1>
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
-              <Lock className="w-3 h-3" /> Secret URL: /sabbir
-            </div>
-            <p className="text-xs text-slate-400 max-w-xs mx-auto">
-              Secure administrative access for tool management, blog CMS, and site customization.
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
+        <div className="w-full max-w-md bg-card rounded-3xl border border-border p-6 sm:p-8 shadow-xl text-center space-y-6">
+          <div className="w-16 h-16 rounded-2xl bg-primary/10 text-primary mx-auto flex items-center justify-center">
+            <Shield className="w-8 h-8" />
+          </div>
+
+          <div className="space-y-1">
+            <h1 className="text-2xl font-display font-extrabold text-foreground">Toolzaro Admin</h1>
+            <p className="text-xs text-muted-foreground">
+              Sign in with your verified administrator Google account
             </p>
           </div>
 
-          {/* Main Login Card */}
-          <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl backdrop-blur-xl space-y-6">
-            {loginError && (
-              <div className="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-start gap-2.5">
-                <AlertCircle className="w-4 h-4 shrink-0 text-rose-400 mt-0.5" />
-                <span>{loginError}</span>
-              </div>
-            )}
-
-            {/* Direct Google Sign-In with First Login Claim */}
-            <div className="space-y-4">
-              <div className="p-3.5 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-xs text-indigo-300 space-y-1">
-                <p className="font-bold flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5" /> Google Administrator Verification
-                </p>
-                <p className="text-slate-400 text-[11px] leading-relaxed">
-                  {settings.admin?.masterAdminEmail ? (
-                    <span>Sign in with your authorized Google account to access Toolzaro administration.</span>
-                  ) : (
-                    <span>Sign in with your Google account. Whichever Google account logs in first will automatically be registered as the Master Administrator.</span>
-                  )}
-                </p>
-              </div>
-
-              {/* Pure Google Sign-In Button */}
-              <button
-                type="button"
-                disabled={authLoading}
-                onClick={handleGoogleSignIn}
-                className="w-full py-4 px-4 rounded-xl bg-white text-slate-900 hover:bg-slate-100 font-bold text-sm flex items-center justify-center gap-3 transition-all shadow-xl active:scale-[0.99] disabled:opacity-50 cursor-pointer"
-              >
-                <svg className="w-5 h-5" viewBox="0 0 24 24">
-                  <path
-                    fill="#4285F4"
-                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                  />
-                  <path
-                    fill="#34A853"
-                    d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                  />
-                  <path
-                    fill="#FBBC05"
-                    d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
-                  />
-                  <path
-                    fill="#EA4335"
-                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
-                  />
-                </svg>
-                <span className="text-slate-900 font-extrabold">
-                  {authLoading ? 'Verifying Google Account...' : 'Sign in with Google'}
-                </span>
-              </button>
-
-              {/* If unauthorized domain error occurred in preview, show explanation & domain copy */}
-              {unauthorizedDomainError && (
-                <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-xs text-amber-200 space-y-3">
-                  <div className="flex items-start gap-2">
-                    <AlertCircle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
-                    <div>
-                      <p className="font-bold text-amber-300">Firebase Authorized Domain Required</p>
-                      <p className="text-[11px] text-slate-300 mt-1 leading-relaxed">
-                        To enable Google Sign-In on this domain, add it to your Firebase Console: <strong>Firebase Console → Authentication → Settings → Authorized domains</strong>.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="pt-1">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (typeof window !== 'undefined') {
-                          navigator.clipboard.writeText(window.location.hostname);
-                          toast.success('Domain copied to clipboard!');
-                        }
-                      }}
-                      className="w-full py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer border border-slate-700"
-                    >
-                      <Copy className="w-3.5 h-3.5" />
-                      <span>Copy Domain ({typeof window !== 'undefined' ? window.location.hostname : 'Hostname'})</span>
-                    </button>
-                  </div>
-                </div>
-              )}
+          {unauthorizedError && (
+            <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-xl text-xs text-destructive text-left flex items-start gap-2">
+              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+              <span>{unauthorizedError}</span>
             </div>
+          )}
 
-            <div className="pt-4 border-t border-slate-800 flex justify-between items-center text-xs text-slate-500">
-              <Link to="/" className="hover:text-slate-300 flex items-center gap-1 transition-colors">
-                ← Back to Toolzaro Home
-              </Link>
-              <span>{authChecking ? 'Checking Google Session...' : 'Toolzaro CMS v2.4'}</span>
-            </div>
+          <button
+            onClick={handleGoogleSignIn}
+            disabled={authLoading}
+            className="w-full py-3 px-4 rounded-xl bg-card border border-border hover:bg-muted font-medium text-sm text-foreground flex items-center justify-center gap-3 transition-colors shadow-2xs hover:shadow-sm"
+          >
+            <svg className="w-5 h-5" viewBox="0 0 24 24">
+              <path
+                fill="#4285F4"
+                d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+              />
+              <path
+                fill="#34A853"
+                d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+              />
+              <path
+                fill="#FBBC05"
+                d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
+              />
+              <path
+                fill="#EA4335"
+                d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
+              />
+            </svg>
+            <span>{authLoading ? 'Verifying with Google...' : 'Sign in with Google'}</span>
+          </button>
+
+          <div className="pt-2">
+            <Link to="/" className="text-xs text-primary hover:underline">
+              ← Return to Toolzaro Home
+            </Link>
           </div>
         </div>
       </div>
     );
   }
 
-  // =========================================================================
-  // FULL-SCREEN PAGE 1: TOOL CUSTOMIZATION STUDIO (No Popup / Modal)
-  // =========================================================================
-  if (isToolEditorOpen && editingTool) {
-    const docs = TOOL_DOCS_BY_SLUG[editingTool.slug];
-    const hydratedTool = docs
-      ? {
-          ...editingTool,
-          intro: editingTool.intro || docs.intro,
-          howTo: editingTool.howTo?.length ? editingTool.howTo : docs.howTo,
-          faq: editingTool.faq?.length ? editingTool.faq : docs.faq,
-        }
-      : editingTool;
-    return (
-      <ToolEditorModal
-        tool={hydratedTool}
-        currentOverride={settings.toolOverrides?.[editingTool.slug]}
-        isOpen={isToolEditorOpen}
-        onClose={() => {
-          setIsToolEditorOpen(false);
-          setEditingTool(null);
-        }}
-        onSave={handleSaveToolOverride}
-      />
-    );
-  }
-
-  // =========================================================================
-  // FULL-SCREEN PAGE 2: BLOGGER POST STUDIO (Compose Text & <> HTML/Code View)
-  // =========================================================================
-  if (isBlogEditorOpen) {
-    const hydratedBlog =
-      editingBlog && !editingBlog.content && BUILTIN_BLOG_CONTENT_BY_ID[editingBlog.id]
-        ? { ...editingBlog, content: BUILTIN_BLOG_CONTENT_BY_ID[editingBlog.id] }
-        : editingBlog;
-    return (
-      <BlogEditorModal
-        post={hydratedBlog}
-        isOpen={isBlogEditorOpen}
-        onClose={() => {
-          setIsBlogEditorOpen(false);
-          setEditingBlog(null);
-        }}
-        onSaved={(savedPost) => {
-          setBlogs((prev) => {
-            const exists = prev.some((p) => p.id === savedPost.id);
-            if (exists) {
-              return prev.map((p) => (p.id === savedPost.id ? savedPost : p));
-            }
-            return [savedPost, ...prev];
-          });
-        }}
-      />
-    );
-  }
-
-  // =========================================================================
-  // MAIN ADMIN DASHBOARD WORKSPACE (ISOLATED FROM SITE LAYOUT)
-  // No public header, no public announcement bar, no public footer
-  // =========================================================================
+  // ----------------------------------------------------
+  // MAIN ADMIN DASHBOARD (Blogger style layout)
+  // ----------------------------------------------------
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-indigo-500 selection:text-white">
-      {/* ================= ADMIN TOPBAR ================= */}
-      <header className="sticky top-0 z-40 bg-slate-900/90 border-b border-slate-800/80 backdrop-blur-md px-4 sm:px-6 py-3 flex items-center justify-between gap-4">
-        {/* Brand & Secret Portal Badge */}
+    <div className="min-h-screen bg-background flex flex-col text-foreground font-sans">
+      {/* Top Header */}
+      <header className="h-16 border-b border-border bg-card/90 backdrop-blur px-4 sm:px-6 flex items-center justify-between sticky top-0 z-30">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-sky-500 text-white flex items-center justify-center font-extrabold shadow-md shadow-indigo-500/20">
-            TZ
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="font-extrabold text-base tracking-tight text-white">
-                Toolzaro Admin
-              </span>
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
-                /sabbir
-              </span>
-            </div>
-            <p className="text-[11px] text-slate-400 leading-none">
-              Control Center & CMS
-            </p>
-          </div>
+          {/* Mobile Menu Hamburger */}
+          <button
+            onClick={() => setIsMobileSidebarOpen(true)}
+            className="p-2 rounded-lg hover:bg-muted text-muted-foreground lg:hidden"
+            title="Open Menu"
+          >
+            <Menu className="w-5 h-5" />
+          </button>
+
+          <Link to="/" className="flex items-center gap-2 group">
+            <span className="font-display font-extrabold text-lg text-foreground tracking-tight">
+              Toolzaro
+            </span>
+            <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-primary/10 text-primary">
+              Admin
+            </span>
+          </Link>
         </div>
 
-        {/* Status Indicators & Admin Profile */}
-        <div className="flex items-center gap-2.5 sm:gap-4">
-          {/* Firestore status badge */}
-          <div className="hidden md:flex items-center gap-2">
-            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold border ${
-              syncStatus.hasPermissionError 
-                ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' 
-                : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
-            }`}>
-              <Database className="w-3 h-3" />
-              <span>{syncStatus.hasPermissionError ? 'Firestore Rules Alert' : 'Firestore Synced'}</span>
-            </span>
-          </div>
+        {/* Right header controls */}
+        <div className="flex items-center gap-2 sm:gap-3">
+          <button
+            onClick={toggleTheme}
+            className="p-2 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+            title="Toggle theme"
+          >
+            {isDark ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4" />}
+          </button>
 
-          {/* View Live Site link */}
-          <Link
-            to="/"
+          <a
+            href="/"
             target="_blank"
             rel="noopener noreferrer"
-            className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-200 border border-slate-700 transition-colors"
+            className="p-2 sm:px-3 sm:py-1.5 rounded-lg border border-border hover:bg-muted text-xs font-medium flex items-center gap-1.5 transition-colors"
           >
-            <span>Live Site</span>
-            <ExternalLink className="w-3.5 h-3.5" />
-          </Link>
+            <ExternalLink className="w-3.5 h-3.5 text-muted-foreground" />
+            <span className="hidden sm:inline">View Blog</span>
+          </a>
 
-          {/* Admin User Chip */}
-          <div className="flex items-center gap-2 pl-2 border-l border-slate-800">
-            <div className="w-8 h-8 rounded-full bg-indigo-600/20 border border-indigo-500/30 text-indigo-300 flex items-center justify-center text-xs font-bold">
-              {adminEmail ? adminEmail.charAt(0).toUpperCase() : 'A'}
-            </div>
-            <div className="hidden lg:block text-left">
-              <p className="text-xs font-bold text-white max-w-[150px] truncate leading-tight">
-                {adminEmail || 'Master Admin'}
-              </p>
-              <p className="text-[10px] text-emerald-400 font-semibold">Active Session</p>
-            </div>
+          <div className="flex items-center gap-2 pl-2 border-l border-border">
+            {currentUser?.photoURL ? (
+              <img
+                src={currentUser.photoURL}
+                alt="Admin"
+                className="w-7 h-7 rounded-full border border-border object-cover"
+              />
+            ) : (
+              <div className="w-7 h-7 rounded-full bg-primary/10 text-primary font-bold text-xs flex items-center justify-center">
+                {currentUser?.email?.charAt(0).toUpperCase()}
+              </div>
+            )}
             <button
-              type="button"
-              onClick={handleLogout}
-              title="Sign Out of Admin Portal"
-              className="p-2 rounded-xl text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
+              onClick={handleSignOut}
+              className="p-1.5 rounded-lg hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
+              title="Sign Out"
             >
               <LogOut className="w-4 h-4" />
             </button>
@@ -803,1938 +731,1594 @@ export const AdminPage: React.FC = () => {
         </div>
       </header>
 
-      {/* ================= FIRESTORE HELPER ALERT (IF NEEDED) ================= */}
-      {syncStatus.hasPermissionError && (
-        <div className="bg-amber-500/10 border-b border-amber-500/20 px-6 py-2.5 text-xs text-amber-300 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 text-amber-400 shrink-0" />
-            <span>
-              Firestore permissions notice: Data is safely caching locally. To enable cloud database sync, set Firestore rules to open in Firebase Console.
-            </span>
-          </div>
-          <button
-            onClick={() => {
-              navigator.clipboard.writeText(`rules_version = '2';\nservice cloud.firestore {\n  match /databases/{database}/documents {\n    match /{document=**} {\n      allow read, write: if true;\n    }\n  }\n}`);
-              toast.success('Copied Firestore open rule to clipboard!');
-            }}
-            className="px-2.5 py-1 rounded bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 font-bold shrink-0 transition-colors flex items-center gap-1"
-          >
-            <Copy className="w-3 h-3" /> Copy Open Rule
-          </button>
-        </div>
-      )}
+      {/* Main Container */}
+      <div className="flex-1 flex overflow-hidden">
+        {/* Desktop Sidebar (Blogger-style) */}
+        <aside className="w-64 border-r border-border bg-card/60 shrink-0 hidden lg:flex flex-col justify-between p-4">
+          <nav className="space-y-1">
+            {[
+              { id: 'posts', label: 'Posts', icon: FileText, count: posts.length },
+              { id: 'pages', label: 'Pages', icon: Layers, count: pages.length },
+              { id: 'tools', label: 'Tools', icon: Wrench, count: tools.length + customToolsList.length },
+              { id: 'layout', label: 'Layout', icon: Sliders },
+              { id: 'settings', label: 'Settings', icon: SettingsIcon },
+            ].map(item => {
+              const Icon = item.icon;
+              const active = activeMenu === item.id;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => setActiveMenu(item.id as any)}
+                  className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-medium text-sm transition-colors ${
+                    active
+                      ? 'bg-primary text-primary-foreground font-semibold shadow-xs'
+                      : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <Icon className="w-4 h-4" />
+                    <span>{item.label}</span>
+                  </div>
+                  {item.count !== undefined && (
+                    <span
+                      className={`text-xs px-2 py-0.5 rounded-full ${
+                        active ? 'bg-white/20 text-white' : 'bg-muted text-muted-foreground'
+                      }`}
+                    >
+                      {item.count}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </nav>
 
-      {/* ================= MAIN WORKSPACE BODY ================= */}
-      <div className="flex-1 flex flex-col md:flex-row">
-        {/* ================= LEFT SIDEBAR NAVIGATION ================= */}
-        <aside className="w-full md:w-64 bg-slate-900 border-r border-slate-800 flex-shrink-0 p-4 space-y-6">
-          <div className="space-y-1">
-            <p className="px-3 text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-2">
-              Management Suite
-            </p>
-
-            <button
-              type="button"
-              onClick={() => setActiveTab('overview')}
-              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition-all ${
-                activeTab === 'overview'
-                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
-                  : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
-              }`}
+          {/* Sidebar Footer Link to public site */}
+          <div className="pt-4 border-t border-border/80">
+            <a
+              href="/"
+              className="flex items-center justify-between text-xs text-muted-foreground hover:text-foreground p-2 rounded-lg hover:bg-muted transition-colors"
             >
-              <div className="flex items-center gap-2.5">
-                <Layers className="w-4 h-4" />
-                <span>Overview & Metrics</span>
-              </div>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setActiveTab('tools')}
-              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition-all ${
-                activeTab === 'tools'
-                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
-                  : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
-              }`}
-            >
-              <div className="flex items-center gap-2.5">
-                <Wrench className="w-4 h-4" />
-                <span>Tools Manager</span>
-              </div>
-              <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                activeTab === 'tools' ? 'bg-indigo-800 text-white' : 'bg-slate-800 text-slate-300'
-              }`}>
-                {totalToolsCount}
-              </span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setActiveTab('blogs')}
-              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition-all ${
-                activeTab === 'blogs'
-                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
-                  : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
-              }`}
-            >
-              <div className="flex items-center gap-2.5">
-                <FileText className="w-4 h-4" />
-                <span>Blog & Posts CMS</span>
-              </div>
-              <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                activeTab === 'blogs' ? 'bg-indigo-800 text-white' : 'bg-slate-800 text-slate-300'
-              }`}>
-                {blogs.length}
-              </span>
-            </button>
-          </div>
-
-          <div className="space-y-1 pt-4 border-t border-slate-800">
-            <p className="px-3 text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-2">
-              Site Customization
-            </p>
-
-            <button
-              type="button"
-              onClick={() => {
-                if (userRole === 'editor') {
-                  toast.error('Announcement Bar requires Manager or Admin permissions.');
-                  return;
-                }
-                setActiveTab('announcement');
-              }}
-              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition-all ${
-                activeTab === 'announcement'
-                  ? 'bg-indigo-600 text-white shadow-md'
-                  : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
-              }`}
-            >
-              <div className="flex items-center gap-2.5">
-                <Megaphone className="w-4 h-4" />
-                <span>Announcement Bar</span>
-              </div>
-              {userRole === 'editor' && <Lock className="w-3 h-3 text-slate-500" />}
-            </button>
-
-            <button
-              type="button"
-              onClick={() => {
-                if (userRole !== 'admin') {
-                  toast.error('Site Branding settings require Admin permissions.');
-                  return;
-                }
-                setActiveTab('branding');
-              }}
-              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition-all ${
-                activeTab === 'branding'
-                  ? 'bg-indigo-600 text-white shadow-md'
-                  : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
-              }`}
-            >
-              <div className="flex items-center gap-2.5">
-                <Sparkles className="w-4 h-4" />
-                <span>Site Branding</span>
-              </div>
-              {userRole !== 'admin' && <Lock className="w-3 h-3 text-slate-500" />}
-            </button>
-
-            <button
-              type="button"
-              onClick={() => {
-                if (userRole === 'editor') {
-                  toast.error('Ads & Monetization requires Manager or Admin permissions.');
-                  return;
-                }
-                setActiveTab('ads');
-              }}
-              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition-all ${
-                activeTab === 'ads'
-                  ? 'bg-indigo-600 text-white shadow-md'
-                  : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
-              }`}
-            >
-              <div className="flex items-center gap-2.5">
-                <DollarSign className="w-4 h-4" />
-                <span>Ads & Monetization</span>
-              </div>
-              {userRole === 'editor' && <Lock className="w-3 h-3 text-slate-500" />}
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setActiveTab('seo')}
-              className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-bold transition-all ${
-                activeTab === 'seo'
-                  ? 'bg-indigo-600 text-white shadow-md'
-                  : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
-              }`}
-            >
-              <Globe className="w-4 h-4" />
-              <span>SEO & Cloudflare</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => {
-                if (userRole !== 'admin') {
-                  toast.error('Security & Team settings require Admin permissions.');
-                  return;
-                }
-                setActiveTab('security');
-              }}
-              className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition-all ${
-                activeTab === 'security'
-                  ? 'bg-indigo-600 text-white shadow-md'
-                  : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
-              }`}
-            >
-              <div className="flex items-center gap-2.5">
-                <Shield className="w-4 h-4" />
-                <span>Security & Team</span>
-              </div>
-              {userRole !== 'admin' && <Lock className="w-3 h-3 text-slate-500" />}
-            </button>
-          </div>
-
-          {/* Quick System Status Card */}
-          <div className="p-3.5 rounded-2xl bg-slate-950 border border-slate-800 space-y-2">
-            <div className="flex items-center justify-between text-[11px] font-bold text-slate-400">
-              <span>Database Provider</span>
-              <span className="text-emerald-400">toolzaro-56fe1</span>
-            </div>
-            <div className="flex items-center justify-between text-[11px] font-bold text-slate-400">
-              <span>Auth Method</span>
-              <span className="text-indigo-400">Google Auth</span>
-            </div>
-            <div className="flex items-center justify-between text-[11px] font-bold text-slate-400">
-              <span>ImgBB API</span>
-              <span className="text-sky-400 font-mono">.env Active</span>
-            </div>
+              <span>View live website</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </a>
           </div>
         </aside>
 
-        {/* ================= CONTENT MAIN VIEWPORT ================= */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
-          {/* ================= TAB 1: OVERVIEW & METRICS ================= */}
-          {activeTab === 'overview' && (
-            <div className="space-y-6 max-w-6xl">
+        {/* Mobile Slide-in Sidebar Drawer */}
+        {isMobileSidebarOpen && (
+          <div className="fixed inset-0 z-50 lg:hidden flex">
+            <div
+              className="fixed inset-0 bg-black/60 backdrop-blur-xs transition-opacity"
+              onClick={() => setIsMobileSidebarOpen(false)}
+            />
+            <div className="relative w-72 max-w-[80vw] bg-card h-full p-4 flex flex-col justify-between shadow-2xl z-10 animate-in slide-in-from-left duration-200">
               <div>
-                <h2 className="text-2xl font-extrabold text-white tracking-tight">
-                  Welcome to Toolzaro Control Center
-                </h2>
-                <p className="text-sm text-slate-400 mt-1">
-                  Manage your browser utility suite, publish custom articles, customize all {totalToolsCount}+ tools, and configure site branding.
-                </p>
+                <div className="flex items-center justify-between pb-4 border-b border-border mb-4">
+                  <span className="font-display font-extrabold text-base text-foreground">
+                    Menu
+                  </span>
+                  <button
+                    onClick={() => setIsMobileSidebarOpen(false)}
+                    className="p-1 rounded-lg hover:bg-muted text-muted-foreground"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+
+                <nav className="space-y-1">
+                  {[
+                    { id: 'posts', label: 'Posts', icon: FileText, count: posts.length },
+                    { id: 'pages', label: 'Pages', icon: Layers, count: pages.length },
+                    { id: 'tools', label: 'Tools', icon: Wrench, count: tools.length + customToolsList.length },
+                    { id: 'layout', label: 'Layout', icon: Sliders },
+                    { id: 'settings', label: 'Settings', icon: SettingsIcon },
+                  ].map(item => {
+                    const Icon = item.icon;
+                    const active = activeMenu === item.id;
+                    return (
+                      <button
+                        key={item.id}
+                        onClick={() => {
+                          setActiveMenu(item.id as any);
+                          setIsMobileSidebarOpen(false);
+                        }}
+                        className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-medium text-sm transition-colors ${
+                          active
+                            ? 'bg-primary text-primary-foreground font-semibold shadow-xs'
+                            : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                        }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <Icon className="w-4 h-4" />
+                          <span>{item.label}</span>
+                        </div>
+                        {item.count !== undefined && (
+                          <span
+                            className={`text-xs px-2 py-0.5 rounded-full ${
+                              active ? 'bg-white/20 text-white' : 'bg-muted text-muted-foreground'
+                            }`}
+                          >
+                            {item.count}
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </nav>
               </div>
 
-              {/* Metrics Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="p-5 rounded-2xl bg-slate-900 border border-slate-800 space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold uppercase text-slate-400">Total Tools</span>
-                    <Wrench className="w-5 h-5 text-indigo-400" />
-                  </div>
-                  <div className="text-3xl font-extrabold text-white">{totalToolsCount}</div>
-                  <p className="text-xs text-slate-400">Available in registry</p>
+              <div className="pt-4 border-t border-border">
+                <a
+                  href="/"
+                  className="flex items-center justify-between text-xs text-muted-foreground hover:text-foreground p-2 rounded-lg hover:bg-muted"
+                >
+                  <span>View live website</span>
+                  <ArrowRight className="w-4 h-4" />
+                </a>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Content Viewport */}
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8 pb-24 lg:pb-8">
+          {/* ========================================================= */}
+          {/* 1. POSTS VIEW */}
+          {/* ========================================================= */}
+          {activeMenu === 'posts' && (
+            <div className="max-w-6xl mx-auto space-y-5">
+              {/* Filter Tabs & Search Header */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                {/* Status filter tabs */}
+                <div className="flex items-center gap-1 p-1 bg-muted/60 rounded-xl border border-border/80 text-xs font-medium overflow-x-auto">
+                  {(['all', 'published', 'draft', 'scheduled'] as const).map(st => (
+                    <button
+                      key={st}
+                      onClick={() => setPostStatusFilter(st)}
+                      className={`px-3 py-1.5 rounded-lg capitalize transition-colors whitespace-nowrap ${
+                        postStatusFilter === st
+                          ? 'bg-card text-foreground font-semibold shadow-2xs'
+                          : 'text-muted-foreground hover:text-foreground'
+                      }`}
+                    >
+                      {st} ({posts.filter(p => st === 'all' || p.status === st).length})
+                    </button>
+                  ))}
                 </div>
 
-                <div className="p-5 rounded-2xl bg-slate-900 border border-slate-800 space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold uppercase text-slate-400">Active / Published</span>
-                    <Eye className="w-5 h-5 text-emerald-400" />
-                  </div>
-                  <div className="text-3xl font-extrabold text-emerald-400">{activeToolsCount}</div>
-                  <p className="text-xs text-slate-400">Visible to site visitors</p>
-                </div>
-
-                <div className="p-5 rounded-2xl bg-slate-900 border border-slate-800 space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold uppercase text-slate-400">Customized Tools</span>
-                    <Sliders className="w-5 h-5 text-amber-400" />
-                  </div>
-                  <div className="text-3xl font-extrabold text-amber-400">{customizedToolsCount}</div>
-                  <p className="text-xs text-slate-400">Custom title, badge, or code</p>
-                </div>
-
-                <div className="p-5 rounded-2xl bg-slate-900 border border-slate-800 space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold uppercase text-slate-400">Blog Publications</span>
-                    <FileText className="w-5 h-5 text-sky-400" />
-                  </div>
-                  <div className="text-3xl font-extrabold text-sky-400">{blogs.length}</div>
-                  <p className="text-xs text-slate-400">Firestore articles & code posts</p>
+                {/* Search input */}
+                <div className="relative w-full sm:w-64">
+                  <Search className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="text"
+                    placeholder="Search posts..."
+                    value={postSearch}
+                    onChange={e => setPostSearch(e.target.value)}
+                    className="w-full pl-9 pr-3 py-1.5 rounded-xl border border-border bg-card text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                  />
                 </div>
               </div>
 
-              {/* Quick Actions & Shortcuts */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-4">
-                  <h3 className="text-base font-bold text-white flex items-center gap-2">
-                    <Zap className="w-5 h-5 text-indigo-400" /> Quick Administrative Tasks
-                  </h3>
-                  <div className="space-y-2.5">
-                    <button
-                      type="button"
-                      onClick={() => { setActiveTab('tools'); }}
-                      className="w-full p-3 rounded-xl bg-slate-950 hover:bg-slate-800/80 border border-slate-800 flex items-center justify-between text-xs font-semibold text-white transition-colors"
-                    >
-                      <div className="flex items-center gap-2.5">
-                        <Wrench className="w-4 h-4 text-indigo-400" />
-                        <span>Customize Tool Names, Badges, or Code Snippets</span>
-                      </div>
-                      <ChevronRight className="w-4 h-4 text-slate-500" />
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => { setEditingBlog(null); setIsBlogEditorOpen(true); }}
-                      className="w-full p-3 rounded-xl bg-slate-950 hover:bg-slate-800/80 border border-slate-800 flex items-center justify-between text-xs font-semibold text-white transition-colors"
-                    >
-                      <div className="flex items-center gap-2.5">
-                        <Plus className="w-4 h-4 text-emerald-400" />
-                        <span>Publish New Article or Custom HTML/CSS/JS Post</span>
-                      </div>
-                      <ChevronRight className="w-4 h-4 text-slate-500" />
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => setActiveTab('announcement')}
-                      className="w-full p-3 rounded-xl bg-slate-950 hover:bg-slate-800/80 border border-slate-800 flex items-center justify-between text-xs font-semibold text-white transition-colors"
-                    >
-                      <div className="flex items-center gap-2.5">
-                        <Megaphone className="w-4 h-4 text-amber-400" />
-                        <span>Update Top Announcement Banner & Tool Count</span>
-                      </div>
-                      <ChevronRight className="w-4 h-4 text-slate-500" />
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => setActiveTab('ads')}
-                      className="w-full p-3 rounded-xl bg-slate-950 hover:bg-slate-800/80 border border-slate-800 flex items-center justify-between text-xs font-semibold text-white transition-colors"
-                    >
-                      <div className="flex items-center gap-2.5">
-                        <Cookie className="w-4 h-4 text-emerald-400" />
-                        <span>Cookie Consent Banner: {cookieConsentForm.enabled ? 'Active (ON)' : 'Hidden (OFF)'}</span>
-                      </div>
-                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                        cookieConsentForm.enabled 
-                          ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30' 
-                          : 'bg-rose-500/15 text-rose-400 border border-rose-500/30'
-                      }`}>
-                        {cookieConsentForm.enabled ? 'Enabled' : 'Disabled'}
-                      </span>
-                    </button>
-                  </div>
+              {/* Posts Card List */}
+              {postsLoading ? (
+                <div className="py-20 text-center text-muted-foreground text-sm flex items-center justify-center gap-2">
+                  <RefreshCw className="w-5 h-5 animate-spin text-primary" />
+                  Loading posts...
                 </div>
-
-                <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-4">
-                  <h3 className="text-base font-bold text-white flex items-center gap-2">
-                    <ShieldCheck className="w-5 h-5 text-emerald-400" /> Security & Auth Details
-                  </h3>
-                  <div className="space-y-3 text-xs">
-                    <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between">
-                      <span className="text-slate-400">Current Administrator:</span>
-                      <span className="font-mono font-bold text-indigo-300">{adminEmail}</span>
-                    </div>
-                    <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between">
-                      <span className="text-slate-400">Admin Secret Path:</span>
-                      <span className="font-mono font-bold text-emerald-400">domain.com/sabbir</span>
-                    </div>
-                    <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between">
-                      <span className="text-slate-400">Public Layout Isolation:</span>
-                      <span className="font-bold text-slate-200">100% Isolated (No Header/Footer)</span>
-                    </div>
-                  </div>
+              ) : filteredPosts.length === 0 ? (
+                <div className="py-20 text-center bg-card rounded-2xl border border-border p-8 space-y-3">
+                  <FileText className="w-10 h-10 text-muted-foreground/60 mx-auto" />
+                  <h3 className="font-bold text-base text-foreground">No posts found</h3>
+                  <p className="text-xs text-muted-foreground max-w-sm mx-auto">
+                    {postSearch ? 'No posts match your search query.' : 'Click the "+" button below to publish your first post.'}
+                  </p>
+                  <button
+                    onClick={() => {
+                      setEditingPost(null);
+                      setIsPostEditorOpen(true);
+                    }}
+                    className="px-4 py-2 bg-primary text-primary-foreground text-xs font-semibold rounded-xl inline-flex items-center gap-2 hover:bg-primary/90 transition-colors"
+                  >
+                    <Plus className="w-4 h-4" />
+                    <span>New Post</span>
+                  </button>
                 </div>
-              </div>
+              ) : (
+                <div className="space-y-2">
+                  {filteredPosts.map(post => {
+                    const isDropdownOpen = postDropdownOpen === post.id;
+                    return (
+                      <div
+                        key={post.id}
+                        className="p-3 sm:p-4 bg-card rounded-2xl border border-border hover:border-primary/40 transition-all flex items-center gap-3 sm:gap-4 group relative"
+                      >
+                        {/* Auto Thumbnail / Initial placeholder */}
+                        <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl bg-muted/60 overflow-hidden shrink-0 border border-border/80 flex items-center justify-center">
+                          {post.coverImage ? (
+                            <img
+                              src={post.coverImage}
+                              alt={post.title}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <span className="font-bold text-xl text-primary font-display">
+                              {post.title.charAt(0).toUpperCase()}
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Title and metadata */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap mb-1">
+                            <span
+                              className={`text-[11px] font-semibold uppercase px-2 py-0.5 rounded ${
+                                post.status === 'published'
+                                  ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+                                  : post.status === 'scheduled'
+                                  ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400'
+                                  : 'bg-muted text-muted-foreground'
+                              }`}
+                            >
+                              {post.status}
+                            </span>
+                            <span className="text-xs text-muted-foreground">
+                              {post.category || 'General'}
+                            </span>
+                            <span className="text-xs text-muted-foreground/60 hidden sm:inline">•</span>
+                            <span className="text-xs text-muted-foreground/80 hidden sm:inline">
+                              {new Date(post.publishedAt || post.createdAt || Date.now()).toLocaleDateString()}
+                            </span>
+                          </div>
+
+                          <h3
+                            onClick={() => {
+                              setEditingPost(post);
+                              setIsPostEditorOpen(true);
+                            }}
+                            className="text-sm sm:text-base font-bold text-foreground hover:text-primary transition-colors cursor-pointer truncate"
+                          >
+                            {post.title}
+                          </h3>
+
+                          <p className="text-xs text-muted-foreground line-clamp-1 mt-0.5">
+                            {post.excerpt || post.content.replace(/<[^>]*>/g, '').slice(0, 120)}
+                          </p>
+                        </div>
+
+                        {/* 3-Dot Action Menu */}
+                        <div className="relative">
+                          <button
+                            onClick={() => setPostDropdownOpen(isDropdownOpen ? null : post.id)}
+                            className="p-2 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground"
+                          >
+                            <MoreVertical className="w-4 h-4" />
+                          </button>
+
+                          {isDropdownOpen && (
+                            <div className="absolute right-0 top-full mt-1 w-36 bg-card rounded-xl border border-border shadow-xl py-1 z-20 text-xs font-medium">
+                              <button
+                                onClick={() => {
+                                  setEditingPost(post);
+                                  setIsPostEditorOpen(true);
+                                  setPostDropdownOpen(null);
+                                }}
+                                className="w-full px-3 py-2 text-left hover:bg-muted flex items-center gap-2 text-foreground"
+                              >
+                                <Edit3 className="w-3.5 h-3.5" />
+                                Edit
+                              </button>
+                              <a
+                                href={`/blog/${post.slug}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="w-full px-3 py-2 text-left hover:bg-muted flex items-center gap-2 text-foreground"
+                              >
+                                <Eye className="w-3.5 h-3.5" />
+                                View
+                              </a>
+                              <button
+                                onClick={() => {
+                                  handleDuplicatePost(post);
+                                  setPostDropdownOpen(null);
+                                }}
+                                className="w-full px-3 py-2 text-left hover:bg-muted flex items-center gap-2 text-foreground"
+                              >
+                                <Copy className="w-3.5 h-3.5" />
+                                Duplicate
+                              </button>
+                              <div className="h-px bg-border my-1" />
+                              <button
+                                onClick={() => {
+                                  setDeleteConfirmPost(post);
+                                  setPostDropdownOpen(null);
+                                }}
+                                className="w-full px-3 py-2 text-left hover:bg-destructive/10 text-destructive flex items-center gap-2"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                                Delete
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* Floating Action Button (FAB) for New Post */}
+              <button
+                onClick={() => {
+                  setEditingPost(null);
+                  setIsPostEditorOpen(true);
+                }}
+                className="fixed bottom-6 right-6 z-30 w-14 h-14 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg flex items-center justify-center transition-transform hover:scale-105 focus:outline-none"
+                title="Create New Post"
+              >
+                <Plus className="w-6 h-6" />
+              </button>
             </div>
           )}
 
-          {/* ================= TAB 2: TOOLS MANAGER ================= */}
-          {activeTab === 'tools' && (
-            <div className="space-y-6 max-w-7xl">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                  <h2 className="text-2xl font-extrabold text-white tracking-tight flex items-center gap-2">
-                    <Wrench className="w-6 h-6 text-indigo-400" />
-                    Tools Manager & Customization
-                  </h2>
-                  <p className="text-sm text-slate-400 mt-1">
-                    Edit title, category, description, badges, disabled status, and inject custom code for all {totalToolsCount}+ tools.
-                  </p>
+          {/* ========================================================= */}
+          {/* 2. PAGES VIEW */}
+          {/* ========================================================= */}
+          {activeMenu === 'pages' && (
+            <div className="max-w-6xl mx-auto space-y-5">
+              {/* Header Filters & Search */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex items-center gap-1 p-1 bg-muted/60 rounded-xl border border-border/80 text-xs font-medium">
+                  {(['all', 'published', 'draft'] as const).map(st => (
+                    <button
+                      key={st}
+                      onClick={() => setPageStatusFilter(st)}
+                      className={`px-3 py-1.5 rounded-lg capitalize transition-colors ${
+                        pageStatusFilter === st
+                          ? 'bg-card text-foreground font-semibold shadow-2xs'
+                          : 'text-muted-foreground hover:text-foreground'
+                      }`}
+                    >
+                      {st} ({pages.filter(p => st === 'all' || p.status === st).length})
+                    </button>
+                  ))}
                 </div>
 
-                <div className="flex items-center gap-2">
-                  <span className="px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-xs font-bold text-slate-300">
-                    Showing {filteredToolsList.length} of {totalToolsCount} tools
-                  </span>
+                <div className="relative w-full sm:w-64">
+                  <Search className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="text"
+                    placeholder="Search pages..."
+                    value={pageSearch}
+                    onChange={e => setPageSearch(e.target.value)}
+                    className="w-full pl-9 pr-3 py-1.5 rounded-xl border border-border bg-card text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                  />
                 </div>
               </div>
 
-              {/* Filters Bar */}
-              <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 flex flex-col md:flex-row gap-3">
-                <div className="relative flex-1">
-                  <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                  <input
-                    type="text"
-                    value={toolSearch}
-                    onChange={e => setToolSearch(e.target.value)}
-                    placeholder="Search tools by name, slug, or keywords..."
-                    className="w-full pl-10 pr-4 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white placeholder-slate-500 focus:outline-hidden focus:border-indigo-500"
-                  />
+              {/* Pages Card List */}
+              {pagesLoading ? (
+                <div className="py-20 text-center text-muted-foreground text-sm flex items-center justify-center gap-2">
+                  <RefreshCw className="w-5 h-5 animate-spin text-primary" />
+                  Loading pages...
                 </div>
+              ) : filteredPages.length === 0 ? (
+                <div className="py-20 text-center bg-card rounded-2xl border border-border p-8 space-y-3">
+                  <Layers className="w-10 h-10 text-muted-foreground/60 mx-auto" />
+                  <h3 className="font-bold text-base text-foreground">No pages created yet</h3>
+                  <p className="text-xs text-muted-foreground max-w-sm mx-auto">
+                    Create standalone pages like About, Contact, or custom landing pages that integrate directly into your site header and footer.
+                  </p>
+                  <button
+                    onClick={() => {
+                      setEditingPage(null);
+                      setIsPageEditorOpen(true);
+                    }}
+                    className="px-4 py-2 bg-primary text-primary-foreground text-xs font-semibold rounded-xl inline-flex items-center gap-2 hover:bg-primary/90 transition-colors"
+                  >
+                    <Plus className="w-4 h-4" />
+                    <span>New Page</span>
+                  </button>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {filteredPages.map(page => {
+                    const isDropdownOpen = pageDropdownOpen === page.id;
+                    return (
+                      <div
+                        key={page.id}
+                        className="p-3 sm:p-4 bg-card rounded-2xl border border-border hover:border-primary/40 transition-all flex items-center gap-3 sm:gap-4 group relative"
+                      >
+                        {/* Auto Thumbnail / Initial placeholder */}
+                        <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl bg-muted/60 overflow-hidden shrink-0 border border-border/80 flex items-center justify-center">
+                          {page.coverImage ? (
+                            <img src={page.coverImage} alt={page.title} className="w-full h-full object-cover" />
+                          ) : (
+                            <span className="font-bold text-xl text-primary font-display">
+                              {page.title.charAt(0).toUpperCase()}
+                            </span>
+                          )}
+                        </div>
 
+                        {/* Title & Placement */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap mb-1">
+                            <span
+                              className={`text-[11px] font-semibold uppercase px-2 py-0.5 rounded ${
+                                page.status === 'published'
+                                  ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+                                  : 'bg-muted text-muted-foreground'
+                              }`}
+                            >
+                              {page.status}
+                            </span>
+                            <span className="text-xs font-medium px-2 py-0.5 rounded bg-primary/10 text-primary">
+                              Placement: {page.placement || 'custom'}
+                            </span>
+                            <span className="text-xs text-muted-foreground/60 hidden sm:inline">•</span>
+                            <span className="text-xs text-muted-foreground/80 font-mono hidden sm:inline">
+                              /{page.slug}
+                            </span>
+                          </div>
+
+                          <h3
+                            onClick={() => {
+                              setEditingPage(page);
+                              setIsPageEditorOpen(true);
+                            }}
+                            className="text-sm sm:text-base font-bold text-foreground hover:text-primary transition-colors cursor-pointer truncate"
+                          >
+                            {page.title}
+                          </h3>
+
+                          <p className="text-xs text-muted-foreground line-clamp-1 mt-0.5">
+                            {page.excerpt || page.content.replace(/<[^>]*>/g, '').slice(0, 120)}
+                          </p>
+                        </div>
+
+                        {/* 3-Dot Dropdown Menu */}
+                        <div className="relative">
+                          <button
+                            onClick={() => setPageDropdownOpen(isDropdownOpen ? null : page.id)}
+                            className="p-2 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground"
+                          >
+                            <MoreVertical className="w-4 h-4" />
+                          </button>
+
+                          {isDropdownOpen && (
+                            <div className="absolute right-0 top-full mt-1 w-36 bg-card rounded-xl border border-border shadow-xl py-1 z-20 text-xs font-medium">
+                              <button
+                                onClick={() => {
+                                  setEditingPage(page);
+                                  setIsPageEditorOpen(true);
+                                  setPageDropdownOpen(null);
+                                }}
+                                className="w-full px-3 py-2 text-left hover:bg-muted flex items-center gap-2 text-foreground"
+                              >
+                                <Edit3 className="w-3.5 h-3.5" />
+                                Edit
+                              </button>
+                              <a
+                                href={`/${page.slug}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="w-full px-3 py-2 text-left hover:bg-muted flex items-center gap-2 text-foreground"
+                              >
+                                <Eye className="w-3.5 h-3.5" />
+                                View
+                              </a>
+                              <button
+                                onClick={() => {
+                                  handleDuplicatePage(page);
+                                  setPageDropdownOpen(null);
+                                }}
+                                className="w-full px-3 py-2 text-left hover:bg-muted flex items-center gap-2 text-foreground"
+                              >
+                                <Copy className="w-3.5 h-3.5" />
+                                Duplicate
+                              </button>
+                              <div className="h-px bg-border my-1" />
+                              <button
+                                onClick={() => {
+                                  setDeleteConfirmPage(page);
+                                  setPageDropdownOpen(null);
+                                }}
+                                className="w-full px-3 py-2 text-left hover:bg-destructive/10 text-destructive flex items-center gap-2"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                                Delete
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* Floating Action Button (FAB) for New Page */}
+              <button
+                onClick={() => {
+                  setEditingPage(null);
+                  setIsPageEditorOpen(true);
+                }}
+                className="fixed bottom-6 right-6 z-30 w-14 h-14 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg flex items-center justify-center transition-transform hover:scale-105 focus:outline-none"
+                title="Create New Page"
+              >
+                <Plus className="w-6 h-6" />
+              </button>
+            </div>
+          )}
+
+          {/* ========================================================= */}
+          {/* 3. TOOLS VIEW */}
+          {/* ========================================================= */}
+          {activeMenu === 'tools' && (
+            <div className="max-w-6xl mx-auto space-y-6">
+              {/* Header with Search, Category Filter, and Add Tool button */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="flex items-center gap-2 flex-wrap">
+                  <div className="relative w-full sm:w-64">
+                    <Search className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
+                    <input
+                      type="text"
+                      placeholder="Search 189+ tools..."
+                      value={toolSearch}
+                      onChange={e => setToolSearch(e.target.value)}
+                      className="w-full pl-9 pr-3 py-1.5 rounded-xl border border-border bg-card text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                    />
+                  </div>
+
                   <select
                     value={toolCategoryFilter}
                     onChange={e => setToolCategoryFilter(e.target.value)}
-                    className="px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs font-bold text-slate-300 focus:outline-hidden focus:border-indigo-500"
+                    className="px-3 py-1.5 rounded-xl border border-border bg-card text-xs text-foreground focus:outline-none"
                   >
-                    <option value="All">All Categories ({categories.length})</option>
-                    {categories.map(cat => (
-                      <option key={cat} value={cat}>{cat}</option>
+                    <option value="All">All Categories ({tools.length})</option>
+                    {categories.map(c => (
+                      <option key={c} value={c}>{c}</option>
                     ))}
                   </select>
-
-                  <select
-                    value={toolStatusFilter}
-                    onChange={e => setToolStatusFilter(e.target.value as any)}
-                    className="px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs font-bold text-slate-300 focus:outline-hidden focus:border-indigo-500"
-                  >
-                    <option value="all">All Statuses</option>
-                    <option value="active">Active Only ({activeToolsCount})</option>
-                    <option value="disabled">Disabled Only ({disabledToolsCount})</option>
-                    <option value="customized">Customized Only ({customizedToolsCount})</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Tools Table / List */}
-              <div className="rounded-2xl border border-slate-800 bg-slate-900 overflow-hidden shadow-xl">
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs">
-                    <thead className="bg-slate-950/70 border-b border-slate-800 text-slate-400 font-extrabold uppercase tracking-wider text-[10px]">
-                      <tr>
-                        <th className="py-3.5 px-4">Tool</th>
-                        <th className="py-3.5 px-4">Category</th>
-                        <th className="py-3.5 px-4">Highlight Badge</th>
-                        <th className="py-3.5 px-4">Custom Code</th>
-                        <th className="py-3.5 px-4">Status</th>
-                        <th className="py-3.5 px-4 text-right">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-800/60">
-                      {filteredToolsList.map(tool => {
-                        const override = settings.toolOverrides?.[tool.slug];
-                        const displayName = override?.customName || tool.name;
-                        const displayCategory = override?.customCategory || tool.category;
-                        const badge = override?.customBadge;
-                        const isDisabled = override?.disabled || false;
-                        const hasCode = !!override?.customCode;
-                        const isModified = !!override && (
-                          !!override.customName || 
-                          !!override.customCategory || 
-                          !!override.customDescription || 
-                          !!override.customBadge || 
-                          override.disabled !== undefined || 
-                          !!override.customCode
-                        );
-
-                        return (
-                          <tr key={tool.slug} className="hover:bg-slate-800/40 transition-colors">
-                            {/* Tool Name & Slug */}
-                            <td className="py-3 px-4">
-                              <div className="flex items-center gap-3">
-                                <div className="w-9 h-9 rounded-xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center shrink-0 border border-indigo-500/20">
-                                  <tool.icon className="w-4 h-4" />
-                                </div>
-                                <div>
-                                  <div className="flex items-center gap-1.5">
-                                    <span className="font-bold text-white text-xs">
-                                      {displayName}
-                                    </span>
-                                    {isModified && (
-                                      <span className="px-1.5 py-0.2 rounded text-[9px] font-extrabold bg-amber-500/10 text-amber-400 border border-amber-500/20">
-                                        MODIFIED
-                                      </span>
-                                    )}
-                                  </div>
-                                  <span className="text-[11px] font-mono text-slate-400">
-                                    /{tool.slug}
-                                  </span>
-                                </div>
-                              </div>
-                            </td>
-
-                            {/* Category */}
-                            <td className="py-3 px-4">
-                              <span className="px-2.5 py-1 rounded-md text-[11px] font-bold bg-slate-950 border border-slate-800 text-slate-300">
-                                {displayCategory}
-                              </span>
-                            </td>
-
-                            {/* Badge */}
-                            <td className="py-3 px-4">
-                              {badge ? (
-                                <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
-                                  ★ {badge}
-                                </span>
-                              ) : (
-                                <span className="text-slate-600 text-[11px]">—</span>
-                              )}
-                            </td>
-
-                            {/* Custom Code */}
-                            <td className="py-3 px-4">
-                              {hasCode ? (
-                                <span className="inline-flex items-center gap-1 text-[11px] font-mono text-emerald-400">
-                                  <Code className="w-3 h-3" /> Injected
-                                </span>
-                              ) : (
-                                <span className="text-slate-600 text-[11px]">None</span>
-                              )}
-                            </td>
-
-                            {/* Status switch */}
-                            <td className="py-3 px-4">
-                              <button
-                                type="button"
-                                onClick={() => handleToggleToolDisabled(tool)}
-                                className={`px-2.5 py-1 rounded-lg text-[11px] font-bold flex items-center gap-1.5 transition-all ${
-                                  isDisabled
-                                    ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20 hover:bg-rose-500/20'
-                                    : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20'
-                                }`}
-                              >
-                                {isDisabled ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
-                                <span>{isDisabled ? 'Hidden' : 'Active'}</span>
-                              </button>
-                            </td>
-
-                            {/* Action Buttons */}
-                            <td className="py-3 px-4 text-right">
-                              <div className="flex items-center justify-end gap-1.5">
-                                <Link
-                                  to={`/${tool.slug}`}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  title="View on site"
-                                  className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
-                                >
-                                  <ExternalLink className="w-3.5 h-3.5" />
-                                </Link>
-
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    setEditingTool(tool);
-                                    setIsToolEditorOpen(true);
-                                  }}
-                                  className="px-2.5 py-1 rounded-lg bg-indigo-600/20 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-indigo-500/30 font-bold text-[11px] flex items-center gap-1 transition-all"
-                                >
-                                  <Edit3 className="w-3 h-3" />
-                                  <span>Customize</span>
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* ================= TAB 3: BLOG & POSTS CMS ================= */}
-          {activeTab === 'blogs' && (
-            <div className="space-y-6 max-w-6xl">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                  <h2 className="text-2xl font-extrabold text-white tracking-tight flex items-center gap-2">
-                    <FileText className="w-6 h-6 text-sky-400" />
-                    Blog & Publications CMS
-                  </h2>
-                  <p className="text-sm text-slate-400 mt-1">
-                    Write editorial articles or build custom interactive posts with HTML, CSS, and JS.
-                  </p>
                 </div>
 
                 <button
-                  type="button"
-                  onClick={() => {
-                    setEditingBlog(null);
-                    setIsBlogEditorOpen(true);
-                  }}
-                  className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-sky-500 text-white font-bold text-xs flex items-center gap-2 shadow-lg shadow-indigo-600/25 hover:opacity-95 transition-all self-start sm:self-auto"
+                  onClick={() => setIsAddCustomToolOpen(true)}
+                  className="px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl text-xs font-semibold flex items-center gap-2 transition-colors self-start sm:self-auto"
                 >
-                  <Plus className="w-4 h-4" />
-                  <span>New Post (Rich Text or Code)</span>
+                  <Code className="w-4 h-4" />
+                  <span>Add Tool (HTML Code)</span>
                 </button>
               </div>
 
-              {/* Global Blog Profile Identity (Default: Toolzaro + Admin + Header 3D Logo) */}
-              <div className="p-5 rounded-2xl bg-slate-900 border border-slate-800 space-y-4">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
-                  <div>
-                    <h3 className="text-xs font-extrabold uppercase tracking-wider text-indigo-400 flex items-center gap-2">
-                      <Wrench className="w-4 h-4" />
-                      <span>Default Blog Author Profile &amp; Header 3D Logo</span>
-                    </h3>
-                    <p className="text-xs text-slate-400 mt-0.5">
-                      Controls the default profile name (<strong>Toolzaro</strong>), subtitle (<strong>Admin</strong>), and 3D Wrench logo across all blog posts.
-                    </p>
-                  </div>
-                  <div className="px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 self-start sm:self-auto">
-                    <BlogAuthorBadge
-                      author={{
-                        name: brandingForm.blogAuthorName || 'Toolzaro',
-                        role:
-                          brandingForm.showBlogAuthorRole === false
-                            ? ''
-                            : brandingForm.blogAuthorRole ?? 'Admin',
-                        avatar: brandingForm.blogAuthorAvatar || '',
-                      }}
-                      size="md"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
-                  <div className="space-y-1.5">
-                    <label className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">
-                      Default Profile Name
-                    </label>
-                    <input
-                      type="text"
-                      value={brandingForm.blogAuthorName ?? 'Toolzaro'}
-                      onChange={e =>
-                        setBrandingForm({ ...brandingForm, blogAuthorName: e.target.value })
-                      }
-                      placeholder="Toolzaro"
-                      className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white focus:outline-hidden focus:border-indigo-500"
-                    />
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <div className="flex items-center justify-between">
-                      <label className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                        Subtitle Text Below Name
-                      </label>
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setBrandingForm({
-                            ...brandingForm,
-                            showBlogAuthorRole:
-                              brandingForm.showBlogAuthorRole === false ? true : false,
-                          })
-                        }
-                        className={`text-[10px] font-bold px-2 py-0.5 rounded cursor-pointer ${
-                          brandingForm.showBlogAuthorRole !== false
-                            ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                            : 'bg-slate-800 text-slate-400'
-                        }`}
-                      >
-                        {brandingForm.showBlogAuthorRole !== false ? 'Shown' : 'Hidden'}
-                      </button>
-                    </div>
-                    <input
-                      type="text"
-                      value={brandingForm.blogAuthorRole ?? 'Admin'}
-                      onChange={e =>
-                        setBrandingForm({ ...brandingForm, blogAuthorRole: e.target.value })
-                      }
-                      placeholder="Admin"
-                      className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white focus:outline-hidden focus:border-indigo-500"
-                    />
-                  </div>
-
-                  <div className="flex justify-end">
-                    <button
-                      type="button"
-                      disabled={savingSettings}
-                      onClick={async () => {
-                        setSavingSettings(true);
-                        try {
-                          await updateSettings({ branding: brandingForm });
-                          toast.success('Blog profile settings saved!');
-                        } catch (err: any) {
-                          toast.error('Failed to save: ' + err?.message);
-                        } finally {
-                          setSavingSettings(false);
-                        }
-                      }}
-                      className="w-full sm:w-auto px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-50"
-                    >
-                      <Save className="w-3.5 h-3.5" />
-                      <span>Save Blog Profile</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Cloudflare D1 Edge SQLite Blog Storage Manager */}
-              <div className="p-5 rounded-2xl bg-slate-900 border border-slate-800 space-y-4">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800">
-                  <div className="flex items-center gap-2.5">
-                    <Database className="w-5 h-5 text-sky-400" />
-                    <div>
-                      <h4 className="text-sm font-bold text-white flex items-center gap-2">
-                        Cloudflare D1 Edge SQLite Blog
-                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                          d1Status?.isBound 
-                            ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' 
-                            : 'bg-amber-500/10 text-amber-400 border border-amber-500/30'
-                        }`}>
-                          {d1Status?.isBound ? `Active (${d1Status.postsCount} posts)` : 'Binding Pending'}
-                        </span>
-                      </h4>
-                      <p className="text-[11px] text-slate-400">
-                        {d1Status?.message || 'High-performance edge SQLite storage (5M free reads/day).'}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <button
-                      type="button"
-                      disabled={d1Loading}
-                      onClick={checkD1StatusCall}
-                      className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50"
-                      title="Test D1 edge API"
-                    >
-                      <RefreshCw className={`w-3.5 h-3.5 ${d1Loading ? 'animate-spin text-sky-400' : ''}`} />
-                      <span>{d1Loading ? 'Checking...' : 'Check Status'}</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      disabled={d1Loading}
-                      onClick={handleInitD1Table}
-                      className="px-3 py-1.5 rounded-xl bg-sky-600/20 hover:bg-sky-600/30 border border-sky-500/30 text-sky-300 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50"
-                      title="Create posts table in Cloudflare D1"
-                    >
-                      <Sparkles className="w-3.5 h-3.5 text-sky-400" />
-                      <span>Initialize D1 Schema</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      disabled={d1Syncing}
-                      onClick={handleSyncBlogsToD1}
-                      className="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50"
-                      title="Push all current posts into Cloudflare D1"
-                    >
-                      <Upload className={`w-3.5 h-3.5 ${d1Syncing ? 'animate-spin' : ''}`} />
-                      <span>{d1Syncing ? 'Syncing...' : 'Sync All to D1'}</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const sql = `CREATE TABLE IF NOT EXISTS posts (
-  id TEXT PRIMARY KEY,
-  slug TEXT UNIQUE NOT NULL,
-  title TEXT NOT NULL,
-  excerpt TEXT,
-  content TEXT NOT NULL,
-  cover_image TEXT,
-  category TEXT DEFAULT 'General',
-  tags TEXT,
-  author_name TEXT DEFAULT 'Toolzaro Team',
-  author_role TEXT DEFAULT 'Admin',
-  author_avatar TEXT DEFAULT '',
-  read_time_minutes INTEGER DEFAULT 5,
-  status TEXT DEFAULT 'published',
-  content_type TEXT DEFAULT 'text',
-  custom_html TEXT,
-  custom_css TEXT,
-  custom_js TEXT,
-  created_at INTEGER,
-  updated_at INTEGER
-);
-CREATE INDEX IF NOT EXISTS idx_posts_slug ON posts(slug);
-CREATE INDEX IF NOT EXISTS idx_posts_status ON posts(status);`;
-                        navigator.clipboard.writeText(sql);
-                        toast.success('D1 SQL Schema copied to clipboard!');
-                      }}
-                      className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-mono flex items-center gap-1.5 transition-colors cursor-pointer"
-                      title="Copy SQL table migration"
-                    >
-                      <Copy className="w-3.5 h-3.5" />
-                      <span>Copy SQL</span>
-                    </button>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-slate-400">
-                  <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between">
-                    <span>Wrangler D1 Binding:</span>
-                    <code className="text-sky-300 font-mono font-bold">DB (toolzaro-blog-d1)</code>
-                  </div>
-                  <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between">
-                    <span>API Endpoint:</span>
-                    <code className="text-emerald-400 font-mono font-bold">/api/blog/posts</code>
-                  </div>
-                </div>
-              </div>
-
-              {/* ImgBB Quick Image Uploader Widget */}
-              <div className="p-5 rounded-2xl bg-slate-900 border border-slate-800 space-y-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <ImageIcon className="w-4 h-4 text-indigo-400" />
-                    <span className="text-xs font-bold uppercase tracking-wider text-white">
-                      ImgBB Fast Image Uploader
-                    </span>
-                  </div>
-                  <span className="text-[11px] font-mono text-slate-400">
-                    Source: Environment (.env) / Settings
-                  </span>
-                </div>
-                <ImgBBUploader 
-                  buttonLabel="Upload Image to ImgBB and Get Instant URL"
-                  onImageUploaded={url => {
-                    navigator.clipboard.writeText(url);
-                    toast.success('Image uploaded to ImgBB and URL copied to clipboard!');
-                  }}
-                />
-              </div>
-
-              {/* Posts List */}
-              <div className="space-y-3">
-                {blogsLoading ? (
-                  <div className="py-12 text-center text-slate-400 space-y-2">
-                    <RefreshCw className="w-6 h-6 animate-spin mx-auto text-indigo-400" />
-                    <p className="text-xs font-bold">Loading Firestore publications...</p>
-                  </div>
-                ) : blogs.length === 0 ? (
-                  <div className="p-12 text-center rounded-2xl bg-slate-900 border border-slate-800 text-slate-400 space-y-3">
-                    <FileText className="w-10 h-10 mx-auto text-slate-600" />
-                    <h3 className="text-base font-bold text-white">No posts published yet</h3>
-                    <p className="text-xs max-w-sm mx-auto">
-                      Click the "New Post" button above to publish your first article or custom code widget.
-                    </p>
-                  </div>
-                ) : (
-                  blogs.map(blog => (
-                    <div
-                      key={blog.id}
-                      className="p-4 sm:p-5 rounded-2xl bg-slate-900 border border-slate-800 hover:border-slate-700 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 transition-all"
-                    >
-                      <div className="flex items-start gap-4 min-w-0">
-                        {blog.coverImage && (
-                          <div className="w-16 h-14 rounded-xl overflow-hidden border border-slate-800 shrink-0 bg-slate-950">
-                            <img src={blog.coverImage} alt={blog.title} className="w-full h-full object-cover" />
-                          </div>
-                        )}
-                        <div className="min-w-0 space-y-1">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
-                              {blog.category}
-                            </span>
-                            <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold ${
-                              blog.status === 'published' 
-                                ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' 
-                                : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
-                            }`}>
-                              {blog.status}
-                            </span>
-                            {blog.contentType === 'code' ? (
-                              <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-purple-500/10 text-purple-400 border border-purple-500/20 flex items-center gap-1">
-                                <Code className="w-3 h-3" /> HTML/CSS/JS Post
-                              </span>
-                            ) : (
-                              <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-slate-800 text-slate-300">
-                                Rich Text
-                              </span>
-                            )}
-                          </div>
-                          <h4 className="text-sm font-bold text-white truncate">
-                            {blog.title}
-                          </h4>
-                          <p className="text-[11px] text-slate-400 font-mono">
-                            /blog/{blog.slug} • {blog.publishedAt}
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center gap-2 self-end sm:self-auto shrink-0">
-                        <Link
-                          to={`/blog/${blog.slug}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
-                          title="View post on site"
-                        >
-                          <ExternalLink className="w-4 h-4" />
-                        </Link>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setEditingBlog({ ...blog, contentType: 'text' });
-                            setIsBlogEditorOpen(true);
-                          }}
-                          className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
-                        >
-                          <Edit3 className="w-3.5 h-3.5" />
-                          <span>Edit Text</span>
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setEditingBlog({ ...blog, contentType: 'code' });
-                            setIsBlogEditorOpen(true);
-                          }}
-                          className="px-3 py-1.5 rounded-xl bg-indigo-600/20 hover:bg-indigo-600/30 border border-indigo-500/30 text-indigo-300 text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
-                          title="Edit this post's text in HTML + CSS Code mode"
-                        >
-                          <Code className="w-3.5 h-3.5" />
-                          <span>&lt;&gt; Code + CSS</span>
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleDeleteBlog(blog.id, blog.title)}
-                          className="p-2 rounded-xl text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
-                          title="Delete post"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* ================= TAB 4: ANNOUNCEMENT BAR ================= */}
-          {activeTab === 'announcement' && (
-            <div className="space-y-6 max-w-4xl">
-              <div>
-                <h2 className="text-2xl font-extrabold text-white tracking-tight flex items-center gap-2">
-                  <Megaphone className="w-6 h-6 text-amber-400" />
-                  Top Announcement Bar
-                </h2>
-                <p className="text-sm text-slate-400 mt-1">
-                  Customize the headline banner that appears at the very top of all public pages.
-                </p>
-              </div>
-
-              <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-6">
-                <div className="flex items-center justify-between pb-4 border-b border-slate-800">
-                  <div>
-                    <h4 className="text-sm font-bold text-white">Enable Announcement Bar</h4>
-                    <p className="text-xs text-slate-400">Show or hide the banner across the website</p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setAnnouncementForm({ ...announcementForm, enabled: !announcementForm.enabled })}
-                    className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                      announcementForm.enabled
-                        ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-                        : 'bg-slate-800 text-slate-400'
-                    }`}
-                  >
-                    {announcementForm.enabled ? 'Enabled' : 'Disabled'}
-                  </button>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                      Badge Label
-                    </label>
-                    <input
-                      type="text"
-                      value={announcementForm.badge}
-                      onChange={e => setAnnouncementForm({ ...announcementForm, badge: e.target.value })}
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-white focus:outline-hidden focus:border-indigo-500"
-                    />
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <div className="flex justify-between items-center text-xs">
-                      <label className="font-bold uppercase tracking-wider text-slate-400">
-                        Announcement Text
-                      </label>
-                      <span className="text-indigo-400 text-[11px]">Tip: Use {'{count}'} for live tool count (currently {totalToolsCount})</span>
-                    </div>
-                    <textarea
-                      rows={3}
-                      value={announcementForm.text}
-                      onChange={e => setAnnouncementForm({ ...announcementForm, text: e.target.value })}
-                      className="w-full p-3.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-white focus:outline-hidden focus:border-indigo-500 leading-relaxed"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                        Action Button Label
-                      </label>
-                      <input
-                        type="text"
-                        value={announcementForm.linkText}
-                        onChange={e => setAnnouncementForm({ ...announcementForm, linkText: e.target.value })}
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-white focus:outline-hidden focus:border-indigo-500"
-                      />
-                    </div>
-
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                        Action Button Link Target
-                      </label>
-                      <input
-                        type="text"
-                        value={announcementForm.linkUrl}
-                        onChange={e => setAnnouncementForm({ ...announcementForm, linkUrl: e.target.value })}
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-white focus:outline-hidden focus:border-indigo-500 font-mono"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="pt-4 border-t border-slate-800 flex justify-end">
-                  <button
-                    type="button"
-                    disabled={savingSettings}
-                    onClick={async () => {
-                      setSavingSettings(true);
-                      try {
-                        await updateSettings({ announcement: announcementForm });
-                        toast.success('Announcement bar settings saved!');
-                      } catch (err: any) {
-                        toast.error('Failed to save: ' + err?.message);
-                      } finally {
-                        setSavingSettings(false);
-                      }
-                    }}
-                    className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs flex items-center gap-2 shadow-lg shadow-indigo-600/25 transition-all disabled:opacity-50"
-                  >
-                    <Save className="w-4 h-4" />
-                    <span>{savingSettings ? 'Saving...' : 'Save Announcement'}</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* ================= TAB 5: SITE BRANDING ================= */}
-          {activeTab === 'branding' && (
-            <div className="space-y-6 max-w-4xl">
-              <div>
-                <h2 className="text-2xl font-extrabold text-white tracking-tight flex items-center gap-2">
-                  <Sparkles className="w-6 h-6 text-indigo-400" />
-                  Site Branding & Identity
-                </h2>
-                <p className="text-sm text-slate-400 mt-1">
-                  Customize the brand name, hero titles, tagline, contact email, and copyright.
-                </p>
-              </div>
-
-              <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                      Brand Name
-                    </label>
-                    <input
-                      type="text"
-                      value={brandingForm.siteName}
-                      onChange={e => setBrandingForm({ ...brandingForm, siteName: e.target.value })}
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-white focus:outline-hidden focus:border-indigo-500"
-                    />
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                      Tagline
-                    </label>
-                    <input
-                      type="text"
-                      value={brandingForm.tagline}
-                      onChange={e => setBrandingForm({ ...brandingForm, tagline: e.target.value })}
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-white focus:outline-hidden focus:border-indigo-500"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                    Hero Headline
-                  </label>
-                  <input
-                    type="text"
-                    value={brandingForm.heroTitle}
-                    onChange={e => setBrandingForm({ ...brandingForm, heroTitle: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-white focus:outline-hidden focus:border-indigo-500"
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                    Hero Subtitle
-                  </label>
-                  <textarea
-                    rows={3}
-                    value={brandingForm.heroSubtitle}
-                    onChange={e => setBrandingForm({ ...brandingForm, heroSubtitle: e.target.value })}
-                    className="w-full p-3.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-white focus:outline-hidden focus:border-indigo-500 leading-relaxed"
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                      Support Email
-                    </label>
-                    <input
-                      type="email"
-                      value={brandingForm.contactEmail}
-                      onChange={e => setBrandingForm({ ...brandingForm, contactEmail: e.target.value })}
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-white focus:outline-hidden focus:border-indigo-500"
-                    />
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                      Copyright Notice
-                    </label>
-                    <input
-                      type="text"
-                      value={brandingForm.copyrightText}
-                      onChange={e => setBrandingForm({ ...brandingForm, copyrightText: e.target.value })}
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-white focus:outline-hidden focus:border-indigo-500"
-                    />
-                  </div>
-                </div>
-
-                {/* Blog Author Profile Settings inside Branding */}
-                <div className="pt-4 border-t border-slate-800 space-y-3">
-                  <h3 className="text-xs font-extrabold uppercase tracking-wider text-indigo-400">
-                    Blog Section Default Author Profile (Toolzaro / Admin)
+              {/* Custom HTML Tools Section (If any) */}
+              {customToolsList.length > 0 && (
+                <div className="space-y-3">
+                  <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-primary" />
+                    Custom Admin Tools ({customToolsList.length})
                   </h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                        Blog Author Name (Default: Toolzaro)
-                      </label>
-                      <input
-                        type="text"
-                        value={brandingForm.blogAuthorName ?? 'Toolzaro'}
-                        onChange={e =>
-                          setBrandingForm({ ...brandingForm, blogAuthorName: e.target.value })
-                        }
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-white focus:outline-hidden focus:border-indigo-500"
-                      />
-                    </div>
-                    <div className="space-y-1.5">
-                      <div className="flex items-center justify-between">
-                        <label className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                          Subtitle Below Name (Default: Admin)
-                        </label>
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setBrandingForm({
-                              ...brandingForm,
-                              showBlogAuthorRole:
-                                brandingForm.showBlogAuthorRole === false ? true : false,
-                            })
-                          }
-                          className={`text-[10px] font-bold px-2 py-0.5 rounded cursor-pointer ${
-                            brandingForm.showBlogAuthorRole !== false
-                              ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                              : 'bg-slate-800 text-slate-400'
-                          }`}
-                        >
-                          {brandingForm.showBlogAuthorRole !== false ? 'Show Subtitle' : 'Hidden'}
-                        </button>
-                      </div>
-                      <input
-                        type="text"
-                        value={brandingForm.blogAuthorRole ?? 'Admin'}
-                        onChange={e =>
-                          setBrandingForm({ ...brandingForm, blogAuthorRole: e.target.value })
-                        }
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-white focus:outline-hidden focus:border-indigo-500"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="pt-4 border-t border-slate-800 flex justify-end">
-                  <button
-                    type="button"
-                    disabled={savingSettings}
-                    onClick={async () => {
-                      setSavingSettings(true);
-                      try {
-                        await updateSettings({ branding: brandingForm });
-                        toast.success('Branding settings saved!');
-                      } catch (err: any) {
-                        toast.error('Failed to save: ' + err?.message);
-                      } finally {
-                        setSavingSettings(false);
-                      }
-                    }}
-                    className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs flex items-center gap-2 shadow-lg shadow-indigo-600/25 transition-all disabled:opacity-50"
-                  >
-                    <Save className="w-4 h-4" />
-                    <span>{savingSettings ? 'Saving...' : 'Save Branding'}</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* ================= TAB 6: ADS & MONETIZATION ================= */}
-          {activeTab === 'ads' && (
-            <div className="space-y-6 max-w-4xl">
-              <div>
-                <h2 className="text-2xl font-extrabold text-white tracking-tight flex items-center gap-2">
-                  <DollarSign className="w-6 h-6 text-emerald-400" />
-                  Ads & Monetization
-                </h2>
-                <p className="text-sm text-slate-400 mt-1">
-                  Manage Google AdSense publisher ID, ad slot placement, and ads.txt verification.
-                </p>
-              </div>
-
-              <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-6">
-                <div className="flex items-center justify-between pb-4 border-b border-slate-800">
-                  <div>
-                    <h4 className="text-sm font-bold text-white">Enable Advertisements</h4>
-                    <p className="text-xs text-slate-400">Toggle live ad display across all tool and blog pages</p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setAdsForm({ ...adsForm, enabled: !adsForm.enabled })}
-                    className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                      adsForm.enabled
-                        ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-                        : 'bg-slate-800 text-slate-400'
-                    }`}
-                  >
-                    {adsForm.enabled ? 'Ads Active' : 'Ads Paused'}
-                  </button>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                      AdSense Publisher ID
-                    </label>
-                    <input
-                      type="text"
-                      value={adsForm.publisherId}
-                      onChange={e => setAdsForm({ ...adsForm, publisherId: e.target.value })}
-                      placeholder="ca-pub-8769496591745522"
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-white focus:outline-hidden focus:border-indigo-500 font-mono"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                        In-Content Ad Slot ID
-                      </label>
-                      <input
-                        type="text"
-                        value={adsForm.inContentSlotId}
-                        onChange={e => setAdsForm({ ...adsForm, inContentSlotId: e.target.value })}
-                        placeholder="1234567890"
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-white focus:outline-hidden focus:border-indigo-500 font-mono"
-                      />
-                    </div>
-
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                        Sidebar / Sticky Ad Slot ID
-                      </label>
-                      <input
-                        type="text"
-                        value={adsForm.sidebarSlotId}
-                        onChange={e => setAdsForm({ ...adsForm, sidebarSlotId: e.target.value })}
-                        placeholder="9876543210"
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-white focus:outline-hidden focus:border-indigo-500 font-mono"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Ads.txt helper */}
-                  <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
-                    <div className="flex justify-between items-center">
-                      <span className="text-xs font-bold text-white">Your ads.txt verification snippet</span>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const pubId = adsForm.publisherId.replace(/^ca-pub-/, 'pub-');
-                          navigator.clipboard.writeText(`google.com, ${pubId}, DIRECT, f08c47fec0942fa0`);
-                          toast.success('Copied ads.txt line to clipboard!');
-                        }}
-                        className="text-[11px] text-indigo-400 hover:underline flex items-center gap-1"
-                      >
-                        <Copy className="w-3 h-3" /> Copy Snippet
-                      </button>
-                    </div>
-                    <code className="block p-2 rounded bg-slate-900 text-xs font-mono text-slate-300">
-                      google.com, {adsForm.publisherId.replace(/^ca-pub-/, 'pub-') || 'pub-8769496591745522'}, DIRECT, f08c47fec0942fa0
-                    </code>
-                  </div>
-                </div>
-
-                <div className="pt-4 border-t border-slate-800 flex justify-end">
-                  <button
-                    type="button"
-                    disabled={savingSettings}
-                    onClick={async () => {
-                      setSavingSettings(true);
-                      try {
-                        await updateSettings({ ads: adsForm, cookieConsent: cookieConsentForm });
-                        toast.success('AdSense & Consent settings saved!');
-                      } catch (err: any) {
-                        toast.error('Failed to save: ' + err?.message);
-                      } finally {
-                        setSavingSettings(false);
-                      }
-                    }}
-                    className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs flex items-center gap-2 shadow-lg shadow-indigo-600/25 transition-all disabled:opacity-50"
-                  >
-                    <Save className="w-4 h-4" />
-                    <span>{savingSettings ? 'Saving...' : 'Save Ad Settings'}</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* GDPR & AdSense Cookie Consent Banner Controller */}
-              <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-6">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <Cookie className="w-5 h-5 text-amber-400" />
-                      <h4 className="text-base font-bold text-white">
-                        GDPR &amp; AdSense Cookie Consent Banner
-                      </h4>
-                      <span
-                        className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wide uppercase ${
-                          cookieConsentForm.enabled
-                            ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
-                            : 'bg-rose-500/15 text-rose-400 border border-rose-500/30'
-                        }`}
-                      >
-                        {cookieConsentForm.enabled ? 'Active (ON)' : 'Disabled (OFF)'}
-                      </span>
-                    </div>
-                    <p className="text-xs text-slate-400 max-w-xl leading-relaxed">
-                      Controls whether the privacy &amp; cookie consent banner and the footer <code className="px-1.5 py-0.5 rounded bg-slate-950 text-indigo-300 font-mono text-[11px]">Cookie Preferences</code> button are active on your site.
-                    </p>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={() => handleToggleCookieConsent()}
-                    className={`shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all shadow-md cursor-pointer ${
-                      cookieConsentForm.enabled
-                        ? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-600/20'
-                        : 'bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700'
-                    }`}
-                  >
-                    <span
-                      className={`w-2.5 h-2.5 rounded-full ${
-                        cookieConsentForm.enabled ? 'bg-emerald-200 animate-pulse' : 'bg-slate-500'
-                      }`}
-                    />
-                    <span>{cookieConsentForm.enabled ? 'Turn OFF Banner' : 'Turn ON Banner'}</span>
-                  </button>
-                </div>
-
-                {/* Workflow Guidance for Google AdSense Approval & Post-Approval */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                  <div
-                    className={`p-4 rounded-xl border transition-all ${
-                      cookieConsentForm.enabled
-                        ? 'bg-emerald-950/20 border-emerald-800/50 text-slate-300 shadow-sm'
-                        : 'bg-slate-950/60 border-slate-800/80 text-slate-500 opacity-70'
-                    }`}
-                  >
-                    <div className="flex items-center gap-1.5 font-bold text-white mb-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                      <span>1. Currently ON (Recommended Before AdSense Approval)</span>
-                    </div>
-                    <ul className="space-y-1.5 text-[11px] leading-relaxed">
-                      <li>• <strong>Visitor Banner:</strong> Displays the bottom-right cookie consent notice with clear Accept/Decline buttons.</li>
-                      <li>• <strong>Footer Link:</strong> Displays the <em>Cookie Preferences</em> button in the footer for visitor access.</li>
-                      <li>• <strong>AdSense Safety:</strong> Safe from accidental clicks (isolated bottom-right corner, solid opaque background).</li>
-                      <li>• <strong>Compliance:</strong> Satisfies Google's EU User Consent Policy review requirement.</li>
-                    </ul>
-                  </div>
-
-                  <div
-                    className={`p-4 rounded-xl border transition-all ${
-                      !cookieConsentForm.enabled
-                        ? 'bg-indigo-950/30 border-indigo-700/60 text-slate-300 shadow-sm'
-                        : 'bg-slate-950/60 border-slate-800/80 text-slate-500 opacity-70'
-                    }`}
-                  >
-                    <div className="flex items-center gap-1.5 font-bold text-white mb-2">
-                      <Sparkles className="w-4 h-4 text-indigo-400 shrink-0" />
-                      <span>2. Turn OFF (After Receiving AdSense Approval)</span>
-                    </div>
-                    <ul className="space-y-1.5 text-[11px] leading-relaxed">
-                      <li>• <strong>Instant Clean Site:</strong> Both the banner and the footer <em>Cookie Preferences</em> link are 100% hidden.</li>
-                      <li>• <strong>Zero Code Editing:</strong> No need to modify code or delete files when AdSense is approved.</li>
-                      <li>• <strong>Official Google CMP:</strong> Easily switch to Google AdSense's official automated Privacy &amp; Messaging (GDPR/CPRA CMP) without banner collisions!</li>
-                    </ul>
-                  </div>
-                </div>
-
-                <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-slate-400">
-                  <div className="flex items-center gap-2">
-                    <Info className="w-4 h-4 text-indigo-400 shrink-0" />
-                    <span>
-                      Current Status: <strong className="text-white">{cookieConsentForm.enabled ? 'Banner & Footer Link are LIVE (Desktop & Mobile)' : 'Banner & Footer Link are HIDDEN'}</strong>
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-3 self-end sm:self-auto">
-                    {cookieConsentForm.enabled && (
-                      <button
-                        type="button"
-                        onClick={handlePreviewCookieBanner}
-                        className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-indigo-950/70 hover:bg-indigo-900 border border-indigo-700/60 text-[11px] font-bold text-indigo-300 hover:text-white transition-all shadow-xs cursor-pointer"
-                        title="Reset cached consent and open the cookie banner right now on this screen"
-                      >
-                        <Cookie className="w-3.5 h-3.5 text-indigo-400" />
-                        <span>Preview Banner on this Screen</span>
-                      </button>
-                    )}
-                    <button
-                      type="button"
-                      onClick={() => handleToggleCookieConsent()}
-                      className="text-[11px] font-bold text-indigo-400 hover:text-indigo-300 hover:underline cursor-pointer"
-                    >
-                      {cookieConsentForm.enabled ? 'Click to Disable' : 'Click to Enable'}
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* ================= TAB 7: SEO & CLOUDFLARE ================= */}
-          {activeTab === 'seo' && (
-            <div className="space-y-6 max-w-4xl">
-              <div>
-                <h2 className="text-2xl font-extrabold text-white tracking-tight flex items-center gap-2">
-                  <Globe className="w-6 h-6 text-sky-400" />
-                  SEO & Cloudflare Hosting
-                </h2>
-                <p className="text-sm text-slate-400 mt-1">
-                  Configure default meta tags, canonical domain URL, OpenGraph social card, and Cloudflare indexing.
-                </p>
-              </div>
-
-              <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-4">
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                    Canonical Site URL (Without trailing slash)
-                  </label>
-                  <input
-                    type="url"
-                    value={seoForm.canonicalBaseUrl}
-                    onChange={e => setSeoForm({ ...seoForm, canonicalBaseUrl: e.target.value })}
-                    placeholder="https://toolzaro.com"
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-white focus:outline-hidden focus:border-indigo-500 font-mono"
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                    Default Search Engine Title
-                  </label>
-                  <input
-                    type="text"
-                    value={seoForm.defaultTitle}
-                    onChange={e => setSeoForm({ ...seoForm, defaultTitle: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-white focus:outline-hidden focus:border-indigo-500"
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                    Default Meta Description
-                  </label>
-                  <textarea
-                    rows={3}
-                    value={seoForm.defaultDescription}
-                    onChange={e => setSeoForm({ ...seoForm, defaultDescription: e.target.value })}
-                    className="w-full p-3.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-white focus:outline-hidden focus:border-indigo-500 leading-relaxed"
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                    Default OpenGraph Social Banner Image (1200x630)
-                  </label>
-                  <input
-                    type="url"
-                    value={seoForm.defaultOgImage}
-                    onChange={e => setSeoForm({ ...seoForm, defaultOgImage: e.target.value })}
-                    placeholder="https://images.unsplash.com/..."
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-white focus:outline-hidden focus:border-indigo-500 font-mono"
-                  />
-                </div>
-
-                {/* Google Search Console & Webmaster Verification */}
-                <div className="pt-4 border-t border-slate-800 space-y-4">
-                  <div>
-                    <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                      <Sparkles className="w-4 h-4 text-amber-400" />
-                      Google Search Console & Webmaster Verification
-                    </h3>
-                    <p className="text-xs text-slate-400 mt-1">
-                      Verify ownership of <span className="text-indigo-400 font-mono font-bold">toolzaro.cyou</span> in Google Search Console to index tools fast and monitor search rankings.
-                    </p>
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold uppercase tracking-wider text-slate-400 flex justify-between items-center">
-                      <span>Google Search Console Verification Code / HTML Tag</span>
-                      <span className="text-[10px] text-slate-500 lowercase">accepts raw token or full &lt;meta&gt; tag</span>
-                    </label>
-                    <input
-                      type="text"
-                      value={seoForm.googleVerificationCode || ''}
-                      onChange={e => setSeoForm({ ...seoForm, googleVerificationCode: e.target.value })}
-                      placeholder="e.g. 4XYZ1234abcdEFGH... or <meta name='google-site-verification' content='...' />"
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-white focus:outline-hidden focus:border-indigo-500 font-mono"
-                    />
-                    {seoForm.googleVerificationCode && (
-                      <div className="p-2.5 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-xs text-indigo-300 flex items-center gap-2">
-                        <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                        <span>
-                          Active Verification Tag: <code className="text-white font-mono">&lt;meta name="google-site-verification" content="{
-                            seoForm.googleVerificationCode.includes('content=')
-                              ? seoForm.googleVerificationCode.match(/content=["']([^"']+)["']/)?.[1] || seoForm.googleVerificationCode
-                              : seoForm.googleVerificationCode.replace(/<[^>]*>/g, '').trim()
-                          }" /&gt;</code>
-                        </span>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                      Bing Webmaster Tools Verification Code (Optional)
-                    </label>
-                    <input
-                      type="text"
-                      value={seoForm.bingVerificationCode || ''}
-                      onChange={e => setSeoForm({ ...seoForm, bingVerificationCode: e.target.value })}
-                      placeholder="e.g. 5D8A3F2C..."
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-white focus:outline-hidden focus:border-indigo-500 font-mono"
-                    />
-                  </div>
-                </div>
-
-                <div className="pt-4 border-t border-slate-800 flex justify-end">
-                  <button
-                    type="button"
-                    disabled={savingSettings}
-                    onClick={async () => {
-                      setSavingSettings(true);
-                      try {
-                        await updateSettings({ seo: seoForm });
-                        toast.success('SEO & Search Console settings saved successfully!');
-                      } catch (err: any) {
-                        toast.error('Failed to save: ' + err?.message);
-                      } finally {
-                        setSavingSettings(false);
-                      }
-                    }}
-                    className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs flex items-center gap-2 shadow-lg shadow-indigo-600/25 transition-all disabled:opacity-50 cursor-pointer"
-                  >
-                    <Save className="w-4 h-4" />
-                    <span>{savingSettings ? 'Saving...' : 'Save SEO & Verification Settings'}</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* Google Search Console & Cloudflare Step-by-Step Guide */}
-              <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-4">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-base font-extrabold text-white flex items-center gap-2">
-                    <Globe className="w-5 h-5 text-sky-400" />
-                    Google Search Console Verification & Fast Indexing Guide
-                  </h3>
-                  <a
-                    href="https://search.google.com/search-console"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-xs font-bold text-indigo-400 hover:text-indigo-300 flex items-center gap-1.5 bg-indigo-500/10 px-3 py-1.5 rounded-xl border border-indigo-500/20"
-                  >
-                    Open Google Search Console <ExternalLink className="w-3.5 h-3.5" />
-                  </a>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-                  {/* Method 1 */}
-                  <div className="p-4 rounded-xl bg-slate-950 border border-slate-800/80 space-y-2">
-                    <div className="inline-block px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-indigo-500/20 text-indigo-300">
-                      Method 1: HTML Tag
-                    </div>
-                    <h4 className="font-bold text-white">Direct Meta Tag (Easiest)</h4>
-                    <p className="text-slate-400 leading-relaxed text-[11px]">
-                      1. In Google Search Console, select <strong>"URL prefix"</strong> and enter <code className="text-indigo-300">https://toolzaro.cyou</code>.
-                    </p>
-                    <p className="text-slate-400 leading-relaxed text-[11px]">
-                      2. Choose <strong>"HTML tag"</strong> verification method.
-                    </p>
-                    <p className="text-slate-400 leading-relaxed text-[11px]">
-                      3. Copy the code and paste it in the box above, then click <strong>"Save SEO Settings"</strong>. Done!
-                    </p>
-                  </div>
-
-                  {/* Method 2 */}
-                  <div className="p-4 rounded-xl bg-slate-950 border border-slate-800/80 space-y-2">
-                    <div className="inline-block px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-300">
-                      Method 2: Cloudflare DNS (Best)
-                    </div>
-                    <h4 className="font-bold text-white">Domain-Level TXT Record</h4>
-                    <p className="text-slate-400 leading-relaxed text-[11px]">
-                      1. In GSC, choose <strong>"Domain"</strong> verification for <code className="text-emerald-300">toolzaro.cyou</code>.
-                    </p>
-                    <p className="text-slate-400 leading-relaxed text-[11px]">
-                      2. In Cloudflare Dashboard, go to <strong>DNS &gt; Records &gt; Add record</strong>.
-                    </p>
-                    <p className="text-slate-400 leading-relaxed text-[11px]">
-                      3. Type: <strong>TXT</strong>, Name: <strong>@</strong>, Content: <strong>google-site-verification=...</strong>. Verifies entire domain in seconds!
-                    </p>
-                  </div>
-
-                  {/* Method 3 */}
-                  <div className="p-4 rounded-xl bg-slate-950 border border-slate-800/80 space-y-2">
-                    <div className="inline-block px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-sky-500/20 text-sky-300">
-                      Method 3: HTML File
-                    </div>
-                    <h4 className="font-bold text-white">Static File Upload</h4>
-                    <p className="text-slate-400 leading-relaxed text-[11px]">
-                      1. Download the <code className="text-sky-300">google*.html</code> verification file from GSC.
-                    </p>
-                    <p className="text-slate-400 leading-relaxed text-[11px]">
-                      2. Place it in the project's <code className="text-white">/public</code> folder.
-                    </p>
-                    <p className="text-slate-400 leading-relaxed text-[11px]">
-                      3. Cloudflare Pages serves it directly at <code className="text-slate-300">toolzaro.cyou/google*.html</code> with HTTP 200.
-                    </p>
-                  </div>
-                </div>
-
-                {/* Cloudflare Hosting & SEO File Status */}
-                <div className="pt-4 border-t border-slate-800 space-y-3">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-300">
-                    Live Hosting & Indexing Files (Ready for Cloudflare Upload)
-                  </h4>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-                    <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between">
-                      <div>
-                        <span className="font-bold text-white block">sitemap.xml</span>
-                        <span className="text-[11px] text-slate-400">{totalToolsCount}+ tools & dynamic articles</span>
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            navigator.clipboard.writeText('https://toolzaro.cyou/sitemap.xml');
-                            toast.success('Copied sitemap.xml URL!');
-                          }}
-                          className="px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] flex items-center gap-1"
-                        >
-                          <Copy className="w-3 h-3" /> Copy URL
-                        </button>
-                        <a
-                          href="https://search.google.com/search-console/sitemaps"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="px-2 py-1 rounded-lg bg-indigo-600/30 hover:bg-indigo-600/50 text-indigo-300 text-[11px] flex items-center gap-1"
-                        >
-                          Submit to GSC <ExternalLink className="w-3 h-3" />
-                        </a>
-                      </div>
-                    </div>
-
-                    <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between">
-                      <div>
-                        <span className="font-bold text-white block">robots.txt</span>
-                        <span className="text-[11px] text-slate-400">Allows tools, shields /sabbir admin</span>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          navigator.clipboard.writeText('https://toolzaro.cyou/robots.txt');
-                          toast.success('Copied robots.txt URL!');
-                        }}
-                        className="px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] flex items-center gap-1"
-                      >
-                        <Copy className="w-3 h-3" /> Copy URL
-                      </button>
-                    </div>
-
-                    <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between">
-                      <div>
-                        <span className="font-bold text-white block">wrangler.jsonc & _headers</span>
-                        <span className="text-[11px] text-slate-400">Cloudflare SPA routing & root-level tool URLs</span>
-                      </div>
-                      <span className="px-2 py-1 rounded-lg bg-emerald-500/10 text-emerald-400 font-bold text-[11px]">
-                        ✓ Configured
-                      </span>
-                    </div>
-
-                    <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between">
-                      <div>
-                        <span className="font-bold text-white block">ads.txt</span>
-                        <span className="text-[11px] text-slate-400">Google AdSense pub-8769496591745522</span>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          navigator.clipboard.writeText('https://toolzaro.cyou/ads.txt');
-                          toast.success('Copied ads.txt URL!');
-                        }}
-                        className="px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] flex items-center gap-1"
-                      >
-                        <Copy className="w-3 h-3" /> Copy URL
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* ================= TAB 8: SECURITY & ADMIN USERS ================= */}
-          {activeTab === 'security' && (
-            <div className="space-y-6 max-w-4xl">
-              <div>
-                <h2 className="text-2xl font-extrabold text-white tracking-tight flex items-center gap-2">
-                  <ShieldCheck className="w-6 h-6 text-emerald-400" />
-                  Security & Administrator Access
-                </h2>
-                <p className="text-sm text-slate-400 mt-1">
-                  Manage authenticated Firebase admin users, emergency passcodes, and ImgBB integration.
-                </p>
-              </div>
-
-              {/* Current Session Info */}
-              <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-4">
-                <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                  <UserCheck className="w-4 h-4 text-emerald-400" /> Current Authenticated Session
-                </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                  <div className="p-3 rounded-xl bg-slate-950 border border-slate-800">
-                    <span className="text-slate-400 block text-[11px]">Logged in as:</span>
-                    <span className="font-bold text-white">{adminEmail || 'Master Admin'}</span>
-                  </div>
-                  <div className="p-3 rounded-xl bg-slate-950 border border-slate-800">
-                    <span className="text-slate-400 block text-[11px]">Firebase UID:</span>
-                    <span className="font-mono text-slate-300 truncate block">
-                      {currentUser?.uid || 'local-master-session'}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="pt-2">
-                  <button
-                    type="button"
-                    onClick={handleLogout}
-                    className="px-4 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 text-xs font-bold flex items-center gap-2 transition-colors"
-                  >
-                    <LogOut className="w-4 h-4" />
-                    <span>Sign Out of Admin Portal</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* Team Members & Role Access Control (Admin, Editor, Manager) */}
-              <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-5">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-800">
-                  <div>
-                    <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                      <Lock className="w-4 h-4 text-indigo-400" /> Team Access & Role Management
-                    </h3>
-                    <p className="text-xs text-slate-400 mt-0.5">
-                      Authorize Gmail accounts with specific permission roles: <span className="text-indigo-400 font-bold">Admin</span> (Full), <span className="text-emerald-400 font-bold">Editor</span> (Blogs & Content), or <span className="text-amber-400 font-bold">Manager</span> (Tools & Ads).
-                    </p>
-                  </div>
-                  <span className="text-xs font-mono font-bold text-slate-400">
-                    {((settings.admin?.teamMembers || []).length)} Members
-                  </span>
-                </div>
-
-                {/* Team Members List */}
-                <div className="space-y-2">
-                  {/* Master Admin Always Shown */}
-                  <div className="p-3.5 rounded-xl bg-slate-950 border border-indigo-500/30 flex items-center justify-between text-xs">
-                    <div className="flex items-center gap-3">
-                      <div className="w-7 h-7 rounded-lg bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 flex items-center justify-center font-bold text-xs">
-                        ★
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <span className="font-mono font-bold text-white">
-                            {settings.admin?.masterAdminEmail || 'sabbirhasansh321@gmail.com'}
-                          </span>
-                          <span className="px-2 py-0.5 rounded text-[10px] font-extrabold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
-                            MASTER ADMIN
-                          </span>
-                        </div>
-                        <p className="text-[10px] text-slate-400 mt-0.5">Full unrestricted ownership & permissions</p>
-                      </div>
-                    </div>
-                    <span className="text-[10px] text-emerald-400 font-semibold">Protected</span>
-                  </div>
-
-                  {/* Other Team Members */}
-                  {(settings.admin?.teamMembers || [])
-                    .filter(m => m.email.toLowerCase() !== (settings.admin?.masterAdminEmail || 'sabbirhasansh321@gmail.com').toLowerCase())
-                    .map(member => (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {customToolsList.map(ct => (
                       <div
-                        key={member.email}
-                        className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 hover:border-slate-700 flex items-center justify-between text-xs transition-colors"
+                        key={ct.id}
+                        className="p-4 bg-card rounded-2xl border border-primary/30 flex items-center justify-between gap-3 shadow-2xs"
                       >
-                        <div className="flex items-center gap-3">
-                          <div className={`w-7 h-7 rounded-lg flex items-center justify-center font-bold text-xs ${
-                            member.role === 'admin'
-                              ? 'bg-indigo-600/20 text-indigo-400 border border-indigo-500/30'
-                              : member.role === 'editor'
-                              ? 'bg-emerald-600/20 text-emerald-400 border border-emerald-500/30'
-                              : 'bg-amber-600/20 text-amber-400 border border-amber-500/30'
-                          }`}>
-                            {member.role.charAt(0).toUpperCase()}
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-2">
+                            <span className="font-bold text-sm text-foreground truncate">{ct.name}</span>
+                            <span className="text-[10px] px-2 py-0.5 rounded bg-primary/10 text-primary font-bold">
+                              Custom HTML
+                            </span>
                           </div>
-                          <div>
+                          <p className="text-xs text-muted-foreground truncate mt-0.5">{ct.description || `/${ct.slug}`}</p>
+                        </div>
+
+                        <div className="flex items-center gap-1.5">
+                          <button
+                            onClick={() => setPreviewCustomTool(ct)}
+                            className="p-2 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground"
+                            title="Preview Tool"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteCustomToolAction(ct.id)}
+                            className="p-2 rounded-lg hover:bg-destructive/10 text-destructive"
+                            title="Delete Custom Tool"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Built-in 189+ Tools List */}
+              <div className="space-y-2">
+                <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
+                  <Wrench className="w-4 h-4 text-muted-foreground" />
+                  Built-in Tools Directory ({filteredTools.length})
+                </h3>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+                  {filteredTools.map(tool => {
+                    const override = settings.toolOverrides[tool.slug];
+                    const isDisabled = override?.disabled ?? false;
+                    const Icon = tool.icon;
+
+                    return (
+                      <div
+                        key={tool.slug}
+                        className={`p-3.5 bg-card rounded-2xl border transition-all flex items-center justify-between gap-3 ${
+                          isDisabled ? 'opacity-50 border-border bg-muted/20' : 'border-border hover:border-border/80 shadow-2xs'
+                        }`}
+                      >
+                        <div className="flex items-center gap-3 min-w-0 flex-1">
+                          <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                            <Icon className="w-5 h-5" />
+                          </div>
+
+                          <div className="min-w-0 flex-1">
                             <div className="flex items-center gap-2">
-                              <span className="font-mono font-bold text-white">{member.email}</span>
-                              <span className={`px-2 py-0.5 rounded text-[10px] font-extrabold uppercase tracking-wider border ${
-                                member.role === 'admin'
-                                  ? 'bg-indigo-500/10 text-indigo-300 border-indigo-500/30'
-                                  : member.role === 'editor'
-                                  ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30'
-                                  : 'bg-amber-500/10 text-amber-300 border-amber-500/30'
-                              }`}>
-                                {member.role}
+                              <span className="font-bold text-sm text-foreground truncate">
+                                {override?.customName || tool.name}
                               </span>
+                              {override?.customBadge && (
+                                <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-600 font-bold">
+                                  {override.customBadge}
+                                </span>
+                              )}
                             </div>
-                            <p className="text-[10px] text-slate-400 mt-0.5">
-                              {member.role === 'admin'
-                                ? 'Full administrative access'
-                                : member.role === 'editor'
-                                ? 'Can write, edit, and publish blogs & custom docs'
-                                : 'Can manage tools customization, ads, and announcement bar'}
-                              {member.addedAt && ` • Added ${member.addedAt}`}
+                            <p className="text-xs text-muted-foreground truncate">
+                              {override?.customDescription || tool.intro}
                             </p>
                           </div>
                         </div>
 
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveTeamMember(member.email)}
-                          className="p-2 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer"
-                          title="Remove team member"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                        {/* Actions (Toggle Switch & Edit) */}
+                        <div className="flex items-center gap-2 shrink-0">
+                          {/* ON/OFF Toggle Switch */}
+                          <button
+                            onClick={() => handleToggleToolState(tool.slug, isDisabled)}
+                            className={`w-11 h-6 flex items-center rounded-full p-1 transition-colors ${
+                              !isDisabled ? 'bg-emerald-500' : 'bg-muted'
+                            }`}
+                            title={!isDisabled ? 'Active (Click to Disable)' : 'Disabled (Click to Enable)'}
+                          >
+                            <div
+                              className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${
+                                !isDisabled ? 'translate-x-5' : 'translate-x-0'
+                              }`}
+                            />
+                          </button>
+
+                          <button
+                            onClick={() => {
+                              setEditingTool(tool);
+                              setToolOverrideForm(override || {});
+                              setIsToolModalOpen(true);
+                            }}
+                            className="p-1.5 rounded-lg border border-border hover:bg-muted text-muted-foreground hover:text-foreground text-xs"
+                            title="Edit Tool"
+                          >
+                            <Edit3 className="w-4 h-4" />
+                          </button>
+                        </div>
                       </div>
-                    ))}
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ========================================================= */}
+          {/* 4. LAYOUT VIEW */}
+          {/* ========================================================= */}
+          {activeMenu === 'layout' && (
+            <div className="max-w-4xl mx-auto space-y-6">
+              <div className="flex items-center justify-between pb-4 border-b border-border">
+                <div>
+                  <h2 className="text-xl font-display font-extrabold text-foreground">Layout Customizer</h2>
+                  <p className="text-xs text-muted-foreground">
+                    Reorder homepage sections, toggle visibility, and inject custom HTML/CSS scripts.
+                  </p>
                 </div>
 
-                {/* Add Team Member Form */}
-                <div className="pt-3 border-t border-slate-800 space-y-3">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
-                    <Plus className="w-3.5 h-3.5 text-indigo-400" /> Add Team Member (Gmail)
-                  </h4>
-                  <div className="grid grid-cols-1 sm:grid-cols-12 gap-2.5">
-                    <div className="sm:col-span-7">
-                      <input
-                        type="email"
-                        value={newTeamEmail}
-                        onChange={e => setNewTeamEmail(e.target.value)}
-                        placeholder="collaborator@gmail.com"
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white placeholder:text-slate-500 focus:outline-hidden focus:border-indigo-500"
-                      />
-                    </div>
-                    <div className="sm:col-span-3">
-                      <select
-                        value={newTeamRole}
-                        onChange={e => setNewTeamRole(e.target.value as AdminRole)}
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white focus:outline-hidden focus:border-indigo-500 cursor-pointer"
+                <button
+                  onClick={handleSaveLayoutAction}
+                  disabled={savingLayout}
+                  className="px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl text-xs font-semibold flex items-center gap-2 shadow-sm transition-colors disabled:opacity-50"
+                >
+                  <Save className="w-4 h-4" />
+                  <span>{savingLayout ? 'Saving...' : 'Save Layout'}</span>
+                </button>
+              </div>
+
+              {/* Homepage Sections Reordering */}
+              <div className="bg-card rounded-2xl border border-border p-5 space-y-4">
+                <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
+                  <Sliders className="w-4 h-4 text-primary" />
+                  Homepage Section Order & Visibility
+                </h3>
+                <p className="text-xs text-muted-foreground">
+                  Use the arrows to reorder sections. Toggle the switch to hide or display sections on the homepage.
+                </p>
+
+                <div className="space-y-2">
+                  {layoutSections.map((secKey, idx) => {
+                    const isVisible = sectionVisibility[secKey] ?? true;
+                    const labels: Record<string, string> = {
+                      hero: 'Hero Showcase & Search Bar',
+                      categories: 'Category Quick-Filter Strip',
+                      'tech-digest': 'Daily Tech Digest Reader Card',
+                      'featured-tools': 'Trending & Featured Utility Cards',
+                      'all-tools': 'Full 189+ Tool Directory Grid',
+                    };
+
+                    return (
+                      <div
+                        key={secKey}
+                        className="p-3 bg-muted/40 rounded-xl border border-border flex items-center justify-between gap-3"
                       >
-                        <option value="editor">Editor (Blogs & Content)</option>
-                        <option value="manager">Manager (Tools & Ads)</option>
-                        <option value="admin">Admin (Full Control)</option>
-                      </select>
-                    </div>
-                    <div className="sm:col-span-2">
-                      <button
-                        type="button"
-                        onClick={handleAddTeamMember}
-                        className="w-full py-2.5 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer shadow-md"
-                      >
-                        <UserCheck className="w-3.5 h-3.5" />
-                        <span>Add</span>
-                      </button>
-                    </div>
-                  </div>
-                  <p className="text-[11px] text-slate-400">
-                    When this Gmail account signs in via Google, their role and permissions will be applied automatically.
-                  </p>
+                        <div className="flex items-center gap-3">
+                          <span className="w-6 h-6 rounded-md bg-card border border-border flex items-center justify-center font-mono text-xs font-bold text-muted-foreground">
+                            {idx + 1}
+                          </span>
+                          <div>
+                            <p className="font-semibold text-xs text-foreground">{labels[secKey] || secKey}</p>
+                            <span className="text-[11px] text-muted-foreground font-mono">id: {secKey}</span>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => moveSection(idx, 'up')}
+                            disabled={idx === 0}
+                            className="p-1 rounded hover:bg-muted text-muted-foreground disabled:opacity-30"
+                          >
+                            <ChevronUp className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => moveSection(idx, 'down')}
+                            disabled={idx === layoutSections.length - 1}
+                            className="p-1 rounded hover:bg-muted text-muted-foreground disabled:opacity-30"
+                          >
+                            <ChevronDown className="w-4 h-4" />
+                          </button>
+
+                          {/* Visibility Toggle */}
+                          <button
+                            onClick={() => toggleSectionVis(secKey)}
+                            className={`w-10 h-5 flex items-center rounded-full p-0.5 transition-colors ${
+                              isVisible ? 'bg-emerald-500' : 'bg-muted'
+                            }`}
+                          >
+                            <div
+                              className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${
+                                isVisible ? 'translate-x-5' : 'translate-x-0'
+                              }`}
+                            />
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
 
-              {/* ImgBB API Key */}
-              <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-4">
-                <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                  <Upload className="w-4 h-4 text-sky-400" /> ImgBB API Key
+              {/* Custom HTML/CSS/JS Scripts Injection */}
+              <div className="bg-card rounded-2xl border border-border p-5 space-y-4">
+                <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
+                  <Code className="w-4 h-4 text-primary" />
+                  Custom Code & Scripts Injection
                 </h3>
-                <div className="space-y-1.5">
-                  <input
-                    type="text"
-                    value={imgbbKeyInput}
-                    onChange={e => setImgbbKeyInput(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-white focus:outline-hidden focus:border-indigo-500 font-mono"
-                  />
-                  <span className="text-[11px] text-slate-500">
-                    Used for instant blog image hosting via ImgBB API.
-                  </span>
+
+                <div className="space-y-4 text-xs">
+                  <div>
+                    <label className="font-medium text-muted-foreground block mb-1">
+                      Header Code (Injected into &lt;head&gt;)
+                    </label>
+                    <textarea
+                      rows={3}
+                      value={customHeadScripts}
+                      onChange={e => setCustomHeadScripts(e.target.value)}
+                      placeholder="<!-- Google Analytics, Custom Fonts, Meta tags -->"
+                      className="w-full rounded-xl border border-border bg-background p-3 font-mono text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="font-medium text-muted-foreground block mb-1">
+                      Footer Custom HTML / Code (Injected before &lt;/body&gt;)
+                    </label>
+                    <textarea
+                      rows={3}
+                      value={customFooterCode}
+                      onChange={e => setCustomFooterCode(e.target.value)}
+                      placeholder="<!-- Custom chat widget, promotional banner, tracking pixels -->"
+                      className="w-full rounded-xl border border-border bg-background p-3 font-mono text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ========================================================= */}
+          {/* 5. SETTINGS VIEW (Blogger order) */}
+          {/* ========================================================= */}
+          {activeMenu === 'settings' && (
+            <div className="max-w-4xl mx-auto space-y-6">
+              <div className="flex items-center justify-between pb-4 border-b border-border">
+                <div>
+                  <h2 className="text-xl font-display font-extrabold text-foreground">Settings</h2>
+                  <p className="text-xs text-muted-foreground">
+                    Comprehensive site settings configured in Blogger dashboard order.
+                  </p>
                 </div>
 
-                <div className="pt-2 flex justify-end">
+                <button
+                  onClick={handleSaveSettingsAction}
+                  disabled={savingSettings}
+                  className="px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl text-xs font-semibold flex items-center gap-2 shadow-sm transition-colors disabled:opacity-50"
+                >
+                  <Save className="w-4 h-4" />
+                  <span>{savingSettings ? 'Saving...' : 'Save Settings'}</span>
+                </button>
+              </div>
+
+              {/* Blogger-Ordered Accordions */}
+              <div className="bg-card rounded-2xl border border-border divide-y divide-border/60 overflow-hidden text-sm">
+                {/* 1. Basic */}
+                <div className="p-4 sm:p-5">
                   <button
-                    type="button"
-                    onClick={async () => {
-                      await updateSettings({
-                        admin: {
-                          ...settings.admin,
-                          imgbbApiKey: imgbbKeyInput.trim()
-                        }
-                      });
-                      toast.success('ImgBB API key updated!');
-                    }}
-                    className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs transition-colors"
+                    onClick={() => setActiveSettingsAccordion(activeSettingsAccordion === 'basic' ? '' : 'basic')}
+                    className="w-full flex items-center justify-between font-bold text-foreground text-left"
                   >
-                    Save API Key
+                    <span>1. Basic</span>
+                    <ChevronDown className={`w-4 h-4 transition-transform ${activeSettingsAccordion === 'basic' ? 'rotate-180' : ''}`} />
                   </button>
+
+                  {activeSettingsAccordion === 'basic' && (
+                    <div className="mt-4 space-y-3 pt-2 text-xs">
+                      <div>
+                        <label className="font-medium text-muted-foreground block mb-1">Title</label>
+                        <input
+                          type="text"
+                          value={settingsForm.branding.siteName}
+                          onChange={e => setSettingsForm({
+                            ...settingsForm,
+                            branding: { ...settingsForm.branding, siteName: e.target.value }
+                          })}
+                          className="w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground"
+                        />
+                      </div>
+                      <div>
+                        <label className="font-medium text-muted-foreground block mb-1">Description</label>
+                        <textarea
+                          rows={2}
+                          value={settingsForm.branding.tagline}
+                          onChange={e => setSettingsForm({
+                            ...settingsForm,
+                            branding: { ...settingsForm.branding, tagline: e.target.value }
+                          })}
+                          className="w-full rounded-lg border border-border bg-background p-2.5 text-foreground resize-none"
+                        />
+                      </div>
+                      <div>
+                        <label className="font-medium text-muted-foreground block mb-1">Contact Email</label>
+                        <input
+                          type="email"
+                          value={settingsForm.branding.contactEmail}
+                          onChange={e => setSettingsForm({
+                            ...settingsForm,
+                            branding: { ...settingsForm.branding, contactEmail: e.target.value }
+                          })}
+                          className="w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* 2. Posts */}
+                <div className="p-4 sm:p-5">
+                  <button
+                    onClick={() => setActiveSettingsAccordion(activeSettingsAccordion === 'posts' ? '' : 'posts')}
+                    className="w-full flex items-center justify-between font-bold text-foreground text-left"
+                  >
+                    <span>2. Posts</span>
+                    <ChevronDown className={`w-4 h-4 transition-transform ${activeSettingsAccordion === 'posts' ? 'rotate-180' : ''}`} />
+                  </button>
+
+                  {activeSettingsAccordion === 'posts' && (
+                    <div className="mt-4 space-y-3 pt-2 text-xs">
+                      <div>
+                        <label className="font-medium text-muted-foreground block mb-1">Max posts per page</label>
+                        <input
+                          type="number"
+                          value={settingsForm.bloggerSettings?.postsPerPage || 10}
+                          onChange={e => setSettingsForm({
+                            ...settingsForm,
+                            bloggerSettings: { ...settingsForm.bloggerSettings, postsPerPage: Number(e.target.value) }
+                          })}
+                          className="w-32 rounded-lg border border-border bg-background px-3 py-2 text-foreground"
+                        />
+                      </div>
+
+                      <div className="space-y-2 pt-2">
+                        <label className="flex items-center gap-2 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={settingsForm.bloggerSettings?.lightboxEnabled ?? true}
+                            onChange={e => setSettingsForm({
+                              ...settingsForm,
+                              bloggerSettings: { ...settingsForm.bloggerSettings, lightboxEnabled: e.target.checked }
+                            })}
+                            className="rounded text-primary focus:ring-primary"
+                          />
+                          <span>Image Lightbox popup for readers</span>
+                        </label>
+                        <label className="flex items-center gap-2 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={settingsForm.bloggerSettings?.lazyLoadImages ?? true}
+                            onChange={e => setSettingsForm({
+                              ...settingsForm,
+                              bloggerSettings: { ...settingsForm.bloggerSettings, lazyLoadImages: e.target.checked }
+                            })}
+                            className="rounded text-primary focus:ring-primary"
+                          />
+                          <span>Lazy load images for high-speed mobile performance</span>
+                        </label>
+                        <label className="flex items-center gap-2 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={settingsForm.bloggerSettings?.webpServing ?? true}
+                            onChange={e => setSettingsForm({
+                              ...settingsForm,
+                              bloggerSettings: { ...settingsForm.bloggerSettings, webpServing: e.target.checked }
+                            })}
+                            className="rounded text-primary focus:ring-primary"
+                          />
+                          <span>Serve WebP responsive image formats</span>
+                        </label>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* 3. Formatting */}
+                <div className="p-4 sm:p-5">
+                  <button
+                    onClick={() => setActiveSettingsAccordion(activeSettingsAccordion === 'formatting' ? '' : 'formatting')}
+                    className="w-full flex items-center justify-between font-bold text-foreground text-left"
+                  >
+                    <span>3. Formatting</span>
+                    <ChevronDown className={`w-4 h-4 transition-transform ${activeSettingsAccordion === 'formatting' ? 'rotate-180' : ''}`} />
+                  </button>
+
+                  {activeSettingsAccordion === 'formatting' && (
+                    <div className="mt-4 space-y-3 pt-2 text-xs">
+                      <div>
+                        <label className="font-medium text-muted-foreground block mb-1">Time zone</label>
+                        <input
+                          type="text"
+                          value={settingsForm.bloggerSettings?.timezone || 'UTC+06:00'}
+                          onChange={e => setSettingsForm({
+                            ...settingsForm,
+                            bloggerSettings: { ...settingsForm.bloggerSettings, timezone: e.target.value }
+                          })}
+                          className="w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground font-mono"
+                        />
+                      </div>
+                      <div>
+                        <label className="font-medium text-muted-foreground block mb-1">Date header format</label>
+                        <input
+                          type="text"
+                          value={settingsForm.bloggerSettings?.dateFormat || 'MMMM D, YYYY'}
+                          onChange={e => setSettingsForm({
+                            ...settingsForm,
+                            bloggerSettings: { ...settingsForm.bloggerSettings, dateFormat: e.target.value }
+                          })}
+                          className="w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground font-mono"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* 4. Meta tags */}
+                <div className="p-4 sm:p-5">
+                  <button
+                    onClick={() => setActiveSettingsAccordion(activeSettingsAccordion === 'meta' ? '' : 'meta')}
+                    className="w-full flex items-center justify-between font-bold text-foreground text-left"
+                  >
+                    <span>4. Meta tags</span>
+                    <ChevronDown className={`w-4 h-4 transition-transform ${activeSettingsAccordion === 'meta' ? 'rotate-180' : ''}`} />
+                  </button>
+
+                  {activeSettingsAccordion === 'meta' && (
+                    <div className="mt-4 space-y-3 pt-2 text-xs">
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={settingsForm.bloggerSettings?.searchDescriptionEnabled ?? true}
+                          onChange={e => setSettingsForm({
+                            ...settingsForm,
+                            bloggerSettings: { ...settingsForm.bloggerSettings, searchDescriptionEnabled: e.target.checked }
+                          })}
+                          className="rounded text-primary focus:ring-primary"
+                        />
+                        <span>Enable search description</span>
+                      </label>
+                      <div>
+                        <label className="font-medium text-muted-foreground block mb-1">Search description</label>
+                        <textarea
+                          rows={3}
+                          value={settingsForm.seo.defaultDescription}
+                          onChange={e => setSettingsForm({
+                            ...settingsForm,
+                            seo: { ...settingsForm.seo, defaultDescription: e.target.value }
+                          })}
+                          className="w-full rounded-lg border border-border bg-background p-2.5 text-foreground resize-none"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* 5. Errors and redirects */}
+                <div className="p-4 sm:p-5">
+                  <button
+                    onClick={() => setActiveSettingsAccordion(activeSettingsAccordion === 'errors' ? '' : 'errors')}
+                    className="w-full flex items-center justify-between font-bold text-foreground text-left"
+                  >
+                    <span>5. Errors and redirects</span>
+                    <ChevronDown className={`w-4 h-4 transition-transform ${activeSettingsAccordion === 'errors' ? 'rotate-180' : ''}`} />
+                  </button>
+
+                  {activeSettingsAccordion === 'errors' && (
+                    <div className="mt-4 space-y-3 pt-2 text-xs">
+                      <div>
+                        <label className="font-medium text-muted-foreground block mb-1">Custom 404 page message (HTML)</label>
+                        <textarea
+                          rows={2}
+                          placeholder="Page not found. Explore our 189+ free tools below!"
+                          value={settingsForm.bloggerSettings?.custom404Html || ''}
+                          onChange={e => setSettingsForm({
+                            ...settingsForm,
+                            bloggerSettings: { ...settingsForm.bloggerSettings, custom404Html: e.target.value }
+                          })}
+                          className="w-full rounded-lg border border-border bg-background p-2.5 text-foreground font-mono"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* 6. Crawlers and indexing */}
+                <div className="p-4 sm:p-5">
+                  <button
+                    onClick={() => setActiveSettingsAccordion(activeSettingsAccordion === 'crawlers' ? '' : 'crawlers')}
+                    className="w-full flex items-center justify-between font-bold text-foreground text-left"
+                  >
+                    <span>6. Crawlers and indexing</span>
+                    <ChevronDown className={`w-4 h-4 transition-transform ${activeSettingsAccordion === 'crawlers' ? 'rotate-180' : ''}`} />
+                  </button>
+
+                  {activeSettingsAccordion === 'crawlers' && (
+                    <div className="mt-4 space-y-3 pt-2 text-xs">
+                      <div>
+                        <label className="font-medium text-muted-foreground block mb-1">Custom robots.txt</label>
+                        <textarea
+                          rows={4}
+                          value={settingsForm.bloggerSettings?.customRobotsTxt || 'User-agent: *\nAllow: /\nDisallow: /admin\nSitemap: https://toolzaro.cyou/sitemap-index.xml'}
+                          onChange={e => setSettingsForm({
+                            ...settingsForm,
+                            bloggerSettings: { ...settingsForm.bloggerSettings, customRobotsTxt: e.target.value }
+                          })}
+                          className="w-full rounded-lg border border-border bg-background p-2.5 text-foreground font-mono"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* 7. Monetisation */}
+                <div className="p-4 sm:p-5">
+                  <button
+                    onClick={() => setActiveSettingsAccordion(activeSettingsAccordion === 'monetisation' ? '' : 'monetisation')}
+                    className="w-full flex items-center justify-between font-bold text-foreground text-left"
+                  >
+                    <span>7. Monetisation</span>
+                    <ChevronDown className={`w-4 h-4 transition-transform ${activeSettingsAccordion === 'monetisation' ? 'rotate-180' : ''}`} />
+                  </button>
+
+                  {activeSettingsAccordion === 'monetisation' && (
+                    <div className="mt-4 space-y-3 pt-2 text-xs">
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={settingsForm.ads.enabled}
+                          onChange={e => setSettingsForm({
+                            ...settingsForm,
+                            ads: { ...settingsForm.ads, enabled: e.target.checked }
+                          })}
+                          className="rounded text-primary focus:ring-primary"
+                        />
+                        <span>Enable Google AdSense ads</span>
+                      </label>
+
+                      <div>
+                        <label className="font-medium text-muted-foreground block mb-1">AdSense Publisher ID</label>
+                        <input
+                          type="text"
+                          value={settingsForm.ads.publisherId}
+                          onChange={e => setSettingsForm({
+                            ...settingsForm,
+                            ads: { ...settingsForm.ads, publisherId: e.target.value }
+                          })}
+                          className="w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground font-mono"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="font-medium text-muted-foreground block mb-1">Custom ads.txt</label>
+                        <textarea
+                          rows={2}
+                          value={settingsForm.bloggerSettings?.adsTxtContent || 'google.com, pub-8769496591745522, DIRECT, f08c47fec0942fa0'}
+                          onChange={e => setSettingsForm({
+                            ...settingsForm,
+                            bloggerSettings: { ...settingsForm.bloggerSettings, adsTxtContent: e.target.value }
+                          })}
+                          className="w-full rounded-lg border border-border bg-background p-2.5 text-foreground font-mono"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* 8. Manage */}
+                <div className="p-4 sm:p-5">
+                  <button
+                    onClick={() => setActiveSettingsAccordion(activeSettingsAccordion === 'manage' ? '' : 'manage')}
+                    className="w-full flex items-center justify-between font-bold text-foreground text-left"
+                  >
+                    <span>8. Manage</span>
+                    <ChevronDown className={`w-4 h-4 transition-transform ${activeSettingsAccordion === 'manage' ? 'rotate-180' : ''}`} />
+                  </button>
+
+                  {activeSettingsAccordion === 'manage' && (
+                    <div className="mt-4 space-y-4 pt-2 text-xs">
+                      <div className="p-3 bg-muted/40 rounded-xl border border-border flex items-center justify-between">
+                        <div>
+                          <p className="font-semibold text-foreground">Back up content</p>
+                          <p className="text-[11px] text-muted-foreground">Export all posts, pages, tools, and settings as a JSON file</p>
+                        </div>
+                        <button
+                          onClick={handleExportBackup}
+                          className="px-3 py-1.5 bg-card border border-border hover:bg-muted rounded-lg font-medium flex items-center gap-1.5 transition-colors"
+                        >
+                          <Download className="w-3.5 h-3.5 text-primary" />
+                          <span>Export</span>
+                        </button>
+                      </div>
+
+                      <div className="p-3 bg-muted/40 rounded-xl border border-border flex items-center justify-between">
+                        <div>
+                          <p className="font-semibold text-foreground">Import content</p>
+                          <p className="text-[11px] text-muted-foreground">Restore posts, pages, and layout from a backup JSON file</p>
+                        </div>
+                        <label className="px-3 py-1.5 bg-card border border-border hover:bg-muted rounded-lg font-medium flex items-center gap-1.5 transition-colors cursor-pointer">
+                          <Upload className="w-3.5 h-3.5 text-primary" />
+                          <span>Import</span>
+                          <input type="file" accept=".json" onChange={handleImportBackup} className="hidden" />
+                        </label>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* 9. Site feed */}
+                <div className="p-4 sm:p-5">
+                  <button
+                    onClick={() => setActiveSettingsAccordion(activeSettingsAccordion === 'feed' ? '' : 'feed')}
+                    className="w-full flex items-center justify-between font-bold text-foreground text-left"
+                  >
+                    <span>9. Site feed</span>
+                    <ChevronDown className={`w-4 h-4 transition-transform ${activeSettingsAccordion === 'feed' ? 'rotate-180' : ''}`} />
+                  </button>
+
+                  {activeSettingsAccordion === 'feed' && (
+                    <div className="mt-4 space-y-3 pt-2 text-xs">
+                      <div>
+                        <label className="font-medium text-muted-foreground block mb-1">Allow blog feed</label>
+                        <select
+                          value={settingsForm.bloggerSettings?.rssFeedType || 'full'}
+                          onChange={e => setSettingsForm({
+                            ...settingsForm,
+                            bloggerSettings: { ...settingsForm.bloggerSettings, rssFeedType: e.target.value as any }
+                          })}
+                          className="w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground"
+                        >
+                          <option value="full">Full (Entire post content)</option>
+                          <option value="short">Short (Excerpt only)</option>
+                          <option value="none">None (Disabled)</option>
+                        </select>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* 10. Permissions */}
+                <div className="p-4 sm:p-5">
+                  <button
+                    onClick={() => setActiveSettingsAccordion(activeSettingsAccordion === 'permissions' ? '' : 'permissions')}
+                    className="w-full flex items-center justify-between font-bold text-foreground text-left"
+                  >
+                    <span>10. Permissions</span>
+                    <ChevronDown className={`w-4 h-4 transition-transform ${activeSettingsAccordion === 'permissions' ? 'rotate-180' : ''}`} />
+                  </button>
+
+                  {activeSettingsAccordion === 'permissions' && (
+                    <div className="mt-4 space-y-4 pt-2 text-xs">
+                      <div>
+                        <label className="font-medium text-muted-foreground block mb-1">Reader access</label>
+                        <select
+                          value={settingsForm.bloggerSettings?.readerAccess || 'public'}
+                          onChange={e => setSettingsForm({
+                            ...settingsForm,
+                            bloggerSettings: { ...settingsForm.bloggerSettings, readerAccess: e.target.value as any }
+                          })}
+                          className="w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground"
+                        >
+                          <option value="public">Public (Open to everyone worldwide)</option>
+                          <option value="private">Private (Admin only)</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="font-medium text-muted-foreground block mb-1">ImgBB API Key (Image Uploads)</label>
+                        <input
+                          type="text"
+                          value={settingsForm.admin.imgbbApiKey}
+                          onChange={e => setSettingsForm({
+                            ...settingsForm,
+                            admin: { ...settingsForm.admin, imgbbApiKey: e.target.value }
+                          })}
+                          className="w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground font-mono"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="font-medium text-muted-foreground block mb-1">Blog Authors & Team Emails</label>
+                        <div className="space-y-1">
+                          {(settingsForm.admin.allowedEmails || []).map(em => (
+                            <div key={em} className="p-2 rounded-lg bg-muted/40 border border-border flex items-center justify-between">
+                              <span className="font-mono text-xs">{em}</span>
+                              <span className="text-[10px] px-2 py-0.5 rounded bg-primary/10 text-primary font-bold">Admin</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
           )}
         </main>
       </div>
+
+      {/* ========================================================= */}
+      {/* MOBILE BOTTOM NAVIGATION BAR */}
+      {/* ========================================================= */}
+      <nav className="fixed bottom-0 left-0 right-0 h-16 bg-card/95 backdrop-blur border-t border-border flex items-center justify-around px-2 z-30 lg:hidden">
+        {[
+          { id: 'posts', label: 'Posts', icon: FileText },
+          { id: 'pages', label: 'Pages', icon: Layers },
+          { id: 'tools', label: 'Tools', icon: Wrench },
+          { id: 'layout', label: 'Layout', icon: Sliders },
+          { id: 'settings', label: 'Settings', icon: SettingsIcon },
+        ].map(item => {
+          const Icon = item.icon;
+          const active = activeMenu === item.id;
+          return (
+            <button
+              key={item.id}
+              onClick={() => setActiveMenu(item.id as any)}
+              className={`flex flex-col items-center justify-center gap-1 py-1 px-3 rounded-xl transition-colors ${
+                active ? 'text-primary font-bold' : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              <Icon className="w-5 h-5" />
+              <span className="text-[10px]">{item.label}</span>
+            </button>
+          );
+        })}
+      </nav>
+
+      {/* ========================================================= */}
+      {/* UNIFIED RICH CONTENT EDITOR MODAL (For Posts & Pages) */}
+      {/* ========================================================= */}
+      {isPostEditorOpen && (
+        <RichContentEditor
+          type="post"
+          initialData={editingPost}
+          imgbbApiKey={settings.admin.imgbbApiKey}
+          onSave={handleSavePost}
+          onClose={() => {
+            setIsPostEditorOpen(false);
+            setEditingPost(null);
+          }}
+        />
+      )}
+
+      {isPageEditorOpen && (
+        <RichContentEditor
+          type="page"
+          initialData={editingPage}
+          imgbbApiKey={settings.admin.imgbbApiKey}
+          onSave={handleSavePage}
+          onClose={() => {
+            setIsPageEditorOpen(false);
+            setEditingPage(null);
+          }}
+        />
+      )}
+
+      {/* ========================================================= */}
+      {/* DELETE CONFIRMATION DIALOG (Posts) */}
+      {/* ========================================================= */}
+      {deleteConfirmPost && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-card w-full max-w-sm rounded-2xl border border-border shadow-xl p-5 space-y-4">
+            <h3 className="font-bold text-base text-foreground flex items-center gap-2">
+              <Trash2 className="w-5 h-5 text-destructive" />
+              Delete Post?
+            </h3>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Are you sure you want to permanently delete "{deleteConfirmPost.title}"? This action cannot be undone.
+            </p>
+            <div className="flex justify-end gap-2 pt-2">
+              <button
+                onClick={() => setDeleteConfirmPost(null)}
+                className="px-3 py-1.5 rounded-lg border border-border hover:bg-muted text-xs font-medium"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleDeletePost(deleteConfirmPost)}
+                className="px-4 py-1.5 rounded-lg bg-destructive hover:bg-destructive/90 text-white text-xs font-semibold"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================= */}
+      {/* DELETE CONFIRMATION DIALOG (Pages) */}
+      {/* ========================================================= */}
+      {deleteConfirmPage && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-card w-full max-w-sm rounded-2xl border border-border shadow-xl p-5 space-y-4">
+            <h3 className="font-bold text-base text-foreground flex items-center gap-2">
+              <Trash2 className="w-5 h-5 text-destructive" />
+              Delete Page?
+            </h3>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Are you sure you want to delete page "{deleteConfirmPage.title}"? The URL /{deleteConfirmPage.slug} will become inactive.
+            </p>
+            <div className="flex justify-end gap-2 pt-2">
+              <button
+                onClick={() => setDeleteConfirmPage(null)}
+                className="px-3 py-1.5 rounded-lg border border-border hover:bg-muted text-xs font-medium"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleDeletePage(deleteConfirmPage)}
+                className="px-4 py-1.5 rounded-lg bg-destructive hover:bg-destructive/90 text-white text-xs font-semibold"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================= */}
+      {/* EDIT BUILT-IN TOOL MODAL */}
+      {/* ========================================================= */}
+      {isToolModalOpen && editingTool && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-card w-full max-w-md rounded-2xl border border-border shadow-xl p-5 space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="font-bold text-base text-foreground flex items-center gap-2">
+                <Edit3 className="w-4 h-4 text-primary" />
+                Edit Tool: {editingTool.name}
+              </h3>
+              <button onClick={() => setIsToolModalOpen(false)} className="p-1 rounded-lg hover:bg-muted text-muted-foreground">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="space-y-3 text-xs">
+              <div>
+                <label className="font-medium text-muted-foreground block mb-1">Custom Display Name</label>
+                <input
+                  type="text"
+                  value={toolOverrideForm.customName || ''}
+                  placeholder={editingTool.name}
+                  onChange={e => setToolOverrideForm({ ...toolOverrideForm, customName: e.target.value })}
+                  className="w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground"
+                />
+              </div>
+
+              <div>
+                <label className="font-medium text-muted-foreground block mb-1">Custom Description</label>
+                <textarea
+                  rows={2}
+                  value={toolOverrideForm.customDescription || ''}
+                  placeholder={editingTool.intro}
+                  onChange={e => setToolOverrideForm({ ...toolOverrideForm, customDescription: e.target.value })}
+                  className="w-full rounded-lg border border-border bg-background p-2.5 text-foreground resize-none"
+                />
+              </div>
+
+              <div>
+                <label className="font-medium text-muted-foreground block mb-1">Badge (Optional)</label>
+                <select
+                  value={toolOverrideForm.customBadge || ''}
+                  onChange={e => setToolOverrideForm({ ...toolOverrideForm, customBadge: e.target.value as any })}
+                  className="w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground"
+                >
+                  <option value="">None</option>
+                  <option value="Popular">Popular</option>
+                  <option value="New">New</option>
+                  <option value="Pro">Pro</option>
+                  <option value="Featured">Featured</option>
+                  <option value="Updated">Updated</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="font-medium text-muted-foreground block mb-1">Custom HTML/CSS snippet</label>
+                <textarea
+                  rows={2}
+                  value={toolOverrideForm.customCode || ''}
+                  placeholder="<!-- Extra banner or instructions inside tool page -->"
+                  onChange={e => setToolOverrideForm({ ...toolOverrideForm, customCode: e.target.value })}
+                  className="w-full rounded-lg border border-border bg-background p-2 font-mono text-[11px] text-foreground"
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2 pt-2">
+              <button onClick={() => setIsToolModalOpen(false)} className="px-3 py-1.5 rounded-lg border border-border hover:bg-muted text-xs font-medium">
+                Cancel
+              </button>
+              <button onClick={handleSaveToolOverride} className="px-4 py-1.5 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-semibold">
+                Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================= */}
+      {/* ADD CUSTOM HTML TOOL MODAL */}
+      {/* ========================================================= */}
+      {isAddCustomToolOpen && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-card w-full max-w-2xl max-h-[90vh] rounded-3xl border border-border shadow-2xl p-6 flex flex-col space-y-4 overflow-hidden">
+            <div className="flex items-center justify-between pb-3 border-b border-border shrink-0">
+              <h3 className="font-bold text-base text-foreground flex items-center gap-2">
+                <Code className="w-5 h-5 text-primary" />
+                Add New Tool (HTML Code)
+              </h3>
+              <button onClick={() => setIsAddCustomToolOpen(false)} className="p-1 rounded-lg hover:bg-muted text-muted-foreground">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto space-y-3 text-xs pr-1">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="font-medium text-muted-foreground block mb-1">Tool Name</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Markdown Table Builder"
+                    value={customToolForm.name || ''}
+                    onChange={e => {
+                      const name = e.target.value;
+                      const slug = name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
+                      setCustomToolForm({ ...customToolForm, name, slug: customToolForm.slug || slug });
+                    }}
+                    className="w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground"
+                  />
+                </div>
+
+                <div>
+                  <label className="font-medium text-muted-foreground block mb-1">URL Slug</label>
+                  <input
+                    type="text"
+                    placeholder="markdown-table-builder"
+                    value={customToolForm.slug || ''}
+                    onChange={e => setCustomToolForm({ ...customToolForm, slug: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '') })}
+                    className="w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground font-mono"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="font-medium text-muted-foreground block mb-1">Description</label>
+                <input
+                  type="text"
+                  placeholder="Short description of what the tool does..."
+                  value={customToolForm.description || ''}
+                  onChange={e => setCustomToolForm({ ...customToolForm, description: e.target.value })}
+                  className="w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground"
+                />
+              </div>
+
+              <div>
+                <label className="font-medium text-muted-foreground block mb-1">Custom Tool HTML/CSS/JS Code</label>
+                <textarea
+                  rows={8}
+                  placeholder="<div id='app'>...</div><script>...</script><style>...</style>"
+                  value={customToolForm.customHtml || ''}
+                  onChange={e => setCustomToolForm({ ...customToolForm, customHtml: e.target.value })}
+                  className="w-full rounded-xl border border-border bg-background p-3 font-mono text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary leading-relaxed"
+                />
+                <p className="text-[11px] text-muted-foreground mt-1">
+                  Runs inside an isolated, responsive sandbox frame with full-screen toggle support.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2 pt-3 border-t border-border shrink-0">
+              <button onClick={() => setIsAddCustomToolOpen(false)} className="px-3 py-1.5 rounded-lg border border-border hover:bg-muted text-xs font-medium">
+                Cancel
+              </button>
+              <button onClick={handleSaveCustomToolAction} className="px-4 py-1.5 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-semibold">
+                Create Tool
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================= */}
+      {/* PREVIEW CUSTOM TOOL MODAL */}
+      {/* ========================================================= */}
+      {previewCustomTool && (
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-card w-full max-w-4xl h-[85vh] rounded-3xl border border-border shadow-2xl flex flex-col overflow-hidden">
+            <div className="h-14 border-b border-border px-4 flex items-center justify-between bg-muted/40 shrink-0">
+              <span className="font-bold text-sm text-foreground">Preview: {previewCustomTool.name}</span>
+              <button onClick={() => setPreviewCustomTool(null)} className="p-1 rounded-lg hover:bg-muted text-muted-foreground">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="flex-1 p-4 overflow-hidden">
+              <CustomToolRunner
+                customHtml={previewCustomTool.customHtml}
+                name={previewCustomTool.name}
+                description={previewCustomTool.description}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

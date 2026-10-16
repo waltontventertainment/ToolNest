@@ -51,7 +51,7 @@ export interface FirestoreBlog {
   };
   publishedAt: string; // YYYY-MM-DD
   readTimeMinutes: number;
-  status: 'published' | 'draft' | 'deleted';
+  status: 'published' | 'draft' | 'scheduled' | 'deleted';
   contentType?: 'text' | 'code'; // 'text' for formatted editorial text, 'code' for custom HTML/CSS/JS design
   customHtml?: string;
   customCss?: string;
