@@ -1,24 +1,61 @@
-
-if (typeof Uint8Array !== "undefined" && !Uint8Array.prototype.toHex) {
-  Object.defineProperty(Uint8Array.prototype, "toHex", {
-    value: function toHex() {
-      let hex = "";
-      for (let i = 0; i < this.length; i++) {
-        hex += this[i].toString(16).padStart(2, "0");
+// Comprehensive Web Worker polyfills for modern TypedArray/Array toHex proposals
+(function() {
+  function universalToHex() {
+    try {
+      if (typeof this === 'string') {
+        let hex = '';
+        for (let i = 0; i < this.length; i++) {
+          hex += (this.charCodeAt(i) & 0xff).toString(16).padStart(2, '0');
+        }
+        return hex;
       }
-      return hex;
-    },
-    writable: true,
-    configurable: true
+      if (this && typeof this.length === 'number') {
+        let hex = '';
+        for (let i = 0; i < this.length; i++) {
+          const byte = Number(this[i]) & 0xff;
+          hex += byte.toString(16).padStart(2, '0');
+        }
+        return hex;
+      }
+      if (typeof ArrayBuffer !== 'undefined' && this instanceof ArrayBuffer) {
+        const u8 = new Uint8Array(this);
+        let hex = '';
+        for (let i = 0; i < u8.length; i++) {
+          hex += u8[i].toString(16).padStart(2, '0');
+        }
+        return hex;
+      }
+      if (typeof this === 'number') {
+        return (this & 0xff).toString(16).padStart(2, '0');
+      }
+      return '';
+    } catch (e) {
+      return '';
+    }
+  }
+
+  const targets = [
+    typeof Uint8Array !== 'undefined' ? Uint8Array : null,
+    typeof Uint8ClampedArray !== 'undefined' ? Uint8ClampedArray : null,
+    typeof Int8Array !== 'undefined' ? Int8Array : null,
+    typeof Array !== 'undefined' ? Array : null,
+    typeof String !== 'undefined' ? String : null,
+    typeof ArrayBuffer !== 'undefined' ? ArrayBuffer : null,
+    typeof Object !== 'undefined' ? Object : null
+  ];
+
+  targets.forEach(function(cls) {
+    if (cls && cls.prototype && !('toHex' in cls.prototype)) {
+      try {
+        Object.defineProperty(cls.prototype, 'toHex', {
+          value: universalToHex,
+          writable: true,
+          configurable: true
+        });
+      } catch (err) {}
+    }
   });
-}
-if (typeof Uint8ClampedArray !== "undefined" && !Uint8ClampedArray.prototype.toHex) {
-  Object.defineProperty(Uint8ClampedArray.prototype, "toHex", {
-    value: Uint8Array.prototype.toHex,
-    writable: true,
-    configurable: true
-  });
-}
+})();
 
 /**
  * @licstart The following is the entire license notice for the

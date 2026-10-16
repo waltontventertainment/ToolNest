@@ -22,6 +22,7 @@ import { useSearchParams, Link, useNavigate, useLocation } from 'react-router-do
 import { tools, categories, getInterleavedTools } from '../lib/registry';
 import { getEffectiveTools } from '../lib/toolOverrides';
 import { ToolCard } from '../components/ToolCard';
+import { AppLauncherCard } from '../components/AppLauncherCard';
 import { Seo } from '../components/Seo';
 import { AdSlot } from '../components/AdSlot';
 import { BreadcrumbNavigation } from '../components/BreadcrumbNavigation';
@@ -827,18 +828,26 @@ export const Index: React.FC<{ forcedBookmarks?: boolean }> = ({ forcedBookmarks
               </div>
 
               {filteredTools.length > 0 ? (
-                <div className="flex flex-col items-center">
-                  <div
-                    className={
-                      pcViewMode === 'compact'
-                        ? 'grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 w-full'
-                        : 'grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5 w-full'
-                    }
-                  >
-                    {displayedTools.map(tool => (
-                      <ToolCard key={tool.slug} tool={tool} compact={pcViewMode === 'compact'} />
-                    ))}
-                  </div>
+                <div className="flex flex-col items-center w-full">
+                  {activeCategory === 'App' ? (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4 md:gap-5 w-full">
+                      {displayedTools.map(tool => (
+                        <AppLauncherCard key={tool.slug} tool={tool} />
+                      ))}
+                    </div>
+                  ) : (
+                    <div
+                      className={
+                        pcViewMode === 'compact'
+                          ? 'grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 w-full'
+                          : 'grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5 w-full'
+                      }
+                    >
+                      {displayedTools.map(tool => (
+                        <ToolCard key={tool.slug} tool={tool} compact={pcViewMode === 'compact'} />
+                      ))}
+                    </div>
+                  )}
 
                   {displayCount < filteredTools.length && (
                     <button 

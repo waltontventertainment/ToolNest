@@ -7,13 +7,22 @@ export function initPdfWorker() {
   if (isWorkerConfigured || typeof window === 'undefined') return;
 
   try {
+    // 1. Use the standalone polyfilled worker in public/ (served at /pdf.worker.mjs)
+    pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.mjs';
+    isWorkerConfigured = true;
+    return;
+  } catch (err) {
+    console.warn('Local /pdf.worker.mjs configuration error, checking fallback:', err);
+  }
+
+  try {
     if (pdfWorkerUrl) {
       pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
       isWorkerConfigured = true;
       return;
     }
   } catch (err) {
-    console.warn('Local PDF worker URL resolution error, using CDN fallback:', err);
+    console.warn('Bundled PDF worker URL resolution error, using CDN fallback:', err);
   }
 
   try {

@@ -195,12 +195,12 @@ export const CATEGORY_SEO_DATA: Record<
       'Powered by free, open-source public APIs (Memegen, Agify, Nationalize, Open Trivia DB, PokéAPI, YesNo.wtf, TheMealDB, and RickAndMortyAPI) for instant entertainment and viral social sharing.',
   },
   'App': {
-    title: 'Free Web Apps – PDF Editor Suite & Browser Applications | Toolzaro',
+    title: 'Free Web Apps – PDF Editor, Markdown Studio & Code Playground | Toolzaro',
     description:
-      'Explore powerful, free, full-featured web applications running 100% locally in your browser. Edit and annotate PDFs, fill forms, and organize documents with zero server uploads.',
-    keywords: ['free web apps', 'pdf editor online', 'browser apps', 'open source web apps', 'offline web tools', 'private client side apps'],
+      'Explore powerful, standalone web applications running 100% locally in your browser. Edit PDFs, write documentation in Markdown Studio, and prototype in Live Code Playground with zero uploads.',
+    keywords: ['free web apps', 'pdf editor online', 'markdown studio', 'code playground', 'browser apps', 'open source web apps', 'offline web tools', 'private client side apps'],
     editorialSummary:
-      'Standalone, desktop-grade web applications rebuilt with open-source technologies, delivering private in-browser document editing and productivity workflows.',
+      'Standalone, desktop-grade web applications running completely inside your browser, delivering private in-browser document editing, markdown writing, and code prototyping.',
   },
 };
 

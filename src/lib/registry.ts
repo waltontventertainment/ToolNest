@@ -1,5 +1,5 @@
 import React from 'react';
-import { Type, QrCode, Image as ImageIcon, KeyRound, Search, FileText, Binary, Code, Barcode, FileSearch, Timer, Scissors, ArrowDownAZ, Space, Filter, ArrowLeftRight, WrapText, SplitSquareHorizontal, Mail, Link, Hash, FileDiff, Replace, ListPlus, ShieldX, Calculator, Superscript, Clock, Palette, Database, Fingerprint, Scan, Crop, Globe, Heart, Activity, FileCode, Box, Share2, BarChart2, Tag, Zap, BookOpen, Layers as Hierarchy, Volume2, Keyboard, Monitor, Shuffle, Maximize2, Sliders, Stamp, Eye, EyeOff, Sparkles, Merge, RotateCw, ShieldAlert, CheckCircle2, Video, Briefcase, ShoppingBag, Users, GraduationCap, Globe2, Utensils, Scale, Calendar, MapPin, CloudSun, Cloud, Smile, Wifi, Download, User, Info, Map, Wind, Thermometer, ShieldCheck, Bookmark, RefreshCw, AppWindow, PenTool } from 'lucide-react';
+import { Type, QrCode, Image as ImageIcon, KeyRound, Search, FileText, Binary, Code, Barcode, FileSearch, Timer, Scissors, ArrowDownAZ, Space, Filter, ArrowLeftRight, WrapText, SplitSquareHorizontal, Mail, Link, Hash, FileDiff, Replace, ListPlus, ShieldX, Calculator, Superscript, Clock, Palette, Database, Fingerprint, Scan, Crop, Globe, Heart, Activity, FileCode, Box, Share2, BarChart2, Tag, Zap, BookOpen, Layers as Hierarchy, Volume2, Keyboard, Monitor, Shuffle, Maximize2, Sliders, Stamp, Eye, EyeOff, Sparkles, Merge, RotateCw, ShieldAlert, CheckCircle2, Video, Briefcase, ShoppingBag, Users, GraduationCap, Globe2, Utensils, Scale, Calendar, MapPin, CloudSun, Cloud, Smile, Wifi, Download, User, Info, Map, Wind, Thermometer, ShieldCheck, Bookmark, RefreshCw, AppWindow, PenTool, Play } from 'lucide-react';
 import { ToolDefinition, ToolCategory } from './types';
 
 /**
@@ -140,6 +140,9 @@ const WikipediaSummarizer = lazyTool(() => import('../tools/WikipediaSummarizer'
 const WikipediaHistory = lazyTool(() => import('../tools/WikipediaHistory'), 'WikipediaHistory');
 const WikipediaNearby = lazyTool(() => import('../tools/WikipediaNearby'), 'WikipediaNearby');
 const PdfEditorAppTool = lazyTool(() => import('../tools/PdfEditorAppTool'), 'PdfEditorAppTool');
+const loadAppSuiteTools = () => import('../tools/AppSuiteTools');
+const MarkdownStudio = lazyTool(loadAppSuiteTools, 'MarkdownStudio');
+const CodePlayground = lazyTool(loadAppSuiteTools, 'CodePlayground');
 
 // 10. FreeApiToolsBatch
 const loadFreeApiToolsBatch = () => import('../tools/FreeApiToolsBatch');
@@ -490,6 +493,52 @@ export const tools: ToolDefinition[] = [
       { q: 'Is there any watermark added to my exported PDF?', a: 'Never. The PDF Editor Suite produces completely clean, full-resolution PDF files with zero watermarks or branding.' }
     ],
     Component: PdfEditorAppTool
+  },
+  {
+    slug: 'markdown-studio',
+    name: 'Markdown Studio',
+    category: 'App',
+    icon: BookOpen,
+    previewIcons: [BookOpen, FileText, Sparkles],
+    keywords: ['markdown editor', 'markdown studio', 'live markdown preview', 'online markdown writer', 'export markdown to html', 'document studio', 'local markdown editor'],
+    metaTitle: 'Markdown Studio – Free Online Real-Time Markdown Editor & Document App',
+    metaDescription: 'Feature-rich, privacy-first Markdown Editor running 100% in your browser. Real-time split preview, syntax toolbar, word counter, and export to .md and .html.',
+    intro: 'Markdown Studio is a distraction-free, professional document editor and live preview suite. Designed for technical writers, researchers, and developers, it operates entirely offline in your browser with zero latency and automatic local storage persistence.',
+    howTo: [
+      'Type or paste your Markdown content directly into the editor pane on the left.',
+      'Use the quick formatting toolbar for headings, bold/italic, lists, blockquotes, and code blocks.',
+      'Toggle between Split, Full Editor, or Full Preview modes using the top view controls.',
+      'Export your finalized document as formatted .md or standalone styling-ready HTML.'
+    ],
+    faq: [
+      { q: 'Is my document saved automatically?', a: 'Yes. Your document content is saved continuously to your browser local storage so you never lose work on page refresh.' },
+      { q: 'Can I export clean HTML?', a: 'Yes. Click Export HTML to download a complete, self-contained HTML page ready for publishing or sharing.' },
+      { q: 'Does Markdown Studio send my notes to external servers?', a: 'Never. Everything runs 100% client-side with zero cloud dependencies or remote tracking.' }
+    ],
+    Component: MarkdownStudio
+  },
+  {
+    slug: 'code-playground',
+    name: 'Live Code Playground',
+    category: 'App',
+    icon: Code,
+    previewIcons: [Code, FileCode, Play],
+    keywords: ['code playground', 'html css js sandbox', 'live web sandbox', 'online code editor', 'frontend playground', 'instant web app runner'],
+    metaTitle: 'Live Code Playground – Free Online HTML, CSS & JavaScript Sandbox',
+    metaDescription: 'Interactive frontend web sandbox and code playground running directly in your browser. Live compile HTML, CSS, and JS with instant sandboxed iframe execution and export.',
+    intro: 'Live Code Playground is an instant browser-native sandbox for prototyping, testing, and sharing web interfaces. Write HTML, style with CSS, and script with JavaScript with immediate sandboxed live preview execution.',
+    howTo: [
+      'Select between HTML, CSS, and JS tabs in the editor toolbar.',
+      'Write or paste code in the editor pane to see changes reflected immediately in the live preview.',
+      'Inspect your live interactive interface in the isolated iframe canvas.',
+      'Export the unified single-file HTML bundle to run anywhere on desktop or mobile.'
+    ],
+    faq: [
+      { q: 'How does live code execution work?', a: 'Your code is securely bundled and rendered inside an isolated iframe sandbox with client-side script execution.' },
+      { q: 'Can I test responsive mobile layouts?', a: 'Yes. The preview canvas adjusts seamlessly across desktop, tablet, and mobile viewport sizes.' },
+      { q: 'Can I export my project?', a: 'Yes. You can export a production-ready, self-contained single HTML file incorporating all your HTML, CSS, and JS.' }
+    ],
+    Component: CodePlayground
   },
   {
     slug: 'pdf-merge',

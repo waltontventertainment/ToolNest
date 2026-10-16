@@ -82,22 +82,46 @@ const installToHex = (target: any) => {
 if (typeof Uint8Array !== 'undefined') installToHex(Uint8Array);
 if (typeof Uint8ClampedArray !== 'undefined') installToHex(Uint8ClampedArray);
 if (typeof Int8Array !== 'undefined') installToHex(Int8Array);
-if (typeof Array !== 'undefined' && !('toHex' in Array.prototype)) {
-  try {
-    Object.defineProperty(Array.prototype, 'toHex', {
-      value: function toHex(): string {
-        let hex = '';
-        for (let i = 0; i < this.length; i++) {
-          const byte = Number(this[i]) & 0xff;
-          hex += byte.toString(16).padStart(2, '0');
-        }
-        return hex;
-      },
-      writable: true,
-      configurable: true,
-    });
-  } catch {
-    // safe ignore
+if (typeof Uint16Array !== 'undefined') installToHex(Uint16Array);
+if (typeof Uint32Array !== 'undefined') installToHex(Uint32Array);
+if (typeof Array !== 'undefined') installToHex(Array);
+if (typeof String !== 'undefined') {
+  if (!('toHex' in String.prototype)) {
+    try {
+      Object.defineProperty(String.prototype, 'toHex', {
+        value: function toHex(): string {
+          let hex = '';
+          for (let i = 0; i < this.length; i++) {
+            hex += (this.charCodeAt(i) & 0xff).toString(16).padStart(2, '0');
+          }
+          return hex;
+        },
+        writable: true,
+        configurable: true,
+      });
+    } catch {}
+  }
+}
+if (typeof Object !== 'undefined') {
+  if (!('toHex' in Object.prototype)) {
+    try {
+      Object.defineProperty(Object.prototype, 'toHex', {
+        value: function toHex(): string {
+          try {
+            if (this && typeof (this as any).length === 'number') {
+              let hex = '';
+              for (let i = 0; i < (this as any).length; i++) {
+                hex += (Number((this as any)[i]) & 0xff).toString(16).padStart(2, '0');
+              }
+              return hex;
+            }
+          } catch {}
+          return '';
+        },
+        writable: true,
+        configurable: true,
+      });
+    } catch {}
   }
 }
 

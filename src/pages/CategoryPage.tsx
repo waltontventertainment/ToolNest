@@ -16,6 +16,7 @@ import { tools, categories } from '../lib/registry';
 import { getEffectiveTools } from '../lib/toolOverrides';
 import { useSiteSettings } from '../context/SiteSettingsContext';
 import { ToolCard } from '../components/ToolCard';
+import { AppLauncherCard } from '../components/AppLauncherCard';
 import { Seo } from '../components/Seo';
 import { AdSlot } from '../components/AdSlot';
 import { BreadcrumbNavigation } from '../components/BreadcrumbNavigation';
@@ -310,17 +311,25 @@ export const CategoryPage: React.FC<{ forcedSlug?: string }> = ({ forcedSlug }) 
           </div>
 
           {filteredTools.length > 0 ? (
-            <div
-              className={
-                pcViewMode === 'compact'
-                  ? 'grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 w-full'
-                  : 'grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5 w-full'
-              }
-            >
-              {filteredTools.map(tool => (
-                <ToolCard key={tool.slug} tool={tool} compact={pcViewMode === 'compact'} />
-              ))}
-            </div>
+            categoryName === 'App' ? (
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4 md:gap-5 w-full">
+                {filteredTools.map(tool => (
+                  <AppLauncherCard key={tool.slug} tool={tool} />
+                ))}
+              </div>
+            ) : (
+              <div
+                className={
+                  pcViewMode === 'compact'
+                    ? 'grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 w-full'
+                    : 'grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5 w-full'
+                }
+              >
+                {filteredTools.map(tool => (
+                  <ToolCard key={tool.slug} tool={tool} compact={pcViewMode === 'compact'} />
+                ))}
+              </div>
+            )
           ) : (
             <div className="p-10 text-center rounded-2xl bg-card border border-dashed border-border space-y-3">
               <p className="text-sm font-bold text-foreground">No tools in {categoryName} match "{search}"</p>
