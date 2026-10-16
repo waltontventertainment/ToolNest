@@ -205,8 +205,23 @@ const categoryKnowledgeDefaults: Record<ToolCategory, Omit<ToolKnowledge, 'featu
       { q: 'Can I use these apps offline?', a: 'Yes. Once loaded in your browser tab, the web applications execute completely within your local browser sandbox even without an active internet connection.' },
       { q: 'Are there any usage limits or paywalls?', a: 'No. All applications under the App suite are completely free, open-source inspired, and unlimited with zero subscriptions.' }
     ]
+  },
+  'Games': {
+    technicalOverview:
+      'The Games category provides classic strategy and puzzle games designed for instant in-browser entertainment. Built with high-performance React state management and HTML5 Canvas/SVG renderers, every game runs locally with zero lag, instant AI bot opponents, or two-player local pass-and-play.',
+    bestPractices: [
+      { title: 'Play Offline Anytime', advice: 'Games run 100% client-side so you can enjoy uninterrupted sessions even without an active network connection.' },
+      { title: 'Track Your High Scores', advice: 'Your best scores and win streaks are securely preserved in browser local storage.' },
+      { title: 'Mobile Touch Optimized', advice: 'All game boards feature touch-friendly buttons and responsive grids optimized for phones and tablets.' }
+    ],
+    extendedFaqs: [
+      { q: 'Do I need to install an app to play?', a: 'No. All games run directly inside your mobile or desktop web browser with zero downloads required.' },
+      { q: 'Can I play against an AI opponent?', a: 'Yes. Several games include smart local AI bots so you can play solo anytime.' },
+      { q: 'Are these games free?', a: 'Yes. 100% free with unlimited replays and zero advertisements or paywalls.' }
+    ]
   }
 };
+
 
 // Bespoke in-depth knowledge for key high-traffic tools
 const bespokeToolKnowledge: Record<string, Partial<ToolKnowledge>> = {

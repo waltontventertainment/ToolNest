@@ -1,15 +1,15 @@
 ---
 name: toolzaro-llms-index
-description: Toolzaro (https://toolzaro.cyou) is a privacy-first online utility platform offering 176+ browser-native developer, PDF, image, calculator, converter, and SEO tools.
+description: Toolzaro (https://toolzaro.cyou) is a privacy-first online utility platform offering 189+ browser-native developer, PDF, image, calculator, converter, and SEO tools.
 version: 1.0.0
 ---
 
 # Toolzaro - Free Online Developer, PDF, Image & Utility Suite
-> Toolzaro (https://toolzaro.cyou) is a privacy-first online utility platform offering 176+ browser-native tools across 14 categories. All tools run 100% client-side with zero cloud uploads and flat root-level URLs.
+> Toolzaro (https://toolzaro.cyou) is a privacy-first online utility platform offering 189+ browser-native tools across 15 categories. All tools run 100% client-side with zero cloud uploads and flat root-level URLs.
 
 ## Core Pages
-- [Home](https://toolzaro.cyou/): Main hub with instant search across 176+ utilities.
-- [All Tools Directory](https://toolzaro.cyou/tools): Complete A-Z categorized directory of all 176 tools.
+- [Home](https://toolzaro.cyou/): Main hub with instant search across 189+ utilities.
+- [All Tools Directory](https://toolzaro.cyou/tools): Complete A-Z categorized directory of all 189 tools.
 - [Saved Bookmarks](https://toolzaro.cyou/bookmarks): Personal workspace for saved browser tools.
 - [HTML Sitemap](https://toolzaro.cyou/sitemap): Full index of all tools, categories, and guides.
 - [Engineering Blog](https://toolzaro.cyou/blog): Technical tutorials, privacy architecture guides, and developer articles.
@@ -19,8 +19,9 @@ version: 1.0.0
 - [Terms of Service](https://toolzaro.cyou/terms): Fair use terms and conditions.
 - [Disclaimer](https://toolzaro.cyou/disclaimer): Accuracy and verification disclosures.
 
-## Tool Categories (14)
-- [App Tools (9)](https://toolzaro.cyou/app)
+## Tool Categories (15)
+- [App Tools (12)](https://toolzaro.cyou/app)
+- [Games Tools (10)](https://toolzaro.cyou/games)
 - [PDF Tools (7)](https://toolzaro.cyou/pdf)
 - [Universal Data Suite Tools (11)](https://toolzaro.cyou/universal-data-suite)
 - [Wikipedia Tools (3)](https://toolzaro.cyou/wikipedia)
@@ -35,7 +36,7 @@ version: 1.0.0
 - [Utility Tools (11)](https://toolzaro.cyou/utility)
 - [Fun & Viral Tools (12)](https://toolzaro.cyou/fun-viral)
 
-## Complete Directory of 176 Tools (Flat Root-Level URLs)
+## Complete Directory of 189 Tools (Flat Root-Level URLs)
 - [Global Country Directory](https://toolzaro.cyou/rest-countries-explorer): Instantly lookup details, flags, capitals, and currencies of 200+ countries. (Category: Universal Data Suite)
 - [Lexicon Word Definitions](https://toolzaro.cyou/free-dictionary-lookup): Lookup English word definitions, phonetic spellings, synonyms, and audio pronunciation. (Category: Universal Data Suite)
 - [Universal Library Explorer](https://toolzaro.cyou/open-library-book-search): Search millions of books, authors, and cover art seamlessly. (Category: Universal Data Suite)
@@ -57,8 +58,21 @@ version: 1.0.0
 - [Photo Studio](https://toolzaro.cyou/photo-studio-app): Powerful client-side photo editor and visual canvas running 100% locally in your browser. Adjust brightness, contrast, saturation, blur, rotate, and export with zero uploads. (Category: App)
 - [Whiteboard Studio](https://toolzaro.cyou/whiteboard-app): Interactive digital whiteboard running directly in your browser. Draw, sketch, erase, brainstorm ideas, and export your artwork to PNG with zero lag. (Category: App)
 - [Vector Studio](https://toolzaro.cyou/vector-studio-app): Intuitive SVG vector graphic studio running 100% in your browser. Create geometric shapes, customize fill and stroke colors, and export clean SVG code with zero server uploads. (Category: App)
-- [Chess Master](https://toolzaro.cyou/chess-app): Classic, distraction-free Chess application running 100% in your browser. Play locally with two-player pass-and-play, move tracking, and beautiful responsive boards. (Category: App)
-- [Sudoku Master](https://toolzaro.cyou/sudoku-app): Engaging, responsive 9x9 Sudoku puzzle app running 100% in your browser. Input digits with fast on-screen number pad, test your logic, and enjoy distraction-free play. (Category: App)
+- [Piano Music Studio](https://toolzaro.cyou/piano-music-studio): Play, practice, and compose with an interactive virtual piano running 100% locally in your browser using the Web Audio API. Supports mouse, touch, and PC keyboard. (Category: App)
+- [API Client Studio](https://toolzaro.cyou/api-client-studio): Fast, lightweight in-browser API testing studio and Postman alternative. Send GET, POST, PUT, DELETE requests, configure headers, format JSON, and inspect response latency. (Category: App)
+- [Invoice Studio](https://toolzaro.cyou/invoice-generator-app): Create clean, professional itemized invoices in seconds. Customize sender, client, line items, taxes, and currencies with instant 1-click printing and PDF download. (Category: App)
+- [Pomodoro Focus Studio](https://toolzaro.cyou/pomodoro-time-tracker): Boost focus and beat procrastination with an elegant Pomodoro timer. Custom work intervals (25m Focus, 5m Short Break, 15m Long Break), progress ring, and session counter. (Category: App)
+- [Kanban Task Studio](https://toolzaro.cyou/kanban-task-board): Lightweight, privacy-first Kanban task board running 100% locally in your browser. Organize workflows across To Do, In Progress, and Done with local auto-save. (Category: App)
+- [Chess Master](https://toolzaro.cyou/chess-app): Classic, distraction-free Chess application running 100% in your browser. Play locally with two-player pass-and-play, move tracking, and beautiful responsive boards. (Category: Games)
+- [Sudoku Master](https://toolzaro.cyou/sudoku-app): Engaging, responsive 9x9 Sudoku puzzle app running 100% in your browser. Input digits with fast on-screen number pad, test your logic, and enjoy distraction-free play. (Category: Games)
+- [Checkers Master](https://toolzaro.cyou/checkers-app): Play classic 8x8 Checkers (Draughts) directly in your browser. Diagonal moves, jumping captures, King promotions, score tracking, and smooth responsive touch. (Category: Games)
+- [2048 Legend](https://toolzaro.cyou/game-2048-app): Play the addictive 2048 number puzzle in your browser. Slide tiles with keyboard arrow keys or on-screen buttons, merge matching numbers, and aim for 2048. (Category: Games)
+- [Tic-Tac-Toe AI](https://toolzaro.cyou/tic-tac-toe-app): Play Tic-Tac-Toe against a smart AI bot or challenge a friend in 2-player pass-and-play mode. Instant game reset, win streaks, and zero ads. (Category: Games)
+- [Memory Match Quest](https://toolzaro.cyou/memory-match-app): Sharpen your memory and concentration with an engaging emoji card matching puzzle. Flip cards, match pairs, track moves, and test your brain speed. (Category: Games)
+- [Checkers Master](https://toolzaro.cyou/checkers-app): Play classic 8x8 Checkers (Draughts) directly in your browser. Diagonal moves, jumping captures, King promotions, score tracking, and smooth responsive touch. (Category: Games)
+- [2048 Legend](https://toolzaro.cyou/game-2048-app): Play the addictive 2048 number puzzle in your browser. Slide tiles with keyboard arrow keys or on-screen buttons, merge matching numbers, and aim for 2048. (Category: Games)
+- [Tic-Tac-Toe AI](https://toolzaro.cyou/tic-tac-toe-app): Play Tic-Tac-Toe against a smart AI bot or challenge a friend in 2-player pass-and-play mode. Instant game reset, win streaks, and zero ads. (Category: Games)
+- [Memory Match Quest](https://toolzaro.cyou/memory-match-app): Sharpen your memory and concentration with an engaging emoji card matching puzzle. Flip cards, match pairs, track moves, and test your brain speed. (Category: Games)
 - [PDF Merger](https://toolzaro.cyou/pdf-merge): Combine multiple PDF files into a single organized PDF document quickly and securely in your browser. (Category: PDF)
 - [PDF Splitter & Page Extractor](https://toolzaro.cyou/pdf-split): Split a PDF document into separate page files or extract specific page ranges quickly and securely. (Category: PDF)
 - [PDF to Text Extractor](https://toolzaro.cyou/pdf-to-text): Extract raw text and string contents from any PDF file quickly and convert it to readable text or .txt file. (Category: PDF)
