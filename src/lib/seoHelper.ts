@@ -1,15 +1,17 @@
 import { ToolDefinition, ToolCategory } from './types';
 import { categories, tools } from './registry';
+import { getToolSeoProfile } from './seoKeywordsDatabase';
 
 /**
  * Generates an SEO-optimized, high-CTR Page Title (50–65 chars ideal) for any Tool.
  * Ensures brand consistency, action keywords ("Free Online"), and category context.
  */
 export function buildToolSeoTitle(tool: ToolDefinition, siteName = 'Toolzaro'): string {
-  const baseTitle = (tool.metaTitle || tool.name).trim();
+  const profile = getToolSeoProfile(tool.slug);
+  const baseTitle = (tool.metaTitle || profile?.seoTitle || tool.name).trim();
   const lowerTitle = baseTitle.toLowerCase();
 
-  // If the user/admin already wrote a full branded title via Tool Overrides
+  // If already branded
   if (lowerTitle.includes(siteName.toLowerCase())) {
     return baseTitle;
   }
@@ -23,17 +25,18 @@ export function buildToolSeoTitle(tool: ToolDefinition, siteName = 'Toolzaro'): 
  * Preserves each tool's unique description without appending repetitive programmatic boilerplate.
  */
 export function buildToolSeoDescription(tool: ToolDefinition, siteName = 'Toolzaro'): string {
-  const rawDesc = (tool.metaDescription || tool.intro || '').trim().replace(/\.+$/, '');
+  const profile = getToolSeoProfile(tool.slug);
+  const rawDesc = (tool.metaDescription || profile?.metaDescription || tool.intro || '').trim().replace(/\.+$/, '');
   if (!rawDesc) {
     return `Use ${tool.name} free online on ${siteName}. Fast, private client-side browser utility with zero server uploads and instant processing.`;
   }
 
   // If already at ideal descriptive length, return cleanly
-  if (rawDesc.length >= 115) {
+  if (rawDesc.length >= 85) {
     return `${rawDesc}.`;
   }
 
-  // Expand short descriptions to 120-158 characters for optimal Google Search snippet visibility
+  // Expand short descriptions to optimal Google Search snippet visibility
   const categoryBenefits: Record<string, string> = {
     'PDF': 'Process documents locally in your browser with zero server uploads.',
     'Color & Image': 'Fast in-browser processing with zero cloud uploads and full privacy.',
@@ -54,7 +57,7 @@ export function buildToolSeoDescription(tool: ToolDefinition, siteName = 'Toolza
   const benefit = categoryBenefits[tool.category] || '100% free, private browser utility with zero cloud uploads.';
   const enriched = `${rawDesc}. ${benefit}`;
 
-  if (enriched.length <= 170) {
+  if (enriched.length <= 165) {
     return enriched;
   }
   return `${rawDesc}. 100% free & private in your browser.`;
@@ -64,9 +67,13 @@ export function buildToolSeoDescription(tool: ToolDefinition, siteName = 'Toolza
  * Generates comprehensive SEO keywords array for any Tool.
  */
 export function buildToolSeoKeywords(tool: ToolDefinition, siteName = 'Toolzaro'): string[] {
+  const profile = getToolSeoProfile(tool.slug);
   const base = [
     tool.name,
     tool.metaTitle,
+    profile?.primaryKeyword,
+    ...(profile?.secondaryKeywords || []),
+    ...(profile?.longTailKeywords || []),
     `${tool.name.toLowerCase()} online`,
     `free ${tool.name.toLowerCase()}`,
     `${tool.category.toLowerCase()} tools`,
@@ -75,7 +82,7 @@ export function buildToolSeoKeywords(tool: ToolDefinition, siteName = 'Toolzaro'
     'free online tools',
     'client-side browser utility',
   ];
-  return Array.from(new Set(base.filter(Boolean)));
+  return Array.from(new Set(base.filter(Boolean) as string[]));
 }
 
 /**
@@ -204,14 +211,21 @@ export const CATEGORY_SEO_DATA: Record<
   },
 };
 
-export function getHomeSeoData(baseUrl = 'https://toolzaro.cyou', toolCount = tools.length) {
-  const title = `Toolzaro – ${toolCount}+ Free Online Developer, PDF, Image & Utility Tools`;
-  const description = `Access ${toolCount}+ free, fast, and 100% private browser tools on Toolzaro. Merge PDFs, compress & resize images, format JSON, generate QR codes, and convert files with zero uploads.`;
+export function getHomeSeoData(baseUrl = 'https://toolzaro.cyou', toolCount = Math.max(tools.length, 185)) {
+  const title = `Toolzaro - ${toolCount}+ Free Online PDF, Image & Developer Tools`;
+  const description = `Use ${toolCount}+ free online tools: merge PDF, compress images, format JSON, make QR codes and more. Fast, private, no signup, no uploads.`;
   const keywords = [
     'Toolzaro',
     'free online tools',
-    'developer tools',
-    'online pdf tools',
+    'online tools website',
+    'free pdf tools',
+    'free image tools',
+    'developer tools online',
+    'best online tools',
+    'online tools list',
+    'online tools no signup',
+    'online tools on mobile',
+    'online tools for beginners',
     'image compressor',
     'image resizer',
     'json formatter',

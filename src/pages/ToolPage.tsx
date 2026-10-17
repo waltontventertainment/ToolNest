@@ -14,7 +14,9 @@ import {
   CheckCircle2,
   Lightbulb,
   Sparkles,
-  Info
+  Info,
+  Tag,
+  BookOpen
 } from 'lucide-react';
 import { tools, preloadToolBySlug } from '../lib/registry';
 import { TOOL_DOCS_BY_SLUG } from '../lib/registryDocs';
@@ -28,6 +30,7 @@ import { toast } from 'sonner';
 import { getEffectiveTool } from '../lib/toolOverrides';
 import { getToolUrl, getCategoryUrl } from '../lib/appUrls';
 import { buildToolSeoTitle, buildToolSeoDescription, buildToolSeoKeywords } from '../lib/seoHelper';
+import { getToolSeoProfile, BLOG_POST_LINKS } from '../lib/seoKeywordsDatabase';
 import { NotFound } from './NotFound';
 
 export const ToolPage: React.FC<{ forcedSlug?: string }> = ({ forcedSlug }) => {
@@ -85,14 +88,40 @@ export const ToolPage: React.FC<{ forcedSlug?: string }> = ({ forcedSlug }) => {
   const seoDescription = buildToolSeoDescription(tool, siteName);
   const seoKeywords = buildToolSeoKeywords(tool, siteName);
 
-  // Semantic related tools for internal link equity (Same category first, then cross-category popular tools)
+  const seoProfile = getToolSeoProfile(tool.slug);
+
+  // Contextual related tools for internal link equity (Curated high-intent pairs first, then category siblings)
+  const curatedTools = (seoProfile?.relatedToolSlugs || [])
+    .map(s => tools.find(t => t.slug === s))
+    .filter((t): t is typeof tools[0] => Boolean(t && t.slug !== tool.slug));
   const relatedCategoryTools = tools
-    .filter(t => t.category === tool.category && t.slug !== tool.slug)
+    .filter(t => t.category === tool.category && t.slug !== tool.slug && !curatedTools.some(c => c.slug === t.slug))
     .slice(0, 8);
   const crossCategoryTools = tools
-    .filter(t => t.category !== tool.category)
+    .filter(t => t.category !== tool.category && !curatedTools.some(c => c.slug === t.slug))
     .slice(0, 4);
-  const internalLinkSet = [...relatedCategoryTools, ...crossCategoryTools];
+  const internalLinkSet = [...curatedTools, ...relatedCategoryTools, ...crossCategoryTools];
+
+  // Relevant in-depth blog tutorials for deep internal backlink network
+  const directBlogSlugs = seoProfile?.relatedBlogSlugs || [];
+  const applicableBlogSlugs = [...directBlogSlugs];
+  if (applicableBlogSlugs.length === 0) {
+    if (tool.category === 'PDF' || tool.category === 'Converters' || tool.category === 'Generators' || tool.category === 'Text') {
+      applicableBlogSlugs.push('definitive-guide-client-side-privacy-web-utilities');
+    }
+    if (tool.category === 'SEO') {
+      applicableBlogSlugs.push('technical-seo-blueprint-2026-schema-meta-opengraph');
+    }
+    if (tool.category === 'Color & Image') {
+      applicableBlogSlugs.push('modern-web-asset-optimization-webp-avif-performance');
+    }
+    if (tool.category === 'Developer') {
+      applicableBlogSlugs.push('developer-cryptography-cheatsheet-hashes-jwt-base64');
+    }
+  }
+  const applicableGuides = applicableBlogSlugs
+    .map(s => BLOG_POST_LINKS[s])
+    .filter(Boolean);
 
   // Rich Schema.org structured data (WebApplication, BreadcrumbList, FAQPage, HowTo, ItemList internal discovery graph)
   const jsonLd = {
@@ -323,6 +352,28 @@ export const ToolPage: React.FC<{ forcedSlug?: string }> = ({ forcedSlug }) => {
       <div className="my-6 sm:my-8">
         <AdSlot slot="tool-mid" format="horizontal" />
       </div>
+
+      {/* SEO Keywords & Search Topics Badge Ribbon */}
+      {seoKeywords && seoKeywords.length > 0 && (
+        <section className="mb-8 p-4 sm:p-5 rounded-2xl bg-card border border-border/80 shadow-2xs space-y-2.5">
+          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
+            <Tag className="w-3.5 h-3.5 text-primary" />
+            <span>Search Topics &amp; Associated Keywords</span>
+          </div>
+          <div className="flex flex-wrap gap-1.5 pt-0.5">
+            {seoKeywords.slice(0, 16).map((kw, idx) => (
+              <Link
+                key={idx}
+                to={`/?q=${encodeURIComponent(kw)}`}
+                className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium bg-secondary/80 hover:bg-primary/10 text-muted-foreground hover:text-primary border border-border/60 hover:border-primary/30 transition-colors"
+                title={`Search Toolzaro for "${kw}"`}
+              >
+                <span>#{kw}</span>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* High-Value Editorial Documentation Suite */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
@@ -561,6 +612,42 @@ export const ToolPage: React.FC<{ forcedSlug?: string }> = ({ forcedSlug }) => {
             </Link>
           ))}
         </div>
+
+        {/* Contextual In-Depth Technical Guides & Backlinks */}
+        {applicableGuides.length > 0 && (
+          <div className="pt-6 border-t border-border/60 space-y-3">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-bold font-display text-foreground flex items-center gap-2">
+                <BookOpen className="w-4 h-4 text-primary" />
+                <span>Related In-Depth Technical Guides</span>
+              </h3>
+              <Link to="/blog" className="text-xs font-bold text-primary hover:underline">
+                All Blog Guides →
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {applicableGuides.map(guide => (
+                <Link
+                  key={guide.slug}
+                  to={`/blog/${guide.slug}`}
+                  className="group flex flex-col p-4 rounded-xl bg-card border border-border/80 hover:border-primary/40 hover:bg-secondary/30 transition-all shadow-2xs hover:shadow-xs"
+                >
+                  <div className="flex items-center gap-2 text-[11px] font-bold text-primary mb-1">
+                    <span>Expert Guide</span>
+                    <span aria-hidden="true">·</span>
+                    <span className="text-muted-foreground">Toolzaro Knowledge Base</span>
+                  </div>
+                  <h4 className="text-xs sm:text-sm font-bold text-foreground group-hover:text-primary transition-colors line-clamp-1">
+                    {guide.title}
+                  </h4>
+                  <p className="text-xs text-muted-foreground mt-1 line-clamp-2 leading-relaxed">
+                    {guide.excerpt}
+                  </p>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
       </section>
     </>
   );

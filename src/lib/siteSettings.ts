@@ -29,6 +29,7 @@ export interface ToolOverride {
   customBadge?: 'Popular' | 'New' | 'Pro' | 'Featured' | 'Updated' | '';
   disabled?: boolean;
   customCode?: string; // Custom HTML/CSS/JS snippet or banner for this tool
+  customKeywords?: string[]; // Custom or edited keywords for this tool
   updatedAt?: string;
 }
 

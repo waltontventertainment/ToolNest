@@ -71,6 +71,8 @@ import {
 } from '../lib/customToolsService';
 import { RichContentEditor } from '../components/admin/RichContentEditor';
 import { CustomToolRunner } from '../components/admin/CustomToolRunner';
+import { ToolEditorModal } from '../components/admin/ToolEditorModal';
+import { getEffectiveToolKeywords } from '../lib/seoKeywordsDatabase';
 import { ToolOverride } from '../lib/siteSettings';
 import { app } from '../lib/firebase';
 import { 
@@ -145,6 +147,9 @@ export const AdminPage: React.FC = () => {
   // ==========================================
   const [toolSearch, setToolSearch] = useState('');
   const [toolCategoryFilter, setToolCategoryFilter] = useState('All');
+  const [toolStatusFilter, setToolStatusFilter] = useState<'all' | 'active' | 'disabled'>('all');
+  const [expandedToolKeywords, setExpandedToolKeywords] = useState<Record<string, boolean>>({});
+  const [inlineKeywordInputs, setInlineKeywordInputs] = useState<Record<string, string>>({});
   const [editingTool, setEditingTool] = useState<ToolDefinition | null>(null);
   const [toolOverrideForm, setToolOverrideForm] = useState<ToolOverride>({});
   const [isToolModalOpen, setIsToolModalOpen] = useState(false);
@@ -425,6 +430,58 @@ export const AdminPage: React.FC = () => {
     toast.success(`${toolSlug} ${!currentDisabled ? 'disabled' : 'enabled'} successfully`);
   };
 
+  const handleQuickAddKeyword = async (toolSlug: string) => {
+    const rawInput = inlineKeywordInputs[toolSlug] || '';
+    const trimmed = rawInput.trim();
+    if (!trimmed) return;
+    const tool = tools.find(t => t.slug === toolSlug);
+    const existingOverride = settings.toolOverrides[toolSlug] || {};
+    const currentKeywords = getEffectiveToolKeywords(
+      toolSlug,
+      tool?.keywords || [],
+      existingOverride.customKeywords
+    );
+    if (currentKeywords.some(k => k.toLowerCase() === trimmed.toLowerCase())) {
+      toast.error(`Keyword "${trimmed}" already exists for this tool`);
+      return;
+    }
+    const updatedKeywords = [...currentKeywords, trimmed];
+    await updateSettings({
+      toolOverrides: {
+        ...settings.toolOverrides,
+        [toolSlug]: {
+          ...existingOverride,
+          customKeywords: updatedKeywords,
+          updatedAt: new Date().toISOString(),
+        },
+      },
+    });
+    setInlineKeywordInputs(prev => ({ ...prev, [toolSlug]: '' }));
+    toast.success(`Added keyword "${trimmed}" to ${tool?.name || toolSlug}`);
+  };
+
+  const handleQuickDeleteKeyword = async (toolSlug: string, keywordToDelete: string) => {
+    const tool = tools.find(t => t.slug === toolSlug);
+    const existingOverride = settings.toolOverrides[toolSlug] || {};
+    const currentKeywords = getEffectiveToolKeywords(
+      toolSlug,
+      tool?.keywords || [],
+      existingOverride.customKeywords
+    );
+    const updatedKeywords = currentKeywords.filter(k => k !== keywordToDelete);
+    await updateSettings({
+      toolOverrides: {
+        ...settings.toolOverrides,
+        [toolSlug]: {
+          ...existingOverride,
+          customKeywords: updatedKeywords,
+          updatedAt: new Date().toISOString(),
+        },
+      },
+    });
+    toast.success(`Removed keyword "${keywordToDelete}" from ${tool?.name || toolSlug}`);
+  };
+
   const handleSaveToolOverride = async () => {
     if (!editingTool) return;
     await updateSettings({
@@ -664,16 +721,33 @@ export const AdminPage: React.FC = () => {
 
   const filteredTools = useMemo(() => {
     return tools.filter(t => {
+      const override = settings.toolOverrides[t.slug];
+      const isDisabled = override?.disabled ?? false;
+      const effectiveKeywords = getEffectiveToolKeywords(
+        t.slug,
+        t.keywords || [],
+        override?.customKeywords
+      );
+
+      const searchLower = toolSearch.toLowerCase().trim();
       const matchSearch =
-        !toolSearch ||
-        t.name.toLowerCase().includes(toolSearch.toLowerCase()) ||
-        t.slug.toLowerCase().includes(toolSearch.toLowerCase()) ||
-        t.intro.toLowerCase().includes(toolSearch.toLowerCase());
+        !searchLower ||
+        t.name.toLowerCase().includes(searchLower) ||
+        t.slug.toLowerCase().includes(searchLower) ||
+        t.intro.toLowerCase().includes(searchLower) ||
+        effectiveKeywords.some(k => k.toLowerCase().includes(searchLower));
+
       const matchCat =
         toolCategoryFilter === 'All' || t.category === toolCategoryFilter;
-      return matchSearch && matchCat;
+
+      const matchStatus =
+        toolStatusFilter === 'all' ||
+        (toolStatusFilter === 'active' && !isDisabled) ||
+        (toolStatusFilter === 'disabled' && isDisabled);
+
+      return matchSearch && matchCat && matchStatus;
     });
-  }, [toolSearch, toolCategoryFilter]);
+  }, [toolSearch, toolCategoryFilter, toolStatusFilter, settings.toolOverrides]);
 
   // ----------------------------------------------------
   // RENDER: Auth Checking / Login View
@@ -1257,38 +1331,70 @@ export const AdminPage: React.FC = () => {
           {activeMenu === 'tools' && (
             <div className="max-w-6xl mx-auto space-y-6">
               {/* Header with Search, Category Filter, and Add Tool button */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <div className="relative w-full sm:w-64">
-                    <Search className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
-                    <input
-                      type="text"
-                      placeholder="Search 189+ tools..."
-                      value={toolSearch}
-                      onChange={e => setToolSearch(e.target.value)}
-                      className="w-full pl-9 pr-3 py-1.5 rounded-xl border border-border bg-card text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
-                    />
+              {/* Header with Search, Category Filter, Status Filter, and Add Tool button */}
+              <div className="space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <div className="relative w-full sm:w-64">
+                      <Search className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
+                      <input
+                        type="text"
+                        placeholder="Search tools, slugs, or keywords..."
+                        value={toolSearch}
+                        onChange={e => setToolSearch(e.target.value)}
+                        className="w-full pl-9 pr-3 py-1.5 rounded-xl border border-border bg-card text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                      />
+                    </div>
+
+                    <select
+                      value={toolCategoryFilter}
+                      onChange={e => setToolCategoryFilter(e.target.value)}
+                      className="px-3 py-1.5 rounded-xl border border-border bg-card text-xs text-foreground focus:outline-none"
+                    >
+                      <option value="All">All Categories ({tools.length})</option>
+                      {categories.map(c => (
+                        <option key={c} value={c}>{c}</option>
+                      ))}
+                    </select>
+
+                    <select
+                      value={toolStatusFilter}
+                      onChange={e => setToolStatusFilter(e.target.value as any)}
+                      className="px-3 py-1.5 rounded-xl border border-border bg-card text-xs text-foreground focus:outline-none"
+                    >
+                      <option value="all">All Status ({tools.length})</option>
+                      <option value="active">Active Only ({tools.filter(t => !settings.toolOverrides[t.slug]?.disabled).length})</option>
+                      <option value="disabled">Disabled Only ({tools.filter(t => settings.toolOverrides[t.slug]?.disabled).length})</option>
+                    </select>
                   </div>
 
-                  <select
-                    value={toolCategoryFilter}
-                    onChange={e => setToolCategoryFilter(e.target.value)}
-                    className="px-3 py-1.5 rounded-xl border border-border bg-card text-xs text-foreground focus:outline-none"
+                  <button
+                    onClick={() => setIsAddCustomToolOpen(true)}
+                    className="px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl text-xs font-semibold flex items-center gap-2 transition-colors self-start sm:self-auto cursor-pointer"
                   >
-                    <option value="All">All Categories ({tools.length})</option>
-                    {categories.map(c => (
-                      <option key={c} value={c}>{c}</option>
-                    ))}
-                  </select>
+                    <Code className="w-4 h-4" />
+                    <span>Add Tool (HTML Code)</span>
+                  </button>
                 </div>
 
-                <button
-                  onClick={() => setIsAddCustomToolOpen(true)}
-                  className="px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl text-xs font-semibold flex items-center gap-2 transition-colors self-start sm:self-auto"
-                >
-                  <Code className="w-4 h-4" />
-                  <span>Add Tool (HTML Code)</span>
-                </button>
+                {/* Status & Keywords Metrics Bar */}
+                <div className="flex items-center gap-4 text-xs text-muted-foreground flex-wrap pt-1 pb-2 border-b border-border/60">
+                  <span className="font-semibold text-foreground">
+                    Directory: <span className="text-primary font-mono">{tools.length}</span> Built-in Tools
+                  </span>
+                  <span>·</span>
+                  <span className="text-emerald-600 dark:text-emerald-400 font-medium">
+                    {tools.filter(t => !settings.toolOverrides[t.slug]?.disabled).length} Live &amp; Active
+                  </span>
+                  <span>·</span>
+                  <span className="text-rose-500 font-medium">
+                    {tools.filter(t => settings.toolOverrides[t.slug]?.disabled).length} Disabled
+                  </span>
+                  <span>·</span>
+                  <span className="text-sky-500 font-medium">
+                    {Object.values(settings.toolOverrides).filter(o => o.customKeywords && o.customKeywords.length > 0).length} with Custom Keywords
+                  </span>
+                </div>
               </div>
 
               {/* Custom HTML Tools Section (If any) */}
@@ -1317,14 +1423,14 @@ export const AdminPage: React.FC = () => {
                         <div className="flex items-center gap-1.5">
                           <button
                             onClick={() => setPreviewCustomTool(ct)}
-                            className="p-2 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground"
+                            className="p-2 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground cursor-pointer"
                             title="Preview Tool"
                           >
                             <Eye className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => handleDeleteCustomToolAction(ct.id)}
-                            className="p-2 rounded-lg hover:bg-destructive/10 text-destructive"
+                            className="p-2 rounded-lg hover:bg-destructive/10 text-destructive cursor-pointer"
                             title="Delete Custom Tool"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -1336,76 +1442,215 @@ export const AdminPage: React.FC = () => {
                 </div>
               )}
 
-              {/* Built-in 189+ Tools List */}
-              <div className="space-y-2">
-                <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
-                  <Wrench className="w-4 h-4 text-muted-foreground" />
-                  Built-in Tools Directory ({filteredTools.length})
-                </h3>
+              {/* Built-in Tools Directory with Direct Keyword CRUD & Toggle */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
+                    <Wrench className="w-4 h-4 text-muted-foreground" />
+                    <span>Tools &amp; SEO Keywords Manager ({filteredTools.length})</span>
+                  </h3>
+                  <span className="text-[11px] text-muted-foreground">
+                    One-click availability switch · Instant keyword CRUD · Firestore synchronized
+                  </span>
+                </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+                <div className="grid grid-cols-1 gap-3.5">
                   {filteredTools.map(tool => {
                     const override = settings.toolOverrides[tool.slug];
                     const isDisabled = override?.disabled ?? false;
                     const Icon = tool.icon;
+                    const effectiveKeywords = getEffectiveToolKeywords(
+                      tool.slug,
+                      tool.keywords || [],
+                      override?.customKeywords
+                    );
+                    const isExpanded = !!expandedToolKeywords[tool.slug];
+                    const displayedKeywords = isExpanded ? effectiveKeywords : effectiveKeywords.slice(0, 5);
+                    const remainingCount = effectiveKeywords.length - 5;
+                    const currentInlineInput = inlineKeywordInputs[tool.slug] || '';
 
                     return (
                       <div
                         key={tool.slug}
-                        className={`p-3.5 bg-card rounded-2xl border transition-all flex items-center justify-between gap-3 ${
-                          isDisabled ? 'opacity-50 border-border bg-muted/20' : 'border-border hover:border-border/80 shadow-2xs'
+                        className={`p-4 bg-card rounded-2xl border transition-all space-y-3.5 ${
+                          isDisabled
+                            ? 'opacity-65 border-border/70 bg-muted/20'
+                            : 'border-border/80 hover:border-primary/40 shadow-2xs'
                         }`}
                       >
-                        <div className="flex items-center gap-3 min-w-0 flex-1">
-                          <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
-                            <Icon className="w-5 h-5" />
+                        {/* Top Row: Info, Toggle Switch, Edit Button */}
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                          <div className="flex items-start sm:items-center gap-3 min-w-0 flex-1">
+                            <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                              <Icon className="w-5 h-5" />
+                            </div>
+
+                            <div className="min-w-0 flex-1">
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <span className="font-bold text-sm text-foreground">
+                                  {override?.customName || tool.name}
+                                </span>
+                                <Link
+                                  to={`/${tool.slug}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-[11px] font-mono text-muted-foreground hover:text-primary flex items-center gap-0.5 underline decoration-dotted"
+                                  title="Open live tool in new tab"
+                                >
+                                  <span>/{tool.slug}</span>
+                                  <ExternalLink className="w-3 h-3" />
+                                </Link>
+                                <span className="text-[10px] px-2 py-0.5 rounded-md bg-secondary text-secondary-foreground font-semibold">
+                                  {override?.customCategory || tool.category}
+                                </span>
+                                {override?.customBadge && (
+                                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold border border-amber-500/20">
+                                    ★ {override.customBadge}
+                                  </span>
+                                )}
+                                {override?.customKeywords && override.customKeywords.length > 0 && (
+                                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-sky-500/10 text-sky-600 dark:text-sky-400 font-bold border border-sky-500/20">
+                                    Custom Keywords Saved
+                                  </span>
+                                )}
+                              </div>
+                              <p className="text-xs text-muted-foreground line-clamp-1 mt-0.5">
+                                {override?.customDescription || tool.intro}
+                              </p>
+                            </div>
                           </div>
 
-                          <div className="min-w-0 flex-1">
+                          {/* Quick Controls: ON/OFF Switch & Full Edit */}
+                          <div className="flex items-center gap-3 shrink-0 self-end sm:self-auto">
+                            {/* Status Switch with Label */}
                             <div className="flex items-center gap-2">
-                              <span className="font-bold text-sm text-foreground truncate">
-                                {override?.customName || tool.name}
+                              <span className={`text-[11px] font-bold ${isDisabled ? 'text-rose-500' : 'text-emerald-500'}`}>
+                                {isDisabled ? 'Disabled' : 'Active'}
                               </span>
-                              {override?.customBadge && (
-                                <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-600 font-bold">
-                                  {override.customBadge}
-                                </span>
-                              )}
+                              <button
+                                type="button"
+                                onClick={() => handleToggleToolState(tool.slug, isDisabled)}
+                                className={`w-11 h-6 flex items-center rounded-full p-1 transition-colors cursor-pointer ${
+                                  !isDisabled ? 'bg-emerald-500' : 'bg-muted border border-border'
+                                }`}
+                                title={!isDisabled ? 'Click to Disable Tool' : 'Click to Enable Tool'}
+                              >
+                                <div
+                                  className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${
+                                    !isDisabled ? 'translate-x-5' : 'translate-x-0'
+                                  }`}
+                                />
+                              </button>
                             </div>
-                            <p className="text-xs text-muted-foreground truncate">
-                              {override?.customDescription || tool.intro}
-                            </p>
+
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setEditingTool(tool);
+                                setToolOverrideForm(override || {});
+                                setIsToolModalOpen(true);
+                              }}
+                              className="px-3 py-1.5 rounded-xl border border-border hover:bg-muted text-foreground text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+                              title="Full Tool Customizer & SEO Keywords Manager"
+                            >
+                              <Edit3 className="w-3.5 h-3.5 text-primary" />
+                              <span>Customize &amp; SEO</span>
+                            </button>
                           </div>
                         </div>
 
-                        {/* Actions (Toggle Switch & Edit) */}
-                        <div className="flex items-center gap-2 shrink-0">
-                          {/* ON/OFF Toggle Switch */}
-                          <button
-                            onClick={() => handleToggleToolState(tool.slug, isDisabled)}
-                            className={`w-11 h-6 flex items-center rounded-full p-1 transition-colors ${
-                              !isDisabled ? 'bg-emerald-500' : 'bg-muted'
-                            }`}
-                            title={!isDisabled ? 'Active (Click to Disable)' : 'Disabled (Click to Enable)'}
-                          >
-                            <div
-                              className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${
-                                !isDisabled ? 'translate-x-5' : 'translate-x-0'
-                              }`}
-                            />
-                          </button>
+                        {/* Interactive Keywords Manager Row on Card */}
+                        <div className="p-3 bg-secondary/35 rounded-xl border border-border/60 space-y-2">
+                          <div className="flex items-center justify-between text-xs font-bold text-muted-foreground flex-wrap gap-2">
+                            <div className="flex items-center gap-1.5 text-foreground">
+                              <Tag className="w-3.5 h-3.5 text-primary" />
+                              <span className="text-[11px] uppercase tracking-wider">SEO Keywords</span>
+                              <span className="px-1.5 py-0.2 rounded bg-primary/10 text-primary font-mono text-[10px]">
+                                {effectiveKeywords.length}
+                              </span>
+                            </div>
 
-                          <button
-                            onClick={() => {
-                              setEditingTool(tool);
-                              setToolOverrideForm(override || {});
-                              setIsToolModalOpen(true);
-                            }}
-                            className="p-1.5 rounded-lg border border-border hover:bg-muted text-muted-foreground hover:text-foreground text-xs"
-                            title="Edit Tool"
-                          >
-                            <Edit3 className="w-4 h-4" />
-                          </button>
+                            {/* Inline Quick Add Form */}
+                            <div className="flex items-center gap-1.5">
+                              <input
+                                type="text"
+                                placeholder="+ Add keyword..."
+                                value={currentInlineInput}
+                                onChange={e =>
+                                  setInlineKeywordInputs(prev => ({
+                                    ...prev,
+                                    [tool.slug]: e.target.value,
+                                  }))
+                                }
+                                onKeyDown={e => {
+                                  if (e.key === 'Enter') {
+                                    e.preventDefault();
+                                    handleQuickAddKeyword(tool.slug);
+                                  }
+                                }}
+                                className="px-2.5 py-1 rounded-lg border border-border bg-card text-foreground text-xs placeholder:text-muted-foreground focus:outline-none focus:border-primary w-40 sm:w-48"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => handleQuickAddKeyword(tool.slug)}
+                                className="px-2 py-1 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold flex items-center gap-1 cursor-pointer transition-colors"
+                                title="Add keyword to tool"
+                              >
+                                <Plus className="w-3 h-3" />
+                                <span>Add</span>
+                              </button>
+                            </div>
+                          </div>
+
+                          {/* Keyword Chips List with Delete Button */}
+                          <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                            {displayedKeywords.map((kw, idx) => (
+                              <span
+                                key={idx}
+                                className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-[11px] font-medium bg-card border border-border text-foreground hover:border-primary/40 transition-colors group"
+                              >
+                                <span>#{kw}</span>
+                                <button
+                                  type="button"
+                                  onClick={() => handleQuickDeleteKeyword(tool.slug, kw)}
+                                  className="text-muted-foreground hover:text-rose-500 rounded p-0.5 transition-colors cursor-pointer"
+                                  title={`Remove "${kw}"`}
+                                >
+                                  <X className="w-3 h-3" />
+                                </button>
+                              </span>
+                            ))}
+
+                            {remainingCount > 0 && !isExpanded && (
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  setExpandedToolKeywords(prev => ({
+                                    ...prev,
+                                    [tool.slug]: true,
+                                  }))
+                                }
+                                className="text-[11px] font-bold text-primary hover:underline px-1 cursor-pointer"
+                              >
+                                +{remainingCount} more...
+                              </button>
+                            )}
+
+                            {isExpanded && effectiveKeywords.length > 5 && (
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  setExpandedToolKeywords(prev => ({
+                                    ...prev,
+                                    [tool.slug]: false,
+                                  }))
+                                }
+                                className="text-[11px] font-bold text-muted-foreground hover:text-foreground px-1 cursor-pointer"
+                              >
+                                Show less
+                              </button>
+                            )}
+                          </div>
                         </div>
                       </div>
                     );
@@ -2328,81 +2573,30 @@ export const AdminPage: React.FC = () => {
       )}
 
       {/* ========================================================= */}
-      {/* EDIT BUILT-IN TOOL MODAL */}
+      {/* FULL EDIT BUILT-IN TOOL & SEO MULTI-KEYWORD MODAL */}
       {/* ========================================================= */}
       {isToolModalOpen && editingTool && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-card w-full max-w-md rounded-2xl border border-border shadow-xl p-5 space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="font-bold text-base text-foreground flex items-center gap-2">
-                <Edit3 className="w-4 h-4 text-primary" />
-                Edit Tool: {editingTool.name}
-              </h3>
-              <button onClick={() => setIsToolModalOpen(false)} className="p-1 rounded-lg hover:bg-muted text-muted-foreground">
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="space-y-3 text-xs">
-              <div>
-                <label className="font-medium text-muted-foreground block mb-1">Custom Display Name</label>
-                <input
-                  type="text"
-                  value={toolOverrideForm.customName || ''}
-                  placeholder={editingTool.name}
-                  onChange={e => setToolOverrideForm({ ...toolOverrideForm, customName: e.target.value })}
-                  className="w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground"
-                />
-              </div>
-
-              <div>
-                <label className="font-medium text-muted-foreground block mb-1">Custom Description</label>
-                <textarea
-                  rows={2}
-                  value={toolOverrideForm.customDescription || ''}
-                  placeholder={editingTool.intro}
-                  onChange={e => setToolOverrideForm({ ...toolOverrideForm, customDescription: e.target.value })}
-                  className="w-full rounded-lg border border-border bg-background p-2.5 text-foreground resize-none"
-                />
-              </div>
-
-              <div>
-                <label className="font-medium text-muted-foreground block mb-1">Badge (Optional)</label>
-                <select
-                  value={toolOverrideForm.customBadge || ''}
-                  onChange={e => setToolOverrideForm({ ...toolOverrideForm, customBadge: e.target.value as any })}
-                  className="w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground"
-                >
-                  <option value="">None</option>
-                  <option value="Popular">Popular</option>
-                  <option value="New">New</option>
-                  <option value="Pro">Pro</option>
-                  <option value="Featured">Featured</option>
-                  <option value="Updated">Updated</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="font-medium text-muted-foreground block mb-1">Custom HTML/CSS snippet</label>
-                <textarea
-                  rows={2}
-                  value={toolOverrideForm.customCode || ''}
-                  placeholder="<!-- Extra banner or instructions inside tool page -->"
-                  onChange={e => setToolOverrideForm({ ...toolOverrideForm, customCode: e.target.value })}
-                  className="w-full rounded-lg border border-border bg-background p-2 font-mono text-[11px] text-foreground"
-                />
-              </div>
-            </div>
-
-            <div className="flex justify-end gap-2 pt-2">
-              <button onClick={() => setIsToolModalOpen(false)} className="px-3 py-1.5 rounded-lg border border-border hover:bg-muted text-xs font-medium">
-                Cancel
-              </button>
-              <button onClick={handleSaveToolOverride} className="px-4 py-1.5 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-semibold">
-                Save Changes
-              </button>
-            </div>
-          </div>
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-black/80 backdrop-blur-sm">
+          <ToolEditorModal
+            tool={editingTool}
+            currentOverride={settings.toolOverrides[editingTool.slug]}
+            isOpen={isToolModalOpen}
+            onClose={() => {
+              setIsToolModalOpen(false);
+              setEditingTool(null);
+            }}
+            onSave={async (slug, override) => {
+              const updatedOverrides = { ...settings.toolOverrides };
+              if (override === null) {
+                delete updatedOverrides[slug];
+              } else {
+                updatedOverrides[slug] = override;
+              }
+              await updateSettings({ toolOverrides: updatedOverrides });
+              setIsToolModalOpen(false);
+              setEditingTool(null);
+            }}
+          />
         </div>
       )}
 

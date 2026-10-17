@@ -1,11 +1,13 @@
 import { ToolDefinition, ToolCategory } from './types';
 import { ToolOverride } from './siteSettings';
+import { getEffectiveToolKeywords } from './seoKeywordsDatabase';
 
 export interface EffectiveTool extends ToolDefinition {
   isCustomized?: boolean;
   customBadge?: string;
   disabled?: boolean;
   customCode?: string;
+  customKeywords?: string[];
 }
 
 /**
@@ -15,18 +17,25 @@ export function getEffectiveTool(
   tool: ToolDefinition, 
   overrides?: Record<string, ToolOverride>
 ): EffectiveTool {
-  if (!overrides || !overrides[tool.slug]) {
-    return { ...tool, disabled: false };
+  const o = overrides?.[tool.slug];
+  const effectiveKeywords = getEffectiveToolKeywords(
+    tool.slug, 
+    tool.keywords || [], 
+    o?.customKeywords
+  );
+
+  if (!o) {
+    return { ...tool, disabled: false, keywords: effectiveKeywords };
   }
 
-  const o = overrides[tool.slug];
   const isCustomized = !!(
     o.customName || 
     o.customCategory || 
     o.customDescription || 
     o.customBadge || 
     o.disabled !== undefined || 
-    o.customCode
+    o.customCode ||
+    (o.customKeywords && o.customKeywords.length > 0)
   );
 
   return {
@@ -37,6 +46,8 @@ export function getEffectiveTool(
     customBadge: o.customBadge,
     disabled: o.disabled || false,
     customCode: o.customCode,
+    customKeywords: o.customKeywords,
+    keywords: effectiveKeywords,
     isCustomized
   };
 }

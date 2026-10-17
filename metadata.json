@@ -1,6 +1,6 @@
 {
   "name": "Toolzaro",
-  "description": "Access 168+ free, fast, and 100% private browser tools on Toolzaro. Merge PDFs, compress & resize images, format JSON, generate QR codes, and convert files with zero uploads.",
+  "description": "Use 185+ free online tools: merge PDF, compress images, format JSON, make QR codes and more. Fast, private, no signup, no uploads.",
   "requestFramePermissions": ["camera"],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

@@ -9,10 +9,17 @@ import {
   FileText,
   ExternalLink,
   CheckCircle2,
+  Tag,
+  Plus,
+  Trash2,
+  X,
+  Edit2,
+  Check
 } from 'lucide-react';
 import { ToolDefinition, ToolCategory } from '../../lib/types';
 import { categories } from '../../lib/registry';
 import { ToolOverride } from '../../lib/siteSettings';
+import { getEffectiveToolKeywords } from '../../lib/seoKeywordsDatabase';
 import { toast } from 'sonner';
 import { Link } from 'react-router-dom';
 
@@ -38,6 +45,12 @@ export const ToolEditorModal: React.FC<ToolEditorModalProps> = ({
   const [disabled, setDisabled] = useState(false);
   const [customCode, setCustomCode] = useState('');
 
+  // SEO Keywords state
+  const [keywords, setKeywords] = useState<string[]>([]);
+  const [newKeywordInput, setNewKeywordInput] = useState('');
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [editingValue, setEditingValue] = useState('');
+
   useEffect(() => {
     if (tool) {
       setCustomName(currentOverride?.customName || tool.name);
@@ -46,6 +59,15 @@ export const ToolEditorModal: React.FC<ToolEditorModalProps> = ({
       setCustomBadge(currentOverride?.customBadge || '');
       setDisabled(currentOverride?.disabled || false);
       setCustomCode(currentOverride?.customCode || '');
+
+      const effectiveKeywords = getEffectiveToolKeywords(
+        tool.slug, 
+        tool.keywords || [], 
+        currentOverride?.customKeywords
+      );
+      setKeywords(effectiveKeywords);
+      setEditingIndex(null);
+      setNewKeywordInput('');
     }
   }, [tool, currentOverride, isOpen]);
 
@@ -58,7 +80,50 @@ export const ToolEditorModal: React.FC<ToolEditorModalProps> = ({
       !!currentOverride.customDescription ||
       !!currentOverride.customBadge ||
       currentOverride.disabled !== undefined ||
-      !!currentOverride.customCode);
+      !!currentOverride.customCode ||
+      (currentOverride.customKeywords && currentOverride.customKeywords.length > 0));
+
+  const handleAddKeyword = () => {
+    if (!newKeywordInput.trim()) return;
+    const parts = newKeywordInput
+      .split(',')
+      .map((s) => s.trim())
+      .filter(Boolean);
+    const updated = Array.from(new Set([...keywords, ...parts]));
+    setKeywords(updated);
+    setNewKeywordInput('');
+    toast.success(`Added ${parts.length} keyword(s)`);
+  };
+
+  const handleStartEdit = (idx: number) => {
+    setEditingIndex(idx);
+    setEditingValue(keywords[idx]);
+  };
+
+  const handleSaveEdit = (idx: number) => {
+    if (!editingValue.trim()) {
+      handleDeleteKeyword(idx);
+      return;
+    }
+    const updated = [...keywords];
+    updated[idx] = editingValue.trim();
+    setKeywords(updated);
+    setEditingIndex(null);
+  };
+
+  const handleDeleteKeyword = (idx: number) => {
+    const updated = keywords.filter((_, i) => i !== idx);
+    setKeywords(updated);
+    if (editingIndex === idx) {
+      setEditingIndex(null);
+    }
+  };
+
+  const handleResetKeywords = () => {
+    const defaults = getEffectiveToolKeywords(tool.slug, tool.keywords || []);
+    setKeywords(defaults);
+    toast.success('Reset keywords to initial SEO plan defaults');
+  };
 
   const handleSave = () => {
     const override: ToolOverride = {
@@ -69,6 +134,7 @@ export const ToolEditorModal: React.FC<ToolEditorModalProps> = ({
       customBadge: customBadge || undefined,
       disabled: disabled ? true : false,
       customCode: customCode.trim() ? customCode.trim() : undefined,
+      customKeywords: keywords.length > 0 ? keywords : undefined,
       updatedAt: new Date().toISOString(),
     };
 
@@ -246,12 +312,148 @@ export const ToolEditorModal: React.FC<ToolEditorModalProps> = ({
                 Tool Subtitle / Intro Description
               </label>
               <textarea
-                rows={5}
+                rows={4}
                 value={customDescription}
                 onChange={(e) => setCustomDescription(e.target.value)}
                 placeholder="Explain how this tool helps visitors..."
                 className="w-full p-3.5 rounded-xl border border-slate-800 bg-slate-950 text-white text-sm focus:outline-none focus:border-indigo-500 leading-relaxed"
               />
+            </div>
+          </div>
+
+          {/* Dedicated Multi-Keyword SEO Management Card */}
+          <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+              <h2 className="text-sm font-extrabold uppercase tracking-wider text-sky-400 flex items-center gap-2">
+                <Tag className="w-4 h-4" />
+                <span>SEO Multi-Keywords ({keywords.length})</span>
+              </h2>
+
+              <button
+                type="button"
+                onClick={handleResetKeywords}
+                className="text-[11px] font-bold text-slate-400 hover:text-sky-300 flex items-center gap-1 transition-colors cursor-pointer"
+                title="Restore original keywords from the master SEO blueprint"
+              >
+                <RotateCcw className="w-3 h-3" />
+                <span>Reset to SEO Plan Defaults</span>
+              </button>
+            </div>
+
+            <p className="text-xs text-slate-400 leading-relaxed">
+              Manage multi-keywords for this tool. Add primary, secondary, and long-tail keywords to optimize search rankings and Google snippet targeting.
+            </p>
+
+            {/* Add Keyword Input Field */}
+            <div className="flex items-center gap-2">
+              <div className="relative flex-1">
+                <input
+                  type="text"
+                  value={newKeywordInput}
+                  onChange={(e) => setNewKeywordInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      handleAddKeyword();
+                    }
+                  }}
+                  placeholder="Type a new keyword (or comma-separated keywords) and press Enter..."
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-800 bg-slate-950 text-white text-xs font-medium focus:outline-none focus:border-sky-500"
+                />
+              </div>
+              <button
+                type="button"
+                onClick={handleAddKeyword}
+                className="px-4 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer shrink-0"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Add Keyword</span>
+              </button>
+            </div>
+
+            {/* Active Keyword Chips with Edit and Delete */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between text-[11px] text-slate-400 font-bold uppercase tracking-wider">
+                <span>Active Keywords (Click to Edit or Delete)</span>
+                <span>{keywords.length} total</span>
+              </div>
+
+              {keywords.length === 0 ? (
+                <div className="p-4 rounded-xl border border-slate-800/80 bg-slate-950/50 text-center text-xs text-slate-500">
+                  No keywords assigned yet. Add some keywords above to boost this tool's search ranking!
+                </div>
+              ) : (
+                <div className="flex flex-wrap gap-2 max-h-64 overflow-y-auto p-1">
+                  {keywords.map((kw, idx) => (
+                    <div
+                      key={idx}
+                      className="group flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-950 border border-slate-800 hover:border-sky-500/50 text-xs font-medium text-slate-200 transition-colors"
+                    >
+                      {editingIndex === idx ? (
+                        <div className="flex items-center gap-1">
+                          <input
+                            type="text"
+                            value={editingValue}
+                            onChange={(e) => setEditingValue(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault();
+                                handleSaveEdit(idx);
+                              } else if (e.key === 'Escape') {
+                                setEditingIndex(null);
+                              }
+                            }}
+                            autoFocus
+                            className="px-2 py-0.5 rounded bg-slate-900 border border-sky-500 text-white text-xs focus:outline-none"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => handleSaveEdit(idx)}
+                            className="p-1 hover:bg-emerald-500/20 text-emerald-400 rounded cursor-pointer"
+                            title="Save"
+                          >
+                            <Check className="w-3 h-3" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setEditingIndex(null)}
+                            className="p-1 hover:bg-slate-800 text-slate-400 rounded cursor-pointer"
+                            title="Cancel"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </div>
+                      ) : (
+                        <>
+                          <span
+                            onClick={() => handleStartEdit(idx)}
+                            className="cursor-pointer hover:text-sky-300"
+                            title="Click to edit keyword"
+                          >
+                            #{kw}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => handleStartEdit(idx)}
+                            className="p-0.5 rounded text-slate-500 hover:text-sky-400 opacity-60 group-hover:opacity-100 transition-opacity cursor-pointer"
+                            title="Edit keyword"
+                          >
+                            <Edit2 className="w-3 h-3" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteKeyword(idx)}
+                            className="p-0.5 rounded text-slate-500 hover:text-rose-400 opacity-60 group-hover:opacity-100 transition-opacity cursor-pointer"
+                            title="Delete keyword"
+                          >
+                            <Trash2 className="w-3 h-3" />
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>
