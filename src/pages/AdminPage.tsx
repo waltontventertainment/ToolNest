@@ -44,7 +44,9 @@ import {
   CheckCircle2,
   Calendar,
   Clock,
-  EyeOff
+  EyeOff,
+  Terminal,
+  HelpCircle
 } from 'lucide-react';
 import { useSiteSettings } from '../context/SiteSettingsContext';
 import { tools, categories } from '../lib/registry';
@@ -57,7 +59,7 @@ import {
   seedStarterPostIfEmpty 
 } from '../lib/firestoreBlogService';
 import { BUILTIN_BLOG_CONTENT_BY_ID } from '../lib/blogContentData';
-import { saveBlogToD1, deleteBlogFromD1 } from '../lib/d1BlogService';
+import { saveBlogToD1, deleteBlogFromD1, checkD1Status, initializeD1Schema } from '../lib/d1BlogService';
 import { 
   DynamicPage, 
   getAllAdminPages, 
@@ -207,9 +209,21 @@ export const AdminPage: React.FC = () => {
     postsCount: number;
     latencyMs: number;
     timestamp: string;
+    instructions?: string[];
     error?: string;
   } | null>(null);
   const [d1InitLoading, setD1InitLoading] = useState(false);
+  const [isD1GuideModalOpen, setIsD1GuideModalOpen] = useState(false);
+  const [d1CopiedField, setD1CopiedField] = useState<string | null>(null);
+
+  const handleCopyD1Field = (text: string, fieldKey: string) => {
+    navigator.clipboard.writeText(text);
+    setD1CopiedField(fieldKey);
+    toast.success(`Copied ${fieldKey} to clipboard!`);
+    setTimeout(() => {
+      setD1CopiedField(null);
+    }, 2000);
+  };
 
   // ----------------------------------------------------
   // AUTHENTICATION EFFECT (Google Sign-In with Verified Admin)
@@ -338,7 +352,7 @@ export const AdminPage: React.FC = () => {
   };
 
   const handleSavePost = async (postData: any, targetStatus: 'published' | 'draft' | 'scheduled') => {
-    let d1Result: { success: boolean; error?: string } = { success: false };
+    let d1Result: { success: boolean; error?: string; isBindingPending?: boolean } = { success: false };
 
     // 1. Dual-Persistence: Cloudflare D1 handling
     if (targetStatus === 'published') {
@@ -356,7 +370,7 @@ export const AdminPage: React.FC = () => {
     }
 
     // 2. Dual-Persistence: Firebase Firestore save
-    const saved = await saveBlogToFirestore({
+    await saveBlogToFirestore({
       ...postData,
       status: targetStatus,
     });
@@ -364,6 +378,8 @@ export const AdminPage: React.FC = () => {
     if (targetStatus === 'published') {
       if (d1Result.success) {
         toast.success('Post published successfully to Cloudflare D1 & Firebase Firestore!');
+      } else if (d1Result.isBindingPending) {
+        toast.warning('Published to Firebase Firestore! (Edge D1 binding DB is pending in Cloudflare Pages)');
       } else {
         toast.success(`Published to Firebase! (Cloudflare D1 notice: ${d1Result.error || 'Check D1 database binding in Settings'})`);
       }
@@ -618,65 +634,35 @@ export const AdminPage: React.FC = () => {
   // ----------------------------------------------------
   const handleCheckD1Connection = async () => {
     setD1Checking(true);
-    const start = performance.now();
     try {
-      const res = await fetch('/api/blog/posts', {
-        headers: { 'Accept': 'application/json' },
-        signal: AbortSignal.timeout(6000),
+      const res = await checkD1Status();
+      setD1Result({
+        checked: true,
+        isBound: res.isBound,
+        statusCode: res.statusCode || (res.isBound ? 200 : 503),
+        message: res.message || '',
+        instructions: res.instructions,
+        postsCount: res.postsCount,
+        latencyMs: res.latencyMs || 0,
+        timestamp: new Date().toLocaleTimeString(),
+        error: res.isBound ? undefined : res.message
       });
-      const latencyMs = Math.round(performance.now() - start);
 
-      if (res.status === 503) {
-        const body = await res.json().catch(() => ({}));
-        setD1Result({
-          checked: true,
-          isBound: false,
-          statusCode: 503,
-          message: body.error || 'Cloudflare D1 database (DB) is not bound in Cloudflare Pages.',
-          postsCount: 0,
-          latencyMs,
-          timestamp: new Date().toLocaleTimeString(),
-          error: 'Binding DB missing in Cloudflare Pages Functions settings'
-        });
-        toast.error('D1 Check: D1 database binding (DB) not configured yet');
-        return;
-      }
-
-      if (res.ok) {
-        const data = await res.json();
-        const count = Array.isArray(data) ? data.length : 0;
-        setD1Result({
-          checked: true,
-          isBound: true,
-          statusCode: 200,
-          message: 'Cloudflare D1 database is connected, verified and active!',
-          postsCount: count,
-          latencyMs,
-          timestamp: new Date().toLocaleTimeString(),
-        });
-        toast.success(`D1 Database Verified! (${count} published posts in D1, ${latencyMs}ms)`);
+      if (res.isBound) {
+        toast.success(`D1 Database Verified! (${res.postsCount} posts in D1, ${res.latencyMs}ms)`);
+      } else if (res.statusCode === 503) {
+        toast.error('D1 Check: D1 database binding (DB) is not configured in Cloudflare Pages');
       } else {
-        setD1Result({
-          checked: true,
-          isBound: false,
-          statusCode: res.status,
-          message: `D1 API returned HTTP ${res.status}: ${res.statusText}`,
-          postsCount: 0,
-          latencyMs,
-          timestamp: new Date().toLocaleTimeString(),
-          error: `HTTP ${res.status}`
-        });
-        toast.error(`D1 Check: Server returned HTTP ${res.status}`);
+        toast.error(`D1 Check: Server returned HTTP ${res.statusCode}`);
       }
     } catch (err: any) {
-      const latencyMs = Math.round(performance.now() - start);
       setD1Result({
         checked: true,
         isBound: false,
         statusCode: 0,
         message: err.message || 'Network request failed',
         postsCount: 0,
-        latencyMs,
+        latencyMs: 0,
         timestamp: new Date().toLocaleTimeString(),
         error: err.message || 'Timeout'
       });
@@ -689,17 +675,10 @@ export const AdminPage: React.FC = () => {
   const handleInitD1Schema = async () => {
     setD1InitLoading(true);
     try {
-      const res = await fetch('/api/blog/init', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        signal: AbortSignal.timeout(8000),
-      });
-      const data = await res.json();
-      if (res.ok && data.success) {
-        toast.success(data.message || 'D1 table schema initialized!');
+      const res = await initializeD1Schema();
+      if (res.success) {
+        toast.success(res.message || 'D1 table schema initialized!');
         await handleCheckD1Connection();
-      } else {
-        toast.error(data.error || 'Failed to initialize D1 schema');
       }
     } catch (err: any) {
       toast.error('Init failed: ' + (err.message || 'Network error'));
@@ -2640,7 +2619,7 @@ export const AdminPage: React.FC = () => {
                               ) : (
                                 <AlertCircle className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
                               )}
-                              <div className="space-y-1.5 flex-1 min-w-0">
+                              <div className="space-y-2 flex-1 min-w-0">
                                 <div className="flex items-center gap-2 flex-wrap">
                                   <span className="font-bold text-xs">
                                     {d1Result.isBound ? 'D1 Connection Verified & Active' : 'D1 Database Check Notice'}
@@ -2652,14 +2631,39 @@ export const AdminPage: React.FC = () => {
                                     Tested at {d1Result.timestamp} ({d1Result.latencyMs}ms)
                                   </span>
                                 </div>
-                                <p className="text-[11px] leading-relaxed opacity-90">
+                                <p className="text-[11px] leading-relaxed opacity-90 font-medium">
                                   {d1Result.message}
                                 </p>
-                                {d1Result.isBound && (
+
+                                {d1Result.isBound ? (
                                   <div className="pt-1 flex items-center gap-4 text-[10px] font-medium opacity-85">
                                     <span>• Published Posts in D1: {d1Result.postsCount}</span>
                                     <span>• Binding Identifier: DB</span>
-                                    <span>• Schema: posts table active</span>
+                                    <span>• Edge SQLite: Active & Replicated</span>
+                                  </div>
+                                ) : (
+                                  <div className="pt-2 border-t border-amber-500/20 space-y-2">
+                                    <div className="flex flex-wrap gap-2 items-center">
+                                      <button
+                                        type="button"
+                                        onClick={() => setIsD1GuideModalOpen(true)}
+                                        className="px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white font-semibold text-xs rounded-lg shadow-2xs flex items-center gap-1.5 transition-colors"
+                                      >
+                                        <HelpCircle className="w-3.5 h-3.5" />
+                                        <span>How to Fix HTTP 503 Guide</span>
+                                      </button>
+                                      <button
+                                        type="button"
+                                        onClick={() => handleCopyD1Field('DB', 'Binding Variable DB')}
+                                        className="px-2.5 py-1.5 bg-card/80 border border-amber-500/30 hover:bg-card text-foreground font-mono text-[11px] rounded-lg flex items-center gap-1.5 transition-colors"
+                                      >
+                                        {d1CopiedField === 'Binding Variable DB' ? <Check className="w-3 h-3 text-emerald-500" /> : <Copy className="w-3 h-3 text-muted-foreground" />}
+                                        <span>Copy "DB"</span>
+                                      </button>
+                                    </div>
+                                    <p className="text-[10px] opacity-80 leading-normal">
+                                      * Dual-Persistence Safety: Any published posts are currently preserved in Firebase Firestore, so you will never lose any articles while connecting Cloudflare D1.
+                                    </p>
                                   </div>
                                 )}
                               </div>
@@ -2669,27 +2673,81 @@ export const AdminPage: React.FC = () => {
 
                         {/* Specifications & Binding Blueprint */}
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-2 border-t border-border/60">
-                          <div className="p-2.5 rounded-lg bg-background border border-border">
-                            <span className="text-[10px] text-muted-foreground block">Binding Identifier</span>
-                            <span className="font-mono font-bold text-foreground">DB</span>
+                          <div className="p-2.5 rounded-lg bg-background border border-border flex items-center justify-between">
+                            <div>
+                              <span className="text-[10px] text-muted-foreground block">Binding Variable Name</span>
+                              <span className="font-mono font-bold text-foreground">DB</span>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => handleCopyD1Field('DB', 'Variable Name DB')}
+                              className="p-1 hover:bg-muted rounded text-muted-foreground hover:text-foreground"
+                              title="Copy DB"
+                            >
+                              {d1CopiedField === 'Variable Name DB' ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+                            </button>
                           </div>
-                          <div className="p-2.5 rounded-lg bg-background border border-border">
-                            <span className="text-[10px] text-muted-foreground block">D1 Database Name</span>
-                            <span className="font-mono font-bold text-foreground">toolzaro-blog</span>
+
+                          <div className="p-2.5 rounded-lg bg-background border border-border flex items-center justify-between">
+                            <div>
+                              <span className="text-[10px] text-muted-foreground block">D1 Database Name</span>
+                              <span className="font-mono font-bold text-foreground">toolzaro-blog-d1</span>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => handleCopyD1Field('toolzaro-blog-d1', 'Database Name')}
+                              className="p-1 hover:bg-muted rounded text-muted-foreground hover:text-foreground"
+                              title="Copy Database Name"
+                            >
+                              {d1CopiedField === 'Database Name' ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+                            </button>
                           </div>
-                          <div className="p-2.5 rounded-lg bg-background border border-border">
-                            <span className="text-[10px] text-muted-foreground block">Dual Persistence</span>
-                            <span className="font-bold text-foreground">D1 + Firestore</span>
+
+                          <div className="p-2.5 rounded-lg bg-background border border-border flex items-center justify-between">
+                            <div>
+                              <span className="text-[10px] text-muted-foreground block">Dual Persistence</span>
+                              <span className="font-bold text-emerald-600 dark:text-emerald-400">D1 + Firestore</span>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => setIsD1GuideModalOpen(true)}
+                              className="text-[10px] px-2 py-1 bg-primary/10 hover:bg-primary/20 text-primary font-semibold rounded"
+                            >
+                              Guide
+                            </button>
                           </div>
                         </div>
 
                         {/* Cloudflare Pages Binding Instructions */}
-                        <div className="p-3 bg-card rounded-xl border border-border text-[11px] text-muted-foreground space-y-1 leading-relaxed">
-                          <p className="font-bold text-foreground">Cloudflare Pages D1 Setup Instructions:</p>
-                          <p>1. Open your Cloudflare Dashboard &gt; <strong>Workers &amp; Pages</strong> &gt; Select your project.</p>
-                          <p>2. Navigate to <strong>Settings</strong> &gt; <strong>Functions</strong> &gt; Scroll to <strong>D1 Database Bindings</strong>.</p>
-                          <p>3. Click <strong>Add Binding</strong> &gt; Variable name: <code className="px-1 py-0.5 rounded bg-muted font-bold text-foreground">DB</code> &gt; Database: select your D1 database (<code className="px-1 py-0.5 rounded bg-muted text-foreground">toolzaro-blog</code>).</p>
-                          <p>4. Deploy or restart. Any published article is immediately written to both Cloudflare D1 SQLite and Firebase Firestore.</p>
+                        <div className="p-3.5 bg-card rounded-xl border border-border text-[11px] text-muted-foreground space-y-2 leading-relaxed">
+                          <div className="flex items-center justify-between">
+                            <p className="font-bold text-foreground flex items-center gap-1.5">
+                              <Terminal className="w-3.5 h-3.5 text-primary" />
+                              <span>Cloudflare Pages D1 Setup (3 Simple Steps):</span>
+                            </p>
+                            <button
+                              type="button"
+                              onClick={() => setIsD1GuideModalOpen(true)}
+                              className="text-[10px] text-primary hover:underline font-semibold flex items-center gap-1"
+                            >
+                              <span>Full Visual Walkthrough</span>
+                              <ExternalLink className="w-3 h-3" />
+                            </button>
+                          </div>
+                          <p>1. Open Cloudflare Dashboard (<a href="https://dash.cloudflare.com" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">dash.cloudflare.com</a>) &gt; <strong>Workers &amp; Pages</strong> &gt; Select your project.</p>
+                          <p>2. Navigate to <strong>Settings</strong> &gt; <strong>Functions</strong> &gt; Scroll down to <strong>D1 Database Bindings</strong>.</p>
+                          <p>3. Click <strong>Add Binding</strong> &gt; Variable name: <code className="px-1 py-0.5 rounded bg-muted font-bold text-foreground">DB</code> &gt; Database: select your D1 database (<code className="px-1 py-0.5 rounded bg-muted text-foreground">toolzaro-blog-d1</code>) &gt; Save.</p>
+                          <div className="p-2 bg-muted/50 rounded-lg flex items-center justify-between font-mono text-[10px]">
+                            <span>CLI: npx wrangler d1 create toolzaro-blog-d1</span>
+                            <button
+                              type="button"
+                              onClick={() => handleCopyD1Field('npx wrangler d1 create toolzaro-blog-d1', 'Wrangler Command')}
+                              className="px-2 py-0.5 rounded bg-card hover:bg-muted border border-border text-foreground flex items-center gap-1"
+                            >
+                              {d1CopiedField === 'Wrangler Command' ? <Check className="w-3 h-3 text-emerald-500" /> : <Copy className="w-3 h-3" />}
+                              <span>Copy</span>
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -2951,6 +3009,235 @@ export const AdminPage: React.FC = () => {
                 name={previewCustomTool.name}
                 description={previewCustomTool.description}
               />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================= */}
+      {/* CLOUDFLARE D1 SETUP & FIX GUIDE MODAL */}
+      {/* ========================================================= */}
+      {isD1GuideModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5">
+          <div className="bg-card w-full max-w-2xl max-h-[90vh] rounded-2xl border border-border shadow-2xl flex flex-col overflow-hidden">
+            {/* Modal Header */}
+            <div className="px-5 py-3.5 border-b border-border bg-muted/40 flex items-center justify-between shrink-0">
+              <div className="flex items-center gap-2">
+                <Database className="w-4 h-4 text-primary" />
+                <h3 className="font-bold text-sm text-foreground">Cloudflare D1 Setup &amp; Fix Guide</h3>
+              </div>
+              <button
+                onClick={() => setIsD1GuideModalOpen(false)}
+                className="p-1 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Modal Scrollable Content */}
+            <div className="flex-1 overflow-y-auto p-5 space-y-4 text-xs">
+              {/* Why HTTP 503 Notice */}
+              <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-900 dark:text-amber-200 space-y-1.5">
+                <p className="font-bold flex items-center gap-1.5 text-xs">
+                  <AlertCircle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
+                  <span>Why does "HTTP 503 D1 binding DB not configured" happen?</span>
+                </p>
+                <p className="leading-relaxed opacity-90 text-[11px]">
+                  When deployed on Cloudflare Pages, your serverless Pages Functions (<code className="font-mono px-1 py-0.5 rounded bg-black/10 dark:bg-white/10">functions/api/blog/*</code>) need an environment variable named <code className="font-mono font-bold text-foreground">DB</code> bound to your Edge SQLite D1 database. Until you add this binding in your Cloudflare project settings, Cloudflare responds with HTTP 503.
+                </p>
+                <p className="text-[10px] opacity-80 pt-0.5">
+                  🛡️ <strong>Zero Data Loss:</strong> All posts and drafts are already dual-persisted in Firebase Firestore, so your content is safe and published immediately while you complete this setup.
+                </p>
+              </div>
+
+              {/* 3 Steps in Cloudflare Dashboard */}
+              <div className="space-y-3">
+                <h4 className="font-bold text-foreground text-xs uppercase tracking-wider text-muted-foreground">
+                  Step-by-Step Fix in Cloudflare Dashboard
+                </h4>
+
+                <div className="p-3.5 rounded-xl bg-muted/40 border border-border space-y-2.5">
+                  <div className="flex items-start gap-2.5">
+                    <span className="w-5 h-5 rounded-full bg-primary/10 text-primary font-bold text-[11px] flex items-center justify-center shrink-0">1</span>
+                    <p className="leading-relaxed">
+                      Log into your <a href="https://dash.cloudflare.com" target="_blank" rel="noopener noreferrer" className="text-primary font-semibold hover:underline inline-flex items-center gap-1">Cloudflare Dashboard <ExternalLink className="w-3 h-3" /></a> &gt; Click <strong>Workers &amp; Pages</strong> &gt; Select your Toolzaro project.
+                    </p>
+                  </div>
+
+                  <div className="flex items-start gap-2.5">
+                    <span className="w-5 h-5 rounded-full bg-primary/10 text-primary font-bold text-[11px] flex items-center justify-center shrink-0">2</span>
+                    <p className="leading-relaxed">
+                      Click the <strong>Settings</strong> tab at the top &gt; In the left sidebar, click <strong>Functions</strong> &gt; Scroll down to <strong>D1 Database Bindings</strong>.
+                    </p>
+                  </div>
+
+                  <div className="flex items-start gap-2.5">
+                    <span className="w-5 h-5 rounded-full bg-primary/10 text-primary font-bold text-[11px] flex items-center justify-center shrink-0">3</span>
+                    <div className="space-y-1.5 flex-1 min-w-0">
+                      <p className="leading-relaxed">
+                        Click <strong>Add binding</strong> and fill in:
+                      </p>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 font-mono text-[11px]">
+                        <div className="p-2 rounded bg-background border border-border flex items-center justify-between">
+                          <div>
+                            <span className="text-[10px] text-muted-foreground block font-sans">Variable name (required)</span>
+                            <span className="font-bold text-foreground">DB</span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => handleCopyD1Field('DB', 'Variable Name DB')}
+                            className="p-1 hover:bg-muted rounded text-muted-foreground hover:text-foreground"
+                          >
+                            {d1CopiedField === 'Variable Name DB' ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+                          </button>
+                        </div>
+
+                        <div className="p-2 rounded bg-background border border-border flex items-center justify-between">
+                          <div>
+                            <span className="text-[10px] text-muted-foreground block font-sans">D1 Database</span>
+                            <span className="font-bold text-foreground truncate max-w-[120px]">toolzaro-blog-d1</span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => handleCopyD1Field('toolzaro-blog-d1', 'Database Name')}
+                            className="p-1 hover:bg-muted rounded text-muted-foreground hover:text-foreground"
+                          >
+                            {d1CopiedField === 'Database Name' ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+                          </button>
+                        </div>
+                      </div>
+                      <p className="text-[10px] text-muted-foreground pt-1">
+                        * If you haven't created a D1 database yet, create one in Cloudflare under <strong>Workers &amp; Pages &gt; D1 SQL Database &gt; Create Database</strong> with name <code className="text-foreground">toolzaro-blog-d1</code>.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-2.5">
+                    <span className="w-5 h-5 rounded-full bg-primary/10 text-primary font-bold text-[11px] flex items-center justify-center shrink-0">4</span>
+                    <p className="leading-relaxed">
+                      Click <strong>Save</strong> at the bottom of Cloudflare Pages, then redeploy or restart. Done!
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* CLI Command Alternative */}
+              <div className="space-y-2">
+                <h4 className="font-bold text-foreground text-xs uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                  <Terminal className="w-3.5 h-3.5 text-primary" />
+                  <span>Wrangler CLI Command (Optional)</span>
+                </h4>
+                <div className="p-2.5 rounded-xl bg-muted/60 border border-border font-mono text-[11px] flex items-center justify-between">
+                  <span className="text-foreground select-all">npx wrangler d1 create toolzaro-blog-d1</span>
+                  <button
+                    type="button"
+                    onClick={() => handleCopyD1Field('npx wrangler d1 create toolzaro-blog-d1', 'Wrangler Create Command')}
+                    className="px-2.5 py-1 rounded bg-card hover:bg-muted border border-border text-foreground text-xs flex items-center gap-1 shrink-0"
+                  >
+                    {d1CopiedField === 'Wrangler Create Command' ? <Check className="w-3 h-3 text-emerald-500" /> : <Copy className="w-3 h-3" />}
+                    <span>Copy</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* SQL Schema Definition */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <h4 className="font-bold text-foreground text-xs uppercase tracking-wider text-muted-foreground">
+                    SQLite Table Schema (<code className="text-foreground">posts</code>)
+                  </h4>
+                  <button
+                    type="button"
+                    onClick={() => handleCopyD1Field(`CREATE TABLE IF NOT EXISTS posts (
+  id TEXT PRIMARY KEY,
+  slug TEXT UNIQUE NOT NULL,
+  title TEXT NOT NULL,
+  excerpt TEXT,
+  content TEXT NOT NULL,
+  cover_image TEXT,
+  category TEXT DEFAULT 'General',
+  tags TEXT,
+  author_name TEXT DEFAULT 'Toolzaro Team',
+  author_role TEXT DEFAULT 'Admin',
+  author_avatar TEXT DEFAULT '',
+  read_time_minutes INTEGER DEFAULT 5,
+  status TEXT DEFAULT 'published',
+  content_type TEXT DEFAULT 'text',
+  custom_html TEXT,
+  custom_css TEXT,
+  custom_js TEXT,
+  created_at INTEGER,
+  updated_at INTEGER
+);
+CREATE INDEX IF NOT EXISTS idx_posts_slug ON posts(slug);
+CREATE INDEX IF NOT EXISTS idx_posts_status ON posts(status);`, 'SQL Schema')}
+                    className="text-[10px] text-primary hover:underline font-semibold flex items-center gap-1"
+                  >
+                    {d1CopiedField === 'SQL Schema' ? <Check className="w-3 h-3 text-emerald-500" /> : <Copy className="w-3 h-3" />}
+                    <span>Copy SQL</span>
+                  </button>
+                </div>
+                <pre className="p-3 bg-muted/70 rounded-xl border border-border font-mono text-[10px] leading-relaxed overflow-x-auto text-foreground">
+{`CREATE TABLE IF NOT EXISTS posts (
+  id TEXT PRIMARY KEY,
+  slug TEXT UNIQUE NOT NULL,
+  title TEXT NOT NULL,
+  excerpt TEXT,
+  content TEXT NOT NULL,
+  cover_image TEXT,
+  category TEXT DEFAULT 'General',
+  tags TEXT,
+  author_name TEXT DEFAULT 'Toolzaro Team',
+  author_role TEXT DEFAULT 'Admin',
+  author_avatar TEXT DEFAULT '',
+  read_time_minutes INTEGER DEFAULT 5,
+  status TEXT DEFAULT 'published',
+  content_type TEXT DEFAULT 'text',
+  custom_html TEXT,
+  custom_css TEXT,
+  custom_js TEXT,
+  created_at INTEGER,
+  updated_at INTEGER
+);
+CREATE INDEX IF NOT EXISTS idx_posts_slug ON posts(slug);
+CREATE INDEX IF NOT EXISTS idx_posts_status ON posts(status);`}
+                </pre>
+              </div>
+            </div>
+
+            {/* Modal Actions */}
+            <div className="p-4 bg-muted/30 border-t border-border flex items-center justify-between gap-2 shrink-0">
+              <button
+                type="button"
+                onClick={handleInitD1Schema}
+                disabled={d1InitLoading}
+                className="px-3.5 py-1.5 rounded-xl bg-secondary hover:bg-secondary/80 text-secondary-foreground font-semibold text-xs border border-border flex items-center gap-1.5 transition-colors disabled:opacity-50"
+              >
+                <Database className="w-3.5 h-3.5 text-primary" />
+                <span>{d1InitLoading ? 'Creating table...' : 'Auto-create Table Schema'}</span>
+              </button>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={async () => {
+                    await handleCheckD1Connection();
+                  }}
+                  disabled={d1Checking}
+                  className="px-3.5 py-1.5 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-xs rounded-xl shadow-xs flex items-center gap-1.5 transition-colors disabled:opacity-50"
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 ${d1Checking ? 'animate-spin' : ''}`} />
+                  <span>{d1Checking ? 'Checking...' : 'Re-test D1 Connection'}</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setIsD1GuideModalOpen(false)}
+                  className="px-3.5 py-1.5 rounded-xl border border-border hover:bg-muted text-xs font-medium text-foreground transition-colors"
+                >
+                  Done
+                </button>
+              </div>
             </div>
           </div>
         </div>

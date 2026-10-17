@@ -10,32 +10,70 @@ let memoryD1Cache: FirestoreBlog[] | null = null;
 export interface D1StatusResponse {
   isBound: boolean;
   postsCount: number;
+  statusCode?: number;
   message?: string;
+  instructions?: string[];
+  latencyMs?: number;
 }
 
 /**
- * Checks if the Cloudflare D1 Blog endpoint is available and populated.
+ * Checks if the Cloudflare D1 Blog endpoint is available, bound, and populated.
  */
 export async function checkD1Status(): Promise<D1StatusResponse> {
+  const start = performance.now();
   try {
     const res = await fetch('/api/blog/posts', {
       headers: { 'Accept': 'application/json' },
-      signal: AbortSignal.timeout(5000)
+      signal: AbortSignal.timeout(6000)
     });
+    const latencyMs = Math.round(performance.now() - start);
 
     if (res.status === 503) {
-      return { isBound: false, postsCount: 0, message: 'D1 database binding (DB) not configured yet.' };
+      const data = await res.json().catch(() => ({}));
+      return {
+        isBound: false,
+        postsCount: 0,
+        statusCode: 503,
+        latencyMs,
+        message: data.error || 'Cloudflare D1 database binding (DB) is not configured yet in Cloudflare Pages.',
+        instructions: data.instructions || [
+          'Go to Cloudflare Dashboard > Workers & Pages > Select your project',
+          'Navigate to Settings > Functions > D1 Database Bindings',
+          'Click Add binding > Variable name: DB > Database: select your D1 database',
+          'Save and redeploy your project'
+        ]
+      };
     }
 
     if (res.ok) {
       const data = await res.json();
-      if (Array.isArray(data)) {
-        return { isBound: true, postsCount: data.length, message: 'Cloudflare D1 is connected and active.' };
-      }
+      const count = Array.isArray(data) ? data.length : 0;
+      return {
+        isBound: true,
+        postsCount: count,
+        statusCode: 200,
+        latencyMs,
+        message: 'Cloudflare D1 Edge SQLite database is connected and active!'
+      };
     }
-    return { isBound: false, postsCount: 0, message: `API responded with HTTP ${res.status}` };
+
+    const errData = await res.json().catch(() => ({}));
+    return {
+      isBound: false,
+      postsCount: 0,
+      statusCode: res.status,
+      latencyMs,
+      message: errData.error || `D1 API returned HTTP ${res.status}`
+    };
   } catch (err: any) {
-    return { isBound: false, postsCount: 0, message: err.message || 'Network error' };
+    const latencyMs = Math.round(performance.now() - start);
+    return {
+      isBound: false,
+      postsCount: 0,
+      statusCode: 0,
+      latencyMs,
+      message: err.message || 'Network request failed'
+    };
   }
 }
 
@@ -49,7 +87,7 @@ export async function initializeD1Schema(): Promise<{ success: boolean; message:
       headers: { 'Content-Type': 'application/json' },
       signal: AbortSignal.timeout(8000)
     });
-    const data = await res.json();
+    const data = await res.json().catch(() => ({}));
     if (res.ok && data.success) {
       return { success: true, message: data.message || 'Table created successfully.' };
     }
@@ -136,7 +174,7 @@ export async function getD1BlogBySlug(slug: string): Promise<FirestoreBlog | nul
 /**
  * Saves or updates a blog post in Cloudflare D1
  */
-export async function saveBlogToD1(blog: Partial<FirestoreBlog>): Promise<{ success: boolean; slug?: string; error?: string }> {
+export async function saveBlogToD1(blog: Partial<FirestoreBlog>): Promise<{ success: boolean; slug?: string; error?: string; isBindingPending?: boolean }> {
   try {
     const res = await fetch('/api/blog/posts', {
       method: 'POST',
@@ -147,9 +185,16 @@ export async function saveBlogToD1(blog: Partial<FirestoreBlog>): Promise<{ succ
       signal: AbortSignal.timeout(8000)
     });
 
-    const data = await res.json();
+    const data = await res.json().catch(() => ({}));
+    if (res.status === 503) {
+      return {
+        success: false,
+        isBindingPending: true,
+        error: data.error || 'Cloudflare D1 database (DB) is not bound in Cloudflare Pages.'
+      };
+    }
+
     if (res.ok && data.success) {
-      // Invalidate memory cache
       memoryD1Cache = null;
       return { success: true, slug: data.slug };
     }
@@ -170,7 +215,7 @@ export async function deleteBlogFromD1(slugOrId: string): Promise<{ success: boo
       signal: AbortSignal.timeout(8000)
     });
 
-    const data = await res.json();
+    const data = await res.json().catch(() => ({}));
     if (res.ok && data.success) {
       memoryD1Cache = null;
       return { success: true };

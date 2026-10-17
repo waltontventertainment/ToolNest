@@ -11,6 +11,13 @@ interface RequestContext {
   params: Record<string, string | string[]>;
 }
 
+const CORS_HEADERS = {
+  'Content-Type': 'application/json',
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, DELETE, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+};
+
 export const onRequestGet = async (context: RequestContext): Promise<Response> => {
   const { env, params } = context;
   const rawSlug = params.slug;
@@ -19,14 +26,17 @@ export const onRequestGet = async (context: RequestContext): Promise<Response> =
   if (!slug) {
     return new Response(JSON.stringify({ error: 'Missing slug parameter' }), {
       status: 400,
-      headers: { 'Content-Type': 'application/json' }
+      headers: CORS_HEADERS
     });
   }
 
   if (!env.DB) {
     return new Response(
-      JSON.stringify({ error: 'Cloudflare D1 database (DB) is not bound.' }),
-      { status: 503, headers: { 'Content-Type': 'application/json' } }
+      JSON.stringify({
+        error: 'Cloudflare D1 database (DB) is not bound.',
+        code: 'D1_NOT_BOUND'
+      }),
+      { status: 503, headers: CORS_HEADERS }
     );
   }
 
@@ -38,7 +48,7 @@ export const onRequestGet = async (context: RequestContext): Promise<Response> =
     if (!row) {
       return new Response(JSON.stringify({ error: 'Blog post not found' }), {
         status: 404,
-        headers: { 'Content-Type': 'application/json' }
+        headers: CORS_HEADERS
       });
     }
 
@@ -69,15 +79,14 @@ export const onRequestGet = async (context: RequestContext): Promise<Response> =
     return new Response(JSON.stringify(post), {
       status: 200,
       headers: {
-        'Content-Type': 'application/json',
-        'Cache-Control': 'public, max-age=60, s-maxage=300',
-        'Access-Control-Allow-Origin': '*'
+        ...CORS_HEADERS,
+        'Cache-Control': 'public, max-age=60, s-maxage=300'
       }
     });
   } catch (error: any) {
     return new Response(JSON.stringify({ error: error.message || 'Database error' }), {
       status: 500,
-      headers: { 'Content-Type': 'application/json' }
+      headers: CORS_HEADERS
     });
   }
 };
@@ -90,14 +99,17 @@ export const onRequestDelete = async (context: RequestContext): Promise<Response
   if (!slug) {
     return new Response(JSON.stringify({ error: 'Missing slug parameter' }), {
       status: 400,
-      headers: { 'Content-Type': 'application/json' }
+      headers: CORS_HEADERS
     });
   }
 
   if (!env.DB) {
     return new Response(
-      JSON.stringify({ error: 'Cloudflare D1 database (DB) is not bound.' }),
-      { status: 503, headers: { 'Content-Type': 'application/json' } }
+      JSON.stringify({
+        error: 'Cloudflare D1 database (DB) is not bound.',
+        code: 'D1_NOT_BOUND'
+      }),
+      { status: 503, headers: CORS_HEADERS }
     );
   }
 
@@ -105,12 +117,19 @@ export const onRequestDelete = async (context: RequestContext): Promise<Response
     await env.DB.prepare('DELETE FROM posts WHERE slug = ? OR id = ?').bind(slug, slug).run();
     return new Response(JSON.stringify({ success: true, deletedSlug: slug }), {
       status: 200,
-      headers: { 'Content-Type': 'application/json' }
+      headers: CORS_HEADERS
     });
   } catch (error: any) {
     return new Response(JSON.stringify({ error: error.message || 'Failed to delete post' }), {
       status: 500,
-      headers: { 'Content-Type': 'application/json' }
+      headers: CORS_HEADERS
     });
   }
+};
+
+export const onRequestOptions = async (): Promise<Response> => {
+  return new Response(null, {
+    status: 204,
+    headers: CORS_HEADERS
+  });
 };

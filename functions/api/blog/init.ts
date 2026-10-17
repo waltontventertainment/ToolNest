@@ -1,5 +1,5 @@
 // Cloudflare Pages Functions - /api/blog/init
-// Automatically runs table migration on Cloudflare D1
+// Automatically runs table migration and creates posts table in Cloudflare D1
 
 interface Env {
   DB?: any;
@@ -11,13 +11,24 @@ interface RequestContext {
   params: Record<string, string | string[]>;
 }
 
+const CORS_HEADERS = {
+  'Content-Type': 'application/json',
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+};
+
 export const onRequestPost = async (context: RequestContext): Promise<Response> => {
   const { env } = context;
 
   if (!env.DB) {
     return new Response(
-      JSON.stringify({ error: 'Cloudflare D1 database (DB) is not bound.' }),
-      { status: 503, headers: { 'Content-Type': 'application/json' } }
+      JSON.stringify({
+        error: 'Cloudflare D1 database (DB) is not bound. Please add the DB binding in Cloudflare Pages settings.',
+        code: 'D1_NOT_BOUND',
+        bindingName: 'DB'
+      }),
+      { status: 503, headers: CORS_HEADERS }
     );
   }
 
@@ -52,17 +63,27 @@ export const onRequestPost = async (context: RequestContext): Promise<Response> 
     await env.DB.exec(`${createTableSql} ${createIndex1} ${createIndex2}`);
 
     return new Response(
-      JSON.stringify({ success: true, message: 'D1 table posts initialized successfully.' }),
-      { status: 200, headers: { 'Content-Type': 'application/json' } }
+      JSON.stringify({
+        success: true,
+        message: 'Cloudflare D1 table `posts` and indexes initialized successfully.'
+      }),
+      { status: 200, headers: CORS_HEADERS }
     );
   } catch (err: any) {
     return new Response(JSON.stringify({ error: err.message || 'Initialization failed' }), {
       status: 500,
-      headers: { 'Content-Type': 'application/json' }
+      headers: CORS_HEADERS
     });
   }
 };
 
 export const onRequestGet = async (context: RequestContext): Promise<Response> => {
   return onRequestPost(context);
+};
+
+export const onRequestOptions = async (): Promise<Response> => {
+  return new Response(null, {
+    status: 204,
+    headers: CORS_HEADERS
+  });
 };

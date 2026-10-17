@@ -1,5 +1,6 @@
 // Cloudflare Pages Functions - /api/blog/posts
 // Handles GET (list published posts) and POST (create/update post in D1)
+// Includes self-healing auto-table creation and comprehensive binding error diagnostics
 
 interface Env {
   DB?: any;
@@ -12,57 +13,117 @@ interface RequestContext {
   params: Record<string, string | string[]>;
 }
 
+const CORS_HEADERS = {
+  'Content-Type': 'application/json',
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+};
+
+/**
+ * Self-healing helper: Ensures the D1 `posts` table and indexes exist
+ */
+async function ensurePostsTable(db: any): Promise<void> {
+  const schema = `
+    CREATE TABLE IF NOT EXISTS posts (
+      id TEXT PRIMARY KEY,
+      slug TEXT UNIQUE NOT NULL,
+      title TEXT NOT NULL,
+      excerpt TEXT,
+      content TEXT NOT NULL,
+      cover_image TEXT,
+      category TEXT DEFAULT 'General',
+      tags TEXT,
+      author_name TEXT DEFAULT 'Toolzaro Team',
+      author_role TEXT DEFAULT 'Admin',
+      author_avatar TEXT DEFAULT '',
+      read_time_minutes INTEGER DEFAULT 5,
+      status TEXT DEFAULT 'published',
+      content_type TEXT DEFAULT 'text',
+      custom_html TEXT,
+      custom_css TEXT,
+      custom_js TEXT,
+      created_at INTEGER,
+      updated_at INTEGER
+    );
+    CREATE INDEX IF NOT EXISTS idx_posts_slug ON posts(slug);
+    CREATE INDEX IF NOT EXISTS idx_posts_status ON posts(status);
+  `;
+  await db.exec(schema);
+}
+
 export const onRequestGet = async (context: RequestContext): Promise<Response> => {
   const { env } = context;
 
   if (!env.DB) {
     return new Response(
       JSON.stringify({
-        error: 'Cloudflare D1 database (DB) is not bound. Bind your D1 database in Cloudflare Pages Settings -> Functions -> D1 Database Bindings.',
-        d1Bound: false
+        error: 'Cloudflare D1 database (DB) is not bound. Configure the D1 binding in Cloudflare Pages settings.',
+        code: 'D1_NOT_BOUND',
+        d1Bound: false,
+        bindingName: 'DB',
+        instructions: [
+          '1. Log into your Cloudflare Dashboard (dash.cloudflare.com)',
+          '2. Open Workers & Pages > Click your Toolzaro Pages project',
+          '3. Navigate to Settings > Functions > Scroll down to D1 Database Bindings',
+          '4. Click "Add binding" -> Variable name must be: DB',
+          '5. Select your D1 database (e.g. toolzaro-blog or create one with "wrangler d1 create toolzaro-blog")',
+          '6. Click Save and trigger a new deployment.'
+        ]
       }),
       {
         status: 503,
-        headers: {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*'
-        }
+        headers: CORS_HEADERS
       }
     );
   }
 
-  try {
-    const query = `
-      SELECT 
-        id, 
-        slug, 
-        title, 
-        excerpt, 
-        content,
-        cover_image, 
-        category, 
-        tags, 
-        author_name, 
-        author_role, 
-        author_avatar, 
-        read_time_minutes, 
-        status, 
-        content_type, 
-        custom_html, 
-        custom_css, 
-        custom_js, 
-        created_at, 
-        updated_at
-      FROM posts 
-      WHERE status = 'published' 
-      ORDER BY created_at DESC 
-      LIMIT 100
-    `;
+  const query = `
+    SELECT 
+      id, 
+      slug, 
+      title, 
+      excerpt, 
+      content,
+      cover_image, 
+      category, 
+      tags, 
+      author_name, 
+      author_role, 
+      author_avatar, 
+      read_time_minutes, 
+      status, 
+      content_type, 
+      custom_html, 
+      custom_css, 
+      custom_js, 
+      created_at, 
+      updated_at
+    FROM posts 
+    WHERE status = 'published' 
+    ORDER BY created_at DESC 
+    LIMIT 100
+  `;
 
-    const { results } = await env.DB.prepare(query).all();
+  try {
+    let results: any[] = [];
+    try {
+      const res = await env.DB.prepare(query).all();
+      results = res.results || [];
+    } catch (queryErr: any) {
+      if (queryErr.message?.toLowerCase().includes('no such table')) {
+        // Table not created yet - auto heal and return empty list
+        await ensurePostsTable(env.DB);
+        return new Response(JSON.stringify([]), {
+          status: 200,
+          headers: CORS_HEADERS
+        });
+      }
+      throw queryErr;
+    }
 
     // Map SQLite flat columns to application blog format
-    const posts = (results || []).map((row: any) => ({
+    const posts = results.map((row: any) => ({
       id: row.id,
       slug: row.slug,
       title: row.title,
@@ -89,9 +150,8 @@ export const onRequestGet = async (context: RequestContext): Promise<Response> =
     return new Response(JSON.stringify(posts), {
       status: 200,
       headers: {
-        'Content-Type': 'application/json',
-        'Cache-Control': 'public, max-age=60, s-maxage=300',
-        'Access-Control-Allow-Origin': '*'
+        ...CORS_HEADERS,
+        'Cache-Control': 'public, max-age=60, s-maxage=300'
       }
     });
   } catch (error: any) {
@@ -99,10 +159,7 @@ export const onRequestGet = async (context: RequestContext): Promise<Response> =
       JSON.stringify({ error: error.message || 'Failed to query posts from D1 database' }),
       {
         status: 500,
-        headers: {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*'
-        }
+        headers: CORS_HEADERS
       }
     );
   }
@@ -113,8 +170,15 @@ export const onRequestPost = async (context: RequestContext): Promise<Response> 
 
   if (!env.DB) {
     return new Response(
-      JSON.stringify({ error: 'Cloudflare D1 database (DB) is not bound.' }),
-      { status: 503, headers: { 'Content-Type': 'application/json' } }
+      JSON.stringify({
+        error: 'Cloudflare D1 database (DB) is not bound in Cloudflare Pages.',
+        code: 'D1_NOT_BOUND',
+        bindingName: 'DB',
+        instructions: [
+          'Add D1 Database Binding in Cloudflare Pages Settings -> Functions -> D1 Database Bindings with variable name DB'
+        ]
+      }),
+      { status: 503, headers: CORS_HEADERS }
     );
   }
 
@@ -123,7 +187,7 @@ export const onRequestPost = async (context: RequestContext): Promise<Response> 
     if (!payload.title || !payload.slug) {
       return new Response(
         JSON.stringify({ error: 'Missing required title or slug.' }),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
+        { status: 400, headers: CORS_HEADERS }
       );
     }
 
@@ -177,26 +241,37 @@ export const onRequestPost = async (context: RequestContext): Promise<Response> 
         updated_at = excluded.updated_at
     `;
 
-    await env.DB.prepare(upsertSql)
-      .bind(
-        id, slug, title, excerpt, content, coverImage, category, tags,
-        authorName, authorRole, authorAvatar, readTimeMinutes,
-        status, contentType, customHtml, customCss, customJs,
-        now, now
-      )
-      .run();
+    const executeUpsert = async () => {
+      await env.DB.prepare(upsertSql)
+        .bind(
+          id, slug, title, excerpt, content, coverImage, category, tags,
+          authorName, authorRole, authorAvatar, readTimeMinutes,
+          status, contentType, customHtml, customCss, customJs,
+          now, now
+        )
+        .run();
+    };
+
+    try {
+      await executeUpsert();
+    } catch (upsertErr: any) {
+      if (upsertErr.message?.toLowerCase().includes('no such table')) {
+        // Self-heal table and retry upsert
+        await ensurePostsTable(env.DB);
+        await executeUpsert();
+      } else {
+        throw upsertErr;
+      }
+    }
 
     return new Response(JSON.stringify({ success: true, slug, id }), {
       status: 200,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
-      }
+      headers: CORS_HEADERS
     });
   } catch (err: any) {
     return new Response(JSON.stringify({ error: err.message || 'Failed to save post' }), {
       status: 500,
-      headers: { 'Content-Type': 'application/json' }
+      headers: CORS_HEADERS
     });
   }
 };
@@ -204,10 +279,6 @@ export const onRequestPost = async (context: RequestContext): Promise<Response> 
 export const onRequestOptions = async (): Promise<Response> => {
   return new Response(null, {
     status: 204,
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization'
-    }
+    headers: CORS_HEADERS
   });
 };
