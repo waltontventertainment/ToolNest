@@ -1,6 +1,6 @@
 {
-  "summary": "Implementation plan for fixing image gallery context/long-press interactions (insert, delete, copy), draft/publish storage split (Firebase Firestore for drafts, Cloudflare D1 JSON for published posts), and rich editor post/page fixes.",
-  "updatedAt": "2026-10-17T04:37:07.528695952Z",
+  "summary": "Implementation plan for SEO Indexing Inspector & Canonical Auditor in the admin panel to address Google Search Console indexing concerns and canonical tags.",
+  "updatedAt": "2026-10-17T04:50:53.059521026Z",
   "requestFeedback": true,
   "userFacing": true
 }
