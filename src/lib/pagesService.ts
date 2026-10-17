@@ -208,6 +208,19 @@ export async function savePageToFirestore(page: Partial<DynamicPage>): Promise<D
   memoryPagesCache = cached;
   setLocalCache(cached);
 
+  // Cloudflare D1 sync: only published pages go to Cloudflare D1 JSON storage. Drafts stay in Firebase/local cache.
+  if (finalPage.status === 'published') {
+    fetch('/api/pages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(finalPage),
+    }).catch(() => {});
+  } else {
+    fetch(`/api/pages/${encodeURIComponent(finalPage.slug)}`, {
+      method: 'DELETE',
+    }).catch(() => {});
+  }
+
   return finalPage;
 }
 
@@ -216,7 +229,14 @@ export async function savePageToFirestore(page: Partial<DynamicPage>): Promise<D
  */
 export async function deletePageFromFirestore(id: string): Promise<boolean> {
   const { doc, deleteDoc } = await import('firebase/firestore');
+  const existing = getLocalCache().find(p => p.id === id);
   await deleteDoc(doc(db, COLLECTION_NAME, id));
+
+  if (existing) {
+    fetch(`/api/pages/${encodeURIComponent(existing.slug || id)}`, {
+      method: 'DELETE',
+    }).catch(() => {});
+  }
 
   const cached = getLocalCache().filter(p => p.id !== id);
   memoryPagesCache = cached;

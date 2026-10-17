@@ -175,6 +175,7 @@ export const RichContentEditor: React.FC<RichContentEditorProps> = ({
   const [imageUploading, setImageUploading] = useState(false);
   const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([]);
   const [gallerySearch, setGallerySearch] = useState('');
+  const [activeImagePopup, setActiveImagePopup] = useState<GalleryImage | null>(null);
 
   // Link modal state
   const [isLinkModalOpen, setIsLinkModalOpen] = useState(false);
@@ -1408,11 +1409,16 @@ export const RichContentEditor: React.FC<RichContentEditorProps> = ({
                       </button>
                     </div>
                   ) : (
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-[380px] overflow-y-auto p-1">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-[380px] overflow-y-auto p-1 relative">
                       {filteredGallery.map(img => (
                         <div
                           key={img.id || img.url}
-                          className="group relative rounded-2xl border border-border bg-card overflow-hidden hover:border-primary/50 transition-all flex flex-col"
+                          onClick={() => setActiveImagePopup(img)}
+                          onContextMenu={(e) => {
+                            e.preventDefault();
+                            setActiveImagePopup(img);
+                          }}
+                          className="group relative rounded-2xl border border-border bg-card overflow-hidden hover:border-primary/50 transition-all flex flex-col cursor-pointer"
                         >
                           <div className="aspect-square bg-muted overflow-hidden relative">
                             <img
@@ -1421,34 +1427,9 @@ export const RichContentEditor: React.FC<RichContentEditorProps> = ({
                               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
                             />
                             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1.5 p-2">
-                              <button
-                                onClick={() => handleInsertImage(img.url, img.alt || img.name)}
-                                className="px-2.5 py-1 bg-primary text-primary-foreground text-[11px] font-bold rounded-lg shadow-sm hover:bg-primary/90"
-                                title="Insert into post at cursor"
-                              >
-                                Insert
-                              </button>
-                              <button
-                                onClick={() => {
-                                  navigator.clipboard.writeText(img.url);
-                                  toast.success('URL copied to clipboard');
-                                }}
-                                className="p-1 bg-white/80 hover:bg-white text-slate-800 rounded-lg"
-                                title="Copy image URL"
-                              >
-                                <Copy className="w-3.5 h-3.5" />
-                              </button>
-                              <button
-                                onClick={() => {
-                                  const next = removeImgBBGalleryItem(img.id || img.url);
-                                  setGalleryImages(next);
-                                  toast.success('Removed from gallery');
-                                }}
-                                className="p-1 bg-red-600/90 hover:bg-red-600 text-white rounded-lg"
-                                title="Delete from gallery"
-                              >
-                                <Trash2 className="w-3.5 h-3.5" />
-                              </button>
+                              <span className="px-2 py-1 bg-white/90 text-slate-900 text-[10px] font-bold rounded-lg shadow">
+                                Click for Options
+                              </span>
                             </div>
                           </div>
                           <div className="p-2 text-[11px]">
@@ -1457,6 +1438,61 @@ export const RichContentEditor: React.FC<RichContentEditorProps> = ({
                           </div>
                         </div>
                       ))}
+
+                      {/* Floating Popup Modal for Selected Gallery Image */}
+                      {activeImagePopup && (
+                        <div className="absolute inset-0 z-20 bg-background/90 backdrop-blur-xs flex flex-col items-center justify-center p-4 animate-in fade-in zoom-in-95 duration-150">
+                          <div className="bg-card w-full max-w-sm rounded-2xl border border-border p-4 shadow-xl space-y-3">
+                            <div className="flex items-center justify-between border-b border-border pb-2">
+                              <span className="text-xs font-bold text-foreground">Image Options</span>
+                              <button
+                                onClick={() => setActiveImagePopup(null)}
+                                className="text-xs text-muted-foreground hover:text-foreground font-bold"
+                              >
+                                ✕ Close
+                              </button>
+                            </div>
+                            <div className="w-24 h-24 mx-auto rounded-xl overflow-hidden bg-muted border border-border">
+                              <img src={activeImagePopup.url} alt="Preview" className="w-full h-full object-cover" />
+                            </div>
+                            <p className="text-[11px] text-center text-muted-foreground truncate">{activeImagePopup.name || activeImagePopup.url}</p>
+                            <div className="grid grid-cols-1 gap-2 pt-1">
+                              <button
+                                onClick={() => {
+                                  handleInsertImage(activeImagePopup.url, activeImagePopup.alt || activeImagePopup.name);
+                                  setActiveImagePopup(null);
+                                }}
+                                className="w-full py-2 bg-primary text-primary-foreground text-xs font-bold rounded-xl hover:bg-primary/90 flex items-center justify-center gap-1.5 shadow-sm"
+                              >
+                                <ImageIcon className="w-3.5 h-3.5" />
+                                <span>Insert into Post at Cursor</span>
+                              </button>
+                              <button
+                                onClick={() => {
+                                  navigator.clipboard.writeText(activeImagePopup.url);
+                                  toast.success('Image URL copied to clipboard!');
+                                }}
+                                className="w-full py-2 bg-secondary text-secondary-foreground text-xs font-semibold rounded-xl hover:bg-secondary/80 flex items-center justify-center gap-1.5"
+                              >
+                                <Copy className="w-3.5 h-3.5" />
+                                <span>Copy Image URL</span>
+                              </button>
+                              <button
+                                onClick={() => {
+                                  const next = removeImgBBGalleryItem(activeImagePopup.id || activeImagePopup.url);
+                                  setGalleryImages(next);
+                                  setActiveImagePopup(null);
+                                  toast.success('Deleted from gallery');
+                                }}
+                                className="w-full py-2 bg-red-600/10 text-red-600 hover:bg-red-600/20 text-xs font-semibold rounded-xl flex items-center justify-center gap-1.5"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                                <span>Delete Image</span>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>

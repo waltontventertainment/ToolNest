@@ -159,6 +159,41 @@ async function startServer() {
     return res.json({ success: true, message: 'D1 schema initialized and seeded.' });
   });
 
+  // --- Cloudflare D1 Local Dev & Preview Pages Store ---
+  let localD1Pages: any[] = [];
+
+  app.get('/api/pages', (req, res) => {
+    return res.json(localD1Pages.filter(p => p.status === 'published'));
+  });
+
+  app.post('/api/pages', (req, res) => {
+    const payload = req.body;
+    if (!payload.title || !payload.slug) {
+      return res.status(400).json({ error: 'Missing title or slug' });
+    }
+    const slug = String(payload.slug).trim().toLowerCase();
+    const existingIndex = localD1Pages.findIndex(p => p.slug.toLowerCase() === slug);
+    const page = {
+      ...payload,
+      id: payload.id || `page-${Date.now()}`,
+      slug,
+      createdAt: payload.createdAt || new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    if (existingIndex >= 0) {
+      localD1Pages[existingIndex] = page;
+    } else {
+      localD1Pages.unshift(page);
+    }
+    return res.json({ success: true, slug, id: page.id });
+  });
+
+  app.delete('/api/pages/:slug', (req, res) => {
+    const slug = req.params.slug.toLowerCase();
+    localD1Pages = localD1Pages.filter(p => p.slug.toLowerCase() !== slug && p.id !== slug);
+    return res.json({ success: true, deletedSlug: slug });
+  });
+
   // Mount Vite development middlewares in non-production environments
   if (process.env.NODE_ENV !== 'production') {
     const { createServer: createViteServer } = await import('vite');
