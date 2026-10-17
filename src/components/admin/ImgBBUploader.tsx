@@ -43,6 +43,17 @@ export const ImgBBUploader: React.FC<ImgBBUploaderProps> = ({
       const result = await uploadToImgBB(file, apiKey, file.name);
       if (result.success && result.url) {
         setUploadedUrl(result.url);
+        // Persist to real Discover gallery
+        try {
+          const { addImgBBGalleryItem } = await import('../../lib/imgbbGallery');
+          addImgBBGalleryItem({
+            url: result.url,
+            thumbUrl: result.thumbUrl || result.url,
+            name: file.name,
+            alt: file.name.replace(/\.[^/.]+$/, ''),
+            deleteUrl: result.deleteUrl,
+          });
+        } catch {}
         toast.success('Image uploaded to ImgBB CDN!');
         if (onImageUploaded) {
           onImageUploaded(result.url);

@@ -57,6 +57,7 @@ import {
   seedStarterPostIfEmpty 
 } from '../lib/firestoreBlogService';
 import { BUILTIN_BLOG_CONTENT_BY_ID } from '../lib/blogContentData';
+import { saveBlogToD1, deleteBlogFromD1 } from '../lib/d1BlogService';
 import { 
   DynamicPage, 
   getAllAdminPages, 
@@ -196,6 +197,20 @@ export const AdminPage: React.FC = () => {
   const [exportScope, setExportScope] = useState<'all' | 'posts' | 'pages'>('all');
   const [importScope, setImportScope] = useState<'auto' | 'posts' | 'pages' | 'all'>('auto');
 
+  // D1 Database Diagnostic State
+  const [d1Checking, setD1Checking] = useState(false);
+  const [d1Result, setD1Result] = useState<{
+    checked: boolean;
+    isBound: boolean;
+    statusCode: number;
+    message: string;
+    postsCount: number;
+    latencyMs: number;
+    timestamp: string;
+    error?: string;
+  } | null>(null);
+  const [d1InitLoading, setD1InitLoading] = useState(false);
+
   // ----------------------------------------------------
   // AUTHENTICATION EFFECT (Google Sign-In with Verified Admin)
   // ----------------------------------------------------
@@ -323,17 +338,38 @@ export const AdminPage: React.FC = () => {
   };
 
   const handleSavePost = async (postData: any, targetStatus: 'published' | 'draft' | 'scheduled') => {
+    let d1Result: { success: boolean; error?: string } = { success: false };
+
+    // 1. Dual-Persistence: Cloudflare D1 handling
+    if (targetStatus === 'published') {
+      try {
+        d1Result = await saveBlogToD1({
+          ...postData,
+          status: 'published',
+        });
+      } catch (err: any) {
+        d1Result = { success: false, error: err?.message || 'D1 connection error' };
+      }
+    } else {
+      // Drafts stay private in Firestore and are cleared from public D1 feeds
+      deleteBlogFromD1(postData.slug || postData.id).catch(() => {});
+    }
+
+    // 2. Dual-Persistence: Firebase Firestore save
     const saved = await saveBlogToFirestore({
       ...postData,
       status: targetStatus,
     });
 
-    // Cloudflare D1 Sync
-    fetch('/api/blog/posts', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(saved),
-    }).catch(() => {});
+    if (targetStatus === 'published') {
+      if (d1Result.success) {
+        toast.success('Post published successfully to Cloudflare D1 & Firebase Firestore!');
+      } else {
+        toast.success(`Published to Firebase! (Cloudflare D1 notice: ${d1Result.error || 'Check D1 database binding in Settings'})`);
+      }
+    } else {
+      toast.success('Draft saved successfully to Firebase Firestore');
+    }
 
     await loadPosts();
     setIsPostEditorOpen(false);
@@ -574,6 +610,101 @@ export const AdminPage: React.FC = () => {
       toast.error('Failed to save settings: ' + err.message);
     } finally {
       setSavingSettings(false);
+    }
+  };
+
+  // ----------------------------------------------------
+  // CLOUDFLARE D1 DATABASE DIAGNOSTICS & VERIFICATION
+  // ----------------------------------------------------
+  const handleCheckD1Connection = async () => {
+    setD1Checking(true);
+    const start = performance.now();
+    try {
+      const res = await fetch('/api/blog/posts', {
+        headers: { 'Accept': 'application/json' },
+        signal: AbortSignal.timeout(6000),
+      });
+      const latencyMs = Math.round(performance.now() - start);
+
+      if (res.status === 503) {
+        const body = await res.json().catch(() => ({}));
+        setD1Result({
+          checked: true,
+          isBound: false,
+          statusCode: 503,
+          message: body.error || 'Cloudflare D1 database (DB) is not bound in Cloudflare Pages.',
+          postsCount: 0,
+          latencyMs,
+          timestamp: new Date().toLocaleTimeString(),
+          error: 'Binding DB missing in Cloudflare Pages Functions settings'
+        });
+        toast.error('D1 Check: D1 database binding (DB) not configured yet');
+        return;
+      }
+
+      if (res.ok) {
+        const data = await res.json();
+        const count = Array.isArray(data) ? data.length : 0;
+        setD1Result({
+          checked: true,
+          isBound: true,
+          statusCode: 200,
+          message: 'Cloudflare D1 database is connected, verified and active!',
+          postsCount: count,
+          latencyMs,
+          timestamp: new Date().toLocaleTimeString(),
+        });
+        toast.success(`D1 Database Verified! (${count} published posts in D1, ${latencyMs}ms)`);
+      } else {
+        setD1Result({
+          checked: true,
+          isBound: false,
+          statusCode: res.status,
+          message: `D1 API returned HTTP ${res.status}: ${res.statusText}`,
+          postsCount: 0,
+          latencyMs,
+          timestamp: new Date().toLocaleTimeString(),
+          error: `HTTP ${res.status}`
+        });
+        toast.error(`D1 Check: Server returned HTTP ${res.status}`);
+      }
+    } catch (err: any) {
+      const latencyMs = Math.round(performance.now() - start);
+      setD1Result({
+        checked: true,
+        isBound: false,
+        statusCode: 0,
+        message: err.message || 'Network request failed',
+        postsCount: 0,
+        latencyMs,
+        timestamp: new Date().toLocaleTimeString(),
+        error: err.message || 'Timeout'
+      });
+      toast.error('D1 Check failed: ' + (err.message || 'Network error'));
+    } finally {
+      setD1Checking(false);
+    }
+  };
+
+  const handleInitD1Schema = async () => {
+    setD1InitLoading(true);
+    try {
+      const res = await fetch('/api/blog/init', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        signal: AbortSignal.timeout(8000),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        toast.success(data.message || 'D1 table schema initialized!');
+        await handleCheckD1Connection();
+      } else {
+        toast.error(data.error || 'Failed to initialize D1 schema');
+      }
+    } catch (err: any) {
+      toast.error('Init failed: ' + (err.message || 'Network error'));
+    } finally {
+      setD1InitLoading(false);
     }
   };
 
@@ -2441,6 +2572,124 @@ export const AdminPage: React.FC = () => {
                               <span className="text-[10px] px-2 py-0.5 rounded bg-primary/10 text-primary font-bold">Admin</span>
                             </div>
                           ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* 11. Cloudflare D1 Database & Storage */}
+                <div className="p-4 sm:p-5">
+                  <button
+                    onClick={() => setActiveSettingsAccordion(activeSettingsAccordion === 'd1' ? '' : 'd1')}
+                    className="w-full flex items-center justify-between font-bold text-foreground text-left"
+                  >
+                    <span className="flex items-center gap-2">
+                      <Database className="w-4 h-4 text-primary" />
+                      <span>11. Cloudflare D1 Database &amp; Storage</span>
+                    </span>
+                    <ChevronDown className={`w-4 h-4 transition-transform ${activeSettingsAccordion === 'd1' ? 'rotate-180' : ''}`} />
+                  </button>
+
+                  {activeSettingsAccordion === 'd1' && (
+                    <div className="mt-4 space-y-4 pt-2 text-xs">
+                      <div className="p-4 rounded-xl bg-muted/40 border border-border space-y-3">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                          <div>
+                            <h4 className="font-bold text-foreground text-sm flex items-center gap-2">
+                              <span>Edge SQLite D1 Database Verification</span>
+                            </h4>
+                            <p className="text-[11px] text-muted-foreground mt-0.5">
+                              Verify binding status, table indexes, and test end-to-end JSON publishing to Cloudflare D1.
+                            </p>
+                          </div>
+
+                          <div className="flex items-center gap-2 shrink-0">
+                            <button
+                              type="button"
+                              onClick={handleCheckD1Connection}
+                              disabled={d1Checking}
+                              className="px-3 py-2 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs rounded-xl shadow-xs flex items-center gap-1.5 transition-colors disabled:opacity-50"
+                            >
+                              <RefreshCw className={`w-3.5 h-3.5 ${d1Checking ? 'animate-spin' : ''}`} />
+                              <span>{d1Checking ? 'Checking D1...' : 'Connect & Check D1 Database'}</span>
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={handleInitD1Schema}
+                              disabled={d1InitLoading}
+                              className="px-3 py-2 bg-secondary hover:bg-secondary/80 text-secondary-foreground font-semibold text-xs rounded-xl border border-border flex items-center gap-1.5 transition-colors disabled:opacity-50"
+                            >
+                              <Database className="w-3.5 h-3.5 text-primary" />
+                              <span>{d1InitLoading ? 'Initializing...' : 'Initialize / Repair Schema'}</span>
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Interactive Diagnostic Result Panel */}
+                        {d1Result && (
+                          <div className={`p-4 rounded-xl border transition-all ${
+                            d1Result.isBound
+                              ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-900 dark:text-emerald-200'
+                              : 'bg-amber-500/10 border-amber-500/30 text-amber-900 dark:text-amber-200'
+                          }`}>
+                            <div className="flex items-start gap-3">
+                              {d1Result.isBound ? (
+                                <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
+                              ) : (
+                                <AlertCircle className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                              )}
+                              <div className="space-y-1.5 flex-1 min-w-0">
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  <span className="font-bold text-xs">
+                                    {d1Result.isBound ? 'D1 Connection Verified & Active' : 'D1 Database Check Notice'}
+                                  </span>
+                                  <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-black/10 dark:bg-white/10 font-semibold">
+                                    HTTP {d1Result.statusCode}
+                                  </span>
+                                  <span className="text-[10px] opacity-75">
+                                    Tested at {d1Result.timestamp} ({d1Result.latencyMs}ms)
+                                  </span>
+                                </div>
+                                <p className="text-[11px] leading-relaxed opacity-90">
+                                  {d1Result.message}
+                                </p>
+                                {d1Result.isBound && (
+                                  <div className="pt-1 flex items-center gap-4 text-[10px] font-medium opacity-85">
+                                    <span>• Published Posts in D1: {d1Result.postsCount}</span>
+                                    <span>• Binding Identifier: DB</span>
+                                    <span>• Schema: posts table active</span>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Specifications & Binding Blueprint */}
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-2 border-t border-border/60">
+                          <div className="p-2.5 rounded-lg bg-background border border-border">
+                            <span className="text-[10px] text-muted-foreground block">Binding Identifier</span>
+                            <span className="font-mono font-bold text-foreground">DB</span>
+                          </div>
+                          <div className="p-2.5 rounded-lg bg-background border border-border">
+                            <span className="text-[10px] text-muted-foreground block">D1 Database Name</span>
+                            <span className="font-mono font-bold text-foreground">toolzaro-blog</span>
+                          </div>
+                          <div className="p-2.5 rounded-lg bg-background border border-border">
+                            <span className="text-[10px] text-muted-foreground block">Dual Persistence</span>
+                            <span className="font-bold text-foreground">D1 + Firestore</span>
+                          </div>
+                        </div>
+
+                        {/* Cloudflare Pages Binding Instructions */}
+                        <div className="p-3 bg-card rounded-xl border border-border text-[11px] text-muted-foreground space-y-1 leading-relaxed">
+                          <p className="font-bold text-foreground">Cloudflare Pages D1 Setup Instructions:</p>
+                          <p>1. Open your Cloudflare Dashboard &gt; <strong>Workers &amp; Pages</strong> &gt; Select your project.</p>
+                          <p>2. Navigate to <strong>Settings</strong> &gt; <strong>Functions</strong> &gt; Scroll to <strong>D1 Database Bindings</strong>.</p>
+                          <p>3. Click <strong>Add Binding</strong> &gt; Variable name: <code className="px-1 py-0.5 rounded bg-muted font-bold text-foreground">DB</code> &gt; Database: select your D1 database (<code className="px-1 py-0.5 rounded bg-muted text-foreground">toolzaro-blog</code>).</p>
+                          <p>4. Deploy or restart. Any published article is immediately written to both Cloudflare D1 SQLite and Firebase Firestore.</p>
                         </div>
                       </div>
                     </div>

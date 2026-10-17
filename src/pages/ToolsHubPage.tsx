@@ -1,5 +1,5 @@
-import React, { useState, useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useMemo, useEffect } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import {
   Search,
   Layers,
@@ -22,10 +22,19 @@ import { useLocalStorage } from '../lib/toolkit';
 
 export const ToolsHubPage: React.FC = () => {
   const { settings } = useSiteSettings();
-  const [search, setSearch] = useState('');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialQuery = searchParams.get('q') || '';
+  const [search, setSearch] = useState(initialQuery);
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [sortBy, setSortBy] = useState<'featured' | 'az'>('featured');
   const [pcViewMode, setPcViewMode] = useLocalStorage<'grid' | 'compact'>('toolzaro_pc_view_mode', 'grid');
+
+  useEffect(() => {
+    const q = searchParams.get('q');
+    if (q !== null && q !== search) {
+      setSearch(q);
+    }
+  }, [searchParams]);
 
   const activeToolsList = useMemo(() => {
     return getEffectiveTools(tools, settings.toolOverrides, false);

@@ -63,5 +63,11 @@ service cloud.firestore {
       allow read: if true;
       allow create, update, delete: if isAuthorizedTeamMember();
     }
+
+    // 6. ImgBB Media Library Assets
+    match /imgbb_gallery/{imageId} {
+      allow read: if isAuthorizedTeamMember();
+      allow create, update, delete: if isAuthorizedTeamMember();
+    }
   }
 }

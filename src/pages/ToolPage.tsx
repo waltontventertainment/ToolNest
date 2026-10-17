@@ -31,6 +31,7 @@ import { getEffectiveTool } from '../lib/toolOverrides';
 import { getToolUrl, getCategoryUrl } from '../lib/appUrls';
 import { buildToolSeoTitle, buildToolSeoDescription, buildToolSeoKeywords } from '../lib/seoHelper';
 import { getToolSeoProfile, BLOG_POST_LINKS } from '../lib/seoKeywordsDatabase';
+import { KeywordExplorerModal } from '../components/KeywordExplorerModal';
 import { NotFound } from './NotFound';
 
 export const ToolPage: React.FC<{ forcedSlug?: string }> = ({ forcedSlug }) => {
@@ -56,6 +57,7 @@ export const ToolPage: React.FC<{ forcedSlug?: string }> = ({ forcedSlug }) => {
   const tool = baseTool ? getEffectiveTool(baseTool, settings.toolOverrides) : undefined;
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [copiedLink, setCopiedLink] = useState(false);
+  const [selectedKeyword, setSelectedKeyword] = useState<string | null>(null);
   const { isFavorite: checkFavorite, toggleFavorite: authToggleFavorite } = useFavorites();
 
   if (!tool) {
@@ -356,20 +358,29 @@ export const ToolPage: React.FC<{ forcedSlug?: string }> = ({ forcedSlug }) => {
       {/* SEO Keywords & Search Topics Badge Ribbon */}
       {seoKeywords && seoKeywords.length > 0 && (
         <section className="mb-8 p-4 sm:p-5 rounded-2xl bg-card border border-border/80 shadow-2xs space-y-2.5">
-          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
-            <Tag className="w-3.5 h-3.5 text-primary" />
-            <span>Search Topics &amp; Associated Keywords</span>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
+              <Tag className="w-3.5 h-3.5 text-primary" />
+              <span>Search Topics &amp; Associated Keywords</span>
+            </div>
+            <span className="text-[11px] text-muted-foreground hidden sm:inline">
+              Click any topic to explore related tools &amp; search intent
+            </span>
           </div>
           <div className="flex flex-wrap gap-1.5 pt-0.5">
-            {seoKeywords.slice(0, 16).map((kw, idx) => (
-              <Link
+            {seoKeywords.slice(0, 20).map((kw, idx) => (
+              <a
                 key={idx}
-                to={`/?q=${encodeURIComponent(kw)}`}
-                className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium bg-secondary/80 hover:bg-primary/10 text-muted-foreground hover:text-primary border border-border/60 hover:border-primary/30 transition-colors"
-                title={`Search Toolzaro for "${kw}"`}
+                href={`/tools?q=${encodeURIComponent(kw)}`}
+                onClick={e => {
+                  e.preventDefault();
+                  setSelectedKeyword(kw);
+                }}
+                className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium bg-secondary/80 hover:bg-primary/10 text-muted-foreground hover:text-primary border border-border/60 hover:border-primary/30 transition-all cursor-pointer hover:scale-102"
+                title={`Explore related tools & Google search intent for "${kw}"`}
               >
                 <span>#{kw}</span>
-              </Link>
+              </a>
             ))}
           </div>
         </section>
@@ -649,6 +660,14 @@ export const ToolPage: React.FC<{ forcedSlug?: string }> = ({ forcedSlug }) => {
           </div>
         )}
       </section>
+
+      {/* Interactive Keyword Explorer & Google Search Ranking Modal */}
+      <KeywordExplorerModal
+        isOpen={Boolean(selectedKeyword)}
+        keyword={selectedKeyword}
+        currentToolSlug={tool.slug}
+        onClose={() => setSelectedKeyword(null)}
+      />
     </>
   );
 };

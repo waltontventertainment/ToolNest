@@ -34,6 +34,7 @@ import { BlogAuthorBadge } from '../components/BlogAuthorBadge';
 import { useSiteSettings } from '../context/SiteSettingsContext';
 import { getBlogPostUrl } from '../lib/appUrls';
 import { getResponsiveHeroCover } from '../lib/imageUtils';
+import { KeywordExplorerModal } from '../components/KeywordExplorerModal';
 import { NotFound } from './NotFound';
 import { toast } from 'sonner';
 
@@ -55,6 +56,7 @@ export const BlogPostPage: React.FC<{ forcedSlug?: string }> = ({ forcedSlug }) 
   const [allBlogs, setAllBlogs] = useState<FirestoreBlog[]>(() => getInstantPublishedBlogs());
   const [resolvingRemote, setResolvingRemote] = useState(!instantPost);
   const [copied, setCopied] = useState(false);
+  const [selectedKeyword, setSelectedKeyword] = useState<string | null>(null);
 
   // Synchronously resolve active post on the very first render pass (0.0ms, zero stale state flash)
   const post = React.useMemo(() => {
@@ -295,17 +297,25 @@ export const BlogPostPage: React.FC<{ forcedSlug?: string }> = ({ forcedSlug }) 
           {/* Tags */}
           {post.tags && post.tags.length > 0 && (
             <div className="pt-6 border-t border-border space-y-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-                <Tag className="w-3.5 h-3.5" /> Topics
-              </span>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                  <Tag className="w-3.5 h-3.5 text-primary" /> Associated Topics &amp; Keywords
+                </span>
+                <span className="text-[11px] text-muted-foreground hidden sm:inline">
+                  Click any topic to explore matching tools
+                </span>
+              </div>
+              <div className="flex flex-wrap gap-2 pt-1">
                 {post.tags.map(tag => (
-                  <span
+                  <button
                     key={tag}
-                    className="px-3 py-1 rounded-lg text-xs font-medium bg-muted text-foreground border border-border"
+                    type="button"
+                    onClick={() => setSelectedKeyword(tag)}
+                    className="px-3 py-1.5 rounded-xl text-xs font-medium bg-muted hover:bg-primary/10 text-foreground hover:text-primary border border-border transition-all cursor-pointer hover:scale-102 flex items-center gap-1"
+                    title={`Explore tools related to "${tag}"`}
                   >
-                    #{tag}
-                  </span>
+                    <span>#{tag}</span>
+                  </button>
                 ))}
               </div>
             </div>
@@ -412,6 +422,13 @@ export const BlogPostPage: React.FC<{ forcedSlug?: string }> = ({ forcedSlug }) 
           </div>
         </aside>
       </div>
+
+      {/* Interactive Keyword Explorer Modal */}
+      <KeywordExplorerModal
+        isOpen={Boolean(selectedKeyword)}
+        keyword={selectedKeyword}
+        onClose={() => setSelectedKeyword(null)}
+      />
     </div>
   );
 };

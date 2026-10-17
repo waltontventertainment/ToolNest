@@ -71,6 +71,20 @@
         "enabled": { "type": "boolean", "description": "Active state" }
       },
       "required": ["id", "slug", "name", "customHtml"]
+    },
+    "ImgBBImage": {
+      "title": "ImgBB Gallery Asset",
+      "description": "Persistent record of images uploaded to ImgBB CDN",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique asset identifier" },
+        "url": { "type": "string", "description": "Direct ImgBB image URL" },
+        "thumbUrl": { "type": "string", "description": "Thumbnail URL" },
+        "name": { "type": "string", "description": "Original filename or title" },
+        "alt": { "type": "string", "description": "Alt description for SEO" },
+        "uploadedAt": { "type": "string", "description": "ISO timestamp of upload" }
+      },
+      "required": ["id", "url"]
     }
   },
   "firestore": {
@@ -93,6 +107,10 @@
     "/custom_tools/{toolId}": {
       "schema": "CustomTool",
       "description": "Admin-added custom HTML tools"
+    },
+    "/imgbb_gallery/{imageId}": {
+      "schema": "ImgBBImage",
+      "description": "Real persistent ImgBB media gallery assets uploaded by authorized team members"
     }
   }
 }

@@ -1,5 +1,6 @@
-// ImgBB Media Library Store
-// Tracks all images uploaded via ImgBB for instant reuse, inserting at cursor, or deletion
+// Real ImgBB Media Library Store
+// Tracks real images uploaded via ImgBB for instant reuse, inserting at cursor, or deletion
+// Dual-persisted in Firebase Firestore ('imgbb_gallery') and local browser storage.
 
 export interface GalleryImage {
   id: string;
@@ -8,92 +9,190 @@ export interface GalleryImage {
   name?: string;
   alt?: string;
   uploadedAt: string;
+  deleteUrl?: string;
 }
 
-const STORAGE_KEY = 'toolzaro_imgbb_media_gallery';
+const STORAGE_KEY = 'toolzaro_imgbb_real_media_gallery';
+const FIRESTORE_COLLECTION = 'imgbb_gallery';
 
-const DEFAULT_SEEDED_IMAGES: GalleryImage[] = [
-  {
-    id: 'seed-1',
-    url: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?w=1200&auto=format&fit=crop&q=80',
-    thumbUrl: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?w=240&auto=format&fit=crop&q=70',
-    name: 'Cybersecurity & Privacy Hero',
-    alt: 'Zero-Knowledge Privacy and Cryptography in Web Browsers',
-    uploadedAt: '2026-10-04T12:00:00Z',
-  },
-  {
-    id: 'seed-2',
-    url: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&auto=format&fit=crop&q=80',
-    thumbUrl: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=240&auto=format&fit=crop&q=70',
-    name: 'Technical SEO Blueprint',
-    alt: 'Search Engine Optimization and Schema Graphs',
-    uploadedAt: '2026-10-03T10:00:00Z',
-  },
-  {
-    id: 'seed-3',
-    url: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1200&auto=format&fit=crop&q=80',
-    thumbUrl: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=240&auto=format&fit=crop&q=70',
-    name: 'Modern Web Architecture',
-    alt: 'Client-Side Web Development Architecture',
-    uploadedAt: '2026-10-02T09:00:00Z',
-  },
-  {
-    id: 'seed-4',
-    url: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=1200&auto=format&fit=crop&q=80',
-    thumbUrl: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=240&auto=format&fit=crop&q=70',
-    name: 'Matrix Data Security',
-    alt: 'Hardware Cryptography and Data Sovereignty',
-    uploadedAt: '2026-10-01T08:00:00Z',
-  }
-];
+let memoryGallery: GalleryImage[] | null = null;
+let firestoreFetchDone = false;
 
-export function getImgBBGallery(): GalleryImage[] {
+// Dynamic loader for Firebase Firestore
+async function getFirestoreModule() {
   try {
-    if (typeof window === 'undefined') return DEFAULT_SEEDED_IMAGES;
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_SEEDED_IMAGES));
-      return DEFAULT_SEEDED_IMAGES;
-    }
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) && parsed.length > 0 ? parsed : DEFAULT_SEEDED_IMAGES;
-  } catch {
-    return DEFAULT_SEEDED_IMAGES;
-  }
-}
-
-export function addImgBBGalleryItem(item: Omit<GalleryImage, 'id' | 'uploadedAt'> & { id?: string; uploadedAt?: string }): GalleryImage[] {
-  try {
-    const current = getImgBBGallery();
-    // Prevent duplicate URLs
-    const filtered = current.filter(img => img.url !== item.url);
-    const newEntry: GalleryImage = {
-      id: item.id || `imgbb-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
-      url: item.url,
-      thumbUrl: item.thumbUrl || item.url,
-      name: item.name || 'Uploaded Asset',
-      alt: item.alt || '',
-      uploadedAt: item.uploadedAt || new Date().toISOString(),
+    const [fs, fb] = await Promise.all([
+      import('firebase/firestore'),
+      import('./firebase'),
+    ]);
+    return {
+      db: fb.db,
+      collection: fs.collection,
+      doc: fs.doc,
+      getDocs: fs.getDocs,
+      setDoc: fs.setDoc,
+      deleteDoc: fs.deleteDoc,
+      query: fs.query,
+      orderBy: fs.orderBy,
+      limit: fs.limit,
     };
-    const updated = [newEntry, ...filtered];
+  } catch (err) {
+    console.warn('Firestore module load note:', err);
+    return null;
+  }
+}
+
+/**
+ * Returns the currently cached real ImgBB gallery images synchronously (0ms delay).
+ * No built-in or mock Unsplash demo images.
+ */
+export function getImgBBGallery(): GalleryImage[] {
+  if (memoryGallery) return memoryGallery;
+
+  try {
     if (typeof window !== 'undefined') {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) {
+          // Filter out any legacy unsplash URLs if they lingered in old localstorage
+          const realImages = parsed.filter(img => !img.url?.includes('images.unsplash.com'));
+          memoryGallery = realImages;
+          return realImages;
+        }
+      }
     }
-    return updated;
-  } catch {
+  } catch {}
+
+  memoryGallery = [];
+  return [];
+}
+
+/**
+ * Fetches real uploaded ImgBB gallery items from Firebase Firestore and syncs local cache.
+ */
+export async function fetchRemoteImgBBGallery(): Promise<GalleryImage[]> {
+  try {
+    const fs = await getFirestoreModule();
+    if (!fs) return getImgBBGallery();
+
+    const q = fs.query(
+      fs.collection(fs.db, FIRESTORE_COLLECTION),
+      fs.orderBy('uploadedAt', 'desc'),
+      fs.limit(100)
+    );
+
+    const snapshot = await fs.getDocs(q);
+    const remoteItems: GalleryImage[] = [];
+
+    snapshot.forEach(docSnap => {
+      const data = docSnap.data();
+      if (data && data.url) {
+        remoteItems.push({
+          id: docSnap.id,
+          url: data.url,
+          thumbUrl: data.thumbUrl || data.url,
+          name: data.name || 'Uploaded Image',
+          alt: data.alt || '',
+          uploadedAt: data.uploadedAt || new Date().toISOString(),
+          deleteUrl: data.deleteUrl,
+        });
+      }
+    });
+
+    // Merge with any local offline uploads
+    const current = getImgBBGallery();
+    const map = new Map<string, GalleryImage>();
+    remoteItems.forEach(item => map.set(item.url, item));
+    current.forEach(item => {
+      if (!map.has(item.url)) {
+        map.set(item.url, item);
+      }
+    });
+
+    const combined = Array.from(map.values()).sort(
+      (a, b) => new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime()
+    );
+
+    memoryGallery = combined;
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(combined));
+      } catch {}
+    }
+    firestoreFetchDone = true;
+    return combined;
+  } catch (err) {
+    console.warn('ImgBB remote gallery sync note:', err);
     return getImgBBGallery();
   }
 }
 
-export function removeImgBBGalleryItem(idOrUrl: string): GalleryImage[] {
-  try {
-    const current = getImgBBGallery();
-    const updated = current.filter(img => img.id !== idOrUrl && img.url !== idOrUrl);
-    if (typeof window !== 'undefined') {
+/**
+ * Adds a new real uploaded image to both local storage and Firestore.
+ */
+export function addImgBBGalleryItem(
+  item: Omit<GalleryImage, 'id' | 'uploadedAt'> & { id?: string; uploadedAt?: string }
+): GalleryImage[] {
+  const current = getImgBBGallery();
+  const id = item.id || `imgbb-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+  const uploadedAt = item.uploadedAt || new Date().toISOString();
+
+  const newEntry: GalleryImage = {
+    id,
+    url: item.url,
+    thumbUrl: item.thumbUrl || item.url,
+    name: item.name || 'Uploaded Asset',
+    alt: item.alt || '',
+    uploadedAt,
+    deleteUrl: item.deleteUrl,
+  };
+
+  // Prepend to list, deduping by URL
+  const filtered = current.filter(img => img.url !== item.url);
+  const updated = [newEntry, ...filtered];
+  memoryGallery = updated;
+
+  if (typeof window !== 'undefined') {
+    try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-    }
-    return updated;
-  } catch {
-    return getImgBBGallery();
+    } catch {}
   }
+
+  // Dual-persist to Firestore in background
+  getFirestoreModule().then(fs => {
+    if (fs) {
+      fs.setDoc(fs.doc(fs.db, FIRESTORE_COLLECTION, id), newEntry, { merge: true }).catch(err => {
+        console.warn('ImgBB Firestore persist note:', err?.message || err);
+      });
+    }
+  }).catch(() => {});
+
+  return updated;
+}
+
+/**
+ * Removes an image from both local storage and Firestore.
+ */
+export function removeImgBBGalleryItem(idOrUrl: string): GalleryImage[] {
+  const current = getImgBBGallery();
+  const itemToRemove = current.find(img => img.id === idOrUrl || img.url === idOrUrl);
+  const updated = current.filter(img => img.id !== idOrUrl && img.url !== idOrUrl);
+  memoryGallery = updated;
+
+  if (typeof window !== 'undefined') {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+    } catch {}
+  }
+
+  if (itemToRemove) {
+    getFirestoreModule().then(fs => {
+      if (fs) {
+        fs.deleteDoc(fs.doc(fs.db, FIRESTORE_COLLECTION, itemToRemove.id)).catch(() => {});
+      }
+    }).catch(() => {});
+  }
+
+  return updated;
 }

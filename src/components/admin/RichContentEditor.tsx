@@ -51,6 +51,7 @@ import { uploadToImgBB } from '../../lib/imgbb';
 import { extractFirstImageFromContent } from '../../lib/pagesService';
 import {
   getImgBBGallery,
+  fetchRemoteImgBBGallery,
   addImgBBGalleryItem,
   removeImgBBGalleryItem,
   GalleryImage
@@ -194,6 +195,9 @@ export const RichContentEditor: React.FC<RichContentEditorProps> = ({
   useEffect(() => {
     if (isImageModalOpen) {
       setGalleryImages(getImgBBGallery());
+      fetchRemoteImgBBGallery().then(items => {
+        if (items) setGalleryImages(items);
+      });
     }
   }, [isImageModalOpen]);
 
@@ -485,21 +489,6 @@ export const RichContentEditor: React.FC<RichContentEditorProps> = ({
       const payload = buildPayload(targetStatus);
       await onSave(payload, targetStatus);
       setStatus(targetStatus);
-
-      // Cloudflare D1 Sync
-      fetch('/api/blog/posts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      }).catch(() => {});
-
-      toast.success(
-        targetStatus === 'published'
-          ? `${isPost ? 'Post' : 'Page'} published to Cloudflare & Firebase!`
-          : targetStatus === 'scheduled'
-          ? `${isPost ? 'Post' : 'Page'} scheduled successfully!`
-          : 'Draft saved to Cloudflare & Firebase!'
-      );
     } catch (err: any) {
       toast.error(err.message || 'Failed to save');
     } finally {
@@ -507,19 +496,12 @@ export const RichContentEditor: React.FC<RichContentEditorProps> = ({
     }
   };
 
-  // Exit Handler with Automatic Draft Save to Firebase & Cloudflare
+  // Exit Handler with Automatic Draft Save to Firebase
   const handleCloseWithAutoDraft = async () => {
     if (title.trim() || content.trim()) {
       try {
         const payload = buildPayload('draft');
         await onSave(payload, 'draft');
-        // Cloudflare D1 Sync
-        fetch('/api/blog/posts', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        }).catch(() => {});
-        toast.success('Draft automatically saved to Cloudflare & Firebase');
       } catch (err) {
         console.warn('Auto draft save note on exit:', err);
       }
