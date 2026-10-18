@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { execSync } from 'child_process';
 import { tools, categories } from '../src/lib/registry';
+import { TOOL_DOCS_BY_SLUG } from '../src/lib/registryDocs';
 import { BUILTIN_BLOG_POSTS } from '../src/lib/blogData';
 import { generateAll3DFavicons } from './render-3d-favicons';
 
@@ -466,6 +467,9 @@ Sitemap: ${BASE_URL}/rss.xml
 `;
   writeSeoFile('robots.txt', robotsTxt);
 
+  // 8. Static HTML Pre-Rendering for all 189+ Tools, Categories, and Pages (Astro-grade SSG output)
+  preRenderStaticHtmlPages();
+
   console.log(
     `[SEO Generator] Successfully generated in public/${fs.existsSync(DIST_DIR) ? ' & dist/' : ''}:\n` +
       `  - sitemap-index.xml (${childSitemapUrls.length} child sitemaps)\n` +
@@ -476,6 +480,425 @@ Sitemap: ${BASE_URL}/rss.xml
       `  - sitemap-blog.xml (${blogEntries.length} blog post URLs)\n` +
       `  - rss.xml & feed.xml (${tools.length + BUILTIN_BLOG_POSTS.length} feed items)\n` +
       `  - llms.txt & robots.txt`
+  );
+}
+
+function escapeHtml(str: string): string {
+  if (!str) return '';
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+function preRenderStaticHtmlPages() {
+  if (!fs.existsSync(DIST_DIR)) return;
+  const indexHtmlPath = path.join(DIST_DIR, 'index.html');
+  if (!fs.existsSync(indexHtmlPath)) return;
+
+  const baseTemplate = fs.readFileSync(indexHtmlPath, 'utf8');
+
+  function renderPage(
+    routePath: string,
+    meta: {
+      title: string;
+      description: string;
+      keywords?: string[];
+      canonicalUrl: string;
+      jsonLd: any;
+      htmlContent: string;
+    }
+  ) {
+    let html = baseTemplate;
+
+    // 1. Replace Title
+    html = html.replace(/<title>[\s\S]*?<\/title>/i, `<title>${escapeHtml(meta.title)}</title>`);
+
+    // 2. Replace Description
+    html = html.replace(
+      /<meta\s+name=["']description["']\s+content=["'][\s\S]*?["']\s*\/?>/i,
+      `<meta name="description" content="${escapeHtml(meta.description)}" />`
+    );
+
+    // 3. Replace Keywords
+    if (meta.keywords && meta.keywords.length > 0) {
+      html = html.replace(
+        /<meta\s+name=["']keywords["']\s+content=["'][\s\S]*?["']\s*\/?>/i,
+        `<meta name="keywords" content="${escapeHtml(meta.keywords.join(', '))}" />`
+      );
+    }
+
+    // 4. Replace Canonical Link
+    html = html.replace(
+      /<link\s+rel=["']canonical["']\s+href=["'][\s\S]*?["']\s*\/?>/i,
+      `<link rel="canonical" href="${escapeHtml(meta.canonicalUrl)}" />`
+    );
+
+    // 5. Replace OpenGraph & Twitter
+    html = html.replace(
+      /<meta\s+property=["']og:title["']\s+content=["'][\s\S]*?["']\s*\/?>/i,
+      `<meta property="og:title" content="${escapeHtml(meta.title)}" />`
+    );
+    html = html.replace(
+      /<meta\s+property=["']og:description["']\s+content=["'][\s\S]*?["']\s*\/?>/i,
+      `<meta property="og:description" content="${escapeHtml(meta.description)}" />`
+    );
+    html = html.replace(
+      /<meta\s+property=["']og:url["']\s+content=["'][\s\S]*?["']\s*\/?>/i,
+      `<meta property="og:url" content="${escapeHtml(meta.canonicalUrl)}" />`
+    );
+    html = html.replace(
+      /<meta\s+name=["']twitter:title["']\s+content=["'][\s\S]*?["']\s*\/?>/i,
+      `<meta name="twitter:title" content="${escapeHtml(meta.title)}" />`
+    );
+    html = html.replace(
+      /<meta\s+name=["']twitter:description["']\s+content=["'][\s\S]*?["']\s*\/?>/i,
+      `<meta name="twitter:description" content="${escapeHtml(meta.description)}" />`
+    );
+
+    // 6. Inject Schema.org JSON-LD
+    const jsonLdTag = `\n    <!-- Pre-rendered Rich Schema.org Structured Data -->\n    <script type="application/ld+json">\n${JSON.stringify(meta.jsonLd, null, 2)}\n    </script>\n`;
+    html = html.replace('</head>', `${jsonLdTag}</head>`);
+
+    // 7. Inject Semantic HTML Content inside <div id="root">
+    html = html.replace('<div id="root"></div>', `<div id="root">${meta.htmlContent}</div>`);
+
+    // 8. Write to disk (both directory/index.html and flat .html for Cloudflare Pages)
+    const targetDir = path.join(DIST_DIR, routePath);
+    if (!fs.existsSync(targetDir)) {
+      fs.mkdirSync(targetDir, { recursive: true });
+    }
+    fs.writeFileSync(path.join(targetDir, 'index.html'), html, 'utf8');
+    fs.writeFileSync(path.join(DIST_DIR, `${routePath}.html`), html, 'utf8');
+  }
+
+  // Pre-render all 189+ Tools
+  let renderedToolsCount = 0;
+  for (const tool of tools) {
+    const docs = TOOL_DOCS_BY_SLUG[tool.slug] || { intro: '', howTo: [], faq: [] };
+    const toolTitle = tool.metaTitle || `${tool.name} - Free Online Browser Tool | Toolzaro`;
+    const toolDesc =
+      tool.metaDescription ||
+      tool.intro ||
+      docs.intro ||
+      `Use ${tool.name} online for free. Fast, client-side, zero uploads, private.`;
+    const toolKeywords = tool.keywords || [];
+    const canonicalUrl = `${BASE_URL}/${tool.slug}`;
+    const catSlug = tool.category.toLowerCase().replace(/ & /g, '-').replace(/ /g, '-');
+
+    const jsonLd: any = {
+      '@context': 'https://schema.org',
+      '@graph': [
+        {
+          '@type': 'WebApplication',
+          name: tool.name,
+          url: canonicalUrl,
+          description: toolDesc,
+          applicationCategory: 'BrowserApplication',
+          applicationSubCategory: tool.category,
+          operatingSystem: 'All',
+          isAccessibleForFree: true,
+          browserRequirements: 'Requires JavaScript and modern HTML5 browser',
+          offers: {
+            '@type': 'Offer',
+            price: '0',
+            priceCurrency: 'USD',
+          },
+        },
+        {
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            {
+              '@type': 'ListItem',
+              position: 1,
+              name: 'Home',
+              item: `${BASE_URL}/`,
+            },
+            {
+              '@type': 'ListItem',
+              position: 2,
+              name: tool.category,
+              item: `${BASE_URL}/${catSlug}`,
+            },
+            {
+              '@type': 'ListItem',
+              position: 3,
+              name: tool.name,
+              item: canonicalUrl,
+            },
+          ],
+        },
+      ],
+    };
+
+    const howToSteps = tool.howTo?.length ? tool.howTo : docs.howTo;
+    if (howToSteps && howToSteps.length > 0) {
+      jsonLd['@graph'].push({
+        '@type': 'HowTo',
+        name: `How to use ${tool.name}`,
+        step: howToSteps.map((step: string, idx: number) => ({
+          '@type': 'HowToStep',
+          position: idx + 1,
+          name: `Step ${idx + 1}`,
+          text: step,
+        })),
+      });
+    }
+
+    const faqItems = tool.faq?.length ? tool.faq : docs.faq;
+    if (faqItems && faqItems.length > 0) {
+      jsonLd['@graph'].push({
+        '@type': 'FAQPage',
+        mainEntity: faqItems.map((f: { q: string; a: string }) => ({
+          '@type': 'Question',
+          name: f.q,
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: f.a,
+          },
+        })),
+      });
+    }
+
+    const howToHtml =
+      howToSteps && howToSteps.length > 0
+        ? `<section style="margin:24px 0;padding:24px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:16px;">
+            <h2 style="font-size:20px;font-weight:700;margin:0 0 14px 0;color:#0f172a;">How to Use ${escapeHtml(tool.name)}</h2>
+            <ol style="margin:0;padding-left:22px;line-height:1.75;color:#334155;font-size:15px;">
+              ${howToSteps.map(s => `<li style="margin-bottom:8px;">${escapeHtml(s)}</li>`).join('')}
+            </ol>
+          </section>`
+        : '';
+
+    const faqHtml =
+      faqItems && faqItems.length > 0
+        ? `<section style="margin:24px 0;padding:24px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:16px;">
+            <h2 style="font-size:20px;font-weight:700;margin:0 0 14px 0;color:#0f172a;">Frequently Asked Questions</h2>
+            <dl style="margin:0;">
+              ${faqItems
+                .map(
+                  f => `
+                <dt style="font-size:16px;font-weight:600;color:#0f172a;margin-top:14px;">${escapeHtml(f.q)}</dt>
+                <dd style="margin:4px 0 0 0;color:#475569;line-height:1.6;font-size:14px;">${escapeHtml(f.a)}</dd>
+              `
+                )
+                .join('')}
+            </dl>
+          </section>`
+        : '';
+
+    const toolContentHtml = `
+      <div style="max-width:1100px;margin:0 auto;padding:32px 16px;font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+        <nav style="font-size:13px;margin-bottom:16px;color:#64748b;">
+          <a href="/" style="color:#4f46e5;text-decoration:none;font-weight:500;">Home</a> / 
+          <a href="/${catSlug}" style="color:#4f46e5;text-decoration:none;font-weight:500;">${escapeHtml(tool.category)}</a> / 
+          <span style="color:#334155;">${escapeHtml(tool.name)}</span>
+        </nav>
+        <header style="margin-bottom:28px;">
+          <h1 style="font-size:32px;font-weight:800;color:#0f172a;margin:0 0 10px 0;letter-spacing:-0.02em;">${escapeHtml(tool.name)}</h1>
+          <p style="font-size:16px;color:#475569;line-height:1.6;margin:0 0 14px 0;max-width:850px;">${escapeHtml(toolDesc)}</p>
+          <div style="display:flex;flex-wrap:wrap;gap:12px;font-size:12px;color:#64748b;font-weight:500;">
+            <span>Category: <strong style="color:#0f172a;">${escapeHtml(tool.category)}</strong></span>
+            <span>·</span>
+            <span>100% Client-Side</span>
+            <span>·</span>
+            <span>Zero Server Uploads</span>
+            <span>·</span>
+            <span>No Signup Required</span>
+          </div>
+        </header>
+        <div style="min-height:220px;padding:36px;background:#ffffff;border:1px solid #e2e8f0;border-radius:16px;box-shadow:0 1px 3px rgba(0,0,0,0.05);margin-bottom:32px;text-align:center;">
+          <p style="color:#64748b;font-size:14px;margin:0;">Interactive tool loading... JavaScript is enabled for instant offline processing.</p>
+        </div>
+        ${howToHtml}
+        ${faqHtml}
+      </div>
+    `;
+
+    renderPage(tool.slug, {
+      title: toolTitle,
+      description: toolDesc,
+      keywords: toolKeywords,
+      canonicalUrl,
+      jsonLd,
+      htmlContent: toolContentHtml,
+    });
+    renderedToolsCount++;
+  }
+
+  // Pre-render Category Pages
+  let renderedCatsCount = 0;
+  for (const cat of categories) {
+    const catSlug = cat.toLowerCase().replace(/ & /g, '-').replace(/ /g, '-');
+    const catTools = tools.filter(t => t.category === cat);
+    const catTitle = `${cat} Tools - Free Online Utilities | Toolzaro`;
+    const catDesc = `Discover ${catTools.length}+ free online ${cat.toLowerCase()} utilities. Fast, privacy-focused, zero server uploads, 100% in-browser processing.`;
+    const canonicalUrl = `${BASE_URL}/${catSlug}`;
+
+    const jsonLd = {
+      '@context': 'https://schema.org',
+      '@type': 'CollectionPage',
+      name: `${cat} Tools`,
+      url: canonicalUrl,
+      description: catDesc,
+      mainEntity: {
+        '@type': 'ItemList',
+        itemListElement: catTools.map((t, idx) => ({
+          '@type': 'ListItem',
+          position: idx + 1,
+          url: `${BASE_URL}/${t.slug}`,
+          name: t.name,
+        })),
+      },
+    };
+
+    const catContentHtml = `
+      <div style="max-width:1200px;margin:0 auto;padding:32px 16px;font-family:system-ui,-apple-system,sans-serif;">
+        <nav style="font-size:13px;margin-bottom:16px;color:#64748b;">
+          <a href="/" style="color:#4f46e5;text-decoration:none;">Home</a> / 
+          <span style="color:#334155;">${escapeHtml(cat)} Tools</span>
+        </nav>
+        <header style="margin-bottom:32px;">
+          <h1 style="font-size:32px;font-weight:800;color:#0f172a;margin:0 0 10px 0;">${escapeHtml(cat)} Tools</h1>
+          <p style="font-size:16px;color:#475569;margin:0;">${escapeHtml(catDesc)}</p>
+        </header>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;">
+          ${catTools
+            .map(
+              t => `
+            <a href="/${t.slug}" style="display:block;padding:20px;background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;text-decoration:none;color:inherit;">
+              <h2 style="font-size:17px;font-weight:700;color:#0f172a;margin:0 0 6px 0;">${escapeHtml(t.name)}</h2>
+              <p style="font-size:13px;color:#64748b;margin:0;line-height:1.5;">${escapeHtml(t.metaDescription || '')}</p>
+            </a>
+          `
+            )
+            .join('')}
+        </div>
+      </div>
+    `;
+
+    renderPage(catSlug, {
+      title: catTitle,
+      description: catDesc,
+      keywords: [cat.toLowerCase(), 'online tools', 'free utilities'],
+      canonicalUrl,
+      jsonLd,
+      htmlContent: catContentHtml,
+    });
+
+    // Also mirror to dist/category/<catSlug>/index.html
+    const nestedCatDir = path.join(DIST_DIR, 'category', catSlug);
+    if (!fs.existsSync(nestedCatDir)) {
+      fs.mkdirSync(nestedCatDir, { recursive: true });
+    }
+    const catHtmlFile = path.join(DIST_DIR, `${catSlug}.html`);
+    if (fs.existsSync(catHtmlFile)) {
+      fs.copyFileSync(catHtmlFile, path.join(nestedCatDir, 'index.html'));
+    }
+    renderedCatsCount++;
+  }
+
+  // Pre-render Core Pages
+  const corePages = [
+    {
+      slug: 'tools',
+      title: 'All Online Tools Directory - 185+ Utilities | Toolzaro',
+      desc: 'Browse the complete directory of 185+ free online PDF, image, developer, converter, and SEO tools.',
+    },
+    {
+      slug: 'about',
+      title: 'About Toolzaro - Privacy-First Free Online Utilities',
+      desc: 'Learn about Toolzaro mission to provide fast, privacy-first, client-side web utilities with zero server data storage.',
+    },
+    {
+      slug: 'privacy-policy',
+      title: 'Privacy Policy - Toolzaro',
+      desc: 'Toolzaro privacy policy explaining our strict zero-upload, client-side data processing and local storage usage.',
+    },
+    {
+      slug: 'terms',
+      title: 'Terms of Service - Toolzaro',
+      desc: 'Terms of service and usage conditions for Toolzaro free online browser utilities.',
+    },
+    {
+      slug: 'disclaimer',
+      title: 'Disclaimer - Toolzaro',
+      desc: 'Legal disclaimer regarding browser-based calculations, conversions, and tool outputs.',
+    },
+    {
+      slug: 'contact',
+      title: 'Contact Us - Toolzaro Support',
+      desc: 'Get in touch with the Toolzaro team for tool suggestions, feedback, bug reports, and inquiries.',
+    },
+    {
+      slug: 'sitemap',
+      title: 'HTML Sitemap - Toolzaro All Pages & Tools',
+      desc: 'Visual HTML sitemap indexing all tools, categories, and technical articles on Toolzaro.',
+    },
+    {
+      slug: 'blog',
+      title: 'Toolzaro Engineering & Privacy Blog',
+      desc: 'Technical deep-dives on client-side privacy, web cryptography, schema markup, and web utility performance.',
+    },
+  ];
+
+  for (const page of corePages) {
+    const canonicalUrl = `${BASE_URL}/${page.slug}`;
+    const jsonLd = {
+      '@context': 'https://schema.org',
+      '@type': 'WebPage',
+      name: page.title,
+      url: canonicalUrl,
+      description: page.desc,
+    };
+    renderPage(page.slug, {
+      title: page.title,
+      description: page.desc,
+      canonicalUrl,
+      jsonLd,
+      htmlContent: `
+        <div style="max-width:900px;margin:0 auto;padding:40px 16px;font-family:system-ui,-apple-system,sans-serif;">
+          <h1 style="font-size:32px;font-weight:800;color:#0f172a;margin-bottom:16px;">${escapeHtml(page.title)}</h1>
+          <p style="font-size:16px;color:#475569;line-height:1.6;">${escapeHtml(page.desc)}</p>
+        </div>
+      `,
+    });
+  }
+
+  // Pre-render Blog Posts
+  for (const post of BUILTIN_BLOG_POSTS) {
+    const canonicalUrl = `${BASE_URL}/${post.slug}`;
+    const jsonLd = {
+      '@context': 'https://schema.org',
+      '@type': 'BlogPosting',
+      headline: post.title,
+      description: post.excerpt,
+      url: canonicalUrl,
+      datePublished: post.publishedAt || TODAY,
+      author: {
+        '@type': 'Organization',
+        name: 'Toolzaro',
+      },
+    };
+    renderPage(post.slug, {
+      title: `${post.title} | Toolzaro Blog`,
+      description: post.excerpt,
+      canonicalUrl,
+      jsonLd,
+      htmlContent: `
+        <article style="max-width:850px;margin:0 auto;padding:36px 16px;font-family:system-ui,-apple-system,sans-serif;">
+          <h1 style="font-size:32px;font-weight:800;color:#0f172a;line-height:1.3;margin-bottom:14px;">${escapeHtml(post.title)}</h1>
+          <p style="font-size:16px;color:#64748b;margin-bottom:24px;">Category: ${escapeHtml(post.category)} · By Toolzaro</p>
+          <div style="font-size:16px;line-height:1.75;color:#334155;">${escapeHtml(post.excerpt)}</div>
+        </article>
+      `,
+    });
+  }
+
+  console.log(
+    `[Pre-Render Engine] Pre-rendered static HTML for ${renderedToolsCount} tools, ${renderedCatsCount} categories, ${corePages.length} core pages, and ${BUILTIN_BLOG_POSTS.length} blog posts!`
   );
 }
 
