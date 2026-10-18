@@ -46,7 +46,9 @@ import {
   Clock,
   EyeOff,
   Terminal,
-  HelpCircle
+  HelpCircle,
+  GitBranch,
+  Bot
 } from 'lucide-react';
 import { useSiteSettings } from '../context/SiteSettingsContext';
 import { tools, categories } from '../lib/registry';
@@ -59,7 +61,15 @@ import {
   seedStarterPostIfEmpty 
 } from '../lib/firestoreBlogService';
 import { BUILTIN_BLOG_CONTENT_BY_ID } from '../lib/blogContentData';
-import { saveBlogToD1, deleteBlogFromD1, checkD1Status, initializeD1Schema } from '../lib/d1BlogService';
+import { 
+  saveBlogToD1, 
+  deleteBlogFromD1, 
+  checkD1Status, 
+  initializeD1Schema,
+  CLOUDFLARE_D1_SQL_SCHEMA,
+  CLOUDFLARE_AI_PROMPT_TEMPLATE,
+  GIT_FUNCTIONS_DEPLOY_COMMANDS
+} from '../lib/d1BlogService';
 import { 
   DynamicPage, 
   getAllAdminPages, 
@@ -211,6 +221,8 @@ export const AdminPage: React.FC = () => {
     timestamp: string;
     instructions?: string[];
     error?: string;
+    isFunctionsMissing?: boolean;
+    isTableMissing?: boolean;
   } | null>(null);
   const [d1InitLoading, setD1InitLoading] = useState(false);
   const [isD1GuideModalOpen, setIsD1GuideModalOpen] = useState(false);
@@ -352,7 +364,7 @@ export const AdminPage: React.FC = () => {
   };
 
   const handleSavePost = async (postData: any, targetStatus: 'published' | 'draft' | 'scheduled') => {
-    let d1Result: { success: boolean; error?: string; isBindingPending?: boolean } = { success: false };
+    let d1Result: { success: boolean; error?: string; isBindingPending?: boolean; isFunctionsMissing?: boolean } = { success: false };
 
     // 1. Dual-Persistence: Cloudflare D1 handling
     if (targetStatus === 'published') {
@@ -378,6 +390,8 @@ export const AdminPage: React.FC = () => {
     if (targetStatus === 'published') {
       if (d1Result.success) {
         toast.success('Post published successfully to Cloudflare D1 & Firebase Firestore!');
+      } else if (d1Result.isFunctionsMissing) {
+        toast.warning('Published to Firebase Firestore! (Note: Push functions/ folder to GitHub to activate Edge D1)');
       } else if (d1Result.isBindingPending) {
         toast.warning('Published to Firebase Firestore! (Edge D1 binding DB is pending in Cloudflare Pages)');
       } else {
@@ -645,11 +659,17 @@ export const AdminPage: React.FC = () => {
         postsCount: res.postsCount,
         latencyMs: res.latencyMs || 0,
         timestamp: new Date().toLocaleTimeString(),
-        error: res.isBound ? undefined : res.message
+        error: res.isBound ? undefined : res.message,
+        isFunctionsMissing: res.isFunctionsMissing,
+        isTableMissing: res.isTableMissing
       });
 
       if (res.isBound) {
         toast.success(`D1 Database Verified! (${res.postsCount} posts in D1, ${res.latencyMs}ms)`);
+      } else if (res.isFunctionsMissing) {
+        toast.warning('D1 Check: Cloudflare Pages Functions are not deployed yet (server returned HTML).');
+      } else if (res.isTableMissing) {
+        toast.warning('D1 Connected! "posts" table needs to be created. Copy SQL to Cloudflare AI.');
       } else if (res.statusCode === 503) {
         toast.error('D1 Check: D1 database binding (DB) is not configured in Cloudflare Pages');
       } else {
@@ -2611,18 +2631,26 @@ export const AdminPage: React.FC = () => {
                           <div className={`p-4 rounded-xl border transition-all ${
                             d1Result.isBound
                               ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-900 dark:text-emerald-200'
-                              : 'bg-amber-500/10 border-amber-500/30 text-amber-900 dark:text-amber-200'
+                              : d1Result.isFunctionsMissing
+                              ? 'bg-amber-500/10 border-amber-500/30 text-amber-900 dark:text-amber-200'
+                              : 'bg-rose-500/10 border-rose-500/30 text-rose-900 dark:text-rose-200'
                           }`}>
                             <div className="flex items-start gap-3">
                               {d1Result.isBound ? (
                                 <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
+                              ) : d1Result.isFunctionsMissing ? (
+                                <GitBranch className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
                               ) : (
-                                <AlertCircle className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                                <AlertCircle className="w-5 h-5 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
                               )}
-                              <div className="space-y-2 flex-1 min-w-0">
+                              <div className="space-y-2.5 flex-1 min-w-0">
                                 <div className="flex items-center gap-2 flex-wrap">
                                   <span className="font-bold text-xs">
-                                    {d1Result.isBound ? 'D1 Connection Verified & Active' : 'D1 Database Check Notice'}
+                                    {d1Result.isBound 
+                                      ? 'D1 Edge Database Connected & Active' 
+                                      : d1Result.isFunctionsMissing 
+                                      ? 'Pages Functions Missing (uses_functions: false)' 
+                                      : 'D1 Binding Notice'}
                                   </span>
                                   <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-black/10 dark:bg-white/10 font-semibold">
                                     HTTP {d1Result.statusCode}
@@ -2642,27 +2670,35 @@ export const AdminPage: React.FC = () => {
                                     <span>• Edge SQLite: Active & Replicated</span>
                                   </div>
                                 ) : (
-                                  <div className="pt-2 border-t border-amber-500/20 space-y-2">
+                                  <div className="pt-2 border-t border-current/20 space-y-2.5">
                                     <div className="flex flex-wrap gap-2 items-center">
                                       <button
                                         type="button"
                                         onClick={() => setIsD1GuideModalOpen(true)}
-                                        className="px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white font-semibold text-xs rounded-lg shadow-2xs flex items-center gap-1.5 transition-colors"
+                                        className="px-3 py-1.5 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-xs rounded-lg shadow-2xs flex items-center gap-1.5 transition-colors"
                                       >
-                                        <HelpCircle className="w-3.5 h-3.5" />
-                                        <span>How to Fix HTTP 503 Guide</span>
+                                        <Bot className="w-3.5 h-3.5" />
+                                        <span>Cloudflare AI & Functions Fix Guide</span>
                                       </button>
                                       <button
                                         type="button"
-                                        onClick={() => handleCopyD1Field('DB', 'Binding Variable DB')}
-                                        className="px-2.5 py-1.5 bg-card/80 border border-amber-500/30 hover:bg-card text-foreground font-mono text-[11px] rounded-lg flex items-center gap-1.5 transition-colors"
+                                        onClick={() => handleCopyD1Field(CLOUDFLARE_AI_PROMPT_TEMPLATE, 'Cloudflare AI Prompt')}
+                                        className="px-2.5 py-1.5 bg-card/80 border border-border hover:bg-card text-foreground font-semibold text-[11px] rounded-lg flex items-center gap-1.5 transition-colors"
                                       >
-                                        {d1CopiedField === 'Binding Variable DB' ? <Check className="w-3 h-3 text-emerald-500" /> : <Copy className="w-3 h-3 text-muted-foreground" />}
-                                        <span>Copy "DB"</span>
+                                        {d1CopiedField === 'Cloudflare AI Prompt' ? <Check className="w-3 h-3 text-emerald-500" /> : <Copy className="w-3 h-3 text-muted-foreground" />}
+                                        <span>Copy Prompt for Cloudflare AI</span>
+                                      </button>
+                                      <button
+                                        type="button"
+                                        onClick={() => handleCopyD1Field(GIT_FUNCTIONS_DEPLOY_COMMANDS, 'Git Push Commands')}
+                                        className="px-2.5 py-1.5 bg-card/80 border border-border hover:bg-card text-foreground font-mono text-[11px] rounded-lg flex items-center gap-1.5 transition-colors"
+                                      >
+                                        {d1CopiedField === 'Git Push Commands' ? <Check className="w-3 h-3 text-emerald-500" /> : <GitBranch className="w-3 h-3 text-muted-foreground" />}
+                                        <span>Copy Git Push Commands</span>
                                       </button>
                                     </div>
                                     <p className="text-[10px] opacity-80 leading-normal">
-                                      * Dual-Persistence Safety: Any published posts are currently preserved in Firebase Firestore, so you will never lose any articles while connecting Cloudflare D1.
+                                      🛡️ <strong>Zero Data Loss Guaranteed:</strong> All published posts and drafts are automatically dual-persisted to Firebase Firestore, so your articles remain 100% safe and available while you connect D1.
                                     </p>
                                   </div>
                                 )}
@@ -2691,11 +2727,11 @@ export const AdminPage: React.FC = () => {
                           <div className="p-2.5 rounded-lg bg-background border border-border flex items-center justify-between">
                             <div>
                               <span className="text-[10px] text-muted-foreground block">D1 Database Name</span>
-                              <span className="font-mono font-bold text-foreground">toolzaro-blog-d1</span>
+                              <span className="font-mono font-bold text-foreground">toolzaro-blog</span>
                             </div>
                             <button
                               type="button"
-                              onClick={() => handleCopyD1Field('toolzaro-blog-d1', 'Database Name')}
+                              onClick={() => handleCopyD1Field('toolzaro-blog', 'Database Name')}
                               className="p-1 hover:bg-muted rounded text-muted-foreground hover:text-foreground"
                               title="Copy Database Name"
                             >
@@ -2718,12 +2754,12 @@ export const AdminPage: React.FC = () => {
                           </div>
                         </div>
 
-                        {/* Cloudflare Pages Binding Instructions */}
-                        <div className="p-3.5 bg-card rounded-xl border border-border text-[11px] text-muted-foreground space-y-2 leading-relaxed">
+                        {/* Quick Action Hub for Cloudflare AI & Git Push */}
+                        <div className="p-3.5 bg-card rounded-xl border border-border text-[11px] text-muted-foreground space-y-3 leading-relaxed">
                           <div className="flex items-center justify-between">
                             <p className="font-bold text-foreground flex items-center gap-1.5">
-                              <Terminal className="w-3.5 h-3.5 text-primary" />
-                              <span>Cloudflare Pages D1 Setup (3 Simple Steps):</span>
+                              <Bot className="w-3.5 h-3.5 text-primary" />
+                              <span>2 Steps to Complete Cloudflare Setup:</span>
                             </p>
                             <button
                               type="button"
@@ -2734,19 +2770,43 @@ export const AdminPage: React.FC = () => {
                               <ExternalLink className="w-3 h-3" />
                             </button>
                           </div>
-                          <p>1. Open Cloudflare Dashboard (<a href="https://dash.cloudflare.com" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">dash.cloudflare.com</a>) &gt; <strong>Workers &amp; Pages</strong> &gt; Select your project.</p>
-                          <p>2. Navigate to <strong>Settings</strong> &gt; <strong>Functions</strong> &gt; Scroll down to <strong>D1 Database Bindings</strong>.</p>
-                          <p>3. Click <strong>Add Binding</strong> &gt; Variable name: <code className="px-1 py-0.5 rounded bg-muted font-bold text-foreground">DB</code> &gt; Database: select your D1 database (<code className="px-1 py-0.5 rounded bg-muted text-foreground">toolzaro-blog-d1</code>) &gt; Save.</p>
-                          <div className="p-2 bg-muted/50 rounded-lg flex items-center justify-between font-mono text-[10px]">
-                            <span>CLI: npx wrangler d1 create toolzaro-blog-d1</span>
-                            <button
-                              type="button"
-                              onClick={() => handleCopyD1Field('npx wrangler d1 create toolzaro-blog-d1', 'Wrangler Command')}
-                              className="px-2 py-0.5 rounded bg-card hover:bg-muted border border-border text-foreground flex items-center gap-1"
-                            >
-                              {d1CopiedField === 'Wrangler Command' ? <Check className="w-3 h-3 text-emerald-500" /> : <Copy className="w-3 h-3" />}
-                              <span>Copy</span>
-                            </button>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+                            <div className="p-3 rounded-lg bg-muted/40 border border-border space-y-2">
+                              <p className="font-bold text-foreground text-xs flex items-center gap-1.5">
+                                <span className="w-4 h-4 rounded-full bg-primary/10 text-primary font-bold text-[10px] flex items-center justify-center">1</span>
+                                <span>Create D1 Table via Cloudflare AI</span>
+                              </p>
+                              <p className="text-[10px] leading-normal">
+                                Send the pre-configured schema prompt to the Cloudflare AI chat in your account.
+                              </p>
+                              <button
+                                type="button"
+                                onClick={() => handleCopyD1Field(CLOUDFLARE_AI_PROMPT_TEMPLATE, 'Cloudflare AI Prompt')}
+                                className="w-full px-2.5 py-1.5 bg-primary/10 hover:bg-primary/20 text-primary font-semibold text-xs rounded-lg flex items-center justify-center gap-1.5 transition-colors"
+                              >
+                                {d1CopiedField === 'Cloudflare AI Prompt' ? <Check className="w-3 h-3 text-emerald-500" /> : <Bot className="w-3 h-3" />}
+                                <span>Copy Cloudflare AI Prompt</span>
+                              </button>
+                            </div>
+
+                            <div className="p-3 rounded-lg bg-muted/40 border border-border space-y-2">
+                              <p className="font-bold text-foreground text-xs flex items-center gap-1.5">
+                                <span className="w-4 h-4 rounded-full bg-primary/10 text-primary font-bold text-[10px] flex items-center justify-center">2</span>
+                                <span>Push functions/ to GitHub</span>
+                              </p>
+                              <p className="text-[10px] leading-normal">
+                                Enables Cloudflare Pages Functions so <code className="text-foreground font-mono">/api/blog/*</code> endpoints execute on the Edge.
+                              </p>
+                              <button
+                                type="button"
+                                onClick={() => handleCopyD1Field(GIT_FUNCTIONS_DEPLOY_COMMANDS, 'Git Push Commands')}
+                                className="w-full px-2.5 py-1.5 bg-secondary hover:bg-secondary/80 text-secondary-foreground font-semibold text-xs rounded-lg border border-border flex items-center justify-center gap-1.5 transition-colors"
+                              >
+                                {d1CopiedField === 'Git Push Commands' ? <Check className="w-3 h-3 text-emerald-500" /> : <GitBranch className="w-3 h-3 text-primary" />}
+                                <span>Copy Git Commands</span>
+                              </button>
+                            </div>
                           </div>
                         </div>
                       </div>
