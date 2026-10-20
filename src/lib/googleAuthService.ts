@@ -26,7 +26,7 @@ function loadAuthDeps() {
         GoogleAuthProvider: authMod.GoogleAuthProvider,
         onAuthStateChanged: authMod.onAuthStateChanged,
         signOut: authMod.signOut,
-        auth: authMod.getAuth(fbMod.app),
+        auth: authMod.getAuth(fbMod.getFirebaseApp()),
         provider,
       };
     });

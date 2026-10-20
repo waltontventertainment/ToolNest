@@ -646,7 +646,7 @@ export const SiteLayout: React.FC = () => {
 
       {/* Viewport-fixed Header Layout Spacer: guarantees page content never gets covered by fixed header */}
       <div 
-        className={`${isAnnouncementActive ? 'h-16 md:h-[98px]' : 'h-16'} shrink-0 w-full pointer-events-none`} 
+        className={`${isAnnouncementActive ? 'h-16 md:h-[98px]' : 'h-16'} shrink-0 w-full pointer-events-none transition-[height] duration-150 ease-out`} 
         aria-hidden="true" 
       />
 
@@ -665,9 +665,7 @@ export const SiteLayout: React.FC = () => {
       )}
 
       <main className="flex-1 w-full max-w-[1400px] mx-auto px-3 sm:px-6 lg:px-8 pt-3 sm:pt-4 md:pt-6 pb-12 sm:pb-16 md:pb-20 overflow-x-clip">
-        <React.Suspense fallback={null}>
-          <Outlet />
-        </React.Suspense>
+        <Outlet />
       </main>
 
       <footer className="border-t border-border bg-card/60 py-10 sm:py-14 mt-12 sm:mt-16 md:mt-20 max-w-full overflow-x-hidden">

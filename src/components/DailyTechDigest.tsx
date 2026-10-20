@@ -254,7 +254,7 @@ export const DailyTechDigest: React.FC = () => {
                   <img
                     src={imgSrc}
                     alt={item.title}
-                    loading="eager"
+                    loading="lazy"
                     decoding="async"
                     referrerPolicy="no-referrer"
                     width={28}
@@ -303,7 +303,7 @@ export const DailyTechDigest: React.FC = () => {
                     <img
                       src={imgSrc}
                       alt={item.title}
-                      loading="eager"
+                      loading="lazy"
                       decoding="async"
                       referrerPolicy="no-referrer"
                       width={28}

@@ -60,7 +60,21 @@ export default defineConfig(() => {
       copyPublicDir: true,
       target: 'es2022',
       cssCodeSplit: !isSingleFile,
-      minify: 'esbuild',
+      minify: 'terser',
+      terserOptions: {
+        compress: {
+          drop_console: true,
+          drop_debugger: true,
+          pure_funcs: ['console.log', 'console.info', 'console.debug'],
+          passes: 2,
+        },
+        format: {
+          comments: false,
+        },
+        mangle: {
+          safari10: true,
+        },
+      },
       modulePreload: isSingleFile
         ? true
         : {

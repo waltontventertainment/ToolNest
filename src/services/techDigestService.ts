@@ -19,14 +19,14 @@ export interface TechDigest {
 }
 
 export const REAL_TECH_TOPIC_IMAGES = [
-  'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=64&h=64&auto=format&fit=crop&q=75&fm=webp', // Modern IDE & Code
-  'https://images.unsplash.com/photo-1563986768609-322da13575f3?w=64&h=64&auto=format&fit=crop&q=75&fm=webp', // Cybersecurity & Zero-Trust
-  'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=64&h=64&auto=format&fit=crop&q=75&fm=webp', // Developer Toolkits & Workstation
-  'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=64&h=64&auto=format&fit=crop&q=75&fm=webp', // WebAssembly & High-Speed Processing
-  'https://images.unsplash.com/photo-1515879218367-8466d910aaa4?w=64&h=64&auto=format&fit=crop&q=75&fm=webp', // Modern TypeScript Architecture
-  'https://images.unsplash.com/photo-1504639725590-34d0984388bd?w=64&h=64&auto=format&fit=crop&q=75&fm=webp', // Web Crypto & Security Primitives
-  'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=64&h=64&auto=format&fit=crop&q=75&fm=webp', // AI & Cloud Computing
-  'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=64&h=64&auto=format&fit=crop&q=75&fm=webp', // Edge Networks & Global Data
+  'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=32&h=32&auto=format&fit=crop&q=50&fm=webp', // Modern IDE & Code
+  'https://images.unsplash.com/photo-1563986768609-322da13575f3?w=32&h=32&auto=format&fit=crop&q=50&fm=webp', // Cybersecurity & Zero-Trust
+  'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=32&h=32&auto=format&fit=crop&q=50&fm=webp', // Developer Toolkits & Workstation
+  'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=32&h=32&auto=format&fit=crop&q=50&fm=webp', // WebAssembly & High-Speed Processing
+  'https://images.unsplash.com/photo-1515879218367-8466d910aaa4?w=32&h=32&auto=format&fit=crop&q=50&fm=webp', // Modern TypeScript Architecture
+  'https://images.unsplash.com/photo-1504639725590-34d0984388bd?w=32&h=32&auto=format&fit=crop&q=50&fm=webp', // Web Crypto & Security Primitives
+  'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=32&h=32&auto=format&fit=crop&q=50&fm=webp', // AI & Cloud Computing
+  'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=32&h=32&auto=format&fit=crop&q=50&fm=webp', // Edge Networks & Global Data
 ];
 
 export function getFallbackTopicImage(index: number): string {

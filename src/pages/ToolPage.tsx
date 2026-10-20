@@ -332,15 +332,10 @@ export const ToolPage: React.FC<{ forcedSlug?: string }> = ({ forcedSlug }) => {
         <section className="mb-8 sm:mb-10 md:mb-12 min-h-[280px]">
           <React.Suspense
             fallback={
-              <div className="w-full rounded-3xl border border-border/80 bg-card/70 p-6 sm:p-8 space-y-5 animate-pulse">
-                <div className="flex items-center justify-between gap-4">
-                  <div className="h-6 w-48 rounded-lg bg-muted" />
-                  <div className="h-8 w-24 rounded-xl bg-muted" />
-                </div>
-                <div className="h-44 sm:h-56 w-full rounded-2xl bg-muted/70 border border-border/50" />
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-36 rounded-xl bg-primary/20" />
-                  <div className="h-10 w-28 rounded-xl bg-muted" />
+              <div className="w-full min-h-[320px] rounded-3xl border border-border/80 bg-card/60 p-6 sm:p-8 flex items-center justify-center">
+                <div className="flex flex-col items-center gap-3">
+                  <div className="w-7 h-7 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+                  <span className="text-xs font-medium text-muted-foreground">Preparing {tool.name}...</span>
                 </div>
               </div>
             }

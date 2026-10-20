@@ -59,9 +59,9 @@ export const Index: React.FC<{ forcedBookmarks?: boolean }> = ({ forcedBookmarks
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(isBookmarksRoute);
   const { favorites, clearFavorites } = useFavorites();
 
-  // Show 12 curated tools initially on the homepage grid (optimizes initial DOM element count for 100/100 Lighthouse)
-  const [displayCount, setDisplayCount] = useState(12);
-  const [incrementCount, setIncrementCount] = useState(24);
+  // Show 24 curated tools stably on the homepage grid (eliminates hydration layout shift)
+  const [displayCount, setDisplayCount] = useState(24);
+  const incrementCount = 24;
   
   // Blog state initialized synchronously with instant cache + built-in posts (0ms render, zero Firestore loading flash)
   const [allBlogPosts, setAllBlogPosts] = useState<FirestoreBlog[]>(() => getInstantPublishedBlogs());
@@ -123,11 +123,6 @@ export const Index: React.FC<{ forcedBookmarks?: boolean }> = ({ forcedBookmarks
     }
   }, [forcedBookmarks, location.pathname, searchParams]);
 
-  useEffect(() => {
-    const count = 12;
-    setDisplayCount(count);
-    setIncrementCount(24);
-  }, []);
 
   const handleExitFavorites = () => {
     setActiveCategory('All');

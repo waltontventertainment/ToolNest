@@ -240,9 +240,6 @@ function SmartSpaLinkInterceptor() {
       ['pointerdown', 'keydown', 'touchstart', 'scroll'].forEach(evt =>
         window.removeEventListener(evt, warmChunks)
       );
-      import('./lib/firestoreBlogService')
-        .then(m => m.getPublishedBlogs())
-        .catch(() => {});
       import('./pages/ToolPage').catch(() => {});
       import('./pages/BlogPostPage').catch(() => {});
       import('./pages/BlogPage').catch(() => {});

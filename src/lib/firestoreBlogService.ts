@@ -19,18 +19,22 @@ function loadFirestoreDeps() {
     firestoreDepsPromise = Promise.all([
       import('firebase/firestore'),
       import('./firebase'),
-    ]).then(([fsMod, fbMod]) => ({
-      collection: fsMod.collection,
-      doc: fsMod.doc,
-      getDocs: fsMod.getDocs,
-      getDoc: fsMod.getDoc,
-      setDoc: fsMod.setDoc,
-      deleteDoc: fsMod.deleteDoc,
-      query: fsMod.query,
-      where: fsMod.where,
-      limit: fsMod.limit,
-      db: fbMod.db,
-    }));
+    ]).then(([fsMod, fbMod]) => {
+      const appInstance = fbMod.getFirebaseApp();
+      const dbInstance = fsMod.getFirestore(appInstance);
+      return {
+        collection: fsMod.collection,
+        doc: fsMod.doc,
+        getDocs: fsMod.getDocs,
+        getDoc: fsMod.getDoc,
+        setDoc: fsMod.setDoc,
+        deleteDoc: fsMod.deleteDoc,
+        query: fsMod.query,
+        where: fsMod.where,
+        limit: fsMod.limit,
+        db: dbInstance,
+      };
+    });
   }
   return firestoreDepsPromise;
 }
